@@ -1,0 +1,16 @@
+[
+  {
+    "modid": "skyblocktweaks",
+    "name": "Skyblock Tweaks",
+    "description": "A Simple Hypixel Skyblock Mod that tweaks your Hypixel Skyblock Experience for the better",
+    "version": "${version}",
+    "mcversion": "${mcversion}",
+    "url": "",
+    "updateUrl": "",
+    "authorList": ["MrFast"],
+    "credits": "",
+    "logoFile": "logo.png",
+    "screenshots": [],
+    "dependencies": []
+  }
+]

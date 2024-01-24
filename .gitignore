@@ -1,0 +1,15 @@
+.gradle/
+
+libs/
+
+bin/
+
+build/
+
+.idea/
+
+.vscode/
+
+*.bat
+
+run/
