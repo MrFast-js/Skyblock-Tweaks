@@ -1,7 +1,9 @@
 package mrfast.sbt
 
 import mrfast.sbt.apis.PlayerStats
+import mrfast.sbt.commands.ConfigCommand
 import mrfast.sbt.config.Config
+import net.minecraftforge.client.ClientCommandHandler
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.event.FMLInitializationEvent
@@ -14,7 +16,7 @@ class SkyblockTweaks {
         const val MOD_ID = "skyblocktweaks"
         const val MOD_NAME = "Skyblock Tweaks"
         const val MOD_VERSION = "1.0.0"
-        val config = Config()
+        val config = Config
     }
 
     @Mod.EventHandler
@@ -29,10 +31,13 @@ class SkyblockTweaks {
         MinecraftForge.EVENT_BUS.register(this)
         // Api's
         MinecraftForge.EVENT_BUS.register(PlayerStats)
+        ClientCommandHandler.instance.registerCommand(ConfigCommand())
     }
 
     @Mod.EventHandler
     fun postInit(event: FMLPostInitializationEvent?) {
         // Your post-init code here
+        println("Saving config for SBT")
+        config.save();
     }
 }

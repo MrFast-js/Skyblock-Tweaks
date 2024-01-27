@@ -19,15 +19,7 @@ object PlayerStats {
     @SubscribeEvent
     fun onActionBarUpdate(event: ClientChatReceivedEvent) {
         if (event.type.toInt() == 2) {
-            println(event.message.formattedText)
-
             event.message = ChatComponentText(updateStatsAndRemoveSegments(event.message.unformattedTextForChat))
-            println("Current Health: $health")
-            println("Max Health: $maxHealth")
-            println("Defense: $defense")
-            println("Current Mana: $mana")
-            println("Max Mana: $maxMana")
-            println("Overflow Mana: $overflowMana")
         }
     }
 

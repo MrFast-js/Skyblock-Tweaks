@@ -1,80 +1,143 @@
 package mrfast.sbt.config
 
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import com.google.gson.JsonSyntaxException
 import net.minecraft.client.Minecraft
 import java.io.File
+import java.io.FileReader
+import java.io.FileWriter
 import java.lang.reflect.Field
-import java.util.*
+import kotlin.reflect.KMutableProperty
+import kotlin.reflect.full.createType
+import kotlin.reflect.full.findAnnotation
+import kotlin.reflect.full.memberProperties
 
 abstract class ConfigManager {
     private val configDirectoryPath = "${Minecraft.getMinecraft().mcDataDir}\\config\\skyblocktweaks"
     private val configFilePath = "$configDirectoryPath\\config.json"
-    private val configProperties = Properties()
+    private val gson = GsonBuilder().setPrettyPrinting().create()
 
-    private fun getProperty(key: String, defaultValue: String): String {
-        return configProperties.getProperty(key, defaultValue)
-    }
+    data class Category(
+            val name: String,
+            var subcategories: MutableMap<String, Subcategory> = mutableMapOf()
+    )
 
-    protected fun setProperty(key: String, value: String) {
-        configProperties.setProperty(key, value)
-    }
+    data class Subcategory(
+            val name: String,
+            var features: MutableMap<String, Feature> = mutableMapOf()
+    )
 
-    fun loadConfig() {
-        val configFile = File(configFilePath)
-        if (configFile.exists()) {
-            configFile.inputStream().use { input ->
-                configProperties.load(input)
-            }
-
-            // Get all fields in the class, including private ones
-            val fields = javaClass.declaredFields
-
-            for (field in fields) {
-                // Check if the field is annotated with @ConfigProperty
-                if (field.isAnnotationPresent(ConfigProperty::class.java)) {
-                    field.isAccessible = true // Allow access to private fields
-                    val configPropertyAnnotation = field.getAnnotation(ConfigProperty::class.java)
-                    val annotationName = configPropertyAnnotation.name
-
-                    // Save the default value to the defaultMap
-                    saveDefault(annotationName, field)
-
-                    val defaultValue = field.get(this).toString()
-
-                    // Load the value from the config file or use the default value
-                    val loadedValue = getProperty(annotationName, defaultValue)
-
-                    // Convert the loaded value to the appropriate type
-                    val convertedValue = when (field.type) {
-                        Boolean::class.java -> loadedValue.toBoolean()
-                        Int::class.java -> loadedValue.toInt()
-                        String::class.java -> loadedValue
-                        else -> throw UnsupportedOperationException("Unsupported type: ${field.type}")
-                    }
-
-                    // Set the field value with the loaded value
-                    field.set(this, convertedValue)
-                }
-            }
-        }
-    }
-
-    private fun saveDefault(propertyName: String, field: Field) {
-        val defaultValue = field.get(this).toString()
-        defaultMap[propertyName] = defaultValue
-    }
+    data class Feature(
+            val name: String,
+            val description: String,
+            var value: Any,
+            var type: PropertyType
+    )
 
     fun saveConfig() {
         val configDirectory = File(configDirectoryPath)
         configDirectory.mkdirs()
 
         val configFile = File(configFilePath)
-        configFile.outputStream().use { output ->
-            configProperties.store(output, null)
+
+        // Convert fields to a Map
+        val fieldMap = mutableMapOf<String, Any>()
+
+        // Get all fields in the class, including private ones
+        val properties = Config::class.memberProperties
+
+        for (property in properties) {
+            val annotation = property.findAnnotation<ConfigProperty>()
+
+            if (annotation != null) {
+                val fieldName = property.name
+                val value = property.getter.call(this) ?: continue
+
+                println("SAVING VARIABLE: $fieldName as $value")
+
+                // Create a new Feature
+                val feature = Feature(annotation.name, annotation.description, value, annotation.type)
+                val category = categories.getOrPut(annotation.category) { Category(annotation.category) }
+                val subcategory = category.subcategories.getOrPut(annotation.subcategory) { Subcategory(annotation.subcategory) }
+
+                // Add the Feature to the Subcategory
+                subcategory.features[annotation.name] = feature
+
+                println(category)
+                println(subcategory)
+                println(subcategory.features)
+
+                fieldMap[fieldName] = value
+            }
+        }
+
+        val json = gson.toJson(fieldMap)
+
+        // Write the JSON to the config file
+        FileWriter(configFile).use { writer ->
+            writer.write(json)
         }
     }
 
+    // Goes through config file and sets each config options value equal to its config.json equivalent
+    fun loadConfig() {
+        val configFile = File(configFilePath)
+        if (configFile.exists()) {
+            try {
+                // Read JSON content from the config file using Gson
+                val gson = Gson()
+                val reader = FileReader(configFile)
+                val fieldMap = gson.fromJson(reader, Map::class.java)
+
+                // Get all properties in the class, including private ones
+                val properties = Config::class.memberProperties
+                println(properties)
+                for (property in properties) {
+                    val propertyName = property.name
+                    if (fieldMap.containsKey(propertyName)) {
+                        val defaultValue = property.getter.call(Config).toString()
+                        println("${fieldMap[propertyName]} property value ${property.returnType}")
+                        val loadedValue = fieldMap[propertyName]
+                        // Convert the loaded value to the appropriate type
+                        val convertedValue: Any? = try {
+                            when (property.returnType) {
+                                Boolean::class.createType() -> loadedValue.toString().toBoolean()
+                                Int::class.createType() -> loadedValue.toString().toInt()
+                                Double::class.createType() -> loadedValue.toString().toDouble()
+                                else -> loadedValue
+                            }
+                        } catch (e: Exception) {
+                            // Type of field changed, resetting to default
+                            defaultValue
+                        }
+                        println("UPDATING VARIABLE: $propertyName = $convertedValue")
+
+                        // Set the property value with the converted value
+                        try {
+                            (property as KMutableProperty<*>).setter.call(Config, convertedValue)
+                        } catch (_: Exception) {
+                        }
+                    }
+                }
+
+                reader.close()
+            } catch (e: JsonSyntaxException) {
+                // Handle JSON syntax exception
+                e.printStackTrace()
+            }
+        }
+    }
+
+
+    private fun saveDefault(propertyName: String, field: Field) {
+        val defaultValue = field.get(this).toString()
+        defaultMap[propertyName] = defaultValue
+    }
+
     companion object {
-        val defaultMap: MutableMap<String, String> = mutableMapOf()
+        var categories: MutableMap<String, Category> = mutableMapOf()
+        var defaultMap: MutableMap<String, String> = mutableMapOf()
 
     }
 }
