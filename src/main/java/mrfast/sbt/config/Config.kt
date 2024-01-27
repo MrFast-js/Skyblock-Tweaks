@@ -5,35 +5,6 @@ import kotlin.reflect.KProperty
 
 object Config : ConfigManager() {
 
-    class TestFeature1 {
-        @ConfigProperty(
-                type = PropertyType.TOGGLE,
-                name = "Test feature 1",
-                description = "womp womp 1",
-                category = "General",
-                subcategory = "Test"
-        )
-        var testFeature1 = true
-
-        @ConfigProperty(
-                type = PropertyType.TOGGLE,
-                name = "Test feature option 1",
-                description = "womp womp 1",
-                category = "General",
-                subcategory = "Test"
-        )
-        var testFeatureOption1 = true
-
-        @ConfigProperty(
-                type = PropertyType.TOGGLE,
-                name = "Test feature option 2",
-                description = "womp womp 1",
-                category = "General",
-                subcategory = "Test"
-        )
-        var testFeatureOption2 = true
-    }
-
     @ConfigProperty(
             type = PropertyType.NUMBER,
             name = "Test feature 2",
@@ -44,13 +15,33 @@ object Config : ConfigManager() {
     var testFeature2 = 5
 
     @ConfigProperty(
+            type = PropertyType.TOGGLE,
+            name = "Test feature 2",
+            description = "scooby doo where are you we got some clues to get now, yeah yeah scooby dooby doo where are youu, we got somewhere to be",
+            category = "General",
+            subcategory = "SAdASd"
+    )
+    var testFeature = false
+
+    @ConfigProperty(
+            type = PropertyType.TOGGLE,
+            name = "Test feature 2",
+            description = "scooby doo where are you we got some clues to get now, yeah yeah scooby dooby doo where are youu, we got somewhere to be",
+            category = "General",
+            subcategory = "SAdASd"
+    )
+    var testFeatur5e = false
+
+
+    @ConfigProperty(
             type = PropertyType.TEXT,
             name = "Test feature 3",
             description = "scooby doo",
-            category = "General",
+            category = "gragrea",
             subcategory = "Test"
     )
     var testFeature3 = "test123"
+
 
 
     // Save the config options to the file
