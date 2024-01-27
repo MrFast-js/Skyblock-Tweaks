@@ -8,8 +8,6 @@ import java.io.File
 import java.io.FileReader
 import java.io.FileWriter
 import java.lang.reflect.Field
-import kotlin.reflect.KMutableProperty
-import kotlin.reflect.full.createType
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.memberProperties
 
@@ -54,8 +52,6 @@ abstract class ConfigManager {
                 val fieldName = property.name
                 val value = property.getter.call(this) ?: continue
 
-                println("SAVING VARIABLE: $fieldName as $value")
-
                 // Create a new Feature
                 val feature = Feature(annotation.name, annotation.description, value, annotation.type)
                 val category = categories.getOrPut(annotation.category) { Category(annotation.category) }
@@ -96,28 +92,16 @@ abstract class ConfigManager {
                 for (property in properties) {
                     val propertyName = property.name
                     if (fieldMap.containsKey(propertyName)) {
-                        val defaultValue = property.getter.call(Config).toString()
-                        println("${fieldMap[propertyName]} property value ${property.returnType}")
-                        val loadedValue = fieldMap[propertyName]
-                        // Convert the loaded value to the appropriate type
-                        val convertedValue: Any? = try {
-                            when (property.returnType) {
-                                Boolean::class.createType() -> loadedValue.toString().toBoolean()
-                                Int::class.createType() -> loadedValue.toString().toInt()
-                                Double::class.createType() -> loadedValue.toString().toDouble()
-                                else -> loadedValue
-                            }
-                        } catch (e: Exception) {
-                            // Type of field changed, resetting to default
-                            defaultValue
-                        }
-                        println("UPDATING VARIABLE: $propertyName = $convertedValue")
+                        var loadedValue = fieldMap[propertyName]
+                        // the field map converted ints to doubles, this is undoing
+                        if (loadedValue is Double) loadedValue = loadedValue.toInt()
+                        val field: Field = Config::class.java.getDeclaredField(propertyName)
+                        field.isAccessible = true
 
-                        // Set the property value with the converted value
-                        try {
-                            (property as KMutableProperty<*>).setter.call(Config, convertedValue)
-                        } catch (_: Exception) {
-                        }
+                        saveDefault(propertyName,field.get(Config))
+
+                        // update the field from Config.kt
+                        field.set(Config, loadedValue)
                     }
                 }
 
@@ -130,15 +114,13 @@ abstract class ConfigManager {
     }
 
 
-    private fun saveDefault(propertyName: String, field: Field) {
-        val defaultValue = field.get(this).toString()
-        defaultMap[propertyName] = defaultValue
+    private fun saveDefault(propertyName: String, field: Any) {
+        defaultMap[propertyName] = field
     }
 
     companion object {
         var categories: MutableMap<String, Category> = mutableMapOf()
-        var defaultMap: MutableMap<String, String> = mutableMapOf()
-
+        var defaultMap: MutableMap<String, Any> = mutableMapOf()
     }
 }
 
