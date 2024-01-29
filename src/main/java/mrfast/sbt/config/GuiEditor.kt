@@ -1,10 +1,10 @@
 package mrfast.sbt.config
 
-import com.sun.javafx.util.Utils.clamp
 import mrfast.sbt.utils.Utils
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.realms.RealmsMth.clamp
 import org.lwjgl.input.Mouse
 import java.awt.Color
 
