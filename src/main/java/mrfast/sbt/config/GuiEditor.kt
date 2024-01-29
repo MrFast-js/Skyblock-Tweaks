@@ -21,7 +21,8 @@ class GuiEditor : GuiScreen() {
     private var showAllEnabledElements = false
     private var offsetX = 0.0
     private var offsetY = 0.0
-    private var res = ScaledResolution(Utils.mc)
+    private var screenWidth = Utils.mc.displayWidth / 2
+    private var screenHeight = Utils.mc.displayHeight / 2
 
     override fun initGui() {
         super.initGui()
@@ -53,13 +54,17 @@ class GuiEditor : GuiScreen() {
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         super.drawScreen(mouseX, mouseY, partialTicks)
 
+        screenWidth = Utils.mc.displayWidth / 2
+        screenHeight = Utils.mc.displayHeight / 2
+
         drawDefaultBackground()
         updateMousePos(mouseX, mouseY)
         for (element in guiManager.guiElements) {
             if (!element.isActive()) continue
             if (!showAllEnabledElements && !element.isVisible()) continue
-            val x = (element.relativeX * res.scaledWidth)
-            val y = (element.relativeY * res.scaledHeight)
+
+            val x = (element.relativeX * screenWidth)
+            val y = (element.relativeY * screenHeight)
             val backgroundColor = Color(25, 25, 25, if (element == hoveredElement) 200 else 159)
             var borderColor = Color(100, 100, 100, 220)
             if (element == hoveredElement) borderColor = Color(150, 150, 150, 220)
@@ -89,7 +94,7 @@ class GuiEditor : GuiScreen() {
         if (hoveredElement != null && !isMouseMoving) {
             val renderTooltip = mutableListOf(
                     "§a§l${hoveredElement!!.elementName}",
-                    "§7X: §e${Math.round(hoveredElement!!.relativeX * res.scaledWidth)} §7Y: §e${Math.round(hoveredElement!!.relativeY * res.scaledHeight)}",
+                    "§7X: §e${Math.round(hoveredElement!!.relativeX * screenWidth)} §7Y: §e${Math.round(hoveredElement!!.relativeY * screenHeight)}",
                     "§3R-CLICK to open config"
             )
             val fontObj = Utils.mc.fontRendererObj
@@ -99,27 +104,27 @@ class GuiEditor : GuiScreen() {
             var adjustedX = max(0, mouseX - 3)
             var adjustedY = mouseY
 
-            if (adjustedX + tooltipWidth > res.scaledWidth) {
-                adjustedX = res.scaledWidth - tooltipWidth
+            if (adjustedX + tooltipWidth > screenWidth) {
+                adjustedX = screenWidth - tooltipWidth
             }
 
-            if (mouseY + tooltipHeight > res.scaledHeight) {
-                adjustedY = max(res.scaledHeight - tooltipHeight, mouseY - tooltipHeight - 12)
+            if (mouseY + tooltipHeight > screenHeight) {
+                adjustedY = max(screenHeight - tooltipHeight, mouseY - tooltipHeight - 12)
             }
 
             if (Mouse.isButtonDown(1)) {
                 ConfigGui.openConfigSearch(hoveredElement!!.elementName)
             }
 
-            GuiUtils.drawHoveringText(renderTooltip, adjustedX, adjustedY, res.scaledWidth, res.scaledHeight, -1, fontObj)
+            GuiUtils.drawHoveringText(renderTooltip, adjustedX, adjustedY, screenWidth, screenHeight, -1, fontObj)
         }
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
         super.mouseClicked(mouseX, mouseY, mouseButton)
         for (element in guiManager.guiElements) {
-            val x = (element.relativeX * res.scaledWidth).toInt()
-            val y = (element.relativeY * res.scaledHeight).toInt()
+            val x = (element.relativeX * screenWidth).toInt()
+            val y = (element.relativeY * screenHeight).toInt()
             val elementWidth = (element.width * element.scale).toInt()
             val elementHeight = (element.height * element.scale).toInt()
 
@@ -155,8 +160,8 @@ class GuiEditor : GuiScreen() {
     private fun updateMousePos(mouseX: Int, mouseY: Int) {
         hoveredElement = null
         for (element in guiManager.guiElements) {
-            val x = (element.relativeX * res.scaledWidth).toInt()
-            val y = (element.relativeY * res.scaledHeight).toInt()
+            val x = (element.relativeX * screenWidth).toInt()
+            val y = (element.relativeY * screenHeight).toInt()
             val elementWidth = (element.width * element.scale).toInt()
             val elementHeight = (element.height * element.scale).toInt()
 
@@ -169,8 +174,8 @@ class GuiEditor : GuiScreen() {
         if (Mouse.isButtonDown(0)) {
             // Left mouse button pressed, handle dragging
             selectedElement?.let {
-                it.relativeX = (mouseX - offsetX) / res.scaledWidth.toDouble()
-                it.relativeY = (mouseY - offsetY) / res.scaledHeight.toDouble()
+                it.relativeX = (mouseX - offsetX) / screenWidth.toDouble()
+                it.relativeY = (mouseY - offsetY) / screenHeight.toDouble()
             }
         } else {
             selectedElement = null

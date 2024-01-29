@@ -24,12 +24,13 @@ object GuiManager {
             for (guiElement in guiElements) {
                 if (guiElement.isActive()) {
                     if (!showall && !guiElement.isVisible()) continue
-                    val res = ScaledResolution(Utils.mc)
-                    GlStateManager.translate(guiElement.relativeX * res.scaledWidth, guiElement.relativeY * res.scaledHeight, 0.0)
+                    val screenWidth = Utils.mc.displayWidth / 2
+                    val screenHeight = Utils.mc.displayHeight / 2
+                    GlStateManager.translate(guiElement.relativeX * screenWidth, guiElement.relativeY * screenHeight, 0.0)
                     GlStateManager.scale(guiElement.scale, guiElement.scale, 1.0)
                     guiElement.draw()
                     GlStateManager.scale(1 / guiElement.scale, 1 / guiElement.scale, 1.0)
-                    GlStateManager.translate(-guiElement.relativeX * res.scaledWidth, -guiElement.relativeY * res.scaledHeight, 0.0)
+                    GlStateManager.translate(-guiElement.relativeX * screenWidth, -guiElement.relativeY * screenHeight, 0.0)
                 }
             }
         }
@@ -56,7 +57,7 @@ object GuiManager {
                 FileReader(configFile).use { reader ->
                     val loadedElements = gson.fromJson(reader, Array<Element>::class.java)
                     for (loadedElement in loadedElements) {
-                        val new = guiElements.find { it.elementName.equals(loadedElement.elementName) }
+                        val new = guiElements.find { it.elementName == loadedElement.elementName }
                         if (new != null) {
                             new.relativeX = loadedElement.relativeX
                             new.relativeY = loadedElement.relativeY

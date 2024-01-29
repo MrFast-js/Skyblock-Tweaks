@@ -14,8 +14,8 @@ object HealthDisplay {
 
     class HealthDisplayGui : GuiManager.Element() {
         init {
-            this.relativeX = 0.3729
-            this.relativeY = 0.8629
+            this.relativeX = 0.371875
+            this.relativeY = 0.842593
             this.elementName = "Health Display"
             this.addToList()
             this.height = Utils.mc.fontRendererObj.FONT_HEIGHT
