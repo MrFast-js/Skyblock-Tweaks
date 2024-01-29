@@ -3,7 +3,10 @@ package mrfast.sbt.config
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonSyntaxException
+import com.google.gson.internal.LinkedTreeMap
+import mrfast.sbt.SkyblockTweaks
 import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.ScaledResolution
 import java.io.File
 import java.io.FileReader
 import java.io.FileWriter
@@ -13,24 +16,34 @@ import kotlin.reflect.full.memberProperties
 
 abstract class ConfigManager {
     private val configDirectoryPath = "${Minecraft.getMinecraft().mcDataDir}\\config\\skyblocktweaks"
-    private val configFilePath = "$configDirectoryPath\\config.json"
+    private val configFilePath = "${Minecraft.getMinecraft().mcDataDir}\\config\\skyblocktweaks\\config.json"
     private val gson = GsonBuilder().setPrettyPrinting().create()
+
+    companion object {
+        var categories: MutableMap<String, Category> = mutableMapOf()
+        var defaultMap: MutableMap<String, Any> = mutableMapOf()
+    }
 
     data class Category(
             val name: String,
-            var subcategories: MutableMap<String, Subcategory> = mutableMapOf()
+            var subcategories: MutableMap<String, Subcategory> = mutableMapOf(),
     )
 
     data class Subcategory(
             val name: String,
-            var features: MutableMap<String, Feature> = mutableMapOf()
+            var features: MutableMap<String, Feature> = mutableMapOf(),
     )
 
     data class Feature(
             val name: String,
             val description: String,
             var value: Any,
-            var type: PropertyType
+            var type: ConfigType,
+            val field: Field,
+            val isParent: Boolean = false,
+            val placeholder: String,
+            var dropdownOptions: Array<String> = arrayOf(),
+            val parentName: String = "",
     )
 
     fun saveConfig() {
@@ -43,28 +56,33 @@ abstract class ConfigManager {
         val fieldMap = mutableMapOf<String, Any>()
 
         // Get all fields in the class, including private ones
-        val properties = Config::class.memberProperties
+        for (config in SkyblockTweaks.config.list) {
+            val properties = config::class.memberProperties
 
-        for (property in properties) {
-            val annotation = property.findAnnotation<ConfigProperty>()
+            for (property in properties) {
+                val configAnnotation = property.findAnnotation<ConfigProperty>()
 
-            if (annotation != null) {
-                val fieldName = property.name
-                val value = property.getter.call(this) ?: continue
+                if (configAnnotation != null) {
+                    val fieldName = property.name
+                    val value = property.getter.call(config) ?: continue
+                    val field = config::class.java.getDeclaredField(fieldName)
 
-                // Create a new Feature
-                val feature = Feature(annotation.name, annotation.description, value, annotation.type)
-                val category = categories.getOrPut(annotation.category) { Category(annotation.category) }
-                val subcategory = category.subcategories.getOrPut(annotation.subcategory) { Subcategory(annotation.subcategory) }
+                    if (Runnable::class.java.isAssignableFrom(field.type)) continue
 
-                // Add the Feature to the Subcategory
-                subcategory.features[annotation.name] = feature
+                    field.isAccessible = true
+                    // Create a new Feature
+                    val feature = Feature(configAnnotation.name, configAnnotation.description, value, configAnnotation.type, field, placeholder = configAnnotation.placeholder)
+                    if (feature.type == ConfigType.DROPDOWN) {
+                        feature.dropdownOptions = configAnnotation.dropdownOptions
+                    }
 
-                println(category)
-                println(subcategory)
-                println(subcategory.features)
+                    val category = categories.getOrPut(configAnnotation.category) { Category(configAnnotation.category) }
+                    val subcategory = category.subcategories.getOrPut(configAnnotation.subcategory) { Subcategory(configAnnotation.subcategory) }
 
-                fieldMap[fieldName] = value
+                    // Add the Feature to the Subcategory
+                    subcategory.features[fieldName] = feature
+                    fieldMap[fieldName] = value
+                }
             }
         }
 
@@ -87,21 +105,33 @@ abstract class ConfigManager {
                 val fieldMap = gson.fromJson(reader, Map::class.java)
 
                 // Get all properties in the class, including private ones
-                val properties = Config::class.memberProperties
-                println(properties)
-                for (property in properties) {
-                    val propertyName = property.name
-                    if (fieldMap.containsKey(propertyName)) {
-                        var loadedValue = fieldMap[propertyName]
-                        // the field map converted ints to doubles, this is undoing
-                        if (loadedValue is Double) loadedValue = loadedValue.toInt()
-                        val field: Field = Config::class.java.getDeclaredField(propertyName)
-                        field.isAccessible = true
+                for (config in SkyblockTweaks.config.list) {
+                    val properties = config::class.memberProperties
+                    for (property in properties) {
+                        val propertyName = property.name
 
-                        saveDefault(propertyName,field.get(Config))
+                        if (fieldMap.containsKey(propertyName)) {
+                            var loadedValue = fieldMap[propertyName]
+                            // the field map converted ints to doubles, this is undoing
+                            if (loadedValue is Double) loadedValue = loadedValue.toInt()
+                            val field: Field = config::class.java.getDeclaredField(propertyName)
+                            field.isAccessible = true
 
-                        // update the field from Config.kt
-                        field.set(Config, loadedValue)
+                            println("SETTING FIELD $propertyName")
+
+                            if (loadedValue is LinkedTreeMap<*, *>) {
+                                loadedValue = gson.fromJson(loadedValue.toString(), field.type)
+                            }
+
+                            saveDefault(propertyName, field.get(SkyblockTweaks.config))
+                            // update the field from Config.kt
+                            try {
+                                field.set(SkyblockTweaks.config, loadedValue)
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                                // type of config option changed, ie boolean -> int
+                            }
+                        }
                     }
                 }
 
@@ -113,18 +143,12 @@ abstract class ConfigManager {
         }
     }
 
-
-    private fun saveDefault(propertyName: String, field: Any) {
-        defaultMap[propertyName] = field
-    }
-
-    companion object {
-        var categories: MutableMap<String, Category> = mutableMapOf()
-        var defaultMap: MutableMap<String, Any> = mutableMapOf()
+    private fun saveDefault(propertyName: String, value: Any) {
+        defaultMap.putIfAbsent(propertyName, value)
     }
 }
 
-enum class PropertyType {
+enum class ConfigType {
     TOGGLE,
     COLOR,
     DROPDOWN,
@@ -138,9 +162,14 @@ enum class PropertyType {
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.PROPERTY)
 annotation class ConfigProperty(
-        val type: PropertyType,
+        val type: ConfigType,
         val name: String,
-        val description: String,
+        val description: String = "",
+        val isParent: Boolean = false,
+        val parentName: String = "",
+        val dropdownOptions: Array<String> = arrayOf(),
         val category: String,
-        val subcategory: String
+        val subcategory: String,
+        val placeholder: String = "",
+        val risky: Boolean = false,
 )
