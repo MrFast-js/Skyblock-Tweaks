@@ -1,5 +1,6 @@
 package mrfast.sbt.config
 
+import gg.essential.api.utils.GuiUtil
 import gg.essential.elementa.ElementaVersion
 import gg.essential.elementa.UIComponent
 import gg.essential.elementa.WindowScreen
@@ -22,9 +23,11 @@ import mrfast.sbt.config.Components.LPosChildSizeConstraint
 import mrfast.sbt.config.Components.NumberInputComponent
 import mrfast.sbt.config.Components.TextInputComponent
 import mrfast.sbt.config.Components.ToggleSwitchComponent
+import mrfast.sbt.utils.ChatUtils
 import mrfast.sbt.utils.Utils
 import net.minecraft.client.Minecraft
 import net.minecraftforge.fml.client.config.GuiUtils
+import org.apache.logging.log4j.LogManager
 import org.lwjgl.input.Keyboard
 import java.awt.Color
 import java.util.*
@@ -33,6 +36,12 @@ import java.util.*
 class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
     companion object {
         var listeningForKeybind = false
+        var searchQuery = ""
+
+        fun openConfigSearch(query:String) {
+            searchQuery = query
+            GuiUtil.open(ConfigGui())
+        }
     }
 
     private var mainBackgroundColor = BasicState(Color(22, 22, 22))
@@ -48,7 +57,6 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
     private var showUpdateButton = true
 
     private var selectedCategory = "General"
-    private var searchQuery = ""
     private var selectedCategoryComponent: UIComponent? = null
 
     private var tooltipElements: MutableMap<UIComponent, Set<String>> = mutableMapOf()
@@ -184,8 +192,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
             width = 79.percent - 3.pixels
             height = 100.percent - 40.pixels
         } childOf background effect ScissorEffect()
-
-        val featureList = ScrollComponent("").constrain {
+        val featureList = ScrollComponent("No features by that name found :(").constrain {
             x = 21.percent + 2.pixels
             y = 32.pixels
             width = 79.percent - 12.pixels
@@ -204,6 +211,13 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
         searchBarInput.onUpdate { text ->
             searchQuery = searchBarInput.getText()
             updateSelectedFeatures(featureList)
+        }
+
+        if(searchQuery.isNotEmpty()) {
+            Utils.setTimeout({
+                searchBarInput.setText(searchQuery)
+                ChatUtils.logMessage("$searchQuery SEARCH QUERY")
+            },200)
         }
 
         for ((count, category) in ConfigManager.categories.values.withIndex()) {
