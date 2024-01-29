@@ -2,6 +2,7 @@ package mrfast.sbt.commands
 
 import gg.essential.api.utils.GuiUtil
 import mrfast.sbt.config.ConfigGui
+import mrfast.sbt.config.GuiEditor
 import net.minecraft.client.Minecraft
 import net.minecraft.command.CommandBase
 import net.minecraft.command.ICommandSender
@@ -18,7 +19,15 @@ class ConfigCommand : CommandBase() {
     }
 
     override fun processCommand(sender: ICommandSender?, args: Array<out String>?) {
-        GuiUtil.open(ConfigGui())
+        if (args != null) {
+            if(args.isNotEmpty()) {
+                if(args[0] == "edit") {
+                    GuiUtil.open(GuiEditor())
+                }
+            } else {
+                GuiUtil.open(ConfigGui())
+            }
+        }
     }
 
     override fun canCommandSenderUseCommand(sender: ICommandSender?): Boolean {
