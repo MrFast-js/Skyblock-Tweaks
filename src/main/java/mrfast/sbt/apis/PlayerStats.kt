@@ -1,8 +1,11 @@
 package mrfast.sbt.apis
 
+import mrfast.sbt.config.Categories.GeneralConfig
+import mrfast.sbt.utils.Utils
 import net.minecraft.util.ChatComponentText
 import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import kotlin.math.max
 
 object PlayerStats {
     var health = 0
@@ -17,46 +20,65 @@ object PlayerStats {
     var effectiveHealth = 0
 
     @SubscribeEvent
-    fun onActionBarUpdate(event: ClientChatReceivedEvent) {
+    fun onEvent(event: ClientChatReceivedEvent) {
         if (event.type.toInt() == 2) {
-            event.message = ChatComponentText(updateStatsAndRemoveSegments(event.message.unformattedTextForChat))
+            var actionBar: String = event.message.formattedText
+            val actionBarSplit: List<String> = actionBar.split(" ")
+
+            for (piece in actionBarSplit) {
+                val trimmed: String = piece.trim()
+                val colorsStripped: String = Utils.cleanColor(trimmed).replace(",", "")
+
+                if (trimmed.isEmpty()) continue
+                val shortString: String = colorsStripped.substring(0, colorsStripped.length - 1).replace(",", "")
+
+                when {
+                    colorsStripped.endsWith("❤") -> parseAndSetHealth(shortString)
+                    colorsStripped.endsWith("❈") -> parseAndSetDefense(shortString)
+                    colorsStripped.endsWith("✎") -> parseAndSetMana(shortString)
+                    colorsStripped.endsWith("ʬ") -> parseAndSetOverflow(shortString)
+                }
+
+                actionBar = actionBar.trim()
+                event.message = ChatComponentText(actionBar)
+            }
+
+            if (GeneralConfig.cleanerActionBar) {
+                val arr: List<String> = actionBar.split(" ")
+
+                for (s in arr) {
+                    when {
+                        s.contains("❤") && GeneralConfig.hideHealthFromBar -> actionBar = actionBar.replace(s, "")
+                        (s.contains("❈") || s.contains("Defense")) && GeneralConfig.hideDefenseFromBar -> actionBar = actionBar.replace(s, "")
+                        (s.contains("✎") || s.contains("Mana")) && GeneralConfig.hideManaFromBar -> actionBar = actionBar.replace(s, "")
+                        s.contains("ʬ") && GeneralConfig.hideOverflowManaFromBar -> actionBar = actionBar.replace(s, "")
+                    }
+                }
+
+                event.message = ChatComponentText(actionBar.trim())
+            }
         }
     }
 
-    val removeHealth: Boolean = true
-    val removeMana: Boolean = true
+    private fun parseAndSetHealth(actionBarSegment: String) {
+        val split: List<String> = actionBarSegment.split("/")
+        health = split[0].toInt()
+        maxHealth = split[1].toInt()
+        effectiveHealth = (health * (1f + defense / 100f).toInt())
+        absorption = max(health-maxHealth,0)
+    }
 
-    fun updateStatsAndRemoveSegments(input: String): String {
-        // Define regex patterns for each segment
-        val healthPattern = Regex("§c(\\d{1,3}(?:,\\d{3})*)/(\\d{1,3}(?:,\\d{3})*)❤")
-        val defensePattern = Regex("§a(\\d{1,3}(?:,\\d{3})*)§a❈ Defense")
-        val manaPattern = Regex("§b(\\d{1,3}(?:,\\d{3})*)/(\\d{1,3}(?:,\\d{3})*)✎")
-        val overflowManaPattern = Regex("§3(\\d{1,3}(?:,\\d{3})*)ʬ")
+    private fun parseAndSetDefense(actionBarSegment: String) {
+        defense = actionBarSegment.toInt()
+    }
 
-        // Extract values from regex matches or default to 0
-        val healthMatch = healthPattern.find(input)
-        val defenseMatch = defensePattern.find(input)
-        val manaMatch = manaPattern.find(input)
-        val overflowManaMatch = overflowManaPattern.find(input)
+    private fun parseAndSetMana(actionBarSegment: String) {
+        val split: List<String> = actionBarSegment.split("/")
+        mana = split[0].toInt()
+        maxMana = split[1].toInt()
+    }
 
-        health = healthMatch?.groupValues?.getOrNull(1)?.replace(",", "")?.toInt() ?: health
-        maxHealth = healthMatch?.groupValues?.getOrNull(2)?.replace(",", "")?.toInt() ?: maxHealth
-        defense = defenseMatch?.groupValues?.getOrNull(1)?.replace(",", "")?.toInt() ?: defense
-        mana = manaMatch?.groupValues?.getOrNull(1)?.replace(",", "")?.toInt() ?: mana
-        maxMana = manaMatch?.groupValues?.getOrNull(2)?.replace(",", "")?.toInt() ?: maxHealth
-        overflowMana = overflowManaMatch?.groupValues?.getOrNull(1)?.replace(",", "")?.toInt() ?: overflowMana
-
-
-        // Remove specified segments from the input string
-        var modifiedInput = input
-        if (removeHealth) {
-            modifiedInput = modifiedInput.replace(healthPattern, "")
-        }
-        if (removeMana) {
-            modifiedInput = modifiedInput.replace(manaPattern, "")
-        }
-
-        // Return the modified input string
-        return modifiedInput
+    private fun parseAndSetOverflow(actionBarSegment: String) {
+        overflowMana = actionBarSegment.toInt()
     }
 }
