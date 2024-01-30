@@ -18,7 +18,7 @@ object Utils {
      * Cleans all minecraft formatting from text
      */
     fun String.clean(): String {
-        return this.replace("§[0-9a-fA-F]".toRegex(), "")
+        return this.replace("§[0-9a-zA-Z]".toRegex(), "")
     }
 
     fun Number.formatNumber(): String {
