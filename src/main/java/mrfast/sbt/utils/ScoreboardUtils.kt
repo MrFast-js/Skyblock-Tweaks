@@ -1,5 +1,6 @@
 package mrfast.sbt.utils
 
+import mrfast.sbt.utils.Utils.clean
 import net.minecraft.client.Minecraft
 import net.minecraft.scoreboard.Score
 import net.minecraft.scoreboard.ScorePlayerTeam
@@ -18,7 +19,7 @@ object ScoreboardUtils {
                             stripAlienCharacters(ScorePlayerTeam.formatPlayerName(it.getPlayersTeam(playerName), playerName))
                         } ?: ""
 
-                        if (cleanColor) Utils.cleanColor(out)
+                        if (cleanColor) out.clean()
                         out
                     }
                     .reversed()
@@ -29,8 +30,8 @@ object ScoreboardUtils {
      * This code is unmodified
      * @Author: nea98
      * @Source: https://moddev.nea.moe
-     */
-    fun stripAlienCharacters(text: String): String {
+     **/
+    private fun stripAlienCharacters(text: String): String {
         val sb = StringBuilder()
         for (c in text.toCharArray()) {
             if (Minecraft.getMinecraft().fontRendererObj.getCharWidth(c) > 0 || c == '§') sb.append(c)

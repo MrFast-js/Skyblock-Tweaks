@@ -2,6 +2,7 @@ package mrfast.sbt.apis
 
 import mrfast.sbt.config.Categories.GeneralConfig
 import mrfast.sbt.utils.Utils
+import mrfast.sbt.utils.Utils.clean
 import net.minecraft.util.ChatComponentText
 import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -27,7 +28,7 @@ object PlayerStats {
 
             for (piece in actionBarSplit) {
                 val trimmed: String = piece.trim()
-                val colorsStripped: String = Utils.cleanColor(trimmed).replace(",", "")
+                val colorsStripped: String = trimmed.clean().replace(",", "")
 
                 if (trimmed.isEmpty()) continue
                 val shortString: String = colorsStripped.substring(0, colorsStripped.length - 1).replace(",", "")

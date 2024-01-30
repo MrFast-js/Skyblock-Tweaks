@@ -6,7 +6,7 @@ import net.minecraft.util.ChatComponentText
 
 object ChatUtils {
     fun sendPlayerMessage(message: String) {
-        Minecraft.getMinecraft().thePlayer.sendChatMessage(message)
+        Minecraft.getMinecraft().thePlayer?.sendChatMessage(message)
     }
     fun logMessage(message: String) {
         val prefix = "§eSkyblock§9Tweaks§6 >>§r "

@@ -2,17 +2,13 @@ package mrfast.sbt
 
 import mrfast.sbt.apis.PlayerStats
 import mrfast.sbt.commands.ConfigCommand
-import mrfast.sbt.config.Categories.OverlaysConfig
 import mrfast.sbt.config.Config
 import mrfast.sbt.config.ConfigGui
 import mrfast.sbt.config.GuiManager
 import mrfast.sbt.features.general.HealthDisplay
-import mrfast.sbt.utils.Utils
-import net.minecraft.client.Minecraft
+import mrfast.sbt.utils.LocationUtils
 import net.minecraftforge.client.ClientCommandHandler
-import net.minecraftforge.client.event.GuiScreenEvent
 import net.minecraftforge.client.event.GuiScreenEvent.KeyboardInputEvent
-import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.event.FMLInitializationEvent
@@ -39,6 +35,10 @@ class SkyblockTweaks {
     fun init(event: FMLInitializationEvent?) {
         // Your init code here
         MinecraftForge.EVENT_BUS.register(this)
+
+        // Utils
+        MinecraftForge.EVENT_BUS.register(LocationUtils)
+
         // Stat Displays
         MinecraftForge.EVENT_BUS.register(HealthDisplay)
 
