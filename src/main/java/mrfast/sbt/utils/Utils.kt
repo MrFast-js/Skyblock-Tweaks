@@ -21,8 +21,8 @@ object Utils {
         return this.replace("§[0-9a-fA-F]".toRegex(), "")
     }
 
-    fun formatNumber(number: Int): String {
-        return String.format("%,d", number)
+    fun Number.formatNumber(): String {
+        return String.format("%,d", this)
     }
 
     fun clamp(min: Double,value: Double,max:Double): Double {

@@ -5,7 +5,7 @@ import mrfast.sbt.commands.ConfigCommand
 import mrfast.sbt.config.Config
 import mrfast.sbt.config.ConfigGui
 import mrfast.sbt.config.GuiManager
-import mrfast.sbt.features.general.HealthDisplay
+import mrfast.sbt.features.general.*
 import mrfast.sbt.utils.LocationUtils
 import net.minecraftforge.client.ClientCommandHandler
 import net.minecraftforge.client.event.GuiScreenEvent.KeyboardInputEvent
@@ -41,6 +41,10 @@ class SkyblockTweaks {
 
         // Stat Displays
         MinecraftForge.EVENT_BUS.register(HealthDisplay)
+        MinecraftForge.EVENT_BUS.register(DefenseDisplay)
+        MinecraftForge.EVENT_BUS.register(EffectiveHealthDisplay)
+        MinecraftForge.EVENT_BUS.register(ManaDisplay)
+        MinecraftForge.EVENT_BUS.register(OverflowManaDisplay)
 
         // Gui
         MinecraftForge.EVENT_BUS.register(GuiManager)

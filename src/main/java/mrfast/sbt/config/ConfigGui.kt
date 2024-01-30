@@ -216,7 +216,6 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
         if(searchQuery.isNotEmpty()) {
             Utils.setTimeout({
                 searchBarInput.setText(searchQuery)
-                ChatUtils.logMessage("$searchQuery SEARCH QUERY")
             },200)
         }
 

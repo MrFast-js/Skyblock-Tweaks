@@ -83,8 +83,10 @@ class GuiEditor : GuiScreen() {
             GlStateManager.scale(1 / element.scale, 1 / element.scale, 1.0)
             GlStateManager.translate(-x, -y, 0.0)
 
-            // Draw additional content for each element if needed
-            fontRendererObj.drawString(element.elementName, x.toInt(), (y - 10).toInt(), 0xFFFFFF)
+            // Draw name for elements for debugging
+            if(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) && CustomizationConfig.developerMode) {
+                fontRendererObj.drawString(element.elementName, x.toInt(), (y - 10).toInt(), 0xFFFFFF)
+            }
         }
 
         buttonList.find {

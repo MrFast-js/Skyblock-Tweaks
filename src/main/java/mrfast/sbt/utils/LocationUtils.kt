@@ -22,6 +22,8 @@ object LocationUtils {
 
         newWorld = true
         listeningForLocraw = true
+        inSkyblock = false
+
         Utils.setTimeout({
             if(!listeningForLocraw) return@setTimeout
 

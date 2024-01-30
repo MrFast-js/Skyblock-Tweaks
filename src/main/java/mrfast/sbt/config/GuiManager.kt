@@ -26,6 +26,7 @@ object GuiManager {
                     if (!showall && !guiElement.isVisible()) continue
                     val screenWidth = Utils.mc.displayWidth / 2
                     val screenHeight = Utils.mc.displayHeight / 2
+
                     GlStateManager.translate(guiElement.relativeX * screenWidth, guiElement.relativeY * screenHeight, 0.0)
                     GlStateManager.scale(guiElement.scale, guiElement.scale, 1.0)
                     guiElement.draw()
