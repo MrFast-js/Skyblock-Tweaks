@@ -23,6 +23,9 @@ object LocationUtils {
         newWorld = true
         listeningForLocraw = true
         inSkyblock = false
+        limboCount = 0
+        currentArea = ""
+        currentIsland = ""
 
         Utils.setTimeout({
             if(!listeningForLocraw) return@setTimeout
@@ -34,6 +37,7 @@ object LocationUtils {
     }
 
     private val gson = Gson()
+    private var limboCount = 0
     @SubscribeEvent
     fun onChat(event:ClientChatReceivedEvent) {
         if(!listeningForLocraw) return
@@ -55,8 +59,17 @@ object LocationUtils {
                 inSkyblock = (obj.get("gametype").asString == "SKYBLOCK")
             }
             if(obj.get("server").asString == "limbo") {
+                if(limboCount>2) {
+                    listeningForLocraw = false
+                    println("Player is actually on afk limbo")
+                    return
+                }
+
                 println("GOT LIMBO! RESENDING LOCRAW")
-                ChatUtils.sendPlayerMessage("/locraw")
+                limboCount++
+                Utils.setTimeout({
+                    ChatUtils.sendPlayerMessage("/locraw")
+                },400)
             }
         }
     }
