@@ -166,9 +166,6 @@ tasks.shadowJar {
     fun relocate(name: String) = relocate(name, "$baseGroup.deps.$name")
 }
 
-tasks.assemble.get().dependsOn(tasks.remapJar)
-
-
 tasks.register("finalize") {
     doLast {
         project.exec {
@@ -176,6 +173,10 @@ tasks.register("finalize") {
         }
     }
 }
+
+tasks.assemble.get().dependsOn(tasks.getByName("finalize"))
+tasks.assemble.get().dependsOn(tasks.remapJar)
+
 
 gradle.buildFinished {
     if(project.hasProperty("runClient")) {
