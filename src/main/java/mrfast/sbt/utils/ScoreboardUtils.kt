@@ -8,7 +8,7 @@ import net.minecraft.scoreboard.ScorePlayerTeam
 
 object ScoreboardUtils {
 
-    fun getScoreboardLines(cleanColor: Boolean): List<String> {
+    fun getSidebarLines(cleanColor: Boolean): List<String> {
         val scoreboard = Minecraft.getMinecraft().theWorld?.scoreboard
         val objective = scoreboard?.getObjectiveInDisplaySlot(1)
 
