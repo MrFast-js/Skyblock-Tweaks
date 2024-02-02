@@ -4,6 +4,8 @@ import com.mojang.realmsclient.gui.ChatFormatting
 import mrfast.sbt.utils.Utils.clean
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.Gui
+import net.minecraft.client.gui.inventory.GuiContainer
+import net.minecraft.inventory.ContainerChest
 import java.awt.Color
 
 object GuiUtils {
@@ -37,5 +39,12 @@ object GuiUtils {
         Gui.drawRect(x, y + 1, x + 1, y + height - 1, borderColor.rgb) // Left
         Gui.drawRect(x + width - 1, y + 1, x + width, y + height - 1, borderColor.rgb) // Right
         Gui.drawRect(x, y + height - 1, x + width, y + height, borderColor.rgb) // Bottom
+    }
+
+    fun GuiContainer.chestName(): String {
+        val chest = this.inventorySlots as ContainerChest
+        val inv = chest.lowerChestInventory
+        val chestName = inv.displayName.unformattedText.trim()
+        return chestName
     }
 }
