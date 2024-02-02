@@ -75,7 +75,7 @@ object LocationUtils {
     }
 
     private fun updatePlayerLocation() {
-        for (line in ScoreboardUtils.getScoreboardLines(true)) {
+        for (line in ScoreboardUtils.getSidebarLines(true)) {
             val clean = line.clean()
             if(clean.contains("⏣")) {
                 currentArea = clean.split("⏣ ")[1]
