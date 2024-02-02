@@ -1,5 +1,6 @@
 package mrfast.sbt
 
+import mrfast.sbt.apis.PartyManager
 import mrfast.sbt.apis.PlayerStats
 import mrfast.sbt.commands.ConfigCommand
 import mrfast.sbt.config.Config
@@ -57,6 +58,9 @@ class SkyblockTweaks {
 
         // Api's
         MinecraftForge.EVENT_BUS.register(PlayerStats)
+        MinecraftForge.EVENT_BUS.register(PartyManager)
+
+        // Commands
         ClientCommandHandler.instance.registerCommand(ConfigCommand())
     }
 
