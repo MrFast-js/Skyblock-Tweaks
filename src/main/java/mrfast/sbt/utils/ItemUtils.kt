@@ -5,13 +5,20 @@ import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 
 object ItemUtils {
+
+    fun getHeldItem(): ItemStack? {
+        return Utils.mc.thePlayer.heldItem
+    }
     fun ItemStack.getSkyblockId(): String? {
+        val nbt = this.getExtraAttributes()
+        if(nbt!=null && nbt.hasKey("id")) {
+            return nbt.getString("id")
+        }
         return null
     }
 
     fun ItemStack.getExtraAttributes(): NBTTagCompound? {
         if (hasTagCompound()) {
-            val tagCompound = tagCompound
             if (tagCompound != null && tagCompound.hasKey("ExtraAttributes")) {
                 return tagCompound.getCompoundTag("ExtraAttributes")
             }
