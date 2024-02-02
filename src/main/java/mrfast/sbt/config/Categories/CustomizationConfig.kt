@@ -3,6 +3,7 @@ package mrfast.sbt.config.Categories
 import mrfast.sbt.config.Config
 import mrfast.sbt.config.ConfigProperty
 import mrfast.sbt.config.ConfigType
+import java.awt.Color
 
 object CustomizationConfig : Config() {
     @ConfigProperty(
@@ -50,4 +51,13 @@ object CustomizationConfig : Config() {
             subcategory = "Colors"
     )
     var chromaConfigBorder = true
+
+    @ConfigProperty(
+        type = ConfigType.COLOR,
+        name = "Toggle Switch Color",
+        description = "",
+        category = "§2§rCustomization",
+        subcategory = "Colors"
+    )
+    var toggleSwitchColor = Color.GREEN
 }

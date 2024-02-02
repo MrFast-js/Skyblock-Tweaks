@@ -41,10 +41,16 @@ class SkyblockTweaks {
 
         // Stat Displays
         MinecraftForge.EVENT_BUS.register(HealthDisplay)
+        MinecraftForge.EVENT_BUS.register(HealthBarDisplay)
         MinecraftForge.EVENT_BUS.register(DefenseDisplay)
         MinecraftForge.EVENT_BUS.register(EffectiveHealthDisplay)
         MinecraftForge.EVENT_BUS.register(ManaDisplay)
+        MinecraftForge.EVENT_BUS.register(ManaBarDisplay)
+        MinecraftForge.EVENT_BUS.register(SpeedDisplay)
         MinecraftForge.EVENT_BUS.register(OverflowManaDisplay)
+
+        // Stop above hotbar elements from rendering
+        MinecraftForge.EVENT_BUS.register(HideHotbarElements)
 
         // Gui
         MinecraftForge.EVENT_BUS.register(GuiManager)

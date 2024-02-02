@@ -22,7 +22,7 @@ object Utils {
     }
 
     fun Number.formatNumber(): String {
-        return String.format("%,d", this)
+        return String.format("%,.0f", this.toDouble())
     }
 
     fun clamp(min: Double,value: Double,max:Double): Double {

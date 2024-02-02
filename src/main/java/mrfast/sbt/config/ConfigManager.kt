@@ -4,9 +4,12 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonSyntaxException
 import com.google.gson.internal.LinkedTreeMap
+import gg.essential.elementa.components.UIBlock
+import gg.essential.elementa.components.UIContainer
 import mrfast.sbt.SkyblockTweaks
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.ScaledResolution
+import scala.swing.UIElement
+import java.awt.Color
 import java.io.File
 import java.io.FileReader
 import java.io.FileWriter
@@ -25,25 +28,28 @@ abstract class ConfigManager {
     }
 
     data class Category(
-            val name: String,
-            var subcategories: MutableMap<String, Subcategory> = mutableMapOf(),
+        val name: String,
+        var subcategories: MutableMap<String, Subcategory> = mutableMapOf(),
     )
 
     data class Subcategory(
-            val name: String,
-            var features: MutableMap<String, Feature> = mutableMapOf(),
+        val name: String,
+        var features: MutableMap<String, Feature> = mutableMapOf(),
     )
 
     data class Feature(
-            val name: String,
-            val description: String,
-            var value: Any,
-            var type: ConfigType,
-            val field: Field,
-            val isParent: Boolean = false,
-            val placeholder: String,
-            var dropdownOptions: Array<String> = arrayOf(),
-            val parentName: String = "",
+        val name: String,
+        val description: String,
+        var value: Any,
+        var type: ConfigType,
+        val field: Field,
+        val isParent: Boolean = false,
+        val placeholder: String,
+        var dropdownOptions: Array<String> = arrayOf(),
+        val parentName: String = "",
+        var featureContainer: UIContainer = UIContainer(),
+        var optionElements: MutableMap<String,UIContainer> = mutableMapOf(),
+        var optionsHidden: Boolean = true
     )
 
     fun saveConfig() {
@@ -71,13 +77,24 @@ abstract class ConfigManager {
 
                     field.isAccessible = true
                     // Create a new Feature
-                    val feature = Feature(configAnnotation.name, configAnnotation.description, value, configAnnotation.type, field, placeholder = configAnnotation.placeholder)
+                    val feature = Feature(
+                        configAnnotation.name,
+                        configAnnotation.description,
+                        value,
+                        configAnnotation.type,
+                        field,
+                        placeholder = configAnnotation.placeholder,
+                        parentName = configAnnotation.parentName,
+                        isParent = configAnnotation.isParent
+                    )
                     if (feature.type == ConfigType.DROPDOWN) {
                         feature.dropdownOptions = configAnnotation.dropdownOptions
                     }
 
-                    val category = categories.getOrPut(configAnnotation.category) { Category(configAnnotation.category) }
-                    val subcategory = category.subcategories.getOrPut(configAnnotation.subcategory) { Subcategory(configAnnotation.subcategory) }
+                    val category =
+                        categories.getOrPut(configAnnotation.category) { Category(configAnnotation.category) }
+                    val subcategory =
+                        category.subcategories.getOrPut(configAnnotation.subcategory) { Subcategory(configAnnotation.subcategory) }
 
                     // Add the Feature to the Subcategory
                     subcategory.features[fieldName] = feature
@@ -162,14 +179,14 @@ enum class ConfigType {
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.PROPERTY)
 annotation class ConfigProperty(
-        val type: ConfigType,
-        val name: String,
-        val description: String = "",
-        val isParent: Boolean = false,
-        val parentName: String = "",
-        val dropdownOptions: Array<String> = arrayOf(),
-        val category: String,
-        val subcategory: String,
-        val placeholder: String = "",
-        val risky: Boolean = false,
+    val type: ConfigType,
+    val name: String,
+    val description: String = "",
+    val isParent: Boolean = false,
+    val parentName: String = "",
+    val dropdownOptions: Array<String> = arrayOf(),
+    val category: String,
+    val subcategory: String,
+    val placeholder: String = "",
+    val risky: Boolean = false,
 )

@@ -3,19 +3,17 @@ package mrfast.sbt.config.Components
 import gg.essential.elementa.components.UIBlock
 import gg.essential.elementa.constraints.CenterConstraint
 import gg.essential.elementa.constraints.animation.Animations
-import gg.essential.elementa.dsl.animate
-import gg.essential.elementa.dsl.childOf
-import gg.essential.elementa.dsl.constrain
-import gg.essential.elementa.dsl.pixels
+import gg.essential.elementa.dsl.*
 import gg.essential.elementa.state.BasicState
 import gg.essential.elementa.state.constraint
+import mrfast.sbt.config.Categories.CustomizationConfig
 import mrfast.sbt.utils.Utils
 import java.awt.Color
 
 class ToggleSwitchComponent(initValue: Boolean) : UIBlock() {
     var activated = initValue
     private var deactivatedColor = BasicState(Color.GRAY)
-    private var activatedColor = BasicState(Color.GREEN)
+    private var activatedColor = BasicState(CustomizationConfig.toggleSwitchColor)
 
     init {
         this.constrain {
@@ -23,7 +21,7 @@ class ToggleSwitchComponent(initValue: Boolean) : UIBlock() {
             y = CenterConstraint()
             width = 32.pixels
             height = 16.pixels
-            color = if (activated) activatedColor.constraint else deactivatedColor.constraint
+            color = if (activated) CustomizationConfig.toggleSwitchColor.constraint else deactivatedColor.constraint
         }
 
         val block = UIBlock(Color.DARK_GRAY).constrain {

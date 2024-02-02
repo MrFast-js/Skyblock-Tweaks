@@ -19,15 +19,10 @@ import gg.essential.vigilance.gui.settings.ColorComponent
 import gg.essential.vigilance.gui.settings.SelectorComponent
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.config.Categories.CustomizationConfig
-import mrfast.sbt.config.Components.LPosChildSizeConstraint
-import mrfast.sbt.config.Components.NumberInputComponent
-import mrfast.sbt.config.Components.TextInputComponent
-import mrfast.sbt.config.Components.ToggleSwitchComponent
-import mrfast.sbt.utils.ChatUtils
+import mrfast.sbt.config.Components.*
 import mrfast.sbt.utils.Utils
 import net.minecraft.client.Minecraft
 import net.minecraftforge.fml.client.config.GuiUtils
-import org.apache.logging.log4j.LogManager
 import org.lwjgl.input.Keyboard
 import java.awt.Color
 import java.util.*
@@ -38,7 +33,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
         var listeningForKeybind = false
         var searchQuery = ""
 
-        fun openConfigSearch(query:String) {
+        fun openConfigSearch(query: String) {
             searchQuery = query
             GuiUtil.open(ConfigGui())
         }
@@ -65,8 +60,16 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
         super.onDrawScreen(matrixStack, mouseX, mouseY, partialTicks)
         for (element in tooltipElements.keys) {
             if (element.isHovered()) {
-                GuiUtils.drawHoveringText(tooltipElements[element]?.toMutableList()
-                        ?: mutableListOf(), mouseX, mouseY, window.getWidth().toInt(), window.getHeight().toInt(), -1, Minecraft.getMinecraft().fontRendererObj)
+                GuiUtils.drawHoveringText(
+                    tooltipElements[element]?.toMutableList()
+                        ?: mutableListOf(),
+                    mouseX,
+                    mouseY,
+                    window.getWidth().toInt(),
+                    window.getHeight().toInt(),
+                    -1,
+                    Minecraft.getMinecraft().fontRendererObj
+                )
             }
         }
     }
@@ -86,7 +89,12 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
             height = 4.pixels
             x = CenterConstraint()
             y = CenterConstraint()
-        } childOf window effect OutlineEffect(color = mainBorderColor, BasicState(2f), drawAfterChildren = true, drawInsideChildren = true)
+        } childOf window effect OutlineEffect(
+            color = mainBorderColor,
+            BasicState(2f),
+            drawAfterChildren = true,
+            drawInsideChildren = true
+        )
 
         background.animate {
             setWidthAnimation(Animations.IN_OUT_EXP, 0.25f, MinConstraint(70.percent, 600.pixels))
@@ -113,8 +121,8 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
         modTitle.setTextScale(2.5.pixels)
 
         val modVersion = UIText("§7v1.0.0").constrain {
-            x = SiblingConstraint(4f)
-            y = SiblingConstraint(4f) - 10f.pixels()
+            x = SiblingConstraintFixed(4f)
+            y = SiblingConstraintFixed(4f) - 10f.pixels()
         } childOf header
 
         modVersion.setTextScale(0.75.pixels)
@@ -144,7 +152,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
             val updateButton = UIBlock(mainBackgroundColor).constrain {
                 width = 16.pixels
                 height = 16.pixels
-                x = SiblingConstraint(15f, true)
+                x = SiblingConstraintFixed(15f, true)
                 y = CenterConstraint()
             } childOf header effect OutlineEffect(guiLineColors.get(), 1f)
 
@@ -168,7 +176,12 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
             y = 32.pixels
             width = 21.percent
             height = 100.percent - 32.pixels
-        } childOf background effect OutlineEffect(guiLineColors.get(), 1f, sides = setOf(OutlineEffect.Side.Right), drawInsideChildren = true) effect ScissorEffect()
+        } childOf background effect OutlineEffect(
+            guiLineColors.get(),
+            1f,
+            sides = setOf(OutlineEffect.Side.Right),
+            drawInsideChildren = true
+        ) effect ScissorEffect()
 
         val categoryList = ScrollComponent("").constrain {
             x = 0.pixels
@@ -213,14 +226,14 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
             updateSelectedFeatures(featureList)
         }
 
-        if(searchQuery.isNotEmpty()) {
+        if (searchQuery.isNotEmpty()) {
             Utils.setTimeout({
                 searchBarInput.setText(searchQuery)
-            },200)
+            }, 200)
         }
 
         for ((count, category) in ConfigManager.categories.values.withIndex()) {
-            val actualY = if (count == 0) 10.pixels else SiblingConstraint(3f)
+            val actualY = if (count == 0) 10.pixels else SiblingConstraintFixed(3f)
 
             val categoryComponent = UIText(category.name).constrain {
                 x = CenterConstraint()
@@ -228,6 +241,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
                 height = 8.pixels
                 color = defaultCategoryColor.constraint
             } childOf categoryList
+
             if (selectedCategory == category.name) {
                 updateSelectedCategoryColor(categoryComponent, category.name)
                 updateSelectedFeatures(featureList)
@@ -290,6 +304,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
         updateBorderTimer = Timer()
         updateBorderTimer.scheduleAtFixedRate(object : TimerTask() {
             override fun run() {
+
                 if (!CustomizationConfig.chromaConfigBorder) {
                     mainBorderColor.set(Color(0, 255, 255))
                     return
@@ -323,7 +338,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
             if (category.key != selectedCategory && searchQuery.isEmpty()) continue
 
             for (subcategory in category.value.subcategories.values) {
-                val actualY = if (drawnCategories == 0) 12.pixels else SiblingConstraint(6f)
+                val actualY = if (drawnCategories == 0) 12.pixels else SiblingConstraintFixed(6f)
                 var drawnFeatures = 0
 
                 val subcategoryComponent = UIContainer().constrain {
@@ -340,36 +355,15 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
                 } childOf subcategoryComponent
 
                 for (feature in subcategory.features.values) {
-                    // Check if name,description,subcategory contain the search
+                    val isChild = feature.parentName.isNotEmpty()
+                    if (isChild) continue
 
-                    if (!(containsIgnoreCase(feature.name, searchQuery) ||
-                                    containsIgnoreCase(feature.description, searchQuery) ||
-                                    containsIgnoreCase(subcategory.name, searchQuery))) {
-                        continue
+                    val featureContainer = createFeatureElement(feature, subcategory, subcategoryComponent)
+
+                    if (featureContainer != null) {
+                        feature.featureContainer = featureContainer
+                        drawnFeatures++
                     }
-
-                    val featureBackground = UIBlock(headerBackgroundColor).constrain {
-                        x = CenterConstraint()
-                        y = SiblingConstraint(6f)
-                        width = 95.percent
-                        height = ChildBasedSizeConstraint(2f)
-                    } childOf subcategoryComponent effect OutlineEffect(guiLineColors.get(), 1f)
-
-                    val featureTitle = UIText(feature.name).constrain {
-                        x = 2.pixels
-                        y = 2.pixels
-                        textScale = 1.5.pixels
-                    } childOf featureBackground
-
-                    val featureDescription = UIWrappedText(feature.description).constrain {
-                        x = 2.pixels
-                        y = SiblingConstraint(2f)
-                        width = 80.percent - 2.pixels
-                        color = Color.GRAY.constraint
-                    } childOf featureBackground
-
-                    populateFeature(feature, featureBackground)
-                    drawnFeatures++
                 }
                 // Dont draw subcategory title if no features
                 if (drawnFeatures != 0) {
@@ -378,6 +372,80 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
                 drawnCategories++
             }
         }
+        // Populate suboptions
+        for (category in ConfigManager.categories) {
+            for (subcategory in category.value.subcategories.values) {
+                for (feature in subcategory.features.values) {
+                    if (feature.parentName.isNotEmpty()) {
+                        val parent = subcategory.features.values.find {
+                            it.name == feature.parentName
+                        }
+                        if (parent != null) {
+                            val featureOption = createFeatureElement(feature, subcategory, parent.featureContainer)
+                            if (featureOption != null) {
+                                parent.optionElements[feature.name] = featureOption
+                                featureOption.hide(true)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun createFeatureElement(
+        feature: ConfigManager.Feature,
+        subcategory: ConfigManager.Subcategory,
+        subcategoryComponent: UIContainer
+    ): UIContainer? {
+        // Check if name,description,subcategory contain the search
+
+        if (!(containsIgnoreCase(feature.name, searchQuery) ||
+                    containsIgnoreCase(feature.description, searchQuery) ||
+                    containsIgnoreCase(subcategory.name, searchQuery) ||
+                    containsIgnoreCase(feature.parentName, searchQuery))
+        ) {
+            var hasChildFittingSearch = false
+            for (optionElement in feature.optionElements) {
+                if(containsIgnoreCase(optionElement.key, searchQuery)) {
+                    hasChildFittingSearch = true
+                }
+            }
+            if(!hasChildFittingSearch) {
+                return null
+            }
+        }
+
+        val featureContainer = UIContainer().constrain {
+            x = CenterConstraint()
+            y = SiblingConstraintFixed(6f)
+            width = 95.percent
+            height = ChildBasedSizeConstraint(2f)
+        } childOf subcategoryComponent
+
+        val featureBackground = UIBlock(headerBackgroundColor).constrain {
+            x = CenterConstraint()
+            y = SiblingConstraintFixed(6f)
+            width = if (feature.parentName.isEmpty()) 100.percent else 90.percent
+            height = ChildBasedSizeConstraint(2f)
+        } childOf featureContainer effect OutlineEffect(guiLineColors.get(), 1f)
+
+        val featureTitle = UIText(feature.name).constrain {
+            x = 2.pixels
+            y = 2.pixels
+            textScale = 1.5.pixels
+        } childOf featureBackground
+
+        val featureDescription = UIWrappedText(feature.description).constrain {
+            x = 2.pixels
+            y = SiblingConstraintFixed(2f)
+            width = 80.percent - 2.pixels
+            color = Color.GRAY.constraint
+        } childOf featureBackground
+
+        populateFeature(feature, featureBackground)
+
+        return featureContainer
     }
 
     private fun containsIgnoreCase(source: String, target: String): Boolean {
@@ -396,7 +464,6 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
             }
             ignoredHeights.add(toggleSwitch)
         }
-
         if (feature.type == ConfigType.NUMBER) {
             val numberInput = NumberInputComponent(feature.value as Int).constrain {
                 x = 10.pixels(alignOpposite = true)
@@ -406,7 +473,6 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
             }
             ignoredHeights.add(numberInput)
         }
-
         if (feature.type == ConfigType.TEXT) {
             val textInput = TextInputComponent(feature.value as String).constrain {
                 x = 10.pixels(alignOpposite = true)
@@ -418,7 +484,6 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
             ignoredHeights.add(textInput)
 
         }
-
         if (feature.type == ConfigType.COLOR) {
             val color = feature.value as Color
             val colorPicker = ColorComponent(color, false).constrain {
@@ -429,14 +494,14 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
                 width = 16.pixels
                 height = 16.pixels
                 y = CenterConstraint()
-                x = SiblingConstraint(3f, true)
+                x = SiblingConstraintFixed(3f, true)
             } childOf featureComponent
 
             val resetImg = UIImage.ofResource("/skyblocktweaks/gui/reset.png").constrain {
                 width = 10.pixels
                 height = 11.pixels
                 y = CenterConstraint()
-                x = SiblingConstraint(3f, true)
+                x = SiblingConstraintFixed(3f, true)
             } childOf featureComponent
 
             resetImg.onMouseClick {
@@ -453,7 +518,6 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
 
             ignoredHeights.addAll(mutableListOf(colorDisplay, resetImg, featureComponent.children[1]))
         }
-
         if (feature.type == ConfigType.DROPDOWN) {
             var selected = feature.dropdownOptions.indexOf(feature.value)
             if (selected == -1) selected = 0
@@ -477,7 +541,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
                 width = 10.pixels
                 height = 11.pixels
                 y = CenterConstraint()
-                x = SiblingConstraint(3f, true)
+                x = SiblingConstraintFixed(3f, true)
             } childOf featureComponent
             ignoredHeights.add(resetImg)
 
@@ -561,32 +625,45 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
             ignoredHeights.add(button)
         }
 
-        // Stop the setting options from effecting total height
-        featureComponent.setHeight(LPosChildSizeConstraint(ignoredHeights) + 5.pixels)
-
         if (feature.isParent) {
             val unhovered = ConstantColorConstraint(Color(200, 200, 200))
             val hovered = ConstantColorConstraint(Color(255, 255, 255))
 
-            val settingsGear = UIImage.ofResourceCached("/assets/skyblocktweaks/gui/gear.png")
-                    .setX(PixelConstraint(50f, true))
-                    .setY(CenterConstraint())
-                    .setHeight(PixelConstraint(16f))
-                    .setColor(unhovered)
-                    .setWidth(PixelConstraint(16f))
-                    .setChildOf(featureComponent)
+            val settingsGear = UIImage.ofResourceCached("/skyblocktweaks/gui/gear.png").constrain {
+                x = SiblingConstraintFixed(5f, true)
+                y = CenterConstraint()
+                height = 16.pixels
+                width = 16.pixels
+            } childOf featureComponent
 
             settingsGear.onMouseEnterRunnable {
-                val anim = settingsGear.makeAnimation()
-                anim.setColorAnimation(Animations.OUT_EXP, 0.5f, hovered)
-                settingsGear.animateTo(anim)
+                settingsGear.animate {
+                    setColorAnimation(Animations.OUT_EXP, 0.5f, hovered)
+                }
             }
             settingsGear.onMouseLeaveRunnable {
-                val anim = settingsGear.makeAnimation()
-                anim.setColorAnimation(Animations.OUT_EXP, 0.5f, unhovered)
-                settingsGear.animateTo(anim)
+                settingsGear.animate {
+                    setColorAnimation(Animations.OUT_EXP, 0.5f, unhovered)
+                }
             }
+            settingsGear.onMouseClick {
+                feature.optionsHidden = !feature.optionsHidden
+
+                if (!feature.optionsHidden) {
+                    feature.optionElements.values.forEach {
+                        it.unhide(true)
+                    }
+                } else {
+                    feature.optionElements.values.forEach {
+                        it.hide(false)
+                    }
+                }
+            }
+            ignoredHeights.add(settingsGear)
         }
+
+        // Stop the setting options from effecting total height
+        featureComponent.setHeight(LPosChildSizeConstraint(ignoredHeights) + 5.pixels)
     }
 
     private fun UIComponent.addTooltip(set: Set<String>) {
