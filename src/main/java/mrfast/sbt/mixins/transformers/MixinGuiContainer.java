@@ -12,10 +12,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(GuiContainer.class)
 public class MixinGuiContainer {
-    @Inject(method = "handleMouseClick(Lnet/minecraft/inventory/Slot;III)V", at = @At("HEAD"))
+    @Inject(method = "handleMouseClick(Lnet/minecraft/inventory/Slot;III)V", at = @At("HEAD"), cancellable = true)
     private void onHandleMouseClick(Slot slot, int slotId, int clickedButton, int mode, CallbackInfo ci) {
         if(slot!=null) {
-            MinecraftForge.EVENT_BUS.post(new SlotClickedEvent(slot, (GuiContainer) Minecraft.getMinecraft().currentScreen));
+            if(MinecraftForge.EVENT_BUS.post(new SlotClickedEvent(slot, (GuiContainer) Minecraft.getMinecraft().currentScreen))) {
+                ci.cancel();
+            }
         }
     }
 }
