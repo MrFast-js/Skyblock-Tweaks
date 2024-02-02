@@ -1,7 +1,8 @@
 {
   "compatibilityLevel": "JAVA_8",
-  "package": "",
+  "package": "mrfast.sbt.mixins.transformers",
   "refmap": "mixins.skyblocktweaks.refmap.json",
+  "plugin": "mrfast.sbt.mixins.init.MixinPlugin",
   "verbose": true,
   "injectors": {
     "maxShiftBy": 2
