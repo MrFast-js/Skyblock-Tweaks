@@ -1,5 +1,6 @@
 package mrfast.sbt
 
+import mrfast.sbt.apis.ItemAbilities
 import mrfast.sbt.apis.PartyManager
 import mrfast.sbt.apis.PlayerStats
 import mrfast.sbt.commands.ConfigCommand
@@ -49,6 +50,7 @@ class SkyblockTweaks {
         MinecraftForge.EVENT_BUS.register(ManaBarDisplay)
         MinecraftForge.EVENT_BUS.register(SpeedDisplay)
         MinecraftForge.EVENT_BUS.register(OverflowManaDisplay)
+        MinecraftForge.EVENT_BUS.register(PartyDisplay)
 
         // Stop above hotbar elements from rendering
         MinecraftForge.EVENT_BUS.register(HideHotbarElements)
@@ -59,6 +61,7 @@ class SkyblockTweaks {
         // Api's
         MinecraftForge.EVENT_BUS.register(PlayerStats)
         MinecraftForge.EVENT_BUS.register(PartyManager)
+        MinecraftForge.EVENT_BUS.register(ItemAbilities)
 
         // Commands
         ClientCommandHandler.instance.registerCommand(ConfigCommand())

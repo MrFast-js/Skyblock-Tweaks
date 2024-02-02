@@ -170,13 +170,22 @@ object GeneralConfig : Config() {
     )
     var hideHealthHearts = false
 
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Party Member Display",
+        description = "Shows players in your party, along with classes if party finder",
+        category = "General",
+        subcategory = "Party"
+    )
+    var partyMemberDisplay = true
+
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
         name = "Auto Party Chat",
         description = "Auto sends §a/chat p§r after joining a party §cWarning Use At Own Risk",
         category = "General",
-        subcategory = "§1§rChat",
+        subcategory = "Party",
         risky = true
     )
     var autoPartyChat = false

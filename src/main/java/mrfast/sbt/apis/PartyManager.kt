@@ -16,7 +16,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.util.regex.Pattern
 
 object PartyManager {
-    private var partyMembers = mutableMapOf<String, PartyMember>()
+    var partyMembers = mutableMapOf<String, PartyMember>()
     private var playerInParty = false
 
     class PartyMember(var name: String) {
@@ -56,6 +56,11 @@ object PartyManager {
                 val regex = "^(\\w+):\\s(\\w+)\\s\\((\\d+)\\)$"
                 val pattern = Pattern.compile(regex)
                 hadProblemJoiningParty = false
+
+                for (line in event.slot.stack.getLore()) {
+                    if(line.clean().startsWith("Requires")) return
+                }
+
                 setTimeout({
                     if (hadProblemJoiningParty) return@setTimeout
                     // Clear all old party members but self
@@ -84,12 +89,18 @@ object PartyManager {
         }
     }
 
+    private fun addSelfToParty() {
+        // Add self to party
+        partyMembers[Utils.mc.thePlayer.name] = PartyMember(Utils.mc.thePlayer.name)
+    }
+
     private fun handleVanillaParty(clean: String) {
         // Other players join party
         if (clean.endsWith("joined the party.")) {
             val pm = PartyMember(parsePlayerName(clean))
             partyMembers[pm.name] = pm
             playerInParty = true
+            addSelfToParty()
         }
 
         // Other players leave party
@@ -151,12 +162,13 @@ object PartyManager {
             pm.leader = true
             partyMembers[pm.name] = pm
             playerInParty = true
+            addSelfToParty()
+
         }
 
         // Joining existing parties
         if (clean.startsWith("You'll be partying with: ")) {
             val membersLine = clean.split("You'll be partying with:")[1].trim()
-            println("$membersLine MEMBERS LINE")
             for (member in membersLine.split(", ")) {
                 val pm = PartyMember(parsePlayerName(member))
                 partyMembers[pm.name] = pm
@@ -165,8 +177,7 @@ object PartyManager {
     }
 
     private fun handleDungeonParty(clean: String) {
-        // Checks if the player is in a party, thus ignoring the "ghost" joining messages that happens often with party finder and leaving parties
-        if (clean.startsWith("Party Finder > ") && clean.contains(" joined the dungeon group! (") && playerInParty) {
+        if (clean.startsWith("Party Finder > ") && clean.contains(" joined the dungeon group! (")) {
             val playerName = clean.split(" ")[3]
             val pm = PartyMember(playerName)
             val lastArg = clean.split("(")[1]
@@ -178,46 +189,11 @@ object PartyManager {
             partyMembers[pm.name] = pm
         }
 
-        if (clean.startsWith("You need to have a class at level") ||
-            clean.startsWith("You need to have Catacombs level") ||
-            clean.startsWith("Party Finder > This group has been de-listed") ||
+        if (clean.startsWith("Party Finder > This group has been de-listed") ||
             clean.startsWith("Party Finder > You are already in a party!") ||
             clean.startsWith("You have just sent a join request recently!")
         ) {
             hadProblemJoiningParty = true
-        }
-    }
-
-    init {
-        PartyDisplay()
-    }
-
-    class PartyDisplay : GuiManager.Element() {
-        init {
-            this.relativeX = 0.371875
-            this.relativeY = 0.842593
-            this.elementName = "Party Display"
-            this.addToList()
-            this.height = Utils.mc.fontRendererObj.FONT_HEIGHT
-        }
-
-        override fun draw() {
-            var display = "§9Party Display\n"
-            for (partyMember in partyMembers.values) {
-                display += "${partyMember.name} ${partyMember.className} ${partyMember.classLvl} LEADER:${partyMember.leader}\n"
-            }
-            for ((index, s) in display.split("\n").withIndex()) {
-                GuiUtils.drawText(s, 0f, (index * 10).toFloat(), GuiUtils.TextStyle.BLACK_OUTLINE)
-            }
-            this.width = Utils.mc.fontRendererObj.getStringWidth(display) + 1
-        }
-
-        override fun isActive(): Boolean {
-            return GeneralConfig.manaDisplay && LocationUtils.inSkyblock
-        }
-
-        override fun isVisible(): Boolean {
-            return true
         }
     }
 }
