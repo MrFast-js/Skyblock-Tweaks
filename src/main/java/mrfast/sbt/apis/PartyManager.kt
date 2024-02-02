@@ -11,13 +11,13 @@ import mrfast.sbt.utils.Utils
 import mrfast.sbt.utils.Utils.clean
 import mrfast.sbt.utils.Utils.setTimeout
 import net.minecraft.client.gui.inventory.GuiChest
-import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.util.regex.Pattern
 
 object PartyManager {
     private var partyMembers = mutableMapOf<String, PartyMember>()
+    private var playerInParty = false
 
     class PartyMember(var name: String) {
         var leader = false
@@ -57,7 +57,7 @@ object PartyManager {
                 val pattern = Pattern.compile(regex)
                 hadProblemJoiningParty = false
                 setTimeout({
-                    if(hadProblemJoiningParty) return@setTimeout
+                    if (hadProblemJoiningParty) return@setTimeout
                     // Clear all old party members but self
                     partyMembers.entries.removeIf { it.key != Utils.mc.thePlayer.name }
 
@@ -78,7 +78,8 @@ object PartyManager {
                     }
                     val leaderName = stackName.clean().split("'")[0]
                     partyMembers[leaderName]?.leader = true
-                },1000)
+                    playerInParty = true
+                }, 1000)
             }
         }
     }
@@ -88,6 +89,7 @@ object PartyManager {
         if (clean.endsWith("joined the party.")) {
             val pm = PartyMember(parsePlayerName(clean))
             partyMembers[pm.name] = pm
+            playerInParty = true
         }
 
         // Other players leave party
@@ -101,11 +103,13 @@ object PartyManager {
         if (clean.endsWith(" has been removed from the party.")) {
             val pm = PartyMember(parsePlayerName(clean))
             partyMembers[pm.name] = pm
+            playerInParty = true
         }
 
         // /p kick people
         if (clean.startsWith("You have been kicked from the party")) {
             partyMembers.clear()
+            playerInParty = false
         }
 
         // /p transfer
@@ -123,6 +127,7 @@ object PartyManager {
                 val playerName = clean.split(" ")[clean.split(" ").size - 1]
                 partyMembers.remove(playerName)
             }
+            playerInParty = true
         }
 
         // no more party 👋
@@ -130,9 +135,11 @@ object PartyManager {
             clean.endsWith(" has disbanded the party!") ||
             clean.startsWith("You left the party.") ||
             clean.startsWith("You have been kicked from the party") ||
-            clean.startsWith("You are not in a party right now.")
+            clean.startsWith("You are not in a party right now.") ||
+            clean.startsWith("You are not in a party.")
         ) {
             partyMembers.clear()
+            playerInParty = false
         }
 
         // You join party
@@ -143,6 +150,7 @@ object PartyManager {
 
             pm.leader = true
             partyMembers[pm.name] = pm
+            playerInParty = true
         }
 
         // Joining existing parties
@@ -157,7 +165,8 @@ object PartyManager {
     }
 
     private fun handleDungeonParty(clean: String) {
-        if (clean.startsWith("Party Finder > ") && clean.contains(" joined the dungeon group! (")) {
+        // Checks if the player is in a party, thus ignoring the "ghost" joining messages that happens often with party finder and leaving parties
+        if (clean.startsWith("Party Finder > ") && clean.contains(" joined the dungeon group! (") && playerInParty) {
             val playerName = clean.split(" ")[3]
             val pm = PartyMember(playerName)
             val lastArg = clean.split("(")[1]
@@ -168,11 +177,13 @@ object PartyManager {
 
             partyMembers[pm.name] = pm
         }
-        if(clean.startsWith("You need to have a class at level") ||
+
+        if (clean.startsWith("You need to have a class at level") ||
             clean.startsWith("You need to have Catacombs level") ||
             clean.startsWith("Party Finder > This group has been de-listed") ||
             clean.startsWith("Party Finder > You are already in a party!") ||
-            clean.startsWith("You have just sent a join request recently!")) {
+            clean.startsWith("You have just sent a join request recently!")
+        ) {
             hadProblemJoiningParty = true
         }
     }
