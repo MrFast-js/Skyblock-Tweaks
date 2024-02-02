@@ -105,6 +105,7 @@ tasks.withType(JavaCompile::class) {
 
 tasks.withType(Jar::class) {
     archiveBaseName.set("Skyblock-Tweaks")
+
     var tweakClass = "org.spongepowered.asm.launch.MixinTweaker"
     if (project.hasProperty("toJar")) {
         tweakClass="gg.essential.loader.stage0.EssentialSetupTweaker"
@@ -117,7 +118,9 @@ tasks.withType(Jar::class) {
         this["TweakClass"] = tweakClass
         this["MixinConfigs"] = "mixins.$modid.json"
     }
-    println("Selected "+tweakClass)
+    println("Selected $tweakClass")
+    println("${System.getenv("APPDATA")}\\.minecraft\\mods")
+
 }
 
 tasks.processResources {
@@ -136,6 +139,10 @@ tasks.processResources {
 
 val remapJar by tasks.named<net.fabricmc.loom.task.RemapJarTask>("remapJar") {
     archiveClassifier.set("")
+    if(project.hasProperty("toModsFolder")) {
+        destinationDirectory.set(file("${System.getenv("APPDATA")}\\.minecraft\\mods"))
+    }
+
     from(tasks.shadowJar)
     input.set(tasks.shadowJar.get().archiveFile)
 }
@@ -160,3 +167,18 @@ tasks.shadowJar {
 }
 
 tasks.assemble.get().dependsOn(tasks.remapJar)
+
+
+tasks.register("finalize") {
+    doLast {
+        project.exec {
+            commandLine("cmd", "/c", "start", "finish.bat")
+        }
+    }
+}
+
+gradle.buildFinished {
+    if(project.hasProperty("runClient")) {
+        tasks["finalize"]?.actions?.forEach { it.execute(tasks["finalize"]) }
+    }
+}
