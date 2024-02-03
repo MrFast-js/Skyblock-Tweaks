@@ -96,7 +96,7 @@ class GuiEditor : GuiScreen() {
         if (hoveredElement != null && !isMouseMoving) {
             val renderTooltip = mutableListOf(
                     "§a§l${hoveredElement!!.elementName}",
-                    "§7X: §e${Math.round(hoveredElement!!.relativeX * screenWidth)} §7Y: §e${Math.round(hoveredElement!!.relativeY * screenHeight)}",
+                    "§7X: §e${Math.round(hoveredElement!!.relativeX * screenWidth)} §7Y: §e${Math.round(hoveredElement!!.relativeY * screenHeight)} §7Scale: §7e${hoveredElement!!.scale}",
                     "§3R-CLICK to open config"
             )
             val fontObj = Utils.mc.fontRendererObj
@@ -148,7 +148,7 @@ class GuiEditor : GuiScreen() {
         if (wheel != 0) {
             selectedElement?.let {
                 it.scale += 0.5 * if (wheel > 0) 1 else -1
-                it.scale = Utils.clamp(1.0, it.scale, 4.0)
+                it.scale = Utils.clamp(0.5, it.scale, 4.0)
             }
         }
     }
