@@ -21,6 +21,7 @@ import java.util.zip.ZipInputStream;
 /**
  * Taken from Skyhanni under GNU LGPL v2.1 license
  * @link https://github.com/hannibal002/SkyHanni/blob/beta/LICENSE
+ * @author Linnea Gräf
  */
 public class MixinPlugin implements IMixinConfigPlugin {
     @Override
