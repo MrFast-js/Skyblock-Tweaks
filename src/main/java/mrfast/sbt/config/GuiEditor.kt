@@ -96,7 +96,7 @@ class GuiEditor : GuiScreen() {
         if (hoveredElement != null && !isMouseMoving) {
             val renderTooltip = mutableListOf(
                     "§a§l${hoveredElement!!.elementName}",
-                    "§7X: §e${Math.round(hoveredElement!!.relativeX * screenWidth)} §7Y: §e${Math.round(hoveredElement!!.relativeY * screenHeight)} §7Scale: §7e${hoveredElement!!.scale}",
+                    "§7X: §e${Math.round(hoveredElement!!.relativeX * screenWidth)} §7Y: §e${Math.round(hoveredElement!!.relativeY * screenHeight)} §7Scale: §e${hoveredElement!!.scale}",
                     "§3R-CLICK to open config"
             )
             val fontObj = Utils.mc.fontRendererObj

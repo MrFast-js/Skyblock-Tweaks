@@ -4,10 +4,12 @@ import mrfast.sbt.apis.ItemAbilities
 import mrfast.sbt.apis.PartyManager
 import mrfast.sbt.apis.PlayerStats
 import mrfast.sbt.commands.ConfigCommand
+import mrfast.sbt.commands.DebugCommand
 import mrfast.sbt.config.Config
 import mrfast.sbt.config.ConfigGui
 import mrfast.sbt.config.GuiManager
 import mrfast.sbt.features.general.*
+import mrfast.sbt.utils.DevUtils
 import mrfast.sbt.utils.LocationUtils
 import net.minecraftforge.client.ClientCommandHandler
 import net.minecraftforge.client.event.GuiScreenEvent.KeyboardInputEvent
@@ -40,6 +42,8 @@ class SkyblockTweaks {
 
         // Utils
         MinecraftForge.EVENT_BUS.register(LocationUtils)
+        MinecraftForge.EVENT_BUS.register(DevUtils)
+
 
         // Stat Displays
         MinecraftForge.EVENT_BUS.register(HealthDisplay)
@@ -65,6 +69,7 @@ class SkyblockTweaks {
 
         // Commands
         ClientCommandHandler.instance.registerCommand(ConfigCommand())
+        ClientCommandHandler.instance.registerCommand(DebugCommand())
     }
 
     @Mod.EventHandler
