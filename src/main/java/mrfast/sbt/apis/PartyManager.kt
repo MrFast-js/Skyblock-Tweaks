@@ -1,12 +1,10 @@
 package mrfast.sbt.apis
 
 import mrfast.sbt.config.Categories.GeneralConfig
-import mrfast.sbt.config.GuiManager
 import mrfast.sbt.customevents.SlotClickedEvent
-import mrfast.sbt.utils.GuiUtils
+import mrfast.sbt.utils.ChatUtils
 import mrfast.sbt.utils.GuiUtils.chestName
 import mrfast.sbt.utils.ItemUtils.getLore
-import mrfast.sbt.utils.LocationUtils
 import mrfast.sbt.utils.Utils
 import mrfast.sbt.utils.Utils.clean
 import mrfast.sbt.utils.Utils.setTimeout
@@ -61,10 +59,15 @@ object PartyManager {
                     if(line.clean().startsWith("Requires")) return
                 }
 
+
                 setTimeout({
                     if (hadProblemJoiningParty) return@setTimeout
+
                     // Clear all old party members but self
                     partyMembers.entries.removeIf { it.key != Utils.mc.thePlayer.name }
+                    if(partyMembers.isEmpty()) {
+                        addSelfToParty()
+                    }
 
                     for (line in event.slot.stack.getLore()) {
                         val matcher = pattern.matcher(line.clean().trim())
@@ -92,6 +95,9 @@ object PartyManager {
     private fun addSelfToParty() {
         // Add self to party
         partyMembers[Utils.mc.thePlayer.name] = PartyMember(Utils.mc.thePlayer.name)
+        if(GeneralConfig.autoPartyChat && !playerInParty) {
+            ChatUtils.sendPlayerMessage("/chat p")
+        }
     }
 
     private fun handleVanillaParty(clean: String) {
@@ -99,21 +105,15 @@ object PartyManager {
         if (clean.endsWith("joined the party.")) {
             val pm = PartyMember(parsePlayerName(clean))
             partyMembers[pm.name] = pm
-            playerInParty = true
             addSelfToParty()
+            playerInParty = true
         }
 
         // Other players leave party
-        if (clean.endsWith("has left the party.")) {
+        if (clean.endsWith("has left the party.") || clean.endsWith(" has been removed from the party.")) {
             partyMembers.values.removeIf {
                 it.name == parsePlayerName(clean)
             }
-        }
-
-        // /p kick people
-        if (clean.endsWith(" has been removed from the party.")) {
-            val pm = PartyMember(parsePlayerName(clean))
-            partyMembers[pm.name] = pm
             playerInParty = true
         }
 
@@ -121,6 +121,9 @@ object PartyManager {
         if (clean.startsWith("You have been kicked from the party")) {
             partyMembers.clear()
             playerInParty = false
+            if(GeneralConfig.autoPartyChat) {
+                ChatUtils.sendPlayerMessage("/chat a")
+            }
         }
 
         // /p transfer
@@ -150,6 +153,9 @@ object PartyManager {
             clean.startsWith("You are not in a party.")
         ) {
             partyMembers.clear()
+            if(GeneralConfig.autoPartyChat && playerInParty) {
+                ChatUtils.sendPlayerMessage("/chat a")
+            }
             playerInParty = false
         }
 
@@ -161,9 +167,8 @@ object PartyManager {
 
             pm.leader = true
             partyMembers[pm.name] = pm
-            playerInParty = true
             addSelfToParty()
-
+            playerInParty = true
         }
 
         // Joining existing parties
