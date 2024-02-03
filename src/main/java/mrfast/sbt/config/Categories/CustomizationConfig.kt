@@ -21,9 +21,9 @@ object CustomizationConfig : Config() {
             description = "Choose between Full and Beta Releases for update checks",
             category = "§2§rCustomization",
             subcategory = "Mod",
-            dropdownOptions = ["Full Releases", "Beta Releases"]
+            dropdownOptions = ["Full (Full Releases)", "Pre (Beta Releases)"]
     )
-    var updateCheckType = "Beta Releases"
+    var updateCheckType = "Pre (Beta Releases)"
 
     @ConfigProperty(
             type = ConfigType.TOGGLE,
