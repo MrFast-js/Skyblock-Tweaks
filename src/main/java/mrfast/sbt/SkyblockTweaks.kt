@@ -14,6 +14,7 @@ import mrfast.sbt.utils.LocationUtils
 import net.minecraftforge.client.ClientCommandHandler
 import net.minecraftforge.client.event.GuiScreenEvent.KeyboardInputEvent
 import net.minecraftforge.common.MinecraftForge
+import net.minecraftforge.fml.common.Loader
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.event.FMLInitializationEvent
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent
@@ -21,14 +22,12 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.input.Keyboard
 
-@Mod(modid = SkyblockTweaks.MOD_ID, name = SkyblockTweaks.MOD_NAME, version = SkyblockTweaks.MOD_VERSION)
-class SkyblockTweaks {
-    companion object {
-        const val MOD_ID = "skyblocktweaks"
-        const val MOD_NAME = "Skyblock Tweaks"
-        const val MOD_VERSION = "1.0.0"
-        val config = Config()
-    }
+@Mod(modid = SkyblockTweaks.MOD_ID, name = SkyblockTweaks.MOD_NAME)
+object SkyblockTweaks {
+    const val MOD_ID = "skyblocktweaks"
+    const val MOD_NAME = "Skyblock Tweaks"
+    var MOD_VERSION = "1.0.0"
+    val config = Config()
 
     @Mod.EventHandler
     fun preInit(event: FMLPreInitializationEvent?) {
@@ -70,6 +69,15 @@ class SkyblockTweaks {
         // Commands
         ClientCommandHandler.instance.registerCommand(ConfigCommand())
         ClientCommandHandler.instance.registerCommand(DebugCommand())
+
+        // Checks mod folder for version of Skyblock Features your using
+        val modList = Loader.instance().modList
+        for (mod in modList) {
+            if (mod.modId == MOD_ID) {
+                MOD_VERSION = mod.displayVersion
+                break
+            }
+        }
     }
 
     @Mod.EventHandler

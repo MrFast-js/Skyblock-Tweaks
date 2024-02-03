@@ -82,7 +82,7 @@ object OverlaysConfig : Config() {
 
     @ConfigProperty(
             type = ConfigType.TOGGLE,
-            name = "SBF Trade Gui",
+            name = "SBT Trade Gui",
             description = "Shows extra information inside the trade gui, including Estimated Values",
             category = "Overlays",
             subcategory = "Miscellaneous"

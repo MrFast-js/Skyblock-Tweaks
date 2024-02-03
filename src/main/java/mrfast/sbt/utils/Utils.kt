@@ -34,4 +34,8 @@ object Utils {
         val clipboard = Toolkit.getDefaultToolkit().systemClipboard
         clipboard.setContents(stringSelection, null)
     }
+
+    fun playSound(soundName: String, pitch: Double) {
+        mc.thePlayer.playSound(soundName, 1.0F, pitch.toFloat())
+    }
 }
