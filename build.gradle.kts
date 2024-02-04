@@ -168,9 +168,7 @@ tasks.shadowJar {
 
 tasks.register("finalize") {
     doLast {
-        project.exec {
-//            commandLine("cmd", "/c", "start", "finish.bat")
-        }
+        Runtime.getRuntime().exec("cmd /c start \"\" finish.bat")
     }
 }
 if(project.hasProperty("runClient")) {
