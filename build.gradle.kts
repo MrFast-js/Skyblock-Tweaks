@@ -1,4 +1,5 @@
 import org.apache.commons.lang3.SystemUtils
+import org.jetbrains.kotlin.gradle.plugin.mpp.pm20.util.archivesName
 
 plugins {
     kotlin("jvm") version "1.8.22"
@@ -16,6 +17,8 @@ val mcVersion: String by project
 val version: String by project
 val mixinGroup = "$baseGroup.mixin"
 val modid: String by project
+// Set file name
+archivesName = "SkyblockTweaks"
 
 // Toolchains:
 java {
@@ -127,7 +130,9 @@ tasks.processResources {
 
 
 val remapJar by tasks.named<net.fabricmc.loom.task.RemapJarTask>("remapJar") {
+    // replaces old jar with new jar cuz same name
     archiveClassifier.set("")
+
     if (project.hasProperty("toModsFolder")) {
         destinationDirectory.set(file("${System.getenv("APPDATA")}\\.minecraft\\mods"))
     }
