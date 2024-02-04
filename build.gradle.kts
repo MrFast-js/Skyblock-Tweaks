@@ -30,7 +30,7 @@ loom {
             // If you don't want mixins, remove these lines
             property("mixin.debug", "false")
             property("asmhelper.verbose", "false")
-            if(project.hasProperty("toJar")) {
+            if (project.hasProperty("toJar")) {
                 arg("--tweakClass", "gg.essential.loader.stage0.EssentialSetupTweaker")
             } else {
                 arg("--tweakClass", "org.spongepowered.asm.launch.MixinTweaker")
@@ -84,7 +84,7 @@ dependencies {
 
     shadowImpl("gg.essential:loader-launchwrapper:1.1.3")
     implementation("gg.essential:essential-1.8.9-forge:11092+gecb85a783")
-    shadowImpl ("io.socket:engine.io-client:2.1.0:")
+    shadowImpl("io.socket:engine.io-client:2.1.0:")
     shadowImpl("moe.nea:libautoupdate:1.2.0")
 
     // If you don't want mixins, remove these lines
@@ -108,12 +108,12 @@ tasks.withType(Jar::class) {
 
     var tweakClass = "org.spongepowered.asm.launch.MixinTweaker"
     if (project.hasProperty("toJar")) {
-        tweakClass="gg.essential.loader.stage0.EssentialSetupTweaker"
+        tweakClass = "gg.essential.loader.stage0.EssentialSetupTweaker"
     }
     manifest.attributes.run {
         this["FMLCorePluginContainsFMLMod"] = "true"
         this["ForceLoadAsMod"] = "true"
-        this["FMLAT"]= "mrfast_at.cfg"
+        this["FMLAT"] = "mrfast_at.cfg"
         this["Main-Class"] = "InstallerFrame"
         this["TweakClass"] = tweakClass
         this["MixinConfigs"] = "mixins.$modid.json"
@@ -139,7 +139,7 @@ tasks.processResources {
 
 val remapJar by tasks.named<net.fabricmc.loom.task.RemapJarTask>("remapJar") {
     archiveClassifier.set("")
-    if(project.hasProperty("toModsFolder")) {
+    if (project.hasProperty("toModsFolder")) {
         destinationDirectory.set(file("${System.getenv("APPDATA")}\\.minecraft\\mods"))
     }
 
@@ -166,19 +166,20 @@ tasks.shadowJar {
     fun relocate(name: String) = relocate(name, "$baseGroup.deps.$name")
 }
 
-tasks.register("finalize") {
-    doLast {
-        Runtime.getRuntime().exec("cmd /c start \"\" finish.bat")
+
+if (project.hasProperty("runClient")) {
+    tasks.register("finalize") {
+        doLast {
+            Runtime.getRuntime().exec("cmd /c start finish.bat")
+        }
     }
-}
-if(project.hasProperty("runClient")) {
     tasks.assemble.get().dependsOn(tasks.getByName("finalize"))
-}
-tasks.assemble.get().dependsOn(tasks.remapJar)
 
-
-gradle.buildFinished {
-    if(project.hasProperty("runClient")) {
-        tasks["finalize"]?.actions?.forEach { it.execute(tasks["finalize"]) }
+    gradle.buildFinished {
+        if (project.hasProperty("runClient")) {
+            tasks["finalize"]?.actions?.forEach { it.execute(tasks["finalize"]) }
+        }
     }
 }
+
+tasks.assemble.get().dependsOn(tasks.remapJar)
