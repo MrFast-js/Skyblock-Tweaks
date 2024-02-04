@@ -161,3 +161,14 @@ tasks.shadowJar {
 }
 
 tasks.assemble.get().dependsOn(tasks.remapJar)
+
+if(project.hasProperty("toModsFolder")) {
+    tasks.register("finalize") {
+        doLast {
+            project.exec {
+                commandLine("cmd", "/c", "start", "finish.bat")
+            }
+        }
+    }
+    tasks.assemble.get().dependsOn(tasks.getByName("finalize"))
+}
