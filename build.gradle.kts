@@ -169,7 +169,7 @@ tasks.shadowJar {
 tasks.register("finalize") {
     doLast {
         project.exec {
-            commandLine("cmd", "/c", "start", "finish.bat")
+//            commandLine("cmd", "/c", "start", "finish.bat")
         }
     }
 }
