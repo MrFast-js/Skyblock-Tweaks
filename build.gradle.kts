@@ -173,8 +173,9 @@ tasks.register("finalize") {
         }
     }
 }
-
-tasks.assemble.get().dependsOn(tasks.getByName("finalize"))
+if(project.hasProperty("runClient")) {
+    tasks.assemble.get().dependsOn(tasks.getByName("finalize"))
+}
 tasks.assemble.get().dependsOn(tasks.remapJar)
 
 

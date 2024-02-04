@@ -3,6 +3,7 @@ package mrfast.sbt
 import mrfast.sbt.apis.ItemAbilities
 import mrfast.sbt.apis.PartyManager
 import mrfast.sbt.apis.PlayerStats
+import mrfast.sbt.apis.VersionManager
 import mrfast.sbt.commands.ConfigCommand
 import mrfast.sbt.commands.DebugCommand
 import mrfast.sbt.config.Config
@@ -23,11 +24,14 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.input.Keyboard
 
 @Mod(modid = SkyblockTweaks.MOD_ID, name = SkyblockTweaks.MOD_NAME)
-object SkyblockTweaks {
-    const val MOD_ID = "skyblocktweaks"
-    const val MOD_NAME = "Skyblock Tweaks"
-    var MOD_VERSION = "1.0.0"
-    val config = Config()
+class SkyblockTweaks {
+    companion object {
+        const val MOD_ID = "skyblocktweaks"
+        const val MOD_NAME = "Skyblock Tweaks"
+        var MOD_VERSION = "1.0.0"
+        val config = Config()
+    }
+
 
     @Mod.EventHandler
     fun preInit(event: FMLPreInitializationEvent?) {
@@ -42,6 +46,7 @@ object SkyblockTweaks {
         // Utils
         MinecraftForge.EVENT_BUS.register(LocationUtils)
         MinecraftForge.EVENT_BUS.register(DevUtils)
+        MinecraftForge.EVENT_BUS.register(VersionManager)
 
 
         // Stat Displays

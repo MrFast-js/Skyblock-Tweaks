@@ -18,6 +18,7 @@ import gg.essential.universal.UMatrixStack
 import gg.essential.vigilance.gui.settings.ColorComponent
 import gg.essential.vigilance.gui.settings.SelectorComponent
 import mrfast.sbt.SkyblockTweaks
+import mrfast.sbt.apis.VersionManager
 import mrfast.sbt.config.Categories.CustomizationConfig
 import mrfast.sbt.config.Components.*
 import mrfast.sbt.utils.Utils
@@ -49,7 +50,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
     private var hoveredCategoryColor = BasicState(Color(255, 255, 255))
     private var updateSymbol = BasicState(UIText())
 
-    private var showUpdateButton = true
+    private var showUpdateButton = VersionManager.neededUpdate.versionName.isNotEmpty()
 
     private var selectedCategory = "General"
     private var selectedCategoryComponent: UIComponent? = null
@@ -167,8 +168,10 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
 
             updateButton.onMouseClick {
                 // do update command
+                VersionManager.checkIfNeedUpdate()
+                Utils.mc.currentScreen = null
             }
-            updateButton.addTooltip(setOf("§aUpdate §ev1.2.0§a is available! Click to download"))
+            updateButton.addTooltip(setOf("§aUpdate §e${VersionManager.neededUpdate.versionName}§a is available! Click to download"))
         }
 
         val categoryListBackground = UIBlock(categoriesBackgroundColor).constrain {
@@ -288,13 +291,13 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
             override fun run() {
                 // blinky arrow
                 updateSymbol.get().animate {
-                    setColorAnimation(Animations.OUT_EXP, 0.5f, colors[currentColorIndex].constraint)
+                    setColorAnimation(Animations.OUT_EXP, 0.3f, colors[currentColorIndex].constraint)
                 }
 
                 // Toggle to the next color index
                 currentColorIndex = (currentColorIndex + 1) % colors.size
             }
-        }, 0, 500)
+        }, 0, 350)
     }
 
 
@@ -407,11 +410,11 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
         ) {
             var hasChildFittingSearch = false
             for (optionElement in feature.optionElements) {
-                if(containsIgnoreCase(optionElement.key, searchQuery)) {
+                if (containsIgnoreCase(optionElement.key, searchQuery)) {
                     hasChildFittingSearch = true
                 }
             }
-            if(!hasChildFittingSearch) {
+            if (!hasChildFittingSearch) {
                 return null
             }
         }
