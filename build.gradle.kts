@@ -30,11 +30,7 @@ loom {
             // If you don't want mixins, remove these lines
             property("mixin.debug", "false")
             property("asmhelper.verbose", "false")
-            if (project.hasProperty("toJar")) {
-                arg("--tweakClass", "gg.essential.loader.stage0.EssentialSetupTweaker")
-            } else {
-                arg("--tweakClass", "org.spongepowered.asm.launch.MixinTweaker")
-            }
+            arg("--tweakClass", "gg.essential.loader.stage0.EssentialSetupTweaker")
         }
     }
     runConfigs {
@@ -106,21 +102,14 @@ tasks.withType(JavaCompile::class) {
 tasks.withType(Jar::class) {
     archiveBaseName.set("Skyblock-Tweaks")
 
-    var tweakClass = "org.spongepowered.asm.launch.MixinTweaker"
-    if (project.hasProperty("toJar")) {
-        tweakClass = "gg.essential.loader.stage0.EssentialSetupTweaker"
-    }
     manifest.attributes.run {
         this["FMLCorePluginContainsFMLMod"] = "true"
         this["ForceLoadAsMod"] = "true"
         this["FMLAT"] = "mrfast_at.cfg"
         this["Main-Class"] = "InstallerFrame"
-        this["TweakClass"] = tweakClass
+        this["TweakClass"] = "gg.essential.loader.stage0.EssentialSetupTweaker"
         this["MixinConfigs"] = "mixins.$modid.json"
     }
-    println("Selected $tweakClass")
-    println("${System.getenv("APPDATA")}\\.minecraft\\mods")
-
 }
 
 tasks.processResources {
@@ -164,22 +153,6 @@ tasks.shadowJar {
 
     // If you want to include other dependencies and shadow them, you can relocate them in here
     fun relocate(name: String) = relocate(name, "$baseGroup.deps.$name")
-}
-
-
-if (project.hasProperty("runClient")) {
-    tasks.register("finalize") {
-        doLast {
-            Runtime.getRuntime().exec("cmd /c start finish.bat")
-        }
-    }
-    tasks.assemble.get().dependsOn(tasks.getByName("finalize"))
-
-    gradle.buildFinished {
-        if (project.hasProperty("runClient")) {
-            tasks["finalize"]?.actions?.forEach { it.execute(tasks["finalize"]) }
-        }
-    }
 }
 
 tasks.assemble.get().dependsOn(tasks.remapJar)
