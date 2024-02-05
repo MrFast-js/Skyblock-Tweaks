@@ -83,11 +83,7 @@ object VersionManager {
 
     private fun checkPotentialUpdate(run: Runnable) {
         println("Checking for Skyblock Tweaks updates: " + getUpdatePreference())
-        context.checkUpdate(getUpdatePreference()).thenAcceptAsync {
-            println(it)
-            println(it.update)
-            println(it.fileName)
-        }
+
         context.checkUpdate(getUpdatePreference()).thenAcceptAsync { update: PotentialUpdate? ->
             if (update != null) {
                 println("Found potential SBT update! Version: ${update.update.versionName}")
