@@ -6,12 +6,14 @@ import mrfast.sbt.commands.DebugCommand
 import mrfast.sbt.config.Config
 import mrfast.sbt.config.ConfigGui
 import mrfast.sbt.config.GuiManager
+import mrfast.sbt.customevents.ProfileLoadEvent
 import mrfast.sbt.features.general.*
 import mrfast.sbt.managers.DataManager
 import mrfast.sbt.managers.PartyManager
 import mrfast.sbt.managers.VersionManager
 import mrfast.sbt.utils.DevUtils
 import mrfast.sbt.utils.LocationUtils
+import mrfast.sbt.utils.SocketUtils
 import net.minecraftforge.client.ClientCommandHandler
 import net.minecraftforge.client.event.GuiScreenEvent.KeyboardInputEvent
 import net.minecraftforge.common.MinecraftForge
@@ -45,6 +47,7 @@ class SkyblockTweaks {
 
         // Utils
         MinecraftForge.EVENT_BUS.register(LocationUtils)
+        MinecraftForge.EVENT_BUS.register(SocketUtils)
         MinecraftForge.EVENT_BUS.register(DevUtils)
 
         // Managers
