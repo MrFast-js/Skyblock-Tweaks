@@ -97,7 +97,6 @@ object VersionManager {
         val currentVersionValue: Double = getVersionValue(MOD_VERSION)
         val updateVersionName = potentialUpdate!!.update.versionName.split("v")[1]
         val updateVersionValue: Double = getVersionValue(updateVersionName)
-        println("CURRENT: $currentVersionValue UPDATE: $updateVersionValue")
 
         return currentVersionValue < updateVersionValue
     }
