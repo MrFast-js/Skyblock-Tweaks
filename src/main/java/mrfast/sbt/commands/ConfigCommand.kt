@@ -1,7 +1,7 @@
 package mrfast.sbt.commands
 
 import gg.essential.api.utils.GuiUtil
-import mrfast.sbt.apis.VersionManager
+import mrfast.sbt.managers.VersionManager
 import mrfast.sbt.config.Categories.CustomizationConfig
 import mrfast.sbt.config.ConfigGui
 import mrfast.sbt.config.GuiEditor

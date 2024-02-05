@@ -18,7 +18,7 @@ import gg.essential.universal.UMatrixStack
 import gg.essential.vigilance.gui.settings.ColorComponent
 import gg.essential.vigilance.gui.settings.SelectorComponent
 import mrfast.sbt.SkyblockTweaks
-import mrfast.sbt.apis.VersionManager
+import mrfast.sbt.managers.VersionManager
 import mrfast.sbt.config.Categories.CustomizationConfig
 import mrfast.sbt.config.Components.*
 import mrfast.sbt.utils.Utils

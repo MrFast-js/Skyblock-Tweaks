@@ -1,4 +1,4 @@
-package mrfast.sbt.apis
+package mrfast.sbt.managers
 
 import moe.nea.libautoupdate.*
 import mrfast.sbt.SkyblockTweaks.Companion.MOD_ID

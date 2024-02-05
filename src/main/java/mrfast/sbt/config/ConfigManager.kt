@@ -4,12 +4,9 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonSyntaxException
 import com.google.gson.internal.LinkedTreeMap
-import gg.essential.elementa.components.UIBlock
 import gg.essential.elementa.components.UIContainer
 import mrfast.sbt.SkyblockTweaks
 import net.minecraft.client.Minecraft
-import scala.swing.UIElement
-import java.awt.Color
 import java.io.File
 import java.io.FileReader
 import java.io.FileWriter
@@ -18,11 +15,11 @@ import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.memberProperties
 
 abstract class ConfigManager {
-    private val configDirectoryPath = "${Minecraft.getMinecraft().mcDataDir}\\config\\skyblocktweaks"
-    private val configFilePath = "${Minecraft.getMinecraft().mcDataDir}\\config\\skyblocktweaks\\config.json"
+    private val configFilePath = "${modDirectoryPath}\\config.json"
     private val gson = GsonBuilder().setPrettyPrinting().create()
 
     companion object {
+        val modDirectoryPath = "${Minecraft.getMinecraft().mcDataDir}\\config\\skyblocktweaks"
         var categories: MutableMap<String, Category> = mutableMapOf()
         var defaultMap: MutableMap<String, Any> = mutableMapOf()
     }
@@ -53,7 +50,7 @@ abstract class ConfigManager {
     )
 
     fun saveConfig() {
-        val configDirectory = File(configDirectoryPath)
+        val configDirectory = File(modDirectoryPath)
         configDirectory.mkdirs()
 
         val configFile = File(configFilePath)

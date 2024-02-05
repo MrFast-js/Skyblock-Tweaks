@@ -1,15 +1,15 @@
 package mrfast.sbt
 
-import mrfast.sbt.apis.ItemAbilities
-import mrfast.sbt.apis.PartyManager
-import mrfast.sbt.apis.PlayerStats
-import mrfast.sbt.apis.VersionManager
+import mrfast.sbt.apis.*
 import mrfast.sbt.commands.ConfigCommand
 import mrfast.sbt.commands.DebugCommand
 import mrfast.sbt.config.Config
 import mrfast.sbt.config.ConfigGui
 import mrfast.sbt.config.GuiManager
 import mrfast.sbt.features.general.*
+import mrfast.sbt.managers.DataManager
+import mrfast.sbt.managers.PartyManager
+import mrfast.sbt.managers.VersionManager
 import mrfast.sbt.utils.DevUtils
 import mrfast.sbt.utils.LocationUtils
 import net.minecraftforge.client.ClientCommandHandler
@@ -46,8 +46,11 @@ class SkyblockTweaks {
         // Utils
         MinecraftForge.EVENT_BUS.register(LocationUtils)
         MinecraftForge.EVENT_BUS.register(DevUtils)
-        MinecraftForge.EVENT_BUS.register(VersionManager)
 
+        // Managers
+        MinecraftForge.EVENT_BUS.register(VersionManager)
+        MinecraftForge.EVENT_BUS.register(DataManager)
+        MinecraftForge.EVENT_BUS.register(PartyManager)
 
         // Stat Displays
         MinecraftForge.EVENT_BUS.register(HealthDisplay)
@@ -68,7 +71,6 @@ class SkyblockTweaks {
 
         // Api's
         MinecraftForge.EVENT_BUS.register(PlayerStats)
-        MinecraftForge.EVENT_BUS.register(PartyManager)
         MinecraftForge.EVENT_BUS.register(ItemAbilities)
 
         // Commands
