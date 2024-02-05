@@ -1,4 +1,4 @@
-package mrfast.sbt.apis
+package mrfast.sbt.managers
 
 import mrfast.sbt.config.Categories.GeneralConfig
 import mrfast.sbt.customevents.SlotClickedEvent
