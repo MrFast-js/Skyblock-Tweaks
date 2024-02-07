@@ -21,6 +21,7 @@ import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.managers.VersionManager
 import mrfast.sbt.config.Categories.CustomizationConfig
 import mrfast.sbt.config.Components.*
+import mrfast.sbt.utils.SocketUtils
 import mrfast.sbt.utils.Utils
 import net.minecraft.client.Minecraft
 import net.minecraftforge.fml.client.config.GuiUtils
@@ -113,6 +114,27 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
             x = 0.pixels()
             y = 0.pixels()
         } childOf background effect OutlineEffect(guiLineColors.get(), 1f, sides = setOf(OutlineEffect.Side.Bottom))
+
+        if(CustomizationConfig.developerMode) {
+            val statusColor = if(SocketUtils.socketConnected) Color(85,255,85) else Color(255,85,85)
+            val socketStatusButton = UIBlock(mainBackgroundColor).constrain {
+                width = 16.pixels
+                height = 16.pixels
+                x = 8.pixels
+                y = CenterConstraint()
+            } childOf header effect OutlineEffect(guiLineColors.get(), 1f)
+
+            val socketStatusNew = UIText("∞",false).constrain {
+                x = CenterConstraint()+1.pixels
+                y = CenterConstraint()
+                color = statusColor.constraint
+                textScale = 1.6.pixels
+            } childOf socketStatusButton
+
+            socketStatusButton.addTooltip(setOf(
+                if(SocketUtils.socketConnected) "§a∞ Connected to SBT Socket!" else "§c✕ Disconnected from SBT Socket!"
+            ))
+        }
 
         // Add some text to the panel
         val modTitle = UIText("§eSkyblock §9Tweaks").constrain {
