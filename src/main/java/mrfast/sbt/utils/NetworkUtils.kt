@@ -106,29 +106,27 @@ object NetworkUtils {
             client.execute(request).use { response ->
                 val entity: HttpEntity = response.entity
                 val statusCode = response.statusLine.statusCode
-                println(response)
 
                 BufferedReader(InputStreamReader(entity.content, StandardCharsets.UTF_8)).use { inStream ->
-                    val gson = Gson()
-                    val out = gson.fromJson(inStream, JsonObject::class.java)
+                    val parsedJson = Gson().fromJson(inStream, JsonObject::class.java)
 
                     if (isMyApi) {
-                        if (out.has("auth-key")) {
-                            tempApiAuthKey = out.get("auth-key").asString
+                        if (parsedJson.has("auth-key")) {
+                            tempApiAuthKey = parsedJson.get("auth-key").asString
                             println("GOT AUTH KEY ${tempApiAuthKey}")
                             return apiRequestAndParse(modifiedUrlString, headers, caching, useProxy)
                         }
                         if (statusCode != 200) {
                             ChatUtils.logMessage(
-                                "§cServer Error: ${out.get("cause").asString} §e§o${out.get("err_code")} $modifiedUrlString"
+                                "§cServer Error: ${parsedJson.get("cause").asString} §e§o${parsedJson.get("err_code")} $modifiedUrlString"
                             )
                             return JsonObject()
                         }
                     }
-                    val cache = CacheObject(modifiedUrlString, out)
+                    val cache = CacheObject(modifiedUrlString, parsedJson)
                     jsonCache[modifiedUrlString] = cache
 
-                    return out
+                    return parsedJson
                 }
             }
         } catch (ex: SSLHandshakeException) {
