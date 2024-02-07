@@ -21,20 +21,22 @@ object SocketUtils {
             }
             // Connect to the Socket.IO server
             socket = Socket("ws://app.mrfast-developer.com:1512")
-            socket!!.on(Socket.EVENT_OPEN) { args: Array<Any?>? ->
+            val socket = socket?:return
+
+            socket.on(Socket.EVENT_OPEN) { args: Array<Any?>? ->
                 println("Opened connection to SBT websocket!")
                 socketConnected = true
                 internalClose = false
             }
-            socket!!.on(Socket.EVENT_MESSAGE) { args: Array<Any> ->
+            socket.on(Socket.EVENT_MESSAGE) { args: Array<Any> ->
                 if (args.isNotEmpty()) {
                     val eventType = args[0].toString().split("~".toRegex())[0]
                     val data = args[0].toString().split("~".toRegex())[1]
-                    MinecraftForge.EVENT_BUS.post(SocketMessageEvent(socket!!, data, eventType))
+                    MinecraftForge.EVENT_BUS.post(SocketMessageEvent(socket, data, eventType))
                 }
             }
 
-            socket!!.on(Socket.EVENT_CLOSE) {
+            socket.on(Socket.EVENT_CLOSE) {
                 if (internalClose) return@on
                 println("Lost connection to SBT websocket! Retrying in 5 seconds..")
                 Utils.setTimeout({
@@ -43,7 +45,7 @@ object SocketUtils {
                 socketConnected = false
             }
 
-            socket!!.open()
+            socket.open()
         } catch (e: URISyntaxException) {
             e.printStackTrace()
         }

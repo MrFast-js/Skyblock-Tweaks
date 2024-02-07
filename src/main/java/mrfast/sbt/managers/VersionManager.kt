@@ -123,8 +123,7 @@ object VersionManager {
     // /sbt update check
     fun checkIfNeedUpdate() {
         checkPotentialUpdate {
-            val updateVersion =
-                potentialUpdate?.update?.versionName?.split("v")?.getOrNull(1)?.trim() ?: return@checkPotentialUpdate
+            val updateVersion = potentialUpdate?.update?.versionName?.split("v")?.getOrNull(1)?.trim() ?: return@checkPotentialUpdate
 
             neededUpdate.versionName = updateVersion
 
