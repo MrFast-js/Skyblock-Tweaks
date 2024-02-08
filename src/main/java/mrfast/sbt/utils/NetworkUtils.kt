@@ -113,7 +113,7 @@ object NetworkUtils {
                     if (isMyApi) {
                         if (parsedJson.has("auth-key")) {
                             tempApiAuthKey = parsedJson.get("auth-key").asString
-                            println("GOT AUTH KEY ${tempApiAuthKey}")
+                            println("GOT AUTH KEY $tempApiAuthKey")
                             return apiRequestAndParse(modifiedUrlString, headers, caching, useProxy)
                         }
                         if (statusCode != 200) {
