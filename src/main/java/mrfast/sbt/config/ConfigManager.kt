@@ -15,11 +15,11 @@ import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.memberProperties
 
 abstract class ConfigManager {
-    private val configFilePath = "${modDirectoryPath}\\config.json"
+    private val configFilePath = modDirectoryPath.resolve("config.json")
     private val gson = GsonBuilder().setPrettyPrinting().create()
 
     companion object {
-        val modDirectoryPath = "${Minecraft.getMinecraft().mcDataDir}\\config\\skyblocktweaks"
+        val modDirectoryPath = Minecraft.getMinecraft().mcDataDir.resolve("config").resolve("skyblocktweaks")
         var categories: MutableMap<String, Category> = mutableMapOf()
         var defaultMap: MutableMap<String, Any> = mutableMapOf()
     }
@@ -50,10 +50,9 @@ abstract class ConfigManager {
     )
 
     fun saveConfig() {
-        val configDirectory = File(modDirectoryPath)
-        configDirectory.mkdirs()
+        modDirectoryPath.mkdirs()
 
-        val configFile = File(configFilePath)
+        val configFile = configFilePath
 
         // Convert fields to a Map
         val fieldMap = mutableMapOf<String, Any>()
@@ -110,7 +109,7 @@ abstract class ConfigManager {
 
     // Goes through config file and sets each config options value equal to its config.json equivalent
     fun loadConfig() {
-        val configFile = File(configFilePath)
+        val configFile = configFilePath
         if (configFile.exists()) {
             try {
                 // Read JSON content from the config file using Gson

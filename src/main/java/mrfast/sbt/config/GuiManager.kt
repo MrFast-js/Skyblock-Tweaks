@@ -13,9 +13,9 @@ import java.io.FileWriter
 
 object GuiManager {
     var guiElements = mutableListOf<Element>()
-    private val guiConfigFilePath = "${Minecraft.getMinecraft().mcDataDir}\\config\\skyblocktweaks\\guiConfig.json"
+    private val guiConfigFilePath = ConfigManager.modDirectoryPath.resolve("guiConfig.json")
     private val gson = GsonBuilder().setPrettyPrinting().create()
-    var showall = false
+    private var showall = false
 
     @SubscribeEvent
     fun onRender(event: RenderGameOverlayEvent.Post) {
@@ -38,7 +38,7 @@ object GuiManager {
     }
 
     fun saveGuiElements() {
-        val configFile = File(guiConfigFilePath)
+        val configFile = guiConfigFilePath
 
         try {
             FileWriter(configFile).use { writer ->
@@ -51,7 +51,7 @@ object GuiManager {
     }
 
     fun loadGuiElements() {
-        val configFile = File(guiConfigFilePath)
+        val configFile = guiConfigFilePath
 
         if (configFile.exists()) {
             try {

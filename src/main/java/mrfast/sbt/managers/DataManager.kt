@@ -18,7 +18,7 @@ import java.util.regex.Pattern
 
 
 object DataManager {
-    private val saveDataFilePath = "${ConfigManager.modDirectoryPath}\\profilesData.json"
+    private val saveDataFilePath = ConfigManager.modDirectoryPath.resolve("profilesData.json")
     private var pfidSentInChat = false
 
     @SubscribeEvent
@@ -56,7 +56,7 @@ object DataManager {
         }
     }
 
-    private var dataFile: File = File(saveDataFilePath)
+    private var dataFile: File = saveDataFilePath
     private var dataJson = JsonObject()
     private var currentProfileId: String? = null
 
