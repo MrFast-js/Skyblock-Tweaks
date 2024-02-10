@@ -1,34 +1,40 @@
 package mrfast.sbt.config.Components
 
 import gg.essential.elementa.components.UIBlock
+import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.elementa.constraints.CenterConstraint
 import gg.essential.elementa.constraints.animation.Animations
 import gg.essential.elementa.dsl.*
 import gg.essential.elementa.state.BasicState
 import gg.essential.elementa.state.constraint
 import mrfast.sbt.config.Categories.CustomizationConfig
+import mrfast.sbt.config.Categories.CustomizationConfig.selectedTheme
 import mrfast.sbt.utils.Utils
 import java.awt.Color
 
-class ToggleSwitchComponent(initValue: Boolean) : UIBlock() {
+class ToggleSwitchComponent(initValue: Boolean) : UIRoundedRectangle(0f) {
     var activated = initValue
     private var deactivatedColor = BasicState(Color.GRAY)
-    private var activatedColor = BasicState(CustomizationConfig.toggleSwitchColor)
+    private var activatedColor = BasicState(CustomizationConfig.enabledSwitchColor)
 
     init {
         this.constrain {
             x = 0.pixels
             y = CenterConstraint()
+            radius = 9.pixels
             width = 32.pixels
             height = 16.pixels
-            color = if (activated) CustomizationConfig.toggleSwitchColor.constraint else deactivatedColor.constraint
+            color = if (activated) CustomizationConfig.enabledSwitchColor.constraint else deactivatedColor.constraint
         }
 
-        val block = UIBlock(Color.DARK_GRAY).constrain {
+        val block = UIRoundedRectangle(8f)
+
+        block.constrain {
             x = 1.pixels
             y = 1.pixels
             width = 14.pixels
             height = 14.pixels
+            color = Color.DARK_GRAY.constraint
         } childOf this
 
         if (activated) {

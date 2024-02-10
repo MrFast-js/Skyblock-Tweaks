@@ -41,21 +41,21 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
         }
     }
 
-    private var mainBackgroundColor = BasicState(Color(22, 22, 22))
-    private var categoriesBackgroundColor = BasicState(Color(28, 28, 28))
-    private var headerBackgroundColor = BasicState(Color(34, 34, 34))
-    private var guiLineColors = BasicState(Color(130, 130, 130))
-    private var mainBorderColor = BasicState(Color(0, 255, 255))
-    private var defaultCategoryColor = BasicState(Color(180, 180, 180))
-    private var selectedCategoryColor = BasicState(Color(0, 255, 255))
-    private var hoveredCategoryColor = BasicState(Color(255, 255, 255))
+    private var mainBackgroundColor: Color = CustomizationConfig.mainBackgroundColor
+    private var sidebarBackgroundColor: Color = CustomizationConfig.sidebarBackgroundColor
+    private var guiLineColors: Color = CustomizationConfig.guiLineColors
+    private var mainBorderColor = BasicState(Color.CYAN)
+    private var defaultCategoryColor: Color = CustomizationConfig.defaultCategoryColor
+    private var selectedCategoryColor: Color = CustomizationConfig.selectedCategoryColor
+    private var hoveredCategoryColor: Color = CustomizationConfig.hoveredCategoryColor
+    private var featureBackgroundColor: Color = CustomizationConfig.featureBackgroundColor
+    private var headerBackgroundColor: Color = CustomizationConfig.headerBackgroundColor
+    private var featureBorderColor: Color = CustomizationConfig.featureBorderColor
+
     private var updateSymbol = BasicState(UIText())
-
     private var showUpdateButton = VersionManager.neededUpdate.versionName.isNotEmpty()
-
     private var selectedCategory = "General"
     private var selectedCategoryComponent: UIComponent? = null
-
     private var tooltipElements: MutableMap<UIComponent, Set<String>> = mutableMapOf()
 
     override fun onDrawScreen(matrixStack: UMatrixStack, mouseX: Int, mouseY: Int, partialTicks: Float) {
@@ -113,27 +113,29 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
             height = 30.pixels
             x = 0.pixels()
             y = 0.pixels()
-        } childOf background effect OutlineEffect(guiLineColors.get(), 1f, sides = setOf(OutlineEffect.Side.Bottom))
+        } childOf background effect OutlineEffect(guiLineColors, 1f, sides = setOf(OutlineEffect.Side.Bottom))
 
-        if(CustomizationConfig.developerMode) {
-            val statusColor = if(SocketUtils.socketConnected) Color(85,255,85) else Color(255,85,85)
+        if (CustomizationConfig.developerMode) {
+            val statusColor = if (SocketUtils.socketConnected) Color(85, 255, 85) else Color(255, 85, 85)
             val socketStatusButton = UIBlock(mainBackgroundColor).constrain {
                 width = 16.pixels
                 height = 16.pixels
                 x = 8.pixels
                 y = CenterConstraint()
-            } childOf header effect OutlineEffect(guiLineColors.get(), 1f)
+            } childOf header effect OutlineEffect(guiLineColors, 1f)
 
-            val socketStatusNew = UIText("∞",false).constrain {
-                x = CenterConstraint()+1.pixels
+            val socketStatusNew = UIText("∞", false).constrain {
+                x = CenterConstraint() + 1.pixels
                 y = CenterConstraint()
                 color = statusColor.constraint
                 textScale = 1.6.pixels
             } childOf socketStatusButton
 
-            socketStatusButton.addTooltip(setOf(
-                if(SocketUtils.socketConnected) "§a∞ Connected to SBT Socket!" else "§c✕ Disconnected from SBT Socket!"
-            ))
+            socketStatusButton.addTooltip(
+                setOf(
+                    if (SocketUtils.socketConnected) "§a∞ Connected to SBT Socket!" else "§c✕ Disconnected from SBT Socket!"
+                )
+            )
         }
 
         // Add some text to the panel
@@ -155,7 +157,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
             height = 12.pixels
             x = PixelConstraint(10f, true)
             y = CenterConstraint()
-        } childOf header effect OutlineEffect(guiLineColors.get(), 1f)
+        } childOf header effect OutlineEffect(guiLineColors, 1f)
 
         val searchBarInput = UITextInput("Search").constrain {
             width = 100.percent
@@ -177,7 +179,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
                 height = 16.pixels
                 x = SiblingConstraintFixed(15f, true)
                 y = CenterConstraint()
-            } childOf header effect OutlineEffect(guiLineColors.get(), 1f)
+            } childOf header effect OutlineEffect(guiLineColors, 1f)
 
             val updateSymbolNew = UIText("⬆").constrain {
                 x = CenterConstraint()
@@ -196,13 +198,13 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
             updateButton.addTooltip(setOf("§aUpdate §e${VersionManager.neededUpdate.versionName}§a is available! Click to download"))
         }
 
-        val categoryListBackground = UIBlock(categoriesBackgroundColor).constrain {
+        val categoryListBackground = UIBlock(sidebarBackgroundColor).constrain {
             x = 0.pixels
             y = 32.pixels
             width = 21.percent
             height = 100.percent - 32.pixels
         } childOf background effect OutlineEffect(
-            guiLineColors.get(),
+            guiLineColors,
             1f,
             sides = setOf(OutlineEffect.Side.Right),
             drawInsideChildren = true
@@ -383,7 +385,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
                     val isChild = feature.parentName.isNotEmpty()
                     if (isChild) continue
 
-                    val featureContainer = createFeatureElement(feature, subcategory, subcategoryComponent)
+                    val featureContainer = createFeatureElement(feature, subcategory, subcategoryComponent, list)
 
                     if (featureContainer != null) {
                         feature.featureContainer = featureContainer
@@ -406,7 +408,8 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
                             it.name == feature.parentName
                         }
                         if (parent != null) {
-                            val featureOption = createFeatureElement(feature, subcategory, parent.featureContainer)
+                            val featureOption =
+                                createFeatureElement(feature, subcategory, parent.featureContainer, list)
                             if (featureOption != null) {
                                 parent.optionElements[feature.name] = featureOption
                                 featureOption.hide(true)
@@ -421,7 +424,8 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
     private fun createFeatureElement(
         feature: ConfigManager.Feature,
         subcategory: ConfigManager.Subcategory,
-        subcategoryComponent: UIContainer
+        subcategoryComponent: UIContainer,
+        featureList: ScrollComponent
     ): UIContainer? {
         // Check if name,description,subcategory contain the search
 
@@ -448,12 +452,13 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
             height = ChildBasedSizeConstraint(2f)
         } childOf subcategoryComponent
 
-        val featureBackground = UIBlock(headerBackgroundColor).constrain {
+        val featureBackground = OutlinedRoundedRectangle(featureBorderColor.constraint, 1f, 6f).constrain {
             x = CenterConstraint()
             y = SiblingConstraintFixed(6f)
             width = if (feature.parentName.isEmpty()) 100.percent else 90.percent
             height = ChildBasedSizeConstraint(2f)
-        } childOf featureContainer effect OutlineEffect(guiLineColors.get(), 1f)
+            color = featureBackgroundColor.constraint
+        } childOf featureContainer
 
         val featureTitle = UIText(feature.name).constrain {
             x = 2.pixels
@@ -468,7 +473,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
             color = Color.GRAY.constraint
         } childOf featureBackground
 
-        populateFeature(feature, featureBackground)
+        populateFeature(feature, featureBackground, featureList)
 
         return featureContainer
     }
@@ -477,7 +482,11 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
         return source.lowercase(Locale.getDefault()).contains(target.lowercase(Locale.getDefault()))
     }
 
-    private fun populateFeature(feature: ConfigManager.Feature, featureComponent: UIComponent) {
+    private fun populateFeature(
+        feature: ConfigManager.Feature,
+        featureComponent: UIComponent,
+        featureList: ScrollComponent
+    ) {
         val ignoredHeights = mutableListOf<UIComponent>()
 
         if (feature.type == ConfigType.TOGGLE) {
@@ -539,6 +548,9 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
             colorPicker.onValueChange { value: Any? ->
                 colorDisplay.setColor(value as Color)
                 feature.field.set(SkyblockTweaks.config, value)
+//                if (feature.field.name == "enabledSwitchColor") {
+//                    SkyblockTweaks.config.saveConfig()
+//                }
             }
 
             ignoredHeights.addAll(mutableListOf(colorDisplay, resetImg, featureComponent.children[1]))
@@ -549,8 +561,15 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
             val selector = SelectorComponent(selected, feature.dropdownOptions.toList()).constrain {
                 x = 10.pixels(alignOpposite = true)
             } childOf featureComponent
+
             selector.onValueChange { value: Any? ->
                 feature.field.set(SkyblockTweaks.config, feature.dropdownOptions[value as Int])
+
+                if (feature.field.name == "selectedTheme") {
+                    SkyblockTweaks.config.saveConfig()
+                    updateSelectedFeatures(featureList)
+
+                }
             }
         }
         if (feature.type == ConfigType.KEYBIND) {
@@ -693,5 +712,22 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
 
     private fun UIComponent.addTooltip(set: Set<String>) {
         tooltipElements[this] = set
+    }
+
+    private fun updateThemeColors() {
+        val theme = CustomizationConfig.selectedTheme
+        if (theme == "Space") {
+            CustomizationConfig.mainBackgroundColor = Color(0x00000)
+            CustomizationConfig.sidebarBackgroundColor = Color(0x070707)
+            CustomizationConfig.guiLineColors = Color(0x828282)
+            mainBorderColor = BasicState(Color.CYAN)
+            CustomizationConfig.enabledSwitchColor = Color(0xe7ba32)
+            CustomizationConfig.defaultCategoryColor = Color(0xb4b4b4)
+            CustomizationConfig.selectedCategoryColor = Color(0x00ffff)
+            CustomizationConfig.hoveredCategoryColor = Color(0xffffff)
+            CustomizationConfig.featureBackgroundColor = Color(0x00)
+            CustomizationConfig.headerBackgroundColor = Color(0x090909)
+            CustomizationConfig.featureBorderColor = Color(0x081528)
+        }
     }
 }
