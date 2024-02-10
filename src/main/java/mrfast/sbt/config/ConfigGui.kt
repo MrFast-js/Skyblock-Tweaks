@@ -13,7 +13,6 @@ import gg.essential.elementa.dsl.*
 import gg.essential.elementa.effects.OutlineEffect
 import gg.essential.elementa.effects.ScissorEffect
 import gg.essential.elementa.state.BasicState
-import gg.essential.elementa.state.constraint
 import gg.essential.universal.UMatrixStack
 import gg.essential.vigilance.gui.settings.ColorComponent
 import gg.essential.vigilance.gui.settings.SelectorComponent
@@ -519,24 +518,39 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
 
         }
         if (feature.type == ConfigType.COLOR) {
-            val color = feature.value as Color
-            val colorPicker = ColorComponent(color, false).constrain {
+            val colorValue = feature.value as Color
+            val colorPicker = ColorComponent(colorValue, false).constrain {
                 x = 10.pixels(alignOpposite = true)
             } childOf featureComponent
 
-            val colorDisplay = UIBlock(color.constraint).constrain {
+            val colorDisplay = UIBlock(colorValue.constraint).constrain {
                 width = 16.pixels
                 height = 16.pixels
                 y = CenterConstraint()
                 x = SiblingConstraintFixed(3f, true)
             } childOf featureComponent
 
+            val unhovered = Color(200, 200, 200)
+            val hovered = Color(255, 255, 255)
+
             val resetImg = UIImage.ofResource("/skyblocktweaks/gui/reset.png").constrain {
                 width = 10.pixels
                 height = 11.pixels
                 y = CenterConstraint()
                 x = SiblingConstraintFixed(3f, true)
+                color = unhovered.constraint
             } childOf featureComponent
+
+            resetImg.onMouseEnterRunnable {
+                resetImg.animate {
+                    setColorAnimation(Animations.OUT_EXP, 0.5f, hovered.constraint)
+                }
+            }
+            resetImg.onMouseLeaveRunnable {
+                resetImg.animate {
+                    setColorAnimation(Animations.OUT_EXP, 0.5f, unhovered.constraint)
+                }
+            }
 
             resetImg.onMouseClick {
                 val defaultValue = ConfigManager.defaultMap[feature.field.name] ?: Color.GRAY
@@ -548,9 +562,6 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
             colorPicker.onValueChange { value: Any? ->
                 colorDisplay.setColor(value as Color)
                 feature.field.set(SkyblockTweaks.config, value)
-//                if (feature.field.name == "enabledSwitchColor") {
-//                    SkyblockTweaks.config.saveConfig()
-//                }
             }
 
             ignoredHeights.addAll(mutableListOf(colorDisplay, resetImg, featureComponent.children[1]))
@@ -568,7 +579,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
                 if (feature.field.name == "selectedTheme") {
                     SkyblockTweaks.config.saveConfig()
                     updateSelectedFeatures(featureList)
-
+                    updateThemeColors()
                 }
             }
         }
@@ -670,24 +681,25 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
         }
 
         if (feature.isParent) {
-            val unhovered = ConstantColorConstraint(Color(200, 200, 200))
-            val hovered = ConstantColorConstraint(Color(255, 255, 255))
+            val unhovered = Color(200, 200, 200)
+            val hovered = Color(255, 255, 255)
 
             val settingsGear = UIImage.ofResourceCached("/skyblocktweaks/gui/gear.png").constrain {
                 x = SiblingConstraintFixed(5f, true)
                 y = CenterConstraint()
                 height = 16.pixels
                 width = 16.pixels
+                color = unhovered.constraint
             } childOf featureComponent
 
             settingsGear.onMouseEnterRunnable {
                 settingsGear.animate {
-                    setColorAnimation(Animations.OUT_EXP, 0.5f, hovered)
+                    setColorAnimation(Animations.OUT_EXP, 0.5f, hovered.constraint)
                 }
             }
             settingsGear.onMouseLeaveRunnable {
                 settingsGear.animate {
-                    setColorAnimation(Animations.OUT_EXP, 0.5f, unhovered)
+                    setColorAnimation(Animations.OUT_EXP, 0.5f, unhovered.constraint)
                 }
             }
             settingsGear.onMouseClick {
@@ -720,7 +732,6 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
             CustomizationConfig.mainBackgroundColor = Color(0x00000)
             CustomizationConfig.sidebarBackgroundColor = Color(0x070707)
             CustomizationConfig.guiLineColors = Color(0x828282)
-            mainBorderColor = BasicState(Color.CYAN)
             CustomizationConfig.enabledSwitchColor = Color(0xe7ba32)
             CustomizationConfig.defaultCategoryColor = Color(0xb4b4b4)
             CustomizationConfig.selectedCategoryColor = Color(0x00ffff)
