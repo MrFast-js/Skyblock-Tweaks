@@ -55,7 +55,7 @@ object CustomizationConfig : Config() {
     @ConfigProperty(
         type = ConfigType.DROPDOWN,
         name = "Config Gui Theme",
-        description = "Woah shapes and colors",
+        description = "Woah shapes and colors. §cRequires reopening this GUI",
         category = "§2§rCustomization",
         subcategory = "Theme",
         dropdownOptions = ["Default", "Space"]

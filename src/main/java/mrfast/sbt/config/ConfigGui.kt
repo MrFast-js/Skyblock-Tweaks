@@ -578,8 +578,8 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
 
                 if (feature.field.name == "selectedTheme") {
                     SkyblockTweaks.config.saveConfig()
-                    updateSelectedFeatures(featureList)
                     updateThemeColors()
+                    updateSelectedFeatures(featureList)
                 }
             }
         }
@@ -739,6 +739,18 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
             CustomizationConfig.featureBackgroundColor = Color(0x00)
             CustomizationConfig.headerBackgroundColor = Color(0x090909)
             CustomizationConfig.featureBorderColor = Color(0x081528)
+        }
+        if (theme == "Default") {
+            CustomizationConfig.mainBackgroundColor = Color(0x161616)
+            CustomizationConfig.sidebarBackgroundColor = Color(0x1c1c1c)
+            CustomizationConfig.guiLineColors = Color(0x828282)
+            CustomizationConfig.enabledSwitchColor = Color(0x00ff00)
+            CustomizationConfig.defaultCategoryColor = Color(0xb4b4b4)
+            CustomizationConfig.selectedCategoryColor = Color(0x00ffff)
+            CustomizationConfig.hoveredCategoryColor = Color(0xffffff)
+            CustomizationConfig.featureBackgroundColor = Color(0x222222)
+            CustomizationConfig.headerBackgroundColor = Color(0x222222)
+            CustomizationConfig.featureBorderColor = Color(0x808080)
         }
     }
 }
