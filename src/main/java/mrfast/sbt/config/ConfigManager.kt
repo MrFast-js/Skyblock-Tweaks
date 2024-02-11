@@ -130,8 +130,6 @@ abstract class ConfigManager {
                             val field: Field = config::class.java.getDeclaredField(propertyName)
                             field.isAccessible = true
 
-                            println("SETTING FIELD $propertyName")
-
                             if (loadedValue is LinkedTreeMap<*, *>) {
                                 loadedValue = gson.fromJson(loadedValue.toString(), field.type)
                             }
