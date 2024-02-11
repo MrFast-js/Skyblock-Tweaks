@@ -44,6 +44,8 @@ class SkyblockTweaks {
     fun init(event: FMLInitializationEvent?) {
         // Your init code here
         MinecraftForge.EVENT_BUS.register(this)
+        // Apis
+        MinecraftForge.EVENT_BUS.register(ItemApi)
 
         // Utils
         MinecraftForge.EVENT_BUS.register(LocationUtils)

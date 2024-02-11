@@ -1,8 +1,10 @@
 package mrfast.sbt.utils
 
 import com.google.gson.*
+import mrfast.sbt.apis.ItemApi
 import mrfast.sbt.config.Categories.CustomizationConfig
 import mrfast.sbt.utils.ItemUtils.getExtraAttributes
+import mrfast.sbt.utils.ItemUtils.getSkyblockId
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.nbt.NBTTagList
 import net.minecraft.nbt.NBTTagString
@@ -16,7 +18,16 @@ object DevUtils {
         return gson.toJson(convertNBTtoJSON(nbt))
     }
 
-    private fun convertNBTtoJSON(nbt: NBTTagCompound, showList:Boolean = false): JsonObject {
+    fun prettyPrintJsonToString(json: JsonObject): String {
+        val gson = GsonBuilder().setPrettyPrinting().create()
+        return gson.toJson(json)
+    }
+
+    fun convertStringToJson(string: String): JsonElement? {
+        return JsonParser().parse(string)
+    }
+
+    private fun convertNBTtoJSON(nbt: NBTTagCompound, showList: Boolean = false): JsonObject {
         val jsonObject = JsonObject()
         for (key in nbt.keySet) {
             val tag = nbt.getTag(key)
@@ -47,11 +58,44 @@ object DevUtils {
         return jsonArray
     }
 
+    /**
+     * Allows for developer mode users to use various debug features
+     * Holding LCTRL -> Show Extra Attributes
+     * Holding LCTRL + LSHIFT -> Show Item Data provided by HySky Api
+     * Holding LCTRL + KEY C -> Copy Viewed Lore
+     */
+    private var copyingTooltip = false
+
     @SubscribeEvent
-    fun onToolTip(event:ItemTooltipEvent) {
-        if(event.itemStack.getExtraAttributes()!=null && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) && CustomizationConfig.developerMode) {
-            val nbt = prettyPrintNBTtoString(event.itemStack.getExtraAttributes()!!).replace("\"","").split("\n")
-            event.toolTip.addAll(nbt)
+    fun onToolTip(event: ItemTooltipEvent) {
+        if (event.itemStack.getExtraAttributes() != null && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) && CustomizationConfig.developerMode) {
+            if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+                event.toolTip.clear()
+                val id = event.itemStack.getSkyblockId()?:return
+                val itemData = ItemApi.getItemInfo(id) ?: return
+                itemData.remove("nbttag")
+                itemData.remove("lore")
+
+                val genericItemData = prettyPrintJsonToString(itemData).replace("\"", "").split("\n")
+                event.toolTip.add("Generic Item Data")
+                event.toolTip.addAll(genericItemData)
+
+                val priceData = ItemApi.getItemPriceInfo(id) ?: return
+
+                val itemPriceData = prettyPrintJsonToString(priceData).replace("\"", "").split("\n")
+                event.toolTip.add("Item Price Data")
+                event.toolTip.addAll(itemPriceData)
+            } else {
+                val nbt = prettyPrintNBTtoString(event.itemStack.getExtraAttributes()!!).replace("\"", "").split("\n")
+                event.toolTip.addAll(nbt)
+            }
+            if (Keyboard.isKeyDown(Keyboard.KEY_C) && !copyingTooltip) {
+                copyingTooltip = true
+                Utils.setTimeout({
+                    copyingTooltip = false
+                }, 500)
+                Utils.copyToClipboard(event.toolTip.joinToString("\n"))
+            }
         }
     }
 }
