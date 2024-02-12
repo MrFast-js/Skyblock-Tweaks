@@ -132,8 +132,8 @@ object VersionManager {
             val updateVersionName = updateInfo.versionName.split("v")[1]
             val updateVersionValue = getVersionValue(updateVersionName)
 
-            ChatUtils.logMessage("§aCurrent version: §b${MOD_VERSION} $currentVersionValue")
-            ChatUtils.logMessage("§aLatest version: §b$updateVersionName $updateVersionValue")
+            ChatUtils.logMessage("§aCurrent version: §b${MOD_VERSION}")
+            ChatUtils.logMessage("§aLatest version: §b$updateVersionName")
             when {
                 currentVersionValue > updateVersionValue -> {
                     ChatUtils.logMessage("§aYou are using a more recent version. No update needed.")
