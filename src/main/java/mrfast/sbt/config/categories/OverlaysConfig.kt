@@ -1,4 +1,4 @@
-package mrfast.sbt.config.Categories
+package mrfast.sbt.config.categories
 
 import mrfast.sbt.config.*
 

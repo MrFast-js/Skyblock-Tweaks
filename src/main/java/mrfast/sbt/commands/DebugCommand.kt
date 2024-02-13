@@ -21,11 +21,11 @@ import java.util.stream.Collectors
 
 class DebugCommand : CommandBase() {
     override fun getCommandName(): String {
-        return "debug"
+        return "sbtdebug"
     }
 
     override fun getCommandUsage(sender: ICommandSender): String {
-        return "/debug"
+        return "/sbtdebug"
     }
 
     override fun addTabCompletionOptions(sender: ICommandSender, args: Array<String>, pos: BlockPos): List<String> {
@@ -38,7 +38,7 @@ class DebugCommand : CommandBase() {
 
     @Throws(CommandException::class)
     override fun processCommand(arg0: ICommandSender, args: Array<String>) {
-        if (args.size == 0) {
+        if (args.isEmpty()) {
             invalidUsage()
             return
         }
@@ -52,14 +52,14 @@ class DebugCommand : CommandBase() {
         when (args[0]) {
             "mobs" -> getMobData(mobs = true, distance = dist)
             "tiles" -> getMobData(tileEntities = true, distance = dist)
-            "location", "loc" -> ChatUtils.logMessage(ChatFormatting.GRAY.toString() + "Area:'" + LocationUtils.currentArea + "' Map:" + LocationUtils.currentIsland + " Skyblock:" + LocationUtils.inSkyblock + "'")
+            "location", "loc" -> ChatUtils.sendClientMessage(ChatFormatting.GRAY.toString() + "Area:'" + LocationUtils.currentArea + "' Map:" + LocationUtils.currentIsland + " Skyblock:" + LocationUtils.inSkyblock + "'")
             "entities" -> getMobData(tileEntities = true, mobs = true, distance = dist)
             "item" -> {
                 val heldItem = ItemUtils.getHeldItem()
                 if (heldItem != null) {
                     getItemData(heldItem)
                 } else {
-                    ChatUtils.logMessage(ChatFormatting.RED.toString() + "You must be holding an item!")
+                    ChatUtils.sendClientMessage(ChatFormatting.RED.toString() + "You must be holding an item!")
                 }
             }
 
@@ -78,7 +78,7 @@ class DebugCommand : CommandBase() {
             for (arg in arguments) {
                 usage.append(arg).append(" ")
             }
-            ChatUtils.logMessage(usage.toString())
+            ChatUtils.sendClientMessage(usage.toString())
         }
 
         val sidebarData: Unit
@@ -90,7 +90,7 @@ class DebugCommand : CommandBase() {
                 for (line in lines) {
                     output.append(line).append("\n")
                 }
-                ChatUtils.logMessage("${ChatFormatting.GREEN}Copied sidebar to clipboard!")
+                ChatUtils.sendClientMessage("${ChatFormatting.GREEN}Copied sidebar to clipboard!")
                 Utils.copyToClipboard(output.toString())
             }
 
@@ -103,7 +103,7 @@ class DebugCommand : CommandBase() {
                     output.append(count).append(": ").append(playerName)
                         .append("\n")
                 }
-                ChatUtils.logMessage("${ChatFormatting.GREEN}Copied tablist to clipboard!")
+                ChatUtils.sendClientMessage("${ChatFormatting.GREEN}Copied tablist to clipboard!")
                 Utils.copyToClipboard(output.toString())
             }
 
@@ -111,7 +111,7 @@ class DebugCommand : CommandBase() {
             val log = File(File(Utils.mc.mcDataDir, "logs"), "latest.log")
             try {
                 val lines = Files.readAllLines(log.toPath(), StandardCharsets.UTF_8)
-                ChatUtils.logMessage("${ChatFormatting.GREEN}Copied latest.log to clipboard!")
+                ChatUtils.sendClientMessage("${ChatFormatting.GREEN}Copied latest.log to clipboard!")
 
                 Utils.copyToClipboard(lines.stream().collect(Collectors.joining(System.lineSeparator())))
             } catch (e: Exception) {
@@ -120,7 +120,7 @@ class DebugCommand : CommandBase() {
         }
 
         fun getItemData(item: ItemStack) {
-            ChatUtils.logMessage("${ChatFormatting.GREEN}Copied item nbt data to clipboard!")
+            ChatUtils.sendClientMessage("${ChatFormatting.GREEN}Copied item nbt data to clipboard!")
             Utils.copyToClipboard(DevUtils.prettyPrintNBTtoString(item.serializeNBT()))
         }
 
@@ -133,7 +133,7 @@ class DebugCommand : CommandBase() {
             if (tileEntities) {
                 stringBuilder.append(copyTileEntities(player, distance))
             }
-            ChatUtils.logMessage("${ChatFormatting.GREEN}Copied nearby entity data to clipboard!")
+            ChatUtils.sendClientMessage("${ChatFormatting.GREEN}Copied nearby entity data to clipboard!")
             Utils.copyToClipboard(stringBuilder.toString())
         }
 

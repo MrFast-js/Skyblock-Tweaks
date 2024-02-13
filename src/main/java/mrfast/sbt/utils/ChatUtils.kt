@@ -10,10 +10,10 @@ object ChatUtils {
     fun sendPlayerMessage(message: String) {
         Minecraft.getMinecraft().thePlayer?.sendChatMessage(message)
     }
-    fun logMessage(message: String) {
+    fun sendClientMessage(message: String) {
         Minecraft.getMinecraft().ingameGUI.chatGUI.printChatMessage(ChatComponentText(modChatPrefix+message))
     }
-    fun logMessage(message: IChatComponent) {
+    fun sendClientMessage(message: IChatComponent) {
         Minecraft.getMinecraft().ingameGUI.chatGUI.printChatMessage(ChatComponentText(modChatPrefix).appendSibling(message))
     }
 }

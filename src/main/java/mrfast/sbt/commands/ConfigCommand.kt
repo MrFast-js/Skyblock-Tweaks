@@ -2,7 +2,7 @@ package mrfast.sbt.commands
 
 import gg.essential.api.utils.GuiUtil
 import mrfast.sbt.managers.VersionManager
-import mrfast.sbt.config.Categories.CustomizationConfig
+import mrfast.sbt.config.categories.CustomizationConfig
 import mrfast.sbt.config.ConfigGui
 import mrfast.sbt.config.GuiEditor
 import mrfast.sbt.utils.ChatUtils
@@ -27,7 +27,7 @@ class ConfigCommand : CommandBase() {
                     args[0] == "edit" -> GuiUtil.open(GuiEditor())
                     args[0] == "update" -> {
                         if(args.size<2) {
-                            ChatUtils.logMessage("§cInvalid Usage! §e/sbt update check|pre|full")
+                            ChatUtils.sendClientMessage("§cInvalid Usage! §e/sbt update check|pre|full")
                             return
                         }
                         when {

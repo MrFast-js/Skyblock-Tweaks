@@ -1,9 +1,8 @@
-package mrfast.sbt.config.Categories
+package mrfast.sbt.config.categories
 
 import mrfast.sbt.config.Config
 import mrfast.sbt.config.ConfigProperty
 import mrfast.sbt.config.ConfigType
-import java.awt.Color
 
 
 object DungeonConfig : Config() {

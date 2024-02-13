@@ -1,4 +1,4 @@
-package mrfast.sbt.config.Categories
+package mrfast.sbt.config.categories
 
 import mrfast.sbt.config.Config
 import mrfast.sbt.config.ConfigProperty
@@ -58,7 +58,7 @@ object CustomizationConfig : Config() {
         description = "Woah shapes and colors. §cRequires reopening this GUI",
         category = "§2§rCustomization",
         subcategory = "Theme",
-        dropdownOptions = ["Default", "§eSpace", "§bOcean"]
+        dropdownOptions = ["Default", "§eSpace", "§bOcean", "§3MacOS"]
     )
     var selectedTheme = "Default"
 

@@ -1,12 +1,11 @@
 package mrfast.sbt.config
 
 import com.mojang.realmsclient.gui.ChatFormatting
-import mrfast.sbt.config.Categories.CustomizationConfig
+import mrfast.sbt.config.categories.CustomizationConfig
 import mrfast.sbt.utils.ChatUtils
 import mrfast.sbt.utils.Utils
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiScreen
-import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraftforge.fml.client.config.GuiUtils
 import org.lwjgl.input.Keyboard
@@ -191,7 +190,7 @@ class GuiEditor : GuiScreen() {
 
                 val point = "this.relativeX = ${hoveredElement!!.relativeX}\nthis.relativeY = ${hoveredElement!!.relativeY}"
                 Utils.copyToClipboard(point)
-                ChatUtils.logMessage(ChatFormatting.GREEN.toString() + "Copied hovered element position: " + ChatFormatting.YELLOW + point)
+                ChatUtils.sendClientMessage(ChatFormatting.GREEN.toString() + "Copied hovered element position: " + ChatFormatting.YELLOW + point)
             } else {
                 copyingPos = false
             }
