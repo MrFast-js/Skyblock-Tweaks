@@ -1,6 +1,6 @@
 package mrfast.sbt.managers
 
-import mrfast.sbt.config.Categories.GeneralConfig
+import mrfast.sbt.config.categories.GeneralConfig
 import mrfast.sbt.customevents.SlotClickedEvent
 import mrfast.sbt.utils.ChatUtils
 import mrfast.sbt.utils.GuiUtils.chestName

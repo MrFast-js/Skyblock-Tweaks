@@ -1,7 +1,6 @@
 package mrfast.sbt.apis
 
-import mrfast.sbt.config.Categories.GeneralConfig
-import mrfast.sbt.utils.Utils
+import mrfast.sbt.config.categories.GeneralConfig
 import mrfast.sbt.utils.Utils.clean
 import net.minecraft.util.ChatComponentText
 import net.minecraftforge.client.event.ClientChatReceivedEvent

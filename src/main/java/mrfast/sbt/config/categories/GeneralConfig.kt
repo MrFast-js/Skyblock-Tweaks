@@ -1,4 +1,4 @@
-package mrfast.sbt.config.Categories
+package mrfast.sbt.config.categories
 
 // Import the ConfigProperty annotation if it's in a different package
 import mrfast.sbt.config.Config

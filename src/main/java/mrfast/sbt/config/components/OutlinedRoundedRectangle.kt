@@ -1,4 +1,4 @@
-package mrfast.sbt.config.Components
+package mrfast.sbt.config.components
 
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.elementa.constraints.ConstantColorConstraint

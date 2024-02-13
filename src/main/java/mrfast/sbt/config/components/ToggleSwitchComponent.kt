@@ -1,14 +1,12 @@
-package mrfast.sbt.config.Components
+package mrfast.sbt.config.components
 
-import gg.essential.elementa.components.UIBlock
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.elementa.constraints.CenterConstraint
 import gg.essential.elementa.constraints.animation.Animations
 import gg.essential.elementa.dsl.*
 import gg.essential.elementa.state.BasicState
 import gg.essential.elementa.state.constraint
-import mrfast.sbt.config.Categories.CustomizationConfig
-import mrfast.sbt.config.Categories.CustomizationConfig.selectedTheme
+import mrfast.sbt.config.categories.CustomizationConfig
 import mrfast.sbt.utils.Utils
 import java.awt.Color
 

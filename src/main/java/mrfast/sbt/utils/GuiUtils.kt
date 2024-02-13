@@ -44,7 +44,6 @@ object GuiUtils {
     fun GuiContainer.chestName(): String {
         val chest = this.inventorySlots as ContainerChest
         val inv = chest.lowerChestInventory
-        val chestName = inv.displayName.unformattedText.trim()
-        return chestName
+        return inv.displayName.unformattedText.trim()
     }
 }
