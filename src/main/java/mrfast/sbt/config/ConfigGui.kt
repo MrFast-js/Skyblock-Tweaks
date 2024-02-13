@@ -53,7 +53,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
 
     private var updateSymbol = BasicState(UIText())
     private var showUpdateButton = VersionManager.neededUpdate.versionName.isNotEmpty()
-    private var selectedCategory = "General"
+    var selectedCategory = "General"
     private var selectedCategoryComponent: UIComponent? = null
     private var tooltipElements: MutableMap<UIComponent, Set<String>> = mutableMapOf()
 
@@ -579,7 +579,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
                 if (feature.field.name == "selectedTheme") {
                     SkyblockTweaks.config.saveConfig()
                     updateThemeColors()
-                    updateSelectedFeatures(featureList)
+                    GuiUtil.open(ConfigGui())
                 }
             }
         }
@@ -728,7 +728,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
 
     private fun updateThemeColors() {
         val theme = CustomizationConfig.selectedTheme
-        if (theme == "Space") {
+        if (theme == "§eSpace") {
             CustomizationConfig.mainBackgroundColor = Color(0x00000)
             CustomizationConfig.sidebarBackgroundColor = Color(0x070707)
             CustomizationConfig.guiLineColors = Color(0x828282)
@@ -751,6 +751,18 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
             CustomizationConfig.featureBackgroundColor = Color(0x222222)
             CustomizationConfig.headerBackgroundColor = Color(0x222222)
             CustomizationConfig.featureBorderColor = Color(0x808080)
+        }
+        if (theme == "§bOcean") {
+            CustomizationConfig.mainBackgroundColor = Color(0x01303f)
+            CustomizationConfig.sidebarBackgroundColor = Color(0x024059)
+            CustomizationConfig.guiLineColors = Color(0x09fca4)
+            CustomizationConfig.enabledSwitchColor = Color(0x00e0ff)
+            CustomizationConfig.defaultCategoryColor = Color(0x00f227)
+            CustomizationConfig.selectedCategoryColor = Color(0x00ffff)
+            CustomizationConfig.hoveredCategoryColor = Color(0x14d3bc)
+            CustomizationConfig.featureBackgroundColor = Color(0x2577a)
+            CustomizationConfig.headerBackgroundColor = Color(0x2577a)
+            CustomizationConfig.featureBorderColor = Color(0x28d5f8)
         }
     }
 }

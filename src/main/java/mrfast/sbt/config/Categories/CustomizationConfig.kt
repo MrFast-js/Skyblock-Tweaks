@@ -58,7 +58,7 @@ object CustomizationConfig : Config() {
         description = "Woah shapes and colors. §cRequires reopening this GUI",
         category = "§2§rCustomization",
         subcategory = "Theme",
-        dropdownOptions = ["Default", "Space"]
+        dropdownOptions = ["Default", "§eSpace", "§bOcean"]
     )
     var selectedTheme = "Default"
 
