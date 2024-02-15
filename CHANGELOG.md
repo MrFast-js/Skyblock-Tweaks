@@ -1,5 +1,9 @@
 # v1.0.0 Beta 1
+## Changes
 ```diff
-- Test
-+ test
++ First version, no differences 🤯
+```
+### Fixes
+```diff
++ No fixes
 ```
