@@ -1,6 +1,6 @@
 package mrfast.sbt.features.general
 
-import mrfast.sbt.config.Categories.GeneralConfig
+import mrfast.sbt.config.categories.GeneralConfig
 import mrfast.sbt.config.GuiManager
 import mrfast.sbt.managers.PartyManager
 import mrfast.sbt.utils.GuiUtils

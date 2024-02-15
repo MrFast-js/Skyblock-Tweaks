@@ -1,6 +1,6 @@
 package mrfast.sbt.apis
 
-import mrfast.sbt.config.Categories.DeveloperConfig.showItemAbilities
+import mrfast.sbt.config.categories.DeveloperConfig.showItemAbilities
 import mrfast.sbt.customevents.UseItemAbilityEvent
 import mrfast.sbt.utils.*
 import mrfast.sbt.utils.ItemUtils.getLore
@@ -34,7 +34,7 @@ object ItemAbilities {
                 return
             }
             if (showItemAbilities) {
-                ChatUtils.logMessage(ability.itemId + " " + ability.abilityName)
+                ChatUtils.sendClientMessage(ability.itemId + " " + ability.abilityName)
             }
             justUsedAbility = ability
             activeCooldowns[ability.abilityName] = ability.cooldownSeconds
@@ -154,7 +154,7 @@ object ItemAbilities {
 
     private fun getCooldownReduction(): Int {
         for (sidebarLine in ScoreboardUtils.getSidebarLines(true)) {
-            if (sidebarLine.contains(Utils.mc.thePlayer.getName())) {
+            if (sidebarLine.contains(Utils.mc.thePlayer.name)) {
                 try {
                     val mageLvl = sidebarLine.split(" ".toRegex()).dropLastWhile { it.isEmpty() }
                         .toTypedArray()[2].replace("[^0-9]".toRegex(), "").toInt()
@@ -170,7 +170,7 @@ object ItemAbilities {
     private val isUniqueDungeonClass = false
 
     /*
-   Handle left click events differently as they just dont work like normal and more commonly used right click abilities
+   Handle left click events differently as they just don't work like normal and more commonly used right click abilities
     */
     @SubscribeEvent
     fun onMouseClick(event: MouseEvent) {
@@ -202,7 +202,7 @@ object ItemAbilities {
         if (skyblockId == null || !itemCooldowns.containsKey(skyblockId)) return
         val cdItem = itemCooldowns[skyblockId]
 
-        val sneaking: Boolean = Utils.mc.thePlayer.isSneaking()
+        val sneaking: Boolean = Utils.mc.thePlayer.isSneaking
         if (event.action == PlayerInteractEvent.Action.RIGHT_CLICK_AIR) {
 
             // Right mouse button pressed

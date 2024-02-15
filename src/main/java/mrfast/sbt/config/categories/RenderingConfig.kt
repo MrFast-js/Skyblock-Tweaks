@@ -1,4 +1,4 @@
-package mrfast.sbt.config.Categories
+package mrfast.sbt.config.categories
 
 import mrfast.sbt.config.Config
 import mrfast.sbt.config.ConfigProperty
@@ -113,6 +113,6 @@ object RenderingConfig : Config() {
     )
     val openBestiary = Runnable {
         ChatUtils.sendPlayerMessage("/bestiary")
-        ChatUtils.logMessage("test 123§d test 123")
+        ChatUtils.sendClientMessage("test 123§d test 123")
     }
 }

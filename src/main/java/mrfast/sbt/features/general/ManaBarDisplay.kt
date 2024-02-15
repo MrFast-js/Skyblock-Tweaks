@@ -1,7 +1,7 @@
 package mrfast.sbt.features.general
 
 import mrfast.sbt.apis.PlayerStats
-import mrfast.sbt.config.Categories.GeneralConfig
+import mrfast.sbt.config.categories.GeneralConfig
 import mrfast.sbt.config.GuiManager
 import mrfast.sbt.utils.LocationUtils
 import net.minecraft.client.gui.Gui

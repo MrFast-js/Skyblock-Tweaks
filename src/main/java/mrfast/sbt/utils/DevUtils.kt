@@ -2,7 +2,7 @@ package mrfast.sbt.utils
 
 import com.google.gson.*
 import mrfast.sbt.apis.ItemApi
-import mrfast.sbt.config.Categories.CustomizationConfig
+import mrfast.sbt.config.categories.CustomizationConfig
 import mrfast.sbt.utils.ItemUtils.getExtraAttributes
 import mrfast.sbt.utils.ItemUtils.getSkyblockId
 import net.minecraft.nbt.NBTTagCompound

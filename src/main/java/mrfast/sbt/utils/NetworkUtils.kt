@@ -3,8 +3,8 @@ package mrfast.sbt.utils
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import mrfast.sbt.SkyblockTweaks
-import mrfast.sbt.config.Categories.CustomizationConfig
-import mrfast.sbt.config.Categories.DeveloperConfig
+import mrfast.sbt.config.categories.CustomizationConfig
+import mrfast.sbt.config.categories.DeveloperConfig
 import net.minecraft.util.ChatComponentText
 import org.apache.http.HttpEntity
 import org.apache.http.HttpVersion
@@ -117,7 +117,7 @@ object NetworkUtils {
                             return apiRequestAndParse(modifiedUrlString, headers, caching, useProxy)
                         }
                         if (statusCode != 200) {
-                            ChatUtils.logMessage(
+                            ChatUtils.sendClientMessage(
                                 "§cServer Error: ${parsedJson.get("cause").asString} §e§o${parsedJson.get("err_code")} $modifiedUrlString"
                             )
                             return JsonObject()

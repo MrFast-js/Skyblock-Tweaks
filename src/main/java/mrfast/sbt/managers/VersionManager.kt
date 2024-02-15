@@ -3,7 +3,7 @@ package mrfast.sbt.managers
 import moe.nea.libautoupdate.*
 import mrfast.sbt.SkyblockTweaks.Companion.MOD_ID
 import mrfast.sbt.SkyblockTweaks.Companion.MOD_VERSION
-import mrfast.sbt.config.Categories.CustomizationConfig
+import mrfast.sbt.config.categories.CustomizationConfig
 import mrfast.sbt.utils.ChatUtils
 import mrfast.sbt.utils.Utils
 import net.minecraft.event.ClickEvent
@@ -74,7 +74,7 @@ object VersionManager {
 
                     Utils.setTimeout({
                         Utils.playSound("random.orb", 0.1)
-                        ChatUtils.logMessage(notificationText)
+                        ChatUtils.sendClientMessage(notificationText)
                     }, 10000)
                 }
             }
@@ -105,14 +105,14 @@ object VersionManager {
         val mainVersionPart = version.split("-")[0]
         val mainVersionNum = mainVersionPart.replace("[^0-9]".toRegex(), "").toDouble()
 
-        if ("BETA" in version) {
+        return if ("BETA" in version) {
             val betaPart = version.split("-")[1]
             val betaNum = betaPart.replace("[^0-9]".toRegex(), "").toDouble()
             // 1.1.5-BETA5 (pre) -> 114.005
-            return (mainVersionNum - 1) + (betaNum / 1000)
+            (mainVersionNum - 1) + (betaNum / 1000)
         } else {
             // 1.1.5 (full) -> 115
-            return mainVersionNum
+            mainVersionNum
         }
     }
 
@@ -132,16 +132,16 @@ object VersionManager {
             val updateVersionName = updateInfo.versionName.split("v")[1]
             val updateVersionValue = getVersionValue(updateVersionName)
 
-            ChatUtils.logMessage("§aCurrent version: §b${MOD_VERSION}")
-            ChatUtils.logMessage("§aLatest version: §b$updateVersionName")
+            ChatUtils.sendClientMessage("§aCurrent version: §b${MOD_VERSION}")
+            ChatUtils.sendClientMessage("§aLatest version: §b$updateVersionName")
             when {
                 currentVersionValue > updateVersionValue -> {
-                    ChatUtils.logMessage("§aYou are using a more recent version. No update needed.")
+                    ChatUtils.sendClientMessage("§aYou are using a more recent version. No update needed.")
 
                 }
 
                 currentVersionValue == updateVersionValue -> {
-                    ChatUtils.logMessage("§aYou are already using the latest version. Enjoy!")
+                    ChatUtils.sendClientMessage("§aYou are already using the latest version. Enjoy!")
                 }
 
                 else -> {
@@ -152,7 +152,7 @@ object VersionManager {
                                     ClickEvent(ClickEvent.Action.RUN_COMMAND, "/sbt update latest")
                                 )
                             )
-                    ChatUtils.logMessage(comp)
+                    ChatUtils.sendClientMessage(comp)
                 }
             }
         }
@@ -161,7 +161,7 @@ object VersionManager {
     fun doUpdate() {
         CompletableFuture.supplyAsync<Any?> {
             try {
-                ChatUtils.logMessage("§ePreparing update...")
+                ChatUtils.sendClientMessage("§ePreparing update...")
                 potentialUpdate!!.prepareUpdate()
             } catch (e: IOException) {
                 e.printStackTrace()
@@ -170,7 +170,7 @@ object VersionManager {
             null
         }.thenAcceptAsync {
             try {
-                ChatUtils.logMessage("§aDownloading update: §b" + potentialUpdate!!.update.versionName)
+                ChatUtils.sendClientMessage("§aDownloading update: §b" + potentialUpdate!!.update.versionName)
                 potentialUpdate!!.executeUpdate()
 
                 val notificationText =
@@ -187,7 +187,7 @@ object VersionManager {
                             )
                     )
                 notificationText.appendSibling(closeGame)
-                ChatUtils.logMessage(notificationText)
+                ChatUtils.sendClientMessage(notificationText)
             } catch (e: IOException) {
                 e.printStackTrace()
                 throw RuntimeException(e)

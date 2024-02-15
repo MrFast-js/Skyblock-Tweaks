@@ -47,7 +47,7 @@ object DataManager {
         val matcher = pattern.matcher(event.message.unformattedText)
         if (matcher.find()) {
             pfidSentInChat = true
-            // Dont update if its the same
+            // Don't update if it's the same
             if (currentProfileId != null && currentProfileId == matcher.group(1)) return
             currentProfileId = matcher.group(1)
             dataJson.addProperty("currentProfileId", currentProfileId)
@@ -86,7 +86,7 @@ object DataManager {
         return convertFromJsonElement(dataJson[dataName])
     }
 
-    // Works with datanames such as "subset1.list.option2" or even just "option2"
+    // Works with data names such as "subset1.list.option2" or even just "option2"
     fun saveProfileData(dataName: String, dataValue: Any) {
         if (currentProfileId == null) return
         var profileJson = dataJson.getAsJsonObject(currentProfileId)

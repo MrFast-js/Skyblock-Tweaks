@@ -18,8 +18,8 @@ import gg.essential.vigilance.gui.settings.ColorComponent
 import gg.essential.vigilance.gui.settings.SelectorComponent
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.managers.VersionManager
-import mrfast.sbt.config.Categories.CustomizationConfig
-import mrfast.sbt.config.Components.*
+import mrfast.sbt.config.categories.CustomizationConfig
+import mrfast.sbt.config.components.*
 import mrfast.sbt.utils.SocketUtils
 import mrfast.sbt.utils.Utils
 import net.minecraft.client.Minecraft
@@ -247,7 +247,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
 
         featureList.setVerticalScrollBarComponent(featureScrollbar, true)
 
-        searchBarInput.onUpdate { text ->
+        searchBarInput.onUpdate {
             searchQuery = searchBarInput.getText()
             updateSelectedFeatures(featureList)
         }
@@ -275,7 +275,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
             categoryComponent.setTextScale(1.6.pixels)
 
             categoryComponent.onMouseEnter {
-                // Dont do hover colors if already colored
+                // Don't do hover colors if already colored
                 if (selectedCategory != category.name) {
                     if (!categoryComponent.getColor().equals(hoveredCategoryColor.constraint)) {
                         categoryComponent.animate {
@@ -285,7 +285,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
                 }
             }
             categoryComponent.onMouseLeave {
-                // Dont do hover colors if already colored
+                // Don't do hover colors if already colored
                 if (selectedCategory != category.name) {
                     if (!categoryComponent.getColor().equals(defaultCategoryColor.constraint)) {
                         categoryComponent.animate {
@@ -391,7 +391,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
                         drawnFeatures++
                     }
                 }
-                // Dont draw subcategory title if no features
+                // Don't draw subcategory title if no features
                 if (drawnFeatures != 0) {
                     subcategoryComponent childOf list
                 }
@@ -426,7 +426,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
         subcategoryComponent: UIContainer,
         featureList: ScrollComponent
     ): UIContainer? {
-        // Check if name,description,subcategory contain the search
+        // Check if name, description or subcategory contain the search
 
         if (!(containsIgnoreCase(feature.name, searchQuery) ||
                     containsIgnoreCase(feature.description, searchQuery) ||
@@ -728,6 +728,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
 
     private fun updateThemeColors() {
         val theme = CustomizationConfig.selectedTheme
+        // TODO: Switch to classes
         if (theme == "§eSpace") {
             CustomizationConfig.mainBackgroundColor = Color(0x00000)
             CustomizationConfig.sidebarBackgroundColor = Color(0x070707)
@@ -763,6 +764,18 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
             CustomizationConfig.featureBackgroundColor = Color(0x2577a)
             CustomizationConfig.headerBackgroundColor = Color(0x2577a)
             CustomizationConfig.featureBorderColor = Color(0x28d5f8)
+        }
+        if (theme == "§3MacOS") {
+            CustomizationConfig.mainBackgroundColor = Color(31, 47, 66)
+            CustomizationConfig.sidebarBackgroundColor = Color(57, 68, 82)
+            CustomizationConfig.guiLineColors = Color(83, 94, 109)
+            CustomizationConfig.enabledSwitchColor = Color(0, 115, 255)
+            CustomizationConfig.defaultCategoryColor = Color(123, 138, 157)
+            CustomizationConfig.selectedCategoryColor = Color(234, 235, 235)
+            CustomizationConfig.hoveredCategoryColor = Color(157, 158, 158)
+            CustomizationConfig.featureBackgroundColor = Color(39, 41, 43)
+            CustomizationConfig.headerBackgroundColor = Color(53, 56, 59)
+            CustomizationConfig.featureBorderColor = Color(78, 81, 85)
         }
     }
 }
