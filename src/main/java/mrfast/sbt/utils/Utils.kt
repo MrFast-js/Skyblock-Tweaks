@@ -20,6 +20,12 @@ object Utils {
     fun String.clean(): String {
         return this.replace("§[0-9a-zA-Z]".toRegex(), "")
     }
+    /**
+     * Cleans all minecraft color formatting from text
+     */
+    fun String.cleanColor(): String {
+        return this.replace(Regex("(?i)§[0-9A-F]"), "")
+    }
 
     fun Number.formatNumber(): String {
         return String.format("%,.0f", this.toDouble())

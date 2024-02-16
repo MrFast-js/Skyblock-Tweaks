@@ -1,7 +1,6 @@
 package mrfast.sbt.utils
 
-import com.mojang.realmsclient.gui.ChatFormatting
-import mrfast.sbt.utils.Utils.clean
+import mrfast.sbt.utils.Utils.cleanColor
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.gui.inventory.GuiContainer
@@ -16,9 +15,7 @@ object GuiUtils {
     }
 
     fun drawText(text: String, x: Float, y: Float, style: TextStyle) {
-        val bold = text.contains(ChatFormatting.BOLD.toString())
-        var shadowText: String = text.clean()
-        if (bold) shadowText = ChatFormatting.BOLD.toString() + shadowText
+        val shadowText: String = text.cleanColor()
 
         if (style == TextStyle.BLACK_OUTLINE) {
             Minecraft.getMinecraft().fontRendererObj.drawString(shadowText, x + 2, y + 1, 0x000000, false)
