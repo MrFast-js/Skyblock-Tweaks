@@ -72,7 +72,14 @@ class GuiEditor : GuiScreen() {
             val actualHeight = (element.height * element.scale).toInt()
 
             // Offset for outlined box
-            mrfast.sbt.utils.GuiUtils.drawOutlinedSquare((x - 2).toInt(), (y - 2).toInt(), actualWidth + 4, actualHeight + 4, backgroundColor, borderColor)
+            mrfast.sbt.utils.GuiUtils.drawOutlinedSquare(
+                (x - 2).toInt(),
+                (y - 2).toInt(),
+                actualWidth + 4,
+                actualHeight + 4,
+                backgroundColor,
+                borderColor
+            )
 
             GlStateManager.translate(x, y, 0.0)
             GlStateManager.scale(element.scale, element.scale, 1.0)
@@ -83,7 +90,7 @@ class GuiEditor : GuiScreen() {
             GlStateManager.translate(-x, -y, 0.0)
 
             // Draw name for elements for debugging
-            if(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) && CustomizationConfig.developerMode) {
+            if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) && CustomizationConfig.developerMode) {
                 fontRendererObj.drawString(element.elementName, x.toInt(), (y - 10).toInt(), 0xFFFFFF)
             }
         }
@@ -94,9 +101,9 @@ class GuiEditor : GuiScreen() {
 
         if (hoveredElement != null && !isMouseMoving) {
             val renderTooltip = mutableListOf(
-                    "§a§l${hoveredElement!!.elementName}",
-                    "§7X: §e${Math.round(hoveredElement!!.relativeX * screenWidth)} §7Y: §e${Math.round(hoveredElement!!.relativeY * screenHeight)} §7Scale: §e${hoveredElement!!.scale}",
-                    "§3R-CLICK to open config"
+                "§a§l${hoveredElement!!.elementName}",
+                "§7X: §e${Math.round(hoveredElement!!.relativeX * screenWidth)} §7Y: §e${Math.round(hoveredElement!!.relativeY * screenHeight)} §7Scale: §e${hoveredElement!!.scale}",
+                "§3R-CLICK to open config"
             )
             val fontObj = Utils.mc.fontRendererObj
             val tooltipWidth = fontObj.getStringWidth(renderTooltip[0])
@@ -173,11 +180,14 @@ class GuiEditor : GuiScreen() {
             }
         }
         if (Mouse.isButtonDown(0)) {
+            val selectedElement = selectedElement ?: return
+
             // Left mouse button pressed, handle dragging
-            selectedElement?.let {
+            selectedElement.let {
                 it.relativeX = (mouseX - offsetX) / screenWidth.toDouble()
                 it.relativeY = (mouseY - offsetY) / screenHeight.toDouble()
             }
+            // Potentially add edge snapping against other elements here
         } else {
             selectedElement = null
         }
@@ -188,7 +198,8 @@ class GuiEditor : GuiScreen() {
                 if (copyingPos) return
                 copyingPos = true
 
-                val point = "this.relativeX = ${hoveredElement!!.relativeX}\nthis.relativeY = ${hoveredElement!!.relativeY}"
+                val point =
+                    "this.relativeX = ${hoveredElement!!.relativeX}\nthis.relativeY = ${hoveredElement!!.relativeY}"
                 Utils.copyToClipboard(point)
                 ChatUtils.sendClientMessage(ChatFormatting.GREEN.toString() + "Copied hovered element position: " + ChatFormatting.YELLOW + point)
             } else {
