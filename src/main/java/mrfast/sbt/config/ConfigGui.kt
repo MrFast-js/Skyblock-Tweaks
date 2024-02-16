@@ -247,15 +247,16 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
 
         featureList.setVerticalScrollBarComponent(featureScrollbar, true)
 
-        searchBarInput.onUpdate {
-            searchQuery = searchBarInput.getText()
-            updateSelectedFeatures(featureList)
-        }
-
         if (searchQuery.isNotEmpty()) {
             Utils.setTimeout({
                 searchBarInput.setText(searchQuery)
+                updateSelectedFeatures(featureList)
             }, 200)
+        }
+
+        searchBarInput.onKeyType { _, _ ->
+            searchQuery = searchBarInput.getText()
+            updateSelectedFeatures(featureList)
         }
 
         for ((count, category) in ConfigManager.categories.values.withIndex()) {
