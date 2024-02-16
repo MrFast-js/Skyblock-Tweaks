@@ -8,7 +8,6 @@ import net.minecraft.item.ItemStack
 object ItemApi {
     private var skyblockItems = JsonObject()
     private var skyblockItemPrices = JsonObject()
-
     var skyblockItemsLoaded = false
 
     init {
