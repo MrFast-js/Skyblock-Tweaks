@@ -18,6 +18,7 @@ object PartyDisplay {
             this.elementName = "Party Display"
             this.addToList()
             this.height = Utils.mc.fontRendererObj.FONT_HEIGHT
+            this.width = Utils.mc.fontRendererObj.getStringWidth("Party Members (5)")
         }
 
         override fun draw() {
@@ -38,7 +39,6 @@ object PartyDisplay {
             for ((index, s) in display.split("\n").withIndex()) {
                 GuiUtils.drawText(s, 0f, (index * 10).toFloat(), GuiUtils.TextStyle.BLACK_OUTLINE)
             }
-            this.width = Utils.mc.fontRendererObj.getStringWidth(display) + 1
         }
 
         override fun isActive(): Boolean {
