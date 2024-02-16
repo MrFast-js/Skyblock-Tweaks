@@ -19,6 +19,6 @@ open class Config : ConfigManager() {
         //RiftConfig,
         //RenderingConfig,
         CustomizationConfig,
-        //DeveloperConfig
+        DeveloperConfig
     )
 }

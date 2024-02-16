@@ -19,6 +19,7 @@ import gg.essential.vigilance.gui.settings.SelectorComponent
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.managers.VersionManager
 import mrfast.sbt.config.categories.CustomizationConfig
+import mrfast.sbt.config.categories.DeveloperConfig.showInspector
 import mrfast.sbt.config.components.*
 import mrfast.sbt.utils.SocketUtils
 import mrfast.sbt.utils.Utils
@@ -104,7 +105,9 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
 
         animateBorder()
 
-        Inspector(background) childOf window
+        if(showInspector) {
+            Inspector(background) childOf window
+        }
         // Use 70% width, max 600px
 
         val header = UIBlock(headerBackgroundColor).constrain {
