@@ -4,6 +4,7 @@ package mrfast.sbt.config.categories
 import mrfast.sbt.config.Config
 import mrfast.sbt.config.ConfigProperty
 import mrfast.sbt.config.ConfigType
+import java.awt.Color
 
 
 object GeneralConfig : Config() {
@@ -63,18 +64,80 @@ object GeneralConfig : Config() {
         name = "Health Bar",
         description = "Moveable Health Bar that adjusts depending on absorption and damage taken",
         category = "General",
-        subcategory = "Health & Mana Bars"
+        subcategory = "Health & Mana Bars",
+        isParent = true
     )
     var healthBar = false
+
+    @ConfigProperty(
+        type = ConfigType.COLOR,
+        name = "Health Color",
+        description = "",
+        category = "General",
+        subcategory = "Health & Mana Bars",
+        parentName = "Health Bar"
+    )
+    var healthBarHealthColor = Color.RED
+
+    @ConfigProperty(
+        type = ConfigType.COLOR,
+        name = "Absorption Color",
+        description = "",
+        category = "General",
+        subcategory = "Health & Mana Bars",
+        parentName = "Health Bar"
+    )
+    var healthBarAbsorbColor = Color(0xFFAA00)
+
+    @ConfigProperty(
+        type = ConfigType.COLOR,
+        name = "Health Bar Background",
+        description = "",
+        category = "General",
+        subcategory = "Health & Mana Bars",
+        parentName = "Health Bar"
+    )
+    var healthBarBarColor = Color.BLACK
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
         name = "Mana Bar",
         description = "Moveable Mana Bar that adjusts depending on abilities and overflow mana",
         category = "General",
-        subcategory = "Health & Mana Bars"
+        subcategory = "Health & Mana Bars",
+        isParent = true
     )
     var manaBar = false
+
+    @ConfigProperty(
+        type = ConfigType.COLOR,
+        name = "Mana Color",
+        description = "",
+        category = "General",
+        subcategory = "Health & Mana Bars",
+        parentName = "Mana Bar"
+    )
+    var manaBarManaColor = Color(0x5555FF)
+
+    @ConfigProperty(
+        type = ConfigType.COLOR,
+        name = "Overflow Color",
+        description = "",
+        category = "General",
+        subcategory = "Health & Mana Bars",
+        parentName = "Mana Bar"
+    )
+    var manaBarOverflowColor = Color(0x55FFFF)
+
+    @ConfigProperty(
+        type = ConfigType.COLOR,
+        name = "Mana Bar Background",
+        description = "",
+        category = "General",
+        subcategory = "Health & Mana Bars",
+        parentName = "Mana Bar"
+    )
+    var manaBarBarColor = Color.BLACK
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,

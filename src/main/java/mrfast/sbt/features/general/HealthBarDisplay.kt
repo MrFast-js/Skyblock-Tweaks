@@ -3,6 +3,9 @@ package mrfast.sbt.features.general
 import mrfast.sbt.apis.PlayerStats
 import mrfast.sbt.config.categories.GeneralConfig
 import mrfast.sbt.config.GuiManager
+import mrfast.sbt.config.categories.GeneralConfig.healthBarAbsorbColor
+import mrfast.sbt.config.categories.GeneralConfig.healthBarBarColor
+import mrfast.sbt.config.categories.GeneralConfig.healthBarHealthColor
 import mrfast.sbt.utils.LocationUtils
 import net.minecraft.client.gui.Gui
 import java.awt.Color
@@ -30,18 +33,15 @@ object HealthBarDisplay {
             val healthFillPerc = health.toDouble() / total
             val absorbFillPerc = absorption.toDouble() / total
 
-            val healthColor = Color.RED
-            val absorbColor = Color(0xFFAA00)
-
             // Draw background/border
-            Gui.drawRect(0, 0, 80, 10, Color.BLACK.rgb)
+            Gui.drawRect(0, 0, 80, 10, healthBarBarColor.rgb)
 
-            Gui.drawRect(2, 2, (78.0 * healthFillPerc).toInt(), 8, healthColor.rgb)
+            Gui.drawRect(2, 2, (78.0 * healthFillPerc).toInt(), 8, healthBarHealthColor.rgb)
             if (absorption != 0) {
                 val fillPixels = (78.0 * absorbFillPerc).toInt() + 3
                 Gui.drawRect(
                     minOf(76, maxOf(2, 2 + (78 - fillPixels))),
-                    2, 78, 8, absorbColor.rgb
+                    2, 78, 8, healthBarAbsorbColor.rgb
                 )
             }
         }
