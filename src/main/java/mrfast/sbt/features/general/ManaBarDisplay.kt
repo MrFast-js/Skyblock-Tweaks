@@ -19,7 +19,7 @@ object ManaBarDisplay {
         init {
             this.relativeX = 0.371875
             this.relativeY = 0.842593
-            this.elementName = "Mana Bar Display"
+            this.elementName = "Mana Bar"
             this.addToList()
             this.height = 10
             this.width = 80

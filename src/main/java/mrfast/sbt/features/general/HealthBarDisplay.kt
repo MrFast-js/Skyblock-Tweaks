@@ -1,14 +1,13 @@
 package mrfast.sbt.features.general
 
 import mrfast.sbt.apis.PlayerStats
-import mrfast.sbt.config.categories.GeneralConfig
 import mrfast.sbt.config.GuiManager
+import mrfast.sbt.config.categories.GeneralConfig
 import mrfast.sbt.config.categories.GeneralConfig.healthBarAbsorbColor
 import mrfast.sbt.config.categories.GeneralConfig.healthBarBarColor
 import mrfast.sbt.config.categories.GeneralConfig.healthBarHealthColor
 import mrfast.sbt.utils.LocationUtils
 import net.minecraft.client.gui.Gui
-import java.awt.Color
 
 object HealthBarDisplay {
     init {
@@ -19,7 +18,7 @@ object HealthBarDisplay {
         init {
             this.relativeX = 0.371875
             this.relativeY = 0.842593
-            this.elementName = "Health Bar Display"
+            this.elementName = "Health Bar"
             this.addToList()
             this.height = 10
             this.width = 80

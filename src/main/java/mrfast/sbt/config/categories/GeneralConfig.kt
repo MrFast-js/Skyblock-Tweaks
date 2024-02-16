@@ -14,7 +14,7 @@ object GeneralConfig : Config() {
         name = "Cleaner Action Bar",
         description = "Hides Health, Mana and other attributes from action bar",
         category = "General",
-        subcategory = "Health & Mana Bars",
+        subcategory = "Stat Displays",
         isParent = true
     )
     var cleanerActionBar = false
@@ -24,7 +24,7 @@ object GeneralConfig : Config() {
         name = "Hide Health",
         description = "Hides health from action bar",
         category = "General",
-        subcategory = "Health & Mana Bars",
+        subcategory = "Stat Displays",
         parentName = "Cleaner Action Bar"
     )
     var hideHealthFromBar = true
@@ -34,7 +34,7 @@ object GeneralConfig : Config() {
         name = "Hide Mana",
         description = "Hides mana from action bar",
         category = "General",
-        subcategory = "Health & Mana Bars",
+        subcategory = "Stat Displays",
         parentName = "Cleaner Action Bar"
     )
     var hideManaFromBar = true
@@ -44,7 +44,7 @@ object GeneralConfig : Config() {
         name = "Hide Overflow Mana",
         description = "Hides overflow mana from action bar",
         category = "General",
-        subcategory = "Health & Mana Bars",
+        subcategory = "Stat Displays",
         parentName = "Cleaner Action Bar"
     )
     var hideOverflowManaFromBar = true
@@ -54,7 +54,7 @@ object GeneralConfig : Config() {
         name = "Hide Defense",
         description = "Hides defense from action bar",
         category = "General",
-        subcategory = "Health & Mana Bars",
+        subcategory = "Stat Displays",
         parentName = "Cleaner Action Bar"
     )
     var hideDefenseFromBar = true
@@ -64,7 +64,7 @@ object GeneralConfig : Config() {
         name = "Health Bar",
         description = "Moveable Health Bar that adjusts depending on absorption and damage taken",
         category = "General",
-        subcategory = "Health & Mana Bars",
+        subcategory = "Stat Displays",
         isParent = true
     )
     var healthBar = false
@@ -74,7 +74,7 @@ object GeneralConfig : Config() {
         name = "Health Color",
         description = "",
         category = "General",
-        subcategory = "Health & Mana Bars",
+        subcategory = "Stat Displays",
         parentName = "Health Bar"
     )
     var healthBarHealthColor = Color.RED
@@ -84,7 +84,7 @@ object GeneralConfig : Config() {
         name = "Absorption Color",
         description = "",
         category = "General",
-        subcategory = "Health & Mana Bars",
+        subcategory = "Stat Displays",
         parentName = "Health Bar"
     )
     var healthBarAbsorbColor = Color(0xFFAA00)
@@ -94,7 +94,7 @@ object GeneralConfig : Config() {
         name = "Health Bar Background",
         description = "",
         category = "General",
-        subcategory = "Health & Mana Bars",
+        subcategory = "Stat Displays",
         parentName = "Health Bar"
     )
     var healthBarBarColor = Color.BLACK
@@ -104,7 +104,7 @@ object GeneralConfig : Config() {
         name = "Mana Bar",
         description = "Moveable Mana Bar that adjusts depending on abilities and overflow mana",
         category = "General",
-        subcategory = "Health & Mana Bars",
+        subcategory = "Stat Displays",
         isParent = true
     )
     var manaBar = false
@@ -114,7 +114,7 @@ object GeneralConfig : Config() {
         name = "Mana Color",
         description = "",
         category = "General",
-        subcategory = "Health & Mana Bars",
+        subcategory = "Stat Displays",
         parentName = "Mana Bar"
     )
     var manaBarManaColor = Color(0x5555FF)
@@ -124,7 +124,7 @@ object GeneralConfig : Config() {
         name = "Overflow Color",
         description = "",
         category = "General",
-        subcategory = "Health & Mana Bars",
+        subcategory = "Stat Displays",
         parentName = "Mana Bar"
     )
     var manaBarOverflowColor = Color(0x55FFFF)
@@ -134,7 +134,7 @@ object GeneralConfig : Config() {
         name = "Mana Bar Background",
         description = "",
         category = "General",
-        subcategory = "Health & Mana Bars",
+        subcategory = "Stat Displays",
         parentName = "Mana Bar"
     )
     var manaBarBarColor = Color.BLACK
@@ -144,7 +144,7 @@ object GeneralConfig : Config() {
         name = "Health Display",
         description = "Movable health display",
         category = "General",
-        subcategory = "Health & Mana Bars"
+        subcategory = "Stat Displays"
     )
     var healthDisplay = false
 
@@ -153,7 +153,7 @@ object GeneralConfig : Config() {
         name = "Speed Display",
         description = "Movable Speed display",
         category = "General",
-        subcategory = "Health & Mana Bars"
+        subcategory = "Stat Displays"
     )
     var speedDisplay = false
 
@@ -162,7 +162,7 @@ object GeneralConfig : Config() {
         name = "Effective Health Display",
         description = "Movable Effective Health display",
         category = "General",
-        subcategory = "Health & Mana Bars"
+        subcategory = "Stat Displays"
     )
     var effectiveHealthDisplay = false
 
@@ -171,7 +171,7 @@ object GeneralConfig : Config() {
         name = "Mana Display",
         description = "Movable mana",
         category = "General",
-        subcategory = "Health & Mana Bars"
+        subcategory = "Stat Displays"
     )
     var manaDisplay = false
 
@@ -180,7 +180,7 @@ object GeneralConfig : Config() {
         name = "Overflow Mana Display",
         description = "Movable overflow mana display",
         category = "General",
-        subcategory = "Health & Mana Bars"
+        subcategory = "Stat Displays"
     )
     var overflowManaDisplay = false
 
@@ -189,7 +189,7 @@ object GeneralConfig : Config() {
         name = "Defense Display",
         description = "Movable defense display",
         category = "General",
-        subcategory = "Health & Mana Bars"
+        subcategory = "Stat Displays"
     )
     var defenseDisplay = false
 
@@ -198,7 +198,7 @@ object GeneralConfig : Config() {
         name = "Cleaner Hotbar Area",
         description = "Hides elements like hunger bar, armor bar",
         category = "General",
-        subcategory = "Health & Mana Bars",
+        subcategory = "Stat Displays",
         isParent = true
     )
     var cleanerHotbarArea = false
@@ -208,7 +208,7 @@ object GeneralConfig : Config() {
         name = "Hide Armor Bar",
         description = "Hide the armor icons above health bar",
         category = "General",
-        subcategory = "Health & Mana Bars",
+        subcategory = "Stat Displays",
         parentName = "Cleaner Hotbar Area"
     )
     var hideArmorBar = true
@@ -218,7 +218,7 @@ object GeneralConfig : Config() {
         name = "Hide Hunger Bar",
         description = "Hide the food icons above hotbar",
         category = "General",
-        subcategory = "Health & Mana Bars",
+        subcategory = "Stat Displays",
         parentName = "Cleaner Hotbar Area"
     )
     var hideHungerBar = true
@@ -228,14 +228,14 @@ object GeneralConfig : Config() {
         name = "Hide Health Hearts",
         description = "Hide the health icons above health bar",
         category = "General",
-        subcategory = "Health & Mana Bars",
+        subcategory = "Stat Displays",
         parentName = "Cleaner Hotbar Area"
     )
     var hideHealthHearts = false
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
-        name = "Party Member Display",
+        name = "Party Display",
         description = "Shows players in your party, along with classes if party finder",
         category = "General",
         subcategory = "Party"
