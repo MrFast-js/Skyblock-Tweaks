@@ -34,14 +34,15 @@ object CustomizationConfig : Config() {
     )
     var developerMode = false
 
-    @ConfigProperty(
-        type = ConfigType.TOGGLE,
-        name = "Use At Own Risk Features",
-        description = "Toggles whether §cUse At Own Risk§r features will show inside of the config menu",
-        category = "§2§rCustomization",
-        subcategory = "Mod"
-    )
-    var riskyFeatures = true
+    // No uses yet
+//    @ConfigProperty(
+//        type = ConfigType.TOGGLE,
+//        name = "Use At Own Risk Features",
+//        description = "Toggles whether §cUse At Own Risk§r features will show inside of the config menu",
+//        category = "§2§rCustomization",
+//        subcategory = "Mod"
+//    )
+//    var riskyFeatures = true
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
