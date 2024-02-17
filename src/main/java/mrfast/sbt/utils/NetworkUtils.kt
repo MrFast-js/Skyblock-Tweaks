@@ -171,8 +171,24 @@ object NetworkUtils {
         return null
     }
 
-    private var latestProfileCache = HashMap<String, String>()
-    fun getActiveProfile(playerUUID: String): String? {
+    private var latestProfileIdCache = HashMap<String, String>()
+    private var latestProfileCache = HashMap<String, JsonObject>()
+
+    fun getActiveProfileId(playerUUID: String): String? {
+        latestProfileIdCache[playerUUID]?.let { cachedProfile ->
+            return cachedProfile
+        }
+
+        val apiUrl = "https://api.hypixel.net/skyblock/profiles?uuid=$playerUUID"
+        val profiles = apiRequestAndParse(apiUrl).getAsJsonArray("profiles")
+
+        return profiles
+            .firstOrNull { it.asJsonObject["selected"].asBoolean }
+            ?.asJsonObject?.get("profile_id")?.asString
+            ?: profiles.firstOrNull()?.asJsonObject?.get("profile_id")?.asString
+    }
+
+    fun getActiveProfile(playerUUID: String): JsonObject? {
         latestProfileCache[playerUUID]?.let { cachedProfile ->
             return cachedProfile
         }
@@ -181,8 +197,46 @@ object NetworkUtils {
         val profiles = apiRequestAndParse(apiUrl).getAsJsonArray("profiles")
 
         return profiles
-            .firstOrNull { it.asJsonObject.get("selected").asBoolean }
-            ?.asJsonObject?.get("profile_id")?.asString
-            ?: profiles.firstOrNull()?.asJsonObject?.get("profile_id")?.asString
+            .firstOrNull { it.asJsonObject["selected"].asBoolean }
+            ?.asJsonObject
+            ?: profiles.firstOrNull()?.asJsonObject
+    }
+
+
+    private val nameCache = mutableMapOf<String, String>()
+
+    fun getName(uuid: String): String? {
+        nameCache[uuid]?.let { return it }
+
+        try {
+            val json = apiRequestAndParse("https://api.mojang.com/user/profile/$uuid")
+            if (json.has("error")) return null
+            val name = json["name"].asString.lowercase()
+            nameCache[uuid] = name
+            return name
+        } catch (e: Exception) {
+            return null
+        }
+    }
+
+    fun getUUID(username: String, formatted: Boolean = false): String? {
+        nameCache.entries.find { it.value.equals(username, ignoreCase = true) }?.let {
+            return if (formatted) formatUUID(it.key) else it.key
+        }
+
+        try {
+            val uuidResponse = apiRequestAndParse("https://api.mojang.com/users/profiles/minecraft/$username")
+            val uuid = uuidResponse["id"].asString
+            val name = uuidResponse["name"].asString.lowercase()
+            nameCache[uuid] = name
+            return if (formatted) formatUUID(uuid) else uuid
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return null
+    }
+
+    private fun formatUUID(input: String): String {
+        return input.replace(Regex("(.{8})(.{4})(.{4})(.{4})(.{12})"), "$1-$2-$3-$4-$5")
     }
 }

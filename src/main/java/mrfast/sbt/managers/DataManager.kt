@@ -29,7 +29,7 @@ object DataManager {
             if (!pfidSentInChat) {
                 pfidSentInChat = true
                 if (currentProfileId == null) {
-                    currentProfileId = NetworkUtils.getActiveProfile(Utils.mc.thePlayer.uniqueID.toString())
+                    currentProfileId = NetworkUtils.getActiveProfileId(Utils.mc.thePlayer.uniqueID.toString())
                     dataJson.addProperty("currentProfileId", currentProfileId)
                     saveDataToFile()
                     MinecraftForge.EVENT_BUS.post(ProfileLoadEvent())
