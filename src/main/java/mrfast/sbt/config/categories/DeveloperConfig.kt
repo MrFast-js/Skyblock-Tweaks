@@ -15,14 +15,14 @@ object DeveloperConfig : Config() {
     )
     var modAPIURL = "https://app.mrfast-developer.com/"
 
-//    @ConfigProperty(
-//            type = ConfigType.TOGGLE,
-//            name = "Show mob ids",
-//            description = "Shows skyblock mob ids on mobs in the world using Skyblock Mob Detector",
-//            category = "§eDeveloper",
-//            subcategory = "Settings"
-//    )
-//    var showMobIds = false
+    @ConfigProperty(
+            type = ConfigType.TOGGLE,
+            name = "Show mob ids",
+            description = "Shows skyblock mob ids on mobs in the world using Skyblock Mob Detector",
+            category = "§eDeveloper",
+            subcategory = "Settings"
+    )
+    var showMobIds = false
 
     @ConfigProperty(
             type = ConfigType.TOGGLE,

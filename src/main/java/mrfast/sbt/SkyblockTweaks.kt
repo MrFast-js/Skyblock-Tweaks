@@ -46,6 +46,7 @@ class SkyblockTweaks {
         MinecraftForge.EVENT_BUS.register(this)
         // Apis
         MinecraftForge.EVENT_BUS.register(ItemApi)
+        MinecraftForge.EVENT_BUS.register(SkyblockMobDetector)
 
         // Utils
         MinecraftForge.EVENT_BUS.register(LocationUtils)
