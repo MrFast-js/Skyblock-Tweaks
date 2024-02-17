@@ -1,7 +1,14 @@
 package mrfast.sbt.utils
 
+import net.minecraft.init.Blocks
 import net.minecraft.item.ItemStack
+import net.minecraft.nbt.CompressedStreamTools
 import net.minecraft.nbt.NBTTagCompound
+import net.minecraft.util.EnumChatFormatting
+import net.minecraftforge.common.util.Constants
+import java.io.ByteArrayInputStream
+import java.io.IOException
+import java.util.*
 
 object ItemUtils {
 
@@ -62,5 +69,33 @@ object ItemUtils {
         }
 
         return lore
+    }
+
+    fun decodeBase64Inventory(data: String?): List<ItemStack> {
+        val itemStack = mutableListOf<ItemStack>()
+
+        if (data != null) {
+            val decode = Base64.getDecoder().decode(data)
+
+            try {
+                val compound = CompressedStreamTools.readCompressed(ByteArrayInputStream(decode))
+                val list = compound.getTagList("i", Constants.NBT.TAG_COMPOUND)
+
+                for (i in 0 until list.tagCount()) {
+                    itemStack.add(ItemStack.loadItemStackFromNBT(list.getCompoundTagAt(i)))
+                }
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        } else {
+            val barrier = ItemStack(Blocks.barrier)
+            barrier.setStackDisplayName(EnumChatFormatting.RESET.toString() + EnumChatFormatting.RED + "Item is not available!")
+
+            repeat(36) {
+                itemStack.add(barrier)
+            }
+        }
+
+        return itemStack
     }
 }
