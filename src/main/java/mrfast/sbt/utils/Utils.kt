@@ -3,6 +3,8 @@ package mrfast.sbt.utils
 import net.minecraft.client.Minecraft
 import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 
 object Utils {
     val mc: Minecraft = Minecraft.getMinecraft()
@@ -25,6 +27,20 @@ object Utils {
      */
     fun String.cleanColor(): String {
         return this.replace(Regex("(?i)§[0-9A-F]"), "")
+    }
+
+    fun String.matches(regex: String): Boolean {
+        val pattern = Pattern.compile(regex)
+        val matcher = pattern.matcher(this)
+        return matcher.find()
+    }
+
+    fun String.getRegexGroups(regex: String): Matcher? {
+        val pattern = Pattern.compile(regex)
+        val matcher = pattern.matcher(this)
+        if(!matcher.find()) return null
+
+        return matcher
     }
 
     fun Number.formatNumber(): String {

@@ -7,11 +7,12 @@ import mrfast.sbt.utils.GuiUtils.chestName
 import mrfast.sbt.utils.ItemUtils.getLore
 import mrfast.sbt.utils.Utils
 import mrfast.sbt.utils.Utils.clean
+import mrfast.sbt.utils.Utils.getRegexGroups
+import mrfast.sbt.utils.Utils.matches
 import mrfast.sbt.utils.Utils.setTimeout
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import java.util.regex.Pattern
 
 object PartyManager {
     var partyMembers = mutableMapOf<String, PartyMember>()
@@ -41,7 +42,7 @@ object PartyManager {
         val clean = event.message.unformattedText.clean()
 
         handleVanillaParty(clean)
-        handleDungeonParty(clean)
+        handleDungeonPartyFinder(clean)
     }
 
     private var hadProblemJoiningParty = false
@@ -51,8 +52,6 @@ object PartyManager {
         if (event.gui is GuiChest && event.gui.chestName().startsWith("Party Finder")) {
             val stackName = event.slot.stack?.displayName?.clean() ?: return
             if (stackName.endsWith("'s Party")) {
-                val regex = "^(\\w+):\\s(\\w+)\\s\\((\\d+)\\)$"
-                val pattern = Pattern.compile(regex)
                 hadProblemJoiningParty = false
 
                 for (line in event.slot.stack.getLore()) {
@@ -70,9 +69,10 @@ object PartyManager {
                     }
 
                     for (line in event.slot.stack.getLore()) {
-                        val matcher = pattern.matcher(line.clean().trim())
-                        if (matcher.find()) {
-                            // Extract information using groups
+                        val regex = "^(\\w+):\\s(\\w+)\\s\\((\\d+)\\)$"
+                        val clean = line.clean().trim()
+                        if (clean.matches(regex)) {
+                            val matcher = clean.getRegexGroups(regex)?:return@setTimeout
                             val playerName = matcher.group(1)
                             val className = matcher.group(2)
                             val classLvl = matcher.group(3)
@@ -150,7 +150,8 @@ object PartyManager {
             clean.startsWith("You left the party.") ||
             clean.startsWith("You have been kicked from the party") ||
             clean.startsWith("You are not in a party right now.") ||
-            clean.startsWith("You are not in a party.")
+            clean.startsWith("You are not in a party.") ||
+            clean.startsWith("You are not currently in a party.")
         ) {
             partyMembers.clear()
             if(GeneralConfig.autoPartyChat && playerInParty) {
@@ -181,16 +182,18 @@ object PartyManager {
         }
     }
 
-    private fun handleDungeonParty(clean: String) {
-        if (clean.startsWith("Party Finder > ") && clean.contains(" joined the dungeon group! (")) {
-            val playerName = clean.split(" ")[3]
+    private fun handleDungeonPartyFinder(clean: String) {
+        val regex = "^Party Finder > ([^\\s]+) joined the dungeon group! \\(([^ ]+) Level (\\d+)\\)\$"
+        if (clean.matches(regex)) {
+            val matcher = clean.getRegexGroups(regex)?:return
+            val playerName = matcher.group(1)
+            val className = matcher.group(2)
+            val classLvl = matcher.group(3)
+
             val pm = PartyMember(playerName)
-            val lastArg = clean.split("(")[1]
-            val className = lastArg.split(" ")[0]
-            val classLvl = lastArg.split(" ")[2].substringBefore(")")
+
             pm.className = className
             pm.classLvl = classLvl
-
             partyMembers[pm.name] = pm
         }
 
