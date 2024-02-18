@@ -18,13 +18,23 @@ object DungeonConfig : Config() {
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
-        name = "Show equipment",
+        name = "Show Player Equipment",
         description = "",
         category = "§1§rDungeons",
         subcategory = "Miscellaneous",
         parentName = "Party Finder Join Info"
     )
     var partyfinderJoinInfo_showEquipment = false
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Show Player Hotbar",
+        description = "§cReplaces \"Hype ✘   Term ✘   Clay ✘\" line!",
+        category = "§1§rDungeons",
+        subcategory = "Miscellaneous",
+        parentName = "Party Finder Join Info"
+    )
+    var partyfinderJoinInfo_showHotbar = false
 
 //    @ConfigProperty(
 //            type = ConfigType.TOGGLE,

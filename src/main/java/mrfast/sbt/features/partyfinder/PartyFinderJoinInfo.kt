@@ -68,8 +68,9 @@ object PartyFinderJoinInfo {
                 output.appendText("\n§cNo armor found or their API is disabled.\n")
             } else {
                 for (itemStack in invArmor) {
-                    val armorComponent = ChatComponentText(itemStack.displayName + "\n")
-                    val lore = itemStack.displayName + "\n" + itemStack.getLore().joinToString("\n")
+                    val lore = if (itemStack != null) itemStack.displayName + "\n" + itemStack.getLore().joinToString("\n") else "§cNone"
+                    val armorComponent = ChatComponentText(itemStack?.displayName + "\n")
+
                     armorComponent.chatStyle.chatHoverEvent =
                         HoverEvent(
                             HoverEvent.Action.SHOW_TEXT,
@@ -90,8 +91,10 @@ object PartyFinderJoinInfo {
                     output.appendText("§cNo equipment found or their API is disabled.\n")
                 } else {
                     for (itemStack in equipment) {
-                        val equipComponent = ChatComponentText(itemStack.displayName + "\n")
-                        val lore = itemStack.displayName + "\n" + itemStack.getLore().joinToString("\n")
+                        val lore = if (itemStack != null) itemStack.displayName + "\n" + itemStack.getLore().joinToString("\n") else "§cNone"
+
+                        val equipComponent = ChatComponentText(itemStack?.displayName + "\n")
+
                         equipComponent.chatStyle.chatHoverEvent =
                             HoverEvent(
                                 HoverEvent.Action.SHOW_TEXT,
@@ -109,15 +112,35 @@ object PartyFinderJoinInfo {
             val inventory = ItemUtils.decodeBase64Inventory(inventoryBase64)
             val items = StringBuilder()
 
-            val hype = inventory.any { it.getSkyblockId() == "HYPERION" }
-            val term = inventory.any { it.getSkyblockId() == "TERMINATOR" }
-            val clay = inventory.any { it.getSkyblockId() == "DARK_CLAYMORE" }
+            val hype = inventory.any { it?.getSkyblockId() == "HYPERION" }
+            val term = inventory.any { it?.getSkyblockId() == "TERMINATOR" }
+            val clay = inventory.any { it?.getSkyblockId() == "DARK_CLAYMORE" }
 
             items.append((if (hype) "§aHype ✔" else "§cHype ✘") + "   ")
             items.append((if (term) "§aTerm ✔" else "§cTerm ✘") + "   ")
             items.append((if (clay) "§aClay ✔" else "§cClay ✘") + "   ")
 
-            output.appendText(items.toString() + "\n")
+            if(DungeonConfig.partyfinderJoinInfo_showHotbar) {
+                val hotbar = ChatComponentText("")
+
+                for ((index, itemStack) in inventory.withIndex().take(9)) {
+                    val lore = if (itemStack != null) itemStack.displayName + "\n" + itemStack.getLore()
+                        .joinToString("\n") else "§cNone"
+
+                    val hotbarPart = ChatComponentText("${if (itemStack == null) "§7" else "§6"}§l[${index + 1}]")
+                    hotbarPart.chatStyle.chatHoverEvent =
+                        HoverEvent(
+                            HoverEvent.Action.SHOW_TEXT,
+                            ChatComponentText(lore)
+                        )
+                    hotbar.appendSibling(hotbarPart)
+                    hotbar.appendText(" ")
+                }
+                output.appendSibling(hotbar)
+                output.appendText("\n")
+            } else {
+                output.appendText(items.toString() + "\n")
+            }
 
             val completions = ChatComponentText("§e§l[Completions]")
             val completionsHover = mutableListOf<String>()
@@ -156,7 +179,6 @@ object PartyFinderJoinInfo {
                     HoverEvent.Action.SHOW_TEXT,
                     ChatComponentText("§7Average Secrets: §3$avgSecrets")
                 )
-
 
             output.appendSibling(completions)
             output.appendText("       ")
