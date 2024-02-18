@@ -82,17 +82,12 @@ object ItemUtils {
                 val list = compound.getTagList("i", Constants.NBT.TAG_COMPOUND)
 
                 for (i in 0 until list.tagCount()) {
-                    itemStack.add(ItemStack.loadItemStackFromNBT(list.getCompoundTagAt(i)))
+                    val tag = list.getCompoundTagAt(i)?:continue
+                    val item = ItemStack.loadItemStackFromNBT(tag)?:continue
+                    itemStack.add(item)
                 }
             } catch (e: IOException) {
                 e.printStackTrace()
-            }
-        } else {
-            val barrier = ItemStack(Blocks.barrier)
-            barrier.setStackDisplayName(EnumChatFormatting.RESET.toString() + EnumChatFormatting.RED + "Item is not available!")
-
-            repeat(36) {
-                itemStack.add(barrier)
             }
         }
 
