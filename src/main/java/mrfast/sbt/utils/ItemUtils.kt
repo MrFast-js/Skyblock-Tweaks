@@ -71,8 +71,8 @@ object ItemUtils {
         return lore
     }
 
-    fun decodeBase64Inventory(data: String?): List<ItemStack> {
-        val itemStack = mutableListOf<ItemStack>()
+    fun decodeBase64Inventory(data: String?): List<ItemStack?> {
+        val itemStack = mutableListOf<ItemStack?>()
 
         if (data != null) {
             val decode = Base64.getDecoder().decode(data)
@@ -80,10 +80,10 @@ object ItemUtils {
             try {
                 val compound = CompressedStreamTools.readCompressed(ByteArrayInputStream(decode))
                 val list = compound.getTagList("i", Constants.NBT.TAG_COMPOUND)
-
                 for (i in 0 until list.tagCount()) {
-                    val tag = list.getCompoundTagAt(i)?:continue
-                    val item = ItemStack.loadItemStackFromNBT(tag)?:continue
+                    val tag = list.getCompoundTagAt(i)
+                    val item = ItemStack.loadItemStackFromNBT(tag) ?: null
+
                     itemStack.add(item)
                 }
             } catch (e: IOException) {
