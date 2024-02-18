@@ -1,13 +1,16 @@
 package mrfast.sbt
 
-import mrfast.sbt.apis.*
+import mrfast.sbt.apis.ItemAbilities
+import mrfast.sbt.apis.ItemApi
+import mrfast.sbt.apis.PlayerStats
+import mrfast.sbt.apis.SkyblockMobDetector
 import mrfast.sbt.commands.ConfigCommand
 import mrfast.sbt.commands.DebugCommand
 import mrfast.sbt.config.Config
 import mrfast.sbt.config.ConfigGui
 import mrfast.sbt.config.GuiManager
-import mrfast.sbt.customevents.ProfileLoadEvent
 import mrfast.sbt.features.general.*
+import mrfast.sbt.features.partyfinder.PartyFinderJoinInfo
 import mrfast.sbt.managers.DataManager
 import mrfast.sbt.managers.PartyManager
 import mrfast.sbt.managers.VersionManager
@@ -42,8 +45,8 @@ class SkyblockTweaks {
 
     @Mod.EventHandler
     fun init(event: FMLInitializationEvent?) {
-        // Your init code here
         MinecraftForge.EVENT_BUS.register(this)
+
         // Apis
         MinecraftForge.EVENT_BUS.register(ItemApi)
         MinecraftForge.EVENT_BUS.register(SkyblockMobDetector)
@@ -68,6 +71,9 @@ class SkyblockTweaks {
         MinecraftForge.EVENT_BUS.register(SpeedDisplay)
         MinecraftForge.EVENT_BUS.register(OverflowManaDisplay)
         MinecraftForge.EVENT_BUS.register(PartyDisplay)
+
+        // Party Finder
+        MinecraftForge.EVENT_BUS.register(PartyFinderJoinInfo)
 
         // Stop above hotbar elements from rendering
         MinecraftForge.EVENT_BUS.register(HideHotbarElements)
