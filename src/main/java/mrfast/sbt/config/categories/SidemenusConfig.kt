@@ -3,7 +3,7 @@ package mrfast.sbt.config.categories
 import mrfast.sbt.config.*
 
 
-object OverlaysConfig : Config() {
+object SidemenusConfig : Config() {
     @ConfigProperty(
             type = ConfigType.TOGGLE,
             name = "Helpful Auction Guis",

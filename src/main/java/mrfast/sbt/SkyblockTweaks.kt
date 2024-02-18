@@ -75,6 +75,9 @@ class SkyblockTweaks {
         // Party Finder
         MinecraftForge.EVENT_BUS.register(PartyFinderJoinInfo)
 
+        // Overlays
+        MinecraftForge.EVENT_BUS.register(LowHealthTint)
+
         // Stop above hotbar elements from rendering
         MinecraftForge.EVENT_BUS.register(HideHotbarElements)
 

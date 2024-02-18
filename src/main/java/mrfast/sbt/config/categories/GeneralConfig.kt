@@ -11,6 +11,15 @@ object GeneralConfig : Config() {
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
+        name = "Low Health Tint",
+        description = "As your health decreases your screen will start to get §cred",
+        category = "General",
+        subcategory = "Low Health"
+    )
+    var lowHealthTint = false
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
         name = "Cleaner Action Bar",
         description = "Hides Health, Mana and other attributes from action bar",
         category = "General",
