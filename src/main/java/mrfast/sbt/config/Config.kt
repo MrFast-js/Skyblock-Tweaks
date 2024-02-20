@@ -14,7 +14,7 @@ open class Config : ConfigManager() {
         //EventsConfig,
         DungeonConfig,
         //AuctionFlipperConfig,
-        //MiscellaneousConfig,
+        MiscellaneousConfig,
         //OverlaysConfig,
         //RiftConfig,
         //RenderingConfig,
