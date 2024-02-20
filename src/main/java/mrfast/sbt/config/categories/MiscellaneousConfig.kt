@@ -3,19 +3,18 @@ package mrfast.sbt.config.categories
 import mrfast.sbt.config.Config
 import mrfast.sbt.config.ConfigProperty
 import mrfast.sbt.config.ConfigType
-import java.awt.Color
 
 
 object MiscellaneousConfig : Config() {
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
-        name = "New Year Cake Bag Sorting Helper",
-        description = "Provides a easy tool to help sort your new year cake bag in order",
+        name = "Cake Bag Sorting Helper",
+        description = "Provides a easy tool to help sort your new year cake bag in order.§b low years -> high years",
         category = "Miscellaneous",
         subcategory = "Items"
     )
-    var newYearCakeBagSortingHelper = false
+    var cakeBagSortingHelper = false
 //    @ConfigProperty(
 //            type = ConfigType.TOGGLE,
 //            name = "Fire Veil Timer",
