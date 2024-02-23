@@ -78,6 +78,7 @@ object GuiUtils {
     }
 
     fun GuiContainer.chestName(): String {
+        if(this.inventorySlots !is ContainerChest) return ""
         val chest = this.inventorySlots as ContainerChest
         val inv = chest.lowerChestInventory
         return inv.displayName.unformattedText.trim()
