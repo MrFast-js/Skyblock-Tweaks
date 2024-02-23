@@ -36,28 +36,6 @@ object DungeonConfig : Config() {
     )
     var partyfinderJoinInfo_showHotbar = false
 
-//    @ConfigProperty(
-//            type = ConfigType.TOGGLE,
-//            name = "Highlight Trash",
-//            description = "Draws a red box around items that just fill up your inventory.",
-//            category = "§1§rDungeons",
-//            subcategory = "Miscellaneous",
-//            isParent = true
-//    )
-//    var highlightTrash = true
-//
-//    @ConfigProperty(
-//            type = ConfigType.BUTTON,
-//            name = "§eEdit Trash",
-//            description = "The trash list will be updated once you save the file. \nTrash is an item whose Skyblock ID contains any of the entries.",
-//            category = "§1§rDungeons",
-//            subcategory = "Miscellaneous",
-//            placeholder = "§cEdit Trash",
-//            parentName = "Highlight Trash"
-//    )
-//    var editTrash = Runnable {
-//
-//    }
 //
 //    @ConfigProperty(
 //            type = ConfigType.TOGGLE,
