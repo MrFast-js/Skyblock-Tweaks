@@ -69,8 +69,6 @@ abstract class ConfigManager {
                     val value = property.getter.call(config) ?: continue
                     val field = config::class.java.getDeclaredField(fieldName)
 
-                    if (Runnable::class.java.isAssignableFrom(field.type)) continue
-
                     field.isAccessible = true
                     // Create a new Feature
                     val feature = Feature(
@@ -94,6 +92,8 @@ abstract class ConfigManager {
 
                     // Add the Feature to the Subcategory
                     subcategory.features[fieldName] = feature
+                    if (Runnable::class.java.isAssignableFrom(field.type)) continue
+
                     fieldMap[fieldName] = value
                 }
             }
