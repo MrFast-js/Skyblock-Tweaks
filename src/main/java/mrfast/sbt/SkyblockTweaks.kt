@@ -76,7 +76,8 @@ class SkyblockTweaks {
         MinecraftForge.EVENT_BUS.register(PartyFinderJoinInfo)
         // Cake bag sorting helper
         MinecraftForge.EVENT_BUS.register(CakeBagSorting)
-
+        // Trash Highlighter
+        MinecraftForge.EVENT_BUS.register(TrashHighlighter)
         // Overlays
         MinecraftForge.EVENT_BUS.register(LowHealthTint)
 
