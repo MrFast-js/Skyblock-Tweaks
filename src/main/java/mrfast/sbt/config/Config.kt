@@ -16,7 +16,7 @@ open class Config : ConfigManager() {
         //AuctionFlipperConfig,
         MiscellaneousConfig,
         //OverlaysConfig,
-        //RiftConfig,
+        RiftConfig,
         //RenderingConfig,
         CustomizationConfig,
         DeveloperConfig
