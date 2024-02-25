@@ -86,24 +86,21 @@ object PlayerStats {
     }
 
     private fun parseAndSetRiftTime(actionBarSegment: String) {
-        println("PARSING RIFT SECONDS $actionBarSegment")
-
         var minutes = 0
         var seconds = 0
         val containsMinutes = actionBarSegment.contains("m")
 
         // Split the string into parts separated by 'm'
         val parts = actionBarSegment.split("[m,s]".toRegex())
-        println("PARSING RIFT PARTS: $parts")
 
-        if (containsMinutes) minutes = parts[0].toIntOrNull() ?: 0
-
-        // Parse seconds from the last part
-        if (parts.isNotEmpty()) seconds = parts.last().toIntOrNull() ?: 0
+        if (containsMinutes) {
+            minutes = parts[0].toIntOrNull() ?: 0
+            seconds = parts[1].toIntOrNull() ?: 0
+        } else {
+            seconds = parts[0].toIntOrNull() ?: 0
+        }
 
         riftTimeSeconds = minutes * 60 + seconds
-
-        println("SET RIFT SECONDS TO: $riftTimeSeconds")
 
         // Update max rift time
         if (riftTimeSeconds > maxRiftTime) maxRiftTime = riftTimeSeconds
