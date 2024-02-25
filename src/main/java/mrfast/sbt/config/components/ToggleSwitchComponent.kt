@@ -32,8 +32,19 @@ class ToggleSwitchComponent(initValue: Boolean) : UIRoundedRectangle(0f) {
             y = 1.pixels
             width = 14.pixels
             height = 14.pixels
-            color = Color.DARK_GRAY.constraint
+            color = Color(44, 44, 44).constraint
         } childOf this
+
+        this.onMouseEnterRunnable {
+            block.animate {
+                setColorAnimation(Animations.OUT_EXP, 0.5f, Color(54, 54, 54).constraint)
+            }
+        }
+        this.onMouseLeaveRunnable {
+            block.animate {
+                setColorAnimation(Animations.OUT_EXP, 0.5f, Color(44, 44, 44).constraint)
+            }
+        }
 
         if (activated) {
             block.setX(1.pixels(alignOpposite = true))

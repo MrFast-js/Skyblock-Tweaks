@@ -666,12 +666,23 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
             }
         }
         if (feature.type == ConfigType.BUTTON) {
-            val button = UIImage.ofResource("/skyblocktweaks/gui/button.png").constrain {
-                width = 88.pixels
-                height = 24.pixels
+            val button = UIBlock(Color.DARK_GRAY).constrain {
+                width = 70.pixels   
+                height = 18.pixels
                 y = CenterConstraint()
                 x = 10.pixels(alignOpposite = true)
-            } childOf featureComponent
+            } childOf featureComponent effect OutlineEffect(CustomizationConfig.enabledSwitchColor,1f)
+
+            button.onMouseEnterRunnable {
+                button.animate {
+                    setColorAnimation(Animations.OUT_EXP, 0.5f, headerBackgroundColor.constraint)
+                }
+            }
+            button.onMouseLeaveRunnable {
+                button.animate {
+                    setColorAnimation(Animations.OUT_EXP, 0.5f, headerBackgroundColor.constraint)
+                }
+            }
 
             val buttonText = UIText(feature.placeholder).constrain {
                 x = CenterConstraint()
