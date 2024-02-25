@@ -10,6 +10,7 @@ import mrfast.sbt.config.Config
 import mrfast.sbt.config.ConfigGui
 import mrfast.sbt.config.GuiManager
 import mrfast.sbt.features.general.*
+import mrfast.sbt.features.general.rift.RiftTimeBarDisplay
 import mrfast.sbt.features.partyfinder.PartyFinderJoinInfo
 import mrfast.sbt.managers.DataManager
 import mrfast.sbt.managers.PartyManager
@@ -72,12 +73,11 @@ class SkyblockTweaks {
         MinecraftForge.EVENT_BUS.register(OverflowManaDisplay)
         MinecraftForge.EVENT_BUS.register(PartyDisplay)
 
-        // Party Finder
-        MinecraftForge.EVENT_BUS.register(PartyFinderJoinInfo)
-        // Cake bag sorting helper
-        MinecraftForge.EVENT_BUS.register(NewYearsCakeHelper)
-        // Trash Highlighter
-        MinecraftForge.EVENT_BUS.register(TrashHighlighter)
+        MinecraftForge.EVENT_BUS.register(PartyFinderJoinInfo) // Party Finder
+        MinecraftForge.EVENT_BUS.register(NewYearsCakeHelper) // Cake bag sorting helper
+        MinecraftForge.EVENT_BUS.register(TrashHighlighter) // Trash Highlighter
+        MinecraftForge.EVENT_BUS.register(RiftTimeBarDisplay) // Rift Bar
+
         // Overlays
         MinecraftForge.EVENT_BUS.register(LowHealthTint)
 

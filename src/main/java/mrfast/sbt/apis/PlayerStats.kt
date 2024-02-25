@@ -4,6 +4,7 @@ import mrfast.sbt.config.categories.GeneralConfig
 import mrfast.sbt.utils.Utils.clean
 import net.minecraft.util.ChatComponentText
 import net.minecraftforge.client.event.ClientChatReceivedEvent
+import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import kotlin.math.max
 
@@ -19,6 +20,14 @@ object PlayerStats {
     var defense = 0
     var effectiveHealth = 0
 
+    var maxRiftTime = 0
+    var riftTimeSeconds = 0
+
+    @SubscribeEvent
+    fun onWorldChange(event: WorldEvent.Load) {
+        maxRiftTime = 0
+    }
+
     @SubscribeEvent
     fun onEvent(event: ClientChatReceivedEvent) {
         if (event.type.toInt() == 2) {
@@ -32,8 +41,11 @@ object PlayerStats {
                 if (trimmed.isEmpty()) continue
                 val shortString: String = colorsStripped.substring(0, colorsStripped.length - 1).replace(",", "")
 
+                println("$colorsStripped ||| ${colorsStripped.endsWith("ф")}")
+
                 when {
                     colorsStripped.endsWith("❤") -> parseAndSetHealth(shortString)
+                    colorsStripped.endsWith("ф") -> parseAndSetRiftTime(shortString)
                     colorsStripped.endsWith("❈") -> parseAndSetDefense(shortString)
                     colorsStripped.endsWith("✎") -> parseAndSetMana(shortString)
                     colorsStripped.endsWith("ʬ") -> parseAndSetOverflow(shortString)
@@ -49,9 +61,14 @@ object PlayerStats {
                 for (s in arr) {
                     when {
                         s.contains("❤") && GeneralConfig.hideHealthFromBar -> actionBar = actionBar.replace(s, "")
-                        (s.contains("❈") || s.contains("Defense")) && GeneralConfig.hideDefenseFromBar -> actionBar = actionBar.replace(s, "")
-                        (s.contains("✎") || s.contains("Mana")) && GeneralConfig.hideManaFromBar -> actionBar = actionBar.replace(s, "")
+                        (s.contains("❈") || s.contains("Defense")) && GeneralConfig.hideDefenseFromBar -> actionBar =
+                            actionBar.replace(s, "")
+
+                        (s.contains("✎") || s.contains("Mana")) && GeneralConfig.hideManaFromBar -> actionBar =
+                            actionBar.replace(s, "")
+
                         s.contains("ʬ") && GeneralConfig.hideOverflowManaFromBar -> actionBar = actionBar.replace(s, "")
+                        s.contains("ф") && GeneralConfig.hideRiftTimeFromBar -> actionBar = actionBar.replace(s, "")
                     }
                 }
 
@@ -65,7 +82,31 @@ object PlayerStats {
         health = split[0].toInt()
         maxHealth = split[1].toInt()
         effectiveHealth = (health * (1f + defense / 100f).toInt())
-        absorption = max(health-maxHealth,0)
+        absorption = max(health - maxHealth, 0)
+    }
+
+    private fun parseAndSetRiftTime(actionBarSegment: String) {
+        println("PARSING RIFT SECONDS $actionBarSegment")
+
+        var minutes = 0
+        var seconds = 0
+        val containsMinutes = actionBarSegment.contains("m")
+
+        // Split the string into parts separated by 'm'
+        val parts = actionBarSegment.split("[m,s]".toRegex())
+        println("PARSING RIFT PARTS: $parts")
+
+        if (containsMinutes) minutes = parts[0].toIntOrNull() ?: 0
+
+        // Parse seconds from the last part
+        if (parts.isNotEmpty()) seconds = parts.last().toIntOrNull() ?: 0
+
+        riftTimeSeconds = minutes * 60 + seconds
+
+        println("SET RIFT SECONDS TO: $riftTimeSeconds")
+
+        // Update max rift time
+        if (riftTimeSeconds > maxRiftTime) maxRiftTime = riftTimeSeconds
     }
 
     private fun parseAndSetDefense(actionBarSegment: String) {
