@@ -12,7 +12,10 @@ import net.minecraft.client.gui.Gui
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.awt.Color
 
-object CakeBagSorting {
+/*
+TODO: Add saving profile data so dont require re opening cake bag every session
+ */
+object NewYearsCakeHelper {
     private val sortedCakeBag = mutableListOf<String>()
 
     @SubscribeEvent
@@ -25,9 +28,23 @@ object CakeBagSorting {
 
     @SubscribeEvent
     fun onSlotDrawPost(event: SlotDrawnEvent.Post) {
+        val isCake = event.slot.hasStack && event.slot.stack.getSkyblockId() == "NEW_YEAR_CAKE"
+
+        if(MiscellaneousConfig.highlightMissingNewYearCakes && event.gui.chestName().startsWith("Auctions") && isCake) {
+            val cleanedName = event.slot.stack.displayName.clean()
+            if(!sortedCakeBag.contains(cleanedName)) {
+                Gui.drawRect(
+                    event.slot.xDisplayPosition,
+                    event.slot.yDisplayPosition,
+                    event.slot.xDisplayPosition + 16,
+                    event.slot.yDisplayPosition + 16,
+                    Color(85, 255, 85, 100).rgb
+                )
+            }
+        }
         if (event.gui.chestName() != "New Year Cake Bag" || !MiscellaneousConfig.cakeBagSortingHelper) return
 
-        if (event.slot.hasStack && event.slot.stack.getSkyblockId() == "NEW_YEAR_CAKE") {
+        if (isCake) {
             val cleanedName = event.slot.stack.displayName.clean()
             if (!sortedCakeBag.contains(cleanedName)) {
                 sortedCakeBag.add(cleanedName)
@@ -67,4 +84,6 @@ object CakeBagSorting {
             }
         }
     }
+
+
 }

@@ -13,9 +13,18 @@ object MiscellaneousConfig : Config() {
         name = "Cake Bag Sorting Helper",
         description = "Provides a easy tool to help sort your new year cake bag in order.§b low years -> high years",
         category = "Miscellaneous",
-        subcategory = "Items"
+        subcategory = "New Years Cakes"
     )
     var cakeBagSortingHelper = false
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Highlight Missing Cakes",
+        description = "Highlight cakes that your missing in the Auction House. §CMust open cake bag first!",
+        category = "Miscellaneous",
+        subcategory = "New Years Cakes"
+    )
+    var highlightMissingNewYearCakes = false
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
