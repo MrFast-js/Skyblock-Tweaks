@@ -60,6 +60,16 @@ object GeneralConfig : Config() {
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
+        name = "Hide Rift Time",
+        description = "Hides rift time from action bar",
+        category = "General",
+        subcategory = "Stat Displays",
+        parentName = "Cleaner Action Bar"
+    )
+    var hideRiftTimeFromBar = false
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
         name = "Hide Defense",
         description = "Hides defense from action bar",
         category = "General",
