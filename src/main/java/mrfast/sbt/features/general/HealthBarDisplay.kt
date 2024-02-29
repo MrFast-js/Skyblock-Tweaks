@@ -1,5 +1,7 @@
 package mrfast.sbt.features.general
 
+import gg.essential.elementa.components.UIRoundedRectangle
+import gg.essential.universal.UMatrixStack
 import mrfast.sbt.apis.PlayerStats
 import mrfast.sbt.config.GuiManager
 import mrfast.sbt.config.categories.GeneralConfig
@@ -33,14 +35,18 @@ object HealthBarDisplay {
             val absorbFillPerc = absorption.toDouble() / total
 
             // Draw background/border
-            Gui.drawRect(0, 0, 80, 10, healthBarBarColor.rgb)
+            UIRoundedRectangle.drawRoundedRectangle(UMatrixStack(), 0f, 0f, 80f, 10f, 6f, healthBarBarColor)
 
-            Gui.drawRect(2, 2, (78.0 * healthFillPerc).toInt(), 8, healthBarHealthColor.rgb)
+            UIRoundedRectangle.drawRoundedRectangle(
+                UMatrixStack(), 2f, 2f,
+                (78f * healthFillPerc).toFloat(), 8f, 4f, healthBarHealthColor
+            )
             if (absorption != 0) {
                 val fillPixels = (78.0 * absorbFillPerc).toInt() + 3
-                Gui.drawRect(
-                    minOf(76, maxOf(2, 2 + (78 - fillPixels))),
-                    2, 78, 8, healthBarAbsorbColor.rgb
+
+                UIRoundedRectangle.drawRoundedRectangle(
+                    UMatrixStack(), minOf(76, maxOf(2, 2 + (78 - fillPixels))).toFloat(), 2f,
+                    78f, 8f, 4f, healthBarAbsorbColor
                 )
             }
         }

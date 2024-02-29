@@ -22,6 +22,7 @@ object GuiUtils {
     fun drawText(text: String, x: Float, y: Float, style: TextStyle) {
         val shadowText: String = text.cleanColor()
 
+        GlStateManager.translate(0f,0f,200f)
         if (style == TextStyle.BLACK_OUTLINE) {
             Minecraft.getMinecraft().fontRendererObj.drawString(shadowText, x + 2, y + 1, 0x000000, false)
             Minecraft.getMinecraft().fontRendererObj.drawString(shadowText, x, y + 1, 0x000000, false)
@@ -36,6 +37,7 @@ object GuiUtils {
             0xFFFFFF,
             style == TextStyle.DROP_SHADOW
         )
+        GlStateManager.translate(0f,0f,-200f)
     }
 
     fun drawOutlinedSquare(x: Int, y: Int, width: Int, height: Int, backgroundColor: Color, borderColor: Color) {

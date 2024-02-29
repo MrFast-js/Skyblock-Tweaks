@@ -160,6 +160,16 @@ object GeneralConfig : Config() {
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
+        name = "Show Overflow Mana",
+        description = "",
+        category = "General",
+        subcategory = "Stat Displays",
+        parentName = "Mana Bar"
+    )
+    var manaBarShowOverflow = false
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
         name = "Health Display",
         description = "Movable health display",
         category = "General",

@@ -1,7 +1,10 @@
 package mrfast.sbt.features.general.rift
 
+import gg.essential.elementa.components.UIRoundedRectangle
+import gg.essential.universal.UMatrixStack
 import mrfast.sbt.apis.PlayerStats
 import mrfast.sbt.config.GuiManager
+import mrfast.sbt.config.categories.GeneralConfig
 import mrfast.sbt.config.categories.RiftConfig
 import mrfast.sbt.utils.LocationUtils
 import net.minecraft.client.gui.Gui
@@ -27,9 +30,18 @@ object RiftTimeBarDisplay {
             val timeFillPerc = riftTime.toDouble() / max
 
             // Draw background/border
-            Gui.drawRect(0, 0, 80, 10, RiftConfig.riftBarBarColor.rgb)
+            UIRoundedRectangle.drawRoundedRectangle(UMatrixStack(), 0f, 0f, 80f, 10f, 6f, RiftConfig.riftBarBarColor)
 
-            Gui.drawRect(2, 2, (78.0 * timeFillPerc).toInt(), 8, RiftConfig.riftBarFillColor.rgb)
+            // Draw normal blue mana
+            UIRoundedRectangle.drawRoundedRectangle(
+                UMatrixStack(),
+                2f,
+                2f,
+                (78f * timeFillPerc).toFloat(),
+                8f,
+                4f,
+                RiftConfig.riftBarFillColor
+            )
         }
 
         override fun isActive(): Boolean {
@@ -37,7 +49,7 @@ object RiftTimeBarDisplay {
         }
 
         override fun isVisible(): Boolean {
-            return true
+            return LocationUtils.currentIsland == "The Rift"
         }
     }
 }

@@ -1,11 +1,18 @@
 package mrfast.sbt.features.general
 
+import gg.essential.elementa.components.UIRoundedRectangle
+import gg.essential.elementa.dsl.constrain
+import gg.essential.elementa.dsl.constraint
+import gg.essential.elementa.dsl.pixels
+import gg.essential.universal.UMatrixStack
 import mrfast.sbt.apis.PlayerStats
 import mrfast.sbt.config.categories.GeneralConfig
 import mrfast.sbt.config.GuiManager
 import mrfast.sbt.config.categories.GeneralConfig.manaBarBarColor
 import mrfast.sbt.config.categories.GeneralConfig.manaBarManaColor
 import mrfast.sbt.config.categories.GeneralConfig.manaBarOverflowColor
+import mrfast.sbt.config.categories.GeneralConfig.manaBarShowOverflow
+import mrfast.sbt.config.components.OutlinedRoundedRectangle
 import mrfast.sbt.utils.LocationUtils
 import net.minecraft.client.gui.Gui
 import java.awt.Color
@@ -29,21 +36,40 @@ object ManaBarDisplay {
             val max = PlayerStats.maxMana
             val mana = PlayerStats.mana
             val overflow = PlayerStats.overflowMana
-            val total = max + overflow
+            val total = max + if(manaBarShowOverflow) overflow else 0
             val manaFillPerc = mana.toDouble() / total
             val overflowFillPerc = overflow.toDouble() / total
+            val borderWidth = 2f
 
             // Draw background/border
-            Gui.drawRect(0, 0, 80, 10, manaBarBarColor.rgb)
+            UIRoundedRectangle.drawRoundedRectangle(UMatrixStack(), 0f, 0f, 80f, 10f, 6f, manaBarBarColor)
 
             // Draw normal blue mana
-            Gui.drawRect(2, 2, (78.0 * manaFillPerc).toInt(), 8, manaBarManaColor.rgb)
+            UIRoundedRectangle.drawRoundedRectangle(
+                UMatrixStack(),
+                borderWidth,
+                borderWidth,
+                ((80f - borderWidth) * manaFillPerc).toFloat(),
+                10f - borderWidth,
+                4f,
+                manaBarManaColor
+            )
+
             // Draw extra cyan overflow
-            if (overflow != 0) {
-                val fillPixels = (78.0 * overflowFillPerc).toInt() + 3
-                Gui.drawRect(
-                    minOf(76, maxOf(2, 2 + (78 - fillPixels))),
-                    2, 78, 8, manaBarOverflowColor.rgb
+            if (overflow != 0 && manaBarShowOverflow) {
+                val fillPixels = ((80f - borderWidth) * overflowFillPerc).toInt() + 3
+
+                UIRoundedRectangle.drawRoundedRectangle(
+                    UMatrixStack(),
+                    minOf(
+                        (80f - borderWidth).toInt(),
+                        maxOf(borderWidth, borderWidth + ((80f - borderWidth) - fillPixels)).toInt()
+                    ).toFloat(),
+                    2f,
+                    (80 - borderWidth),
+                    (10 - borderWidth),
+                    4f,
+                    manaBarOverflowColor
                 )
             }
         }
