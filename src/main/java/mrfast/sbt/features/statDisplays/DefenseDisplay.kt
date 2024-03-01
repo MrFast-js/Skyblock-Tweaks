@@ -1,4 +1,4 @@
-package mrfast.sbt.features.general
+package mrfast.sbt.features.statDisplays
 
 import mrfast.sbt.apis.PlayerStats
 import mrfast.sbt.config.categories.GeneralConfig

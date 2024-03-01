@@ -1,4 +1,4 @@
-package mrfast.sbt.features.general
+package mrfast.sbt.features.statDisplays
 
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.universal.UMatrixStack
@@ -9,7 +9,6 @@ import mrfast.sbt.config.categories.GeneralConfig.healthBarAbsorbColor
 import mrfast.sbt.config.categories.GeneralConfig.healthBarBarColor
 import mrfast.sbt.config.categories.GeneralConfig.healthBarHealthColor
 import mrfast.sbt.utils.LocationUtils
-import net.minecraft.client.gui.Gui
 
 object HealthBarDisplay {
     init {

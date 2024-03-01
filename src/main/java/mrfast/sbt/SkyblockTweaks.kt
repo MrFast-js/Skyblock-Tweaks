@@ -10,8 +10,9 @@ import mrfast.sbt.config.Config
 import mrfast.sbt.config.ConfigGui
 import mrfast.sbt.config.GuiManager
 import mrfast.sbt.features.general.*
-import mrfast.sbt.features.general.rift.RiftTimeBarDisplay
+import mrfast.sbt.features.statDisplays.RiftTimeBarDisplay
 import mrfast.sbt.features.partyfinder.PartyFinderJoinInfo
+import mrfast.sbt.features.statDisplays.*
 import mrfast.sbt.managers.DataManager
 import mrfast.sbt.managers.PartyManager
 import mrfast.sbt.managers.VersionManager

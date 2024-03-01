@@ -1,9 +1,6 @@
-package mrfast.sbt.features.general
+package mrfast.sbt.features.statDisplays
 
 import gg.essential.elementa.components.UIRoundedRectangle
-import gg.essential.elementa.dsl.constrain
-import gg.essential.elementa.dsl.constraint
-import gg.essential.elementa.dsl.pixels
 import gg.essential.universal.UMatrixStack
 import mrfast.sbt.apis.PlayerStats
 import mrfast.sbt.config.categories.GeneralConfig
@@ -12,10 +9,7 @@ import mrfast.sbt.config.categories.GeneralConfig.manaBarBarColor
 import mrfast.sbt.config.categories.GeneralConfig.manaBarManaColor
 import mrfast.sbt.config.categories.GeneralConfig.manaBarOverflowColor
 import mrfast.sbt.config.categories.GeneralConfig.manaBarShowOverflow
-import mrfast.sbt.config.components.OutlinedRoundedRectangle
 import mrfast.sbt.utils.LocationUtils
-import net.minecraft.client.gui.Gui
-import java.awt.Color
 
 object ManaBarDisplay {
     init {

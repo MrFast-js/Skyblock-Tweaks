@@ -1,4 +1,4 @@
-package mrfast.sbt.features.general
+package mrfast.sbt.features.statDisplays
 
 import mrfast.sbt.apis.PlayerStats
 import mrfast.sbt.config.categories.GeneralConfig
@@ -8,28 +8,28 @@ import mrfast.sbt.utils.LocationUtils
 import mrfast.sbt.utils.Utils
 import mrfast.sbt.utils.Utils.formatNumber
 
-object OverflowManaDisplay {
+object EffectiveHealthDisplay {
     init {
-        OverflowManaDisplayGui()
+        EffectiveHealthDisplayGui()
     }
 
-    class OverflowManaDisplayGui : GuiManager.Element() {
+    class EffectiveHealthDisplayGui : GuiManager.Element() {
         init {
             this.relativeX = 0.371875
             this.relativeY = 0.842593
-            this.elementName = "Overflow Mana Display"
+            this.elementName = "Effective Health Display"
             this.addToList()
             this.height = Utils.mc.fontRendererObj.FONT_HEIGHT
         }
 
         override fun draw() {
-            val display = "§3${PlayerStats.overflowMana.formatNumber()}ʬ"
+            val display = "§2${PlayerStats.effectiveHealth.formatNumber()}"
             GuiUtils.drawText(display, 0f, 0f, GuiUtils.TextStyle.BLACK_OUTLINE)
             this.width = Utils.mc.fontRendererObj.getStringWidth(display)+1
         }
 
         override fun isActive(): Boolean {
-            return GeneralConfig.overflowManaDisplay && LocationUtils.inSkyblock
+            return GeneralConfig.effectiveHealthDisplay && LocationUtils.inSkyblock
         }
 
         override fun isVisible(): Boolean {
