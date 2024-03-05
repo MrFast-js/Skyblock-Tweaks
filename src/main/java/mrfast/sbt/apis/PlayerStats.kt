@@ -41,8 +41,6 @@ object PlayerStats {
                 if (trimmed.isEmpty()) continue
                 val shortString: String = colorsStripped.substring(0, colorsStripped.length - 1).replace(",", "")
 
-                println("$colorsStripped ||| ${colorsStripped.endsWith("ф")}")
-
                 when {
                     colorsStripped.endsWith("❤") -> parseAndSetHealth(shortString)
                     colorsStripped.endsWith("ф") -> parseAndSetRiftTime(shortString)
