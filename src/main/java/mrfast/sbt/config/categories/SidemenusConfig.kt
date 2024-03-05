@@ -33,46 +33,6 @@ object SidemenusConfig : Config() {
 
     @ConfigProperty(
             type = ConfigType.TOGGLE,
-            name = "Quiver Overlay",
-            description = "Shows the arrows in currently your quiver. §cThis will also estimate the count after arrows are shot",
-            category = "Overlays",
-            subcategory = "Miscellaneous",
-            isParent = true
-    )
-    var quiverOverlay = false
-
-    @ConfigProperty(
-            type = ConfigType.TOGGLE,
-            name = "Only show when holding bow",
-            description = "",
-            category = "Overlays",
-            subcategory = "Miscellaneous",
-            parentName = "Quiver Overlay"
-    )
-    var quiverOverlayOnlyBow = false
-
-    @ConfigProperty(
-            type = ConfigType.TOGGLE,
-            name = "Low Arrow Notification",
-            description = "Shows a popup on your screen if you get below §a128§r arrows.",
-            category = "Overlays",
-            subcategory = "Miscellaneous",
-            parentName = "Quiver Overlay"
-    )
-    var quiverOverlayLowArrowNotification = true
-
-    @ConfigProperty(
-            type = ConfigType.TOGGLE,
-            name = "Show Arrow Type",
-            description = "Shows the type of arrow selected in the quiver display.",
-            category = "Overlays",
-            subcategory = "Miscellaneous",
-            parentName = "Quiver Overlay"
-    )
-    var quiverOverlayType = false
-
-    @ConfigProperty(
-            type = ConfigType.TOGGLE,
             name = "Collections Leaderboard Overlay",
             description = "Shows a leaderboard for the collection types",
             category = "Overlays",

@@ -59,6 +59,47 @@ object MiscellaneousConfig : Config() {
         dropdownOptions = ["Slot", "Border"]
     )
     var trashHighlightType = "Border"
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Quiver Overlay",
+        description = "Shows the arrows in currently your quiver. §cThis will also estimate the count after arrows are shot",
+        category = "Miscellaneous",
+        subcategory = "Quiver Overlay",
+        isParent = true
+    )
+    var quiverOverlay = false
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Only show when holding bow",
+        description = "",
+        category = "Miscellaneous",
+        subcategory = "Quiver Overlay",
+        parentName = "Quiver Overlay"
+    )
+    var quiverOverlayOnlyBow = false
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Low Arrow Notification",
+        description = "Shows a popup on your screen if you get below §a128§r arrows.",
+        category = "Miscellaneous",
+        subcategory = "Quiver Overlay",
+        parentName = "Quiver Overlay"
+    )
+    var quiverOverlayLowArrowNotification = true
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Show Arrow Type",
+        description = "Shows the type of arrow selected in the quiver display.",
+        category = "Miscellaneous",
+        subcategory = "Quiver Overlay",
+        parentName = "Quiver Overlay"
+    )
+    var quiverOverlayType = false
+
 //    @ConfigProperty(
 //            type = ConfigType.TOGGLE,
 //            name = "Fire Veil Timer",
