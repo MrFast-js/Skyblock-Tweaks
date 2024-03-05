@@ -16,6 +16,7 @@ object HideHotbarElements {
     private fun shouldHide(type:ElementType):Boolean {
         return  type == ElementType.ARMOR && GeneralConfig.hideArmorBar ||
                 type == ElementType.HEALTH && GeneralConfig.hideHealthHearts ||
+                type == ElementType.AIR && GeneralConfig.hideAirBubbles ||
                 type == ElementType.FOOD && GeneralConfig.hideHungerBar
     }
 }

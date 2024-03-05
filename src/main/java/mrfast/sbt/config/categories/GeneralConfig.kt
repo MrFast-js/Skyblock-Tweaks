@@ -255,12 +255,22 @@ object GeneralConfig : Config() {
     @ConfigProperty(
         type = ConfigType.TOGGLE,
         name = "Hide Health Hearts",
-        description = "Hide the health icons above health bar",
+        description = "Hide the health icons above hotbar",
         category = "General",
         subcategory = "Stat Displays",
         parentName = "Cleaner Hotbar Area"
     )
     var hideHealthHearts = false
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Hide Air Bubbles",
+        description = "Hide the air bubble icons above hotbar when underwater",
+        category = "General",
+        subcategory = "Stat Displays",
+        parentName = "Cleaner Hotbar Area"
+    )
+    var hideAirBubbles = false
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
