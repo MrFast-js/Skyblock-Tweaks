@@ -5,9 +5,11 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.inventory.ContainerChest
+import net.minecraft.item.ItemStack
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 import kotlin.math.sqrt
@@ -22,7 +24,7 @@ object GuiUtils {
     fun drawText(text: String, x: Float, y: Float, style: TextStyle) {
         val shadowText: String = text.cleanColor()
 
-        GlStateManager.translate(0f,0f,200f)
+        GlStateManager.translate(0f, 0f, 200f)
         if (style == TextStyle.BLACK_OUTLINE) {
             Minecraft.getMinecraft().fontRendererObj.drawString(shadowText, x + 2, y + 1, 0x000000, false)
             Minecraft.getMinecraft().fontRendererObj.drawString(shadowText, x, y + 1, 0x000000, false)
@@ -37,7 +39,23 @@ object GuiUtils {
             0xFFFFFF,
             style == TextStyle.DROP_SHADOW
         )
-        GlStateManager.translate(0f,0f,-200f)
+        GlStateManager.translate(0f, 0f, -200f)
+    }
+
+    fun renderItemStackOnScreen(stack: ItemStack?, x: Float, y: Float, width: Float, height: Float) {
+        if (stack == null || stack.item == null) {
+            return
+        }
+        GlStateManager.pushMatrix()
+        RenderHelper.enableGUIStandardItemLighting()
+        GlStateManager.enableDepth()
+        GlStateManager.depthFunc(GL11.GL_LEQUAL)
+        GlStateManager.translate(x, y, 0f)
+        GlStateManager.scale(width / 16f, height / 16f, 1.0f)
+        Minecraft.getMinecraft().renderItem.renderItemIntoGUI(stack, 0, 0)
+        Minecraft.getMinecraft().renderItem.renderItemOverlays(Utils.mc.fontRendererObj, stack, 0, 0)
+        RenderHelper.disableStandardItemLighting()
+        GlStateManager.popMatrix()
     }
 
     fun drawOutlinedSquare(x: Int, y: Int, width: Int, height: Int, backgroundColor: Color, borderColor: Color) {
@@ -80,7 +98,7 @@ object GuiUtils {
     }
 
     fun GuiContainer.chestName(): String {
-        if(this.inventorySlots !is ContainerChest) return ""
+        if (this.inventorySlots !is ContainerChest) return ""
         val chest = this.inventorySlots as ContainerChest
         val inv = chest.lowerChestInventory
         return inv.displayName.unformattedText.trim()
