@@ -73,7 +73,7 @@ object MiscellaneousConfig : Config() {
     @ConfigProperty(
         type = ConfigType.TOGGLE,
         name = "Only show when holding bow",
-        description = "",
+        description = "Stops showing the quiver overlay if you no longer hold a bow.s",
         category = "Miscellaneous",
         subcategory = "Quiver Overlay",
         parentName = "Quiver Overlay"

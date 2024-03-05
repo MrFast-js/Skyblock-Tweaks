@@ -81,6 +81,7 @@ class SkyblockTweaks {
 
         // Overlays
         MinecraftForge.EVENT_BUS.register(LowHealthTint)
+        MinecraftForge.EVENT_BUS.register(QuiverOverlay) // Quiver Overlay
 
         // Stop above hotbar elements from rendering
         MinecraftForge.EVENT_BUS.register(HideHotbarElements)
