@@ -4,6 +4,7 @@ import com.google.gson.JsonObject
 import mrfast.sbt.utils.ItemUtils.getSkyblockId
 import mrfast.sbt.utils.NetworkUtils
 import net.minecraft.item.ItemStack
+import net.minecraft.nbt.JsonToNBT
 
 object ItemApi {
     private var skyblockItems = JsonObject()
@@ -53,6 +54,26 @@ object ItemApi {
                 }
             }
         }.start()
+    }
+
+    fun createItemStack(itemId: String): ItemStack? {
+        // Assuming skyblockItems is a map containing NBT data as strings
+        val nbtString = skyblockItems[itemId]?.asJsonObject?.get("nbttag")?.asString ?: return null
+        val mcItemId = skyblockItems[itemId]?.asJsonObject?.get("itemid")?.asString ?: return null
+
+        // Parse NBT string
+        val nbtCompound = try {
+            JsonToNBT.getTagFromJson(nbtString)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return null
+        }
+
+        // Create ItemStack with NBT and item ID
+        val itemStack = ItemStack(net.minecraft.item.Item.getByNameOrId(mcItemId))
+        itemStack.tagCompound = nbtCompound
+
+        return itemStack
     }
 
     fun getItemPriceInfo(itemId: String): JsonObject? {
