@@ -27,7 +27,7 @@ object ItemAbilities {
     private var activeCooldowns = HashMap<String, Double>()
     private var justUsedAbility: ItemAbility? = null
     private fun sendItemAbilityEvent(ability: ItemAbility?, event: Event) {
-        if (ability!=null) {
+        if (ability != null) {
             if (MinecraftForge.EVENT_BUS.post(UseItemAbilityEvent(ability))) {
                 // cancel the item use ability
                 event.setCanceled(true)
@@ -217,6 +217,7 @@ object ItemAbilities {
 
     @SubscribeEvent
     fun onChat(event: ClientChatReceivedEvent) {
+        if (event.type.toInt() == 2) return
         val clean = event.message.unformattedText.clean()
 
         if (clean.startsWith("Used") && LocationUtils.inDungeons) {
