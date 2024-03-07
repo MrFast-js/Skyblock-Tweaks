@@ -57,7 +57,6 @@ object DataManager {
 
             if (groups.size >= 2) {
                 val newProfileId = groups[1]
-                println("$currentProfileId $newProfileId")
                 if (currentProfileId == null || currentProfileId != newProfileId || !sentInitialLoad) {
                     sentInitialLoad = true
                     MinecraftForge.EVENT_BUS.post(ProfileLoadEvent())
@@ -187,7 +186,6 @@ object DataManager {
     }
 
     private fun convertFromJsonElement(jsonElement: JsonElement): Any? {
-        println(jsonElement)
         return if (jsonElement.isJsonPrimitive) {
             if (jsonElement.getAsJsonPrimitive().isBoolean) {
                 jsonElement.getAsJsonPrimitive().asBoolean
@@ -200,7 +198,6 @@ object DataManager {
                     jsonElement.getAsJsonPrimitive().asNumber.toLong()
                 } else jsonElement.getAsJsonPrimitive().asNumber.toInt()
             } else {
-                println("AAAAAAAAAAAA:" +jsonElement.getAsJsonPrimitive().toString())
                 jsonElement.getAsJsonPrimitive().asString
             }
         } else if (jsonElement.isJsonArray) {
