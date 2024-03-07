@@ -17,7 +17,7 @@ open class Config : ConfigManager() {
         MiscellaneousConfig,
         //OverlaysConfig,
         RiftConfig,
-        //RenderingConfig,
+        RenderingConfig,
         CustomizationConfig,
         DeveloperConfig
     )
