@@ -11,7 +11,7 @@ object RiftConfig : Config() {
         type = ConfigType.TOGGLE,
         name = "Rift Time Bar",
         description = "Moveable Rift Time Bar that adjusts depending on your time left in the rift / damage taken",
-        category = "Rift",
+        category = "The Rift",
         subcategory = "Stat Displays",
         isParent = true
     )
@@ -21,7 +21,7 @@ object RiftConfig : Config() {
         type = ConfigType.COLOR,
         name = "Rift Fill Color",
         description = "",
-        category = "Rift",
+        category = "The Rift",
         subcategory = "Stat Displays",
         parentName = "Rift Time Bar"
     )
@@ -31,7 +31,7 @@ object RiftConfig : Config() {
         type = ConfigType.COLOR,
         name = "Rift Bar Background",
         description = "",
-        category = "Rift",
+        category = "The Rift",
         subcategory = "Stat Displays",
         parentName = "Rift Time Bar"
     )
