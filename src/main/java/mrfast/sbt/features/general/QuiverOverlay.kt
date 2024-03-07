@@ -95,6 +95,7 @@ object QuiverOverlay {
 
         val clean = event.message.unformattedText.clean()
         when {
+            // TODO: swap to regex here
             clean.startsWith("You set your selected arrow type to") -> {
                 val arrowName = event.message.formattedText.split("You set your selected arrow type to §r")[1].replace(
                     "§r§a!§r",
@@ -110,25 +111,30 @@ object QuiverOverlay {
                 DataManager.saveProfileData("arrows", arrowCounts)
             }
 
+            // TODO: swap to regex here
             clean.startsWith("You filled your quiver with") -> {
                 val arrowCount = clean.replace("[^0-9]".toRegex(), "").toDouble()
-                val old = arrowCounts.get("§fFlint Arrow")?.asDouble ?: 0.0
-                arrowCounts.addProperty("§fFlint Arrow", old + arrowCount)
+                val arrowObj = getOrCreateArrow("§fFlint Arrow")
+                val old = arrowObj.get("count").asDouble
+
+                arrowObj.addProperty("count", old + arrowCount)
+
                 DataManager.saveProfileData("arrows", arrowCounts)
+                arrowCounts.get("ARROW")
             }
 
+            // TODO: swap to regex here
             clean.startsWith("Jax forged") -> {
                 val arrowName = event.message.formattedText.split("Jax forged §r")[1].split("§r§8 x")[0]
-                val arrowCount = clean.split(" x")[1].split(" ")[0].replace("[^0-9]".toRegex(), "").toDouble()
-                val oldCount = arrowCounts.get(arrowName)?.asDouble ?: 0.0
-                val arrowObj = JsonObject()
-                arrowObj.addProperty("arrowName", arrowName)
-                arrowObj.addProperty("count", oldCount + arrowCount)
+                val newArrowsCreated = clean.split(" x")[1].split(" ")[0].replace("[^0-9]".toRegex(), "").toDouble()
+                val arrowObj = getOrCreateArrow(arrowName)
+                val currentCount = arrowObj.get("count").asDouble
 
-                arrowCounts.add(
-                    getArrowIdFromName(arrowName),
-                    arrowObj
+                arrowObj.addProperty(
+                    "count",
+                    max(0.0, currentCount + newArrowsCreated) // Stop from going negative
                 )
+
                 DataManager.saveProfileData("arrows", arrowCounts)
             }
         }
@@ -193,6 +199,19 @@ object QuiverOverlay {
             display = "§cNo Arrow Selected"
         }
         return display
+    }
+
+    fun getOrCreateArrow(arrowName: String): JsonObject {
+        val id = getArrowIdFromName(arrowName)
+        if (!arrowCounts.has(id)) {
+            val arrow = JsonObject()
+            arrow.addProperty("count", 0)
+            arrow.addProperty("arrowName", arrowName)
+
+            arrowCounts.add(id, arrow)
+        }
+
+        return arrowCounts[getArrowIdFromName(arrowName)].asJsonObject
     }
 
     fun getArrowIdFromName(name: String): String {
