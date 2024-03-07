@@ -15,6 +15,7 @@ import mrfast.sbt.features.partyfinder.PartyFinderJoinInfo
 import mrfast.sbt.features.statDisplays.*
 import mrfast.sbt.managers.DataManager
 import mrfast.sbt.managers.PartyManager
+import mrfast.sbt.managers.SackManager
 import mrfast.sbt.managers.VersionManager
 import mrfast.sbt.utils.DevUtils
 import mrfast.sbt.utils.LocationUtils
@@ -62,6 +63,7 @@ class SkyblockTweaks {
         MinecraftForge.EVENT_BUS.register(VersionManager)
         MinecraftForge.EVENT_BUS.register(DataManager)
         MinecraftForge.EVENT_BUS.register(PartyManager)
+        MinecraftForge.EVENT_BUS.register(SackManager)
 
         // Stat Displays
         MinecraftForge.EVENT_BUS.register(HealthDisplay)
