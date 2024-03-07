@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(RendererLivingEntity.class)
 public class MixinRendererLivingEntity<T extends EntityLivingBase> {
-    @Inject(method = "setBrightness", at = @At("HEAD"))
+    @Inject(method = "setBrightness", at = @At("HEAD"),cancellable = true)
     private void onSetBrightness(T entitylivingbaseIn, float partialTicks, boolean combineTextures, CallbackInfoReturnable<Boolean> cir) {
         boolean flag1 = entitylivingbaseIn.hurtTime > 0 || entitylivingbaseIn.deathTime > 0;
         if (RenderingConfig.INSTANCE.getDisableDamageTint() && flag1) {
