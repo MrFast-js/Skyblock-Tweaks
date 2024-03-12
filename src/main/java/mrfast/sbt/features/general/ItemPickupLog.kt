@@ -7,6 +7,10 @@ import mrfast.sbt.utils.Utils.formatNumber
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import kotlin.math.abs
 
+
+/*
+THIS IS NOT A FEATURE, THIS IS FOR DEBUGGING AND TESTING PURPOSES ONLY
+ */
 object ItemPickupLog {
     var displayLines = mutableMapOf<String, PickupEntry>()
 
