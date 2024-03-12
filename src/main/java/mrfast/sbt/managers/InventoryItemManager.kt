@@ -50,6 +50,13 @@ object InventoryItemManager {
         return inventoryState
     }
 
+    /*
+    HAS MAJOR PROBLEM, WORKS GOOD, EXCEPT IF THEIR IS MULTIPLE OF SAME ITEM IN DIFFERENT SLOTS
+
+    EXAMPLE: IF YOU HAVE 5 SLOTS OF 1 CARROT, IT WONT RECOGNIZE THAT ANY HAVE BEEN DROPPED FROM ANY OF THEM UNLESS THERE IS ONLY ONE STACK
+
+    EXAMPLE 2: IF GAINING ITEMS AND IT GOES OVER 64 IT BECOMES TWO SLOTS, THUS BREAKING IT
+     */
     private fun compareInventories(previous: Map<String, Int>, current: Map<String, Int>) {
         // Compare current inventory with previous inventory
         current.forEach { (displayName, currentCount) ->
