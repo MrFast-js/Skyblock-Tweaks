@@ -13,10 +13,7 @@ import mrfast.sbt.features.general.*
 import mrfast.sbt.features.statDisplays.RiftTimeBarDisplay
 import mrfast.sbt.features.partyfinder.PartyFinderJoinInfo
 import mrfast.sbt.features.statDisplays.*
-import mrfast.sbt.managers.DataManager
-import mrfast.sbt.managers.PartyManager
-import mrfast.sbt.managers.SackManager
-import mrfast.sbt.managers.VersionManager
+import mrfast.sbt.managers.*
 import mrfast.sbt.utils.DevUtils
 import mrfast.sbt.utils.LocationUtils
 import mrfast.sbt.utils.SocketUtils
@@ -63,6 +60,7 @@ class SkyblockTweaks {
         MinecraftForge.EVENT_BUS.register(VersionManager)
         MinecraftForge.EVENT_BUS.register(DataManager)
         MinecraftForge.EVENT_BUS.register(PartyManager)
+        MinecraftForge.EVENT_BUS.register(InventoryItemManager)
         MinecraftForge.EVENT_BUS.register(SackManager)
 
         // Stat Displays
@@ -83,6 +81,7 @@ class SkyblockTweaks {
 
         // Overlays
         MinecraftForge.EVENT_BUS.register(LowHealthTint)
+        MinecraftForge.EVENT_BUS.register(ItemPickupLog)
         MinecraftForge.EVENT_BUS.register(QuiverOverlay) // Quiver Overlay
 
         // Stop above hotbar elements from rendering

@@ -61,7 +61,7 @@ object SackManager {
                         MinecraftForge.EVENT_BUS.post(
                             SkyblockInventoryItemEvent.SackItemEvent(
                                 SkyblockInventoryItemEvent.EventType.LOST,
-                                lastCapturedNumber * -1,
+                                lastCapturedNumber,
                                 material
                             )
                         )
