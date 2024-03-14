@@ -19,7 +19,7 @@ object ItemUtils {
     fun ItemStack.getSkyblockId(): String? {
         val nbt = this.getExtraAttributes()
         if (nbt != null && nbt.hasKey("id")) {
-            if (nbt.getString("id").equals("PET")) {
+            if (nbt.getString("id").equals("PET") && nbt.hasKey("petInfo")) {
                 val petInfo = DevUtils.convertStringToJson(nbt.getString("petInfo"))?.asJsonObject ?: return null
                 val tierInt = petTierToInt(petInfo.get("tier").asString)
 
