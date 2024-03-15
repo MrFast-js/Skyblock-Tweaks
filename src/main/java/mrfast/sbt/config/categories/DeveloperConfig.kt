@@ -25,6 +25,15 @@ object DeveloperConfig : Config() {
     var showMobIds = false
 
     @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Show item pickup log",
+        description = "Shows items gained and lost, aswell as sack info",
+        category = "§eDeveloper",
+        subcategory = "Settings"
+    )
+    var itemPickupLog = false
+
+    @ConfigProperty(
             type = ConfigType.TOGGLE,
             name = "Show item abilities",
             description = "Shows when a skyblock item uses its ability, used to create features with listening for item abilities",

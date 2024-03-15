@@ -1,6 +1,8 @@
 package mrfast.sbt.features.general
 
 import mrfast.sbt.config.GuiManager
+import mrfast.sbt.config.categories.CustomizationConfig
+import mrfast.sbt.config.categories.DeveloperConfig.itemPickupLog
 import mrfast.sbt.customevents.SkyblockInventoryItemEvent
 import mrfast.sbt.utils.GuiUtils
 import mrfast.sbt.utils.Utils.formatNumber
@@ -71,7 +73,7 @@ object ItemPickupLog {
         }
 
         override fun isActive(): Boolean {
-            return true
+            return itemPickupLog && CustomizationConfig.developerMode
         }
 
         override fun isVisible(): Boolean {
