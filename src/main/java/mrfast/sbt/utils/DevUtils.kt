@@ -89,13 +89,13 @@ object DevUtils {
                 val nbt = prettyPrintNBTtoString(event.itemStack.getExtraAttributes()!!).replace("\"", "").split("\n")
                 event.toolTip.addAll(nbt)
             }
-            if (Keyboard.isKeyDown(Keyboard.KEY_C) && !copyingTooltip) {
-                copyingTooltip = true
-                Utils.setTimeout({
-                    copyingTooltip = false
-                }, 500)
-                Utils.copyToClipboard(event.toolTip.joinToString("\n"))
-            }
+        }
+        if (Keyboard.isKeyDown(Keyboard.KEY_C) && !copyingTooltip && CustomizationConfig.developerMode) {
+            copyingTooltip = true
+            Utils.setTimeout({
+                copyingTooltip = false
+            }, 500)
+            Utils.copyToClipboard(event.toolTip.joinToString("\n"))
         }
     }
 }
