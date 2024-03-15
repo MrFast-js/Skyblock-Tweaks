@@ -3,9 +3,11 @@ package mrfast.sbt.managers
 import mrfast.sbt.customevents.SkyblockInventoryItemEvent
 import mrfast.sbt.utils.LocationUtils
 import mrfast.sbt.utils.Utils
-import net.minecraft.client.gui.GuiChat
+import mrfast.sbt.utils.Utils.getRegexGroups
+import mrfast.sbt.utils.Utils.matches
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 import kotlin.math.abs
 
@@ -14,10 +16,11 @@ object InventoryItemManager {
     private var previousInventory = mutableMapOf<String, Int>()
     private var preOpenInventory = mutableMapOf<String, Int>()
     private var isOpen = false
+    private var ignoreStacksRegex = listOf("^§8Quiver.*","^§aSkyBlock Menu §7\\(Click\\)","^§bMagical Map")
 
     @SubscribeEvent
     fun onTickEvent(event: ClientTickEvent) {
-        if (!LocationUtils.inSkyblock || Utils.mc.theWorld == null) return
+        if (event.phase != TickEvent.Phase.START || !LocationUtils.inSkyblock || Utils.mc.theWorld == null) return
 
         val currentInventory = getCurrentInventoryState()
 
@@ -33,18 +36,30 @@ object InventoryItemManager {
         }
 
         // Update the isOpen flag
-        isOpen = Utils.mc.currentScreen != null && Utils.mc.currentScreen !is GuiChat
+        isOpen = false
     }
 
     private fun getCurrentInventoryState(): Map<String, Int> {
         val inventoryState = mutableMapOf<String, Int>()
         val mainInventory = Utils.mc.thePlayer.inventory.mainInventory
 
-        for (i in 0 until mainInventory.size) {
-            val itemStack = mainInventory[i]
-            val displayName = itemStack?.displayName ?: "Empty slot"
-            val itemCount = itemStack?.stackSize ?: 0
-            inventoryState[displayName] = itemCount
+        loop@ for (element in mainInventory) {
+            var displayName = element?.displayName ?: "Empty slot"
+            // Filters
+            for (regex in ignoreStacksRegex) {
+                if (displayName.matches(regex)) {
+                    continue@loop
+                }
+            }
+
+            // npc shop fix
+            val npcSellingStackRegex = "(.*) §8x\\d+"
+            if(displayName.matches(npcSellingStackRegex)) {
+                displayName = displayName.getRegexGroups(npcSellingStackRegex)?.group(1)?:continue
+            }
+
+            val itemCount = element?.stackSize ?: 0
+            inventoryState.merge(displayName, itemCount, Int::plus)
         }
 
         return inventoryState
@@ -58,6 +73,8 @@ object InventoryItemManager {
     EXAMPLE 2: IF GAINING ITEMS AND IT GOES OVER 64 IT BECOMES TWO SLOTS, THUS BREAKING IT
      */
     private fun compareInventories(previous: Map<String, Int>, current: Map<String, Int>) {
+        if(previous.isEmpty() || current.isEmpty()) return
+
         // Compare current inventory with previous inventory
         current.forEach { (displayName, currentCount) ->
             val previousCount = previous[displayName] ?: 0
@@ -65,9 +82,7 @@ object InventoryItemManager {
 
             // Check if there is a change in count
             if (countDifference != 0) {
-                val action = if (countDifference > 0) "+" else "-"
                 val itemName = if (displayName != "Empty slot") displayName else getPreviousItemName(current)
-                val itemChangeMessage = "$action${abs(countDifference)} $itemName"
 
                 if (countDifference > 0) {
                     MinecraftForge.EVENT_BUS.post(
@@ -86,7 +101,6 @@ object InventoryItemManager {
                         )
                     )
                 }
-                println(itemChangeMessage)
             }
         }
 
@@ -94,7 +108,6 @@ object InventoryItemManager {
         previous.forEach { (displayName, previousCount) ->
             val currentCount = current[displayName] ?: 0
             if (previousCount > 0 && currentCount == 0) {
-                val itemChangeMessage = "-$previousCount $displayName"
                 MinecraftForge.EVENT_BUS.post(
                     SkyblockInventoryItemEvent.ItemStackEvent(
                         SkyblockInventoryItemEvent.EventType.LOST,
@@ -102,7 +115,6 @@ object InventoryItemManager {
                         displayName
                     )
                 )
-                println(itemChangeMessage)
             }
         }
     }
