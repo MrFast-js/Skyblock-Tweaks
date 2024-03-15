@@ -82,16 +82,6 @@ object MiscellaneousConfig : Config() {
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
-        name = "Low Arrow Notification",
-        description = "Shows a popup on your screen if you get below §a128§r arrows.",
-        category = "Miscellaneous",
-        subcategory = "Quiver Overlay",
-        parentName = "Quiver Overlay"
-    )
-    var quiverOverlayLowArrowNotification = true
-
-    @ConfigProperty(
-        type = ConfigType.TOGGLE,
         name = "Show Arrow Type",
         description = "Shows the type of arrow selected in the quiver display.",
         category = "Miscellaneous",

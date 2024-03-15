@@ -1,226 +1,51 @@
 package mrfast.sbt.features.general
 
-import com.google.gson.JsonObject
 import mrfast.sbt.apis.ItemApi
 import mrfast.sbt.config.GuiManager
 import mrfast.sbt.config.categories.GeneralConfig
 import mrfast.sbt.config.categories.MiscellaneousConfig
-import mrfast.sbt.customevents.PacketEvent
-import mrfast.sbt.customevents.ProfileLoadEvent
-import mrfast.sbt.customevents.SlotDrawnEvent
-import mrfast.sbt.managers.DataManager
-import mrfast.sbt.utils.ChatUtils
+import mrfast.sbt.config.categories.MiscellaneousConfig.quiverOverlayType
 import mrfast.sbt.utils.GuiUtils
-import mrfast.sbt.utils.GuiUtils.chestName
-import mrfast.sbt.utils.ItemUtils.getExtraAttributes
 import mrfast.sbt.utils.ItemUtils.getLore
-import mrfast.sbt.utils.ItemUtils.getSkyblockId
 import mrfast.sbt.utils.LocationUtils
 import mrfast.sbt.utils.Utils
 import mrfast.sbt.utils.Utils.clean
 import mrfast.sbt.utils.Utils.formatNumber
-import net.minecraft.init.Items
+import mrfast.sbt.utils.Utils.getRegexGroups
+import mrfast.sbt.utils.Utils.matches
 import net.minecraft.item.ItemBow
 import net.minecraft.item.ItemStack
-import net.minecraft.network.play.server.S29PacketSoundEffect
-import net.minecraftforge.client.event.ClientChatReceivedEvent
-import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import kotlin.math.floor
-import kotlin.math.max
+import net.minecraftforge.fml.common.gameevent.TickEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 
 object QuiverOverlay {
-    private var selectedArrowId = ""
-    private var arrowCounts = JsonObject()
-    private var loadedData = false
-    private var readArrowFromSwapper = false
-    private var sentLowArrows = false
+    private var currentArrow = ""
+    private var currentArrowCount = 0
+    private var currentArrowId = ""
 
     @SubscribeEvent
-    fun onProfileSwap(event: ProfileLoadEvent) {
-        arrowCounts = DataManager.getProfileDataDefault("arrows", JsonObject()) as JsonObject
-        selectedArrowId = DataManager.getProfileDataDefault("selectedArrowType", "ARROW") as String
+    fun onTick(event: ClientTickEvent) {
+        if (event.phase != TickEvent.Phase.START || !LocationUtils.inSkyblock || Utils.mc.theWorld == null) return
 
-        loadedData = true
-    }
-
-    @SubscribeEvent
-    fun onWorldLoad(event: WorldEvent.Load) {
-        readArrowFromSwapper = false
-        sentLowArrows = false
-    }
-
-    @SubscribeEvent
-    fun onSlotDraw(event: SlotDrawnEvent.Post) {
-        if (!MiscellaneousConfig.quiverOverlay) return
-
-        val stack = event.slot.stack
-        if (stack != null && stack.item != null && stack.getSkyblockId() == "ARROW_SWAPPER" && !readArrowFromSwapper) {
-            for (lore in stack.getLore()) {
-                if (lore.startsWith("§aSelected: ")) {
-                    readArrowFromSwapper = true
-                    selectedArrowId = getArrowIdFromName(lore.split("§aSelected: ")[1])
-                    DataManager.saveProfileData("selectedArrowType", selectedArrowId)
-                    return
+        for (itemStack in Utils.mc.thePlayer.inventory.mainInventory) {
+            if(itemStack==null) continue
+            if(itemStack.hasDisplayName()) {
+                if(itemStack.displayName.matches("^§8Quiver.*")) {
+                    for (line in itemStack.getLore()) {
+                        val activeArrowLoreRegex = "§7Active Arrow: (.+?) §7\\(§e(\\d+)§7\\)"
+                        if(line.matches(activeArrowLoreRegex)) {
+                            val match = line.getRegexGroups(activeArrowLoreRegex)?:continue
+                            currentArrowCount = match.group(2).toInt()
+                            if(currentArrow!=match.group(1)) {
+                                currentArrow = match.group(1)
+                                currentArrowId = ItemApi.getItemIdFromName(currentArrow)?:"UNKNOWN"
+                            }
+                        }
+                    }
                 }
             }
         }
-
-        if (event.slot.slotIndex == 0 && event.gui.chestName() == "Quiver") {
-            val newArrowCount = JsonObject()
-            for (i in 0 until event.gui.inventorySlots.inventorySlots.size) {
-                val slotStack = event.gui.inventorySlots.getSlot(i).stack ?: continue
-
-                if (slotStack.item == Items.arrow && slotStack.getSkyblockId()?.contains("ARROW") == true) {
-                    val displayName = slotStack.displayName
-                    val arrowObj = JsonObject()
-                    arrowObj.addProperty("arrowName", displayName)
-                    val oldCount = newArrowCount[slotStack.getSkyblockId()]?.asJsonObject?.get("count")?.asDouble ?: 0.0
-                    arrowObj.addProperty("count", oldCount + slotStack.stackSize)
-
-                    newArrowCount.add(
-                        slotStack.getSkyblockId(),
-                        arrowObj
-                    )
-                }
-            }
-            arrowCounts = newArrowCount
-            DataManager.saveProfileData("arrows", arrowCounts)
-        }
-    }
-
-    @SubscribeEvent
-    fun onChat(event: ClientChatReceivedEvent) {
-        if (event.type.toInt() == 2 || !MiscellaneousConfig.quiverOverlay) return
-
-        val clean = event.message.unformattedText.clean()
-        when {
-            // TODO: swap to regex here
-            clean.startsWith("You set your selected arrow type to") -> {
-                val arrowName = event.message.formattedText.split("You set your selected arrow type to §r")[1].replace(
-                    "§r§a!§r",
-                    ""
-                )
-                selectedArrowId = getArrowIdFromName(arrowName)
-
-                DataManager.saveProfileData("selectedArrowType", selectedArrowId)
-            }
-
-            clean == "Cleared your quiver!" || clean == "Your quiver is empty!" || clean.startsWith("You don't have any more arrows left in your Quiver!") -> {
-                arrowCounts = JsonObject()
-                DataManager.saveProfileData("arrows", arrowCounts)
-            }
-
-            // TODO: swap to regex here
-            clean.startsWith("You filled your quiver with") -> {
-                val arrowCount = clean.replace("[^0-9]".toRegex(), "").toDouble()
-                val arrowObj = getOrCreateArrow("§fFlint Arrow")
-                val old = arrowObj.get("count").asDouble
-
-                arrowObj.addProperty("count", old + arrowCount)
-
-                DataManager.saveProfileData("arrows", arrowCounts)
-                arrowCounts.get("ARROW")
-            }
-
-            // TODO: swap to regex here
-            clean.startsWith("Jax forged") -> {
-                val arrowName = event.message.formattedText.split("Jax forged §r")[1].split("§r§8 x")[0]
-                val newArrowsCreated = clean.split(" x")[1].split(" ")[0].replace("[^0-9]".toRegex(), "").toDouble()
-                val arrowObj = getOrCreateArrow(arrowName)
-                val currentCount = arrowObj.get("count").asDouble
-
-                arrowObj.addProperty(
-                    "count",
-                    max(0.0, currentCount + newArrowsCreated) // Stop from going negative
-                )
-
-                DataManager.saveProfileData("arrows", arrowCounts)
-            }
-        }
-    }
-
-    @SubscribeEvent
-    fun onPacket(event: PacketEvent.Received) {
-        if (!MiscellaneousConfig.quiverOverlay || Utils.mc.thePlayer == null || event.packet !is S29PacketSoundEffect) return
-
-        val packet = event.packet
-        val heldItem = Utils.mc.thePlayer.heldItem
-        if (heldItem != null && heldItem.item is ItemBow && packet.soundName == "random.bow") {
-            arrowShot()
-        }
-    }
-
-    private fun arrowShot() {
-        val held = Utils.mc.thePlayer.heldItem ?: return
-        if (held.getSkyblockId() == null || !loadedData) return
-
-        var countToRemove = 1.0
-        val enchants = held.getExtraAttributes()?.getCompoundTag("enchantments")
-
-        if (enchants != null) {
-            if (enchants.hasKey("infinite_quiver")) {
-                val level = enchants.getInteger("infinite_quiver")
-                countToRemove = (1 - level * 0.03)
-            }
-        }
-        val selectedArrow = arrowCounts[selectedArrowId]?.asJsonObject ?: return
-        val currentCount = selectedArrow.get("count")?.asDouble ?: 0.0
-
-        selectedArrow.addProperty(
-            "count",
-            max(0.0, currentCount - countToRemove)
-        )
-
-        val lowArrows = selectedArrow.get("count").asDouble < 128
-        if (MiscellaneousConfig.quiverOverlayLowArrowNotification) {
-            if (!sentLowArrows && lowArrows) {
-                sentLowArrows = true
-                ChatUtils.sendClientMessage("§cRefill Quiver")
-            }
-        }
-
-        DataManager.saveProfileData("arrows", arrowCounts)
-    }
-
-    fun getDisplay(): String {
-        var quiverArrows = -1.0
-        if (arrowCounts.has(selectedArrowId)) {
-            quiverArrows = arrowCounts[selectedArrowId].asJsonObject.get("count").asDouble
-        }
-        quiverArrows = floor(quiverArrows)
-        var display = if (quiverArrows > 0) "§r§7x" + quiverArrows.formatNumber() else "§cEmpty Quiver"
-
-        if (quiverArrows != -1.0 && MiscellaneousConfig.quiverOverlayType) {
-            val arrowName = arrowCounts[selectedArrowId].asJsonObject.get("arrowName").asString
-            display += " $arrowName"
-        }
-        if (selectedArrowId == "Unknown") {
-            display = "§cNo Arrow Selected"
-        }
-        return display
-    }
-
-    fun getOrCreateArrow(arrowName: String): JsonObject {
-        val id = getArrowIdFromName(arrowName)
-        if (!arrowCounts.has(id)) {
-            val arrow = JsonObject()
-            arrow.addProperty("count", 0)
-            arrow.addProperty("arrowName", arrowName)
-
-            arrowCounts.add(id, arrow)
-        }
-
-        return arrowCounts[getArrowIdFromName(arrowName)].asJsonObject
-    }
-
-    fun getArrowIdFromName(name: String): String {
-        arrowCounts.entrySet().forEach {
-            if (it.value.asJsonObject.get("arrowName").asString == name) {
-                return it.key
-            }
-        }
-        return "Unknown"
     }
 
     init {
@@ -237,10 +62,12 @@ object QuiverOverlay {
         }
 
         override fun draw() {
-            GuiUtils.renderItemStackOnScreen(ItemApi.createItemStack(selectedArrowId), 0f, 0f, 16f, 16f)
+            GuiUtils.renderItemStackOnScreen(ItemApi.createItemStack(currentArrowId), 0f, 0f, 16f, 16f)
+            var display = (if(quiverOverlayType) "$currentArrow " else "") + "§r§7x${currentArrowCount.formatNumber()}"
+            if(currentArrow == "") display = "§cHold bow to show arrow"
 
-            GuiUtils.drawText(getDisplay(), 16f, 3f, GuiUtils.TextStyle.DROP_SHADOW)
-            this.width = Utils.mc.fontRendererObj.getStringWidth(getDisplay().clean()) + 17
+            GuiUtils.drawText(display, 17f, 3f, GuiUtils.TextStyle.DROP_SHADOW)
+            this.width = Utils.mc.fontRendererObj.getStringWidth(display.clean()) + 17
         }
 
         override fun isActive(): Boolean {

@@ -65,13 +65,6 @@ object InventoryItemManager {
         return inventoryState
     }
 
-    /*
-    HAS MAJOR PROBLEM, WORKS GOOD, EXCEPT IF THEIR IS MULTIPLE OF SAME ITEM IN DIFFERENT SLOTS
-
-    EXAMPLE: IF YOU HAVE 5 SLOTS OF 1 CARROT, IT WONT RECOGNIZE THAT ANY HAVE BEEN DROPPED FROM ANY OF THEM UNLESS THERE IS ONLY ONE STACK
-
-    EXAMPLE 2: IF GAINING ITEMS AND IT GOES OVER 64 IT BECOMES TWO SLOTS, THUS BREAKING IT
-     */
     private fun compareInventories(previous: Map<String, Int>, current: Map<String, Int>) {
         if(previous.isEmpty() || current.isEmpty()) return
 
@@ -124,6 +117,4 @@ object InventoryItemManager {
         val previousItem = previousInventory.entries.find { it.key != "Empty slot" && it.value == 0 }
         return previousItem?.key ?: "Unknown item"
     }
-
-
 }
