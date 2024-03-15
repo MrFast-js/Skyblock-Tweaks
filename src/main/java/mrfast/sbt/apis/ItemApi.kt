@@ -3,6 +3,7 @@ package mrfast.sbt.apis
 import com.google.gson.JsonObject
 import mrfast.sbt.utils.ItemUtils.getSkyblockId
 import mrfast.sbt.utils.NetworkUtils
+import mrfast.sbt.utils.Utils.clean
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.JsonToNBT
 
@@ -55,6 +56,18 @@ object ItemApi {
             }
         }.start()
     }
+
+    fun getItemIdFromName(displayName: String, ignoreFormatting: Boolean? = false): String? {
+        return skyblockItems.entrySet().find { entry ->
+            val itemName = entry.value.asJsonObject.get("displayname").asString
+            if (ignoreFormatting == true) {
+                itemName.clean()
+            } else {
+                itemName
+            } == displayName
+        }?.key
+    }
+
 
     fun createItemStack(itemId: String): ItemStack? {
         // Assuming skyblockItems is a map containing NBT data as strings
