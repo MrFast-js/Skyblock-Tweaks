@@ -46,9 +46,10 @@ object ItemPickupLog {
         init {
             this.relativeX = 0.0
             this.relativeY = 0.0
-            this.elementName = "Pickup Log Gui"
+            this.elementName = "Item Pickup Log"
             this.addToList()
             this.height = 16
+            this.width = 112
         }
 
         override fun draw() {

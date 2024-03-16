@@ -1,6 +1,7 @@
 package mrfast.sbt.config
 
 import com.google.gson.GsonBuilder
+import mrfast.sbt.config.categories.CustomizationConfig
 import mrfast.sbt.utils.Utils
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.ScaledResolution
@@ -44,7 +45,9 @@ object GuiManager {
             FileWriter(configFile).use { writer ->
                 gson.toJson(guiElements, writer)
             }
-            println("Config saved successfully.")
+            if(CustomizationConfig.developerMode) {
+                println("Config saved successfully.")
+            }
         } catch (e: Exception) {
             println("Error saving config: ${e.message}")
         }
