@@ -4,6 +4,7 @@ import mrfast.sbt.apis.ItemApi
 import mrfast.sbt.config.GuiManager
 import mrfast.sbt.config.categories.GeneralConfig
 import mrfast.sbt.config.categories.MiscellaneousConfig
+import mrfast.sbt.config.categories.MiscellaneousConfig.quiverOverlay
 import mrfast.sbt.config.categories.MiscellaneousConfig.quiverOverlayType
 import mrfast.sbt.utils.GuiUtils
 import mrfast.sbt.utils.ItemUtils.getLore
@@ -71,7 +72,7 @@ object QuiverOverlay {
         }
 
         override fun isActive(): Boolean {
-            return GeneralConfig.healthDisplay && LocationUtils.inSkyblock
+            return quiverOverlay && LocationUtils.inSkyblock
         }
 
         override fun isVisible(): Boolean {
