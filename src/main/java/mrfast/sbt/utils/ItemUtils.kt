@@ -1,10 +1,8 @@
 package mrfast.sbt.utils
 
-import net.minecraft.init.Blocks
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.CompressedStreamTools
 import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.util.EnumChatFormatting
 import net.minecraftforge.common.util.Constants
 import java.io.ByteArrayInputStream
 import java.io.IOException
@@ -17,17 +15,25 @@ object ItemUtils {
     }
 
     fun ItemStack.getSkyblockId(): String? {
-        val nbt = this.getExtraAttributes()
-        if (nbt != null && nbt.hasKey("id")) {
-            if (nbt.getString("id").equals("PET") && nbt.hasKey("petInfo")) {
+        val nbt = this.getExtraAttributes() ?: return null
+
+        if (!nbt.hasKey("id")) return null
+
+        val id = nbt.getString("id")
+        return when {
+            id == "PET" && nbt.hasKey("petInfo") -> {
                 val petInfo = DevUtils.convertStringToJson(nbt.getString("petInfo"))?.asJsonObject ?: return null
                 val tierInt = petTierToInt(petInfo.get("tier").asString)
-
-                return petInfo.get("type").asString + ";$tierInt"
+                "${petInfo.get("type").asString};$tierInt"
             }
-            return nbt.getString("id")
+            nbt.hasKey("runes") -> {
+                val runeType = nbt.getCompoundTag("runes")?.keySet?.firstOrNull()
+                runeType?.let {
+                    "${runeType}_RUNE;${nbt.getCompoundTag("runes").getInteger(runeType)}"
+                }
+            }
+            else -> id
         }
-        return null
     }
 
     private fun petTierToInt(tier: String): Int {
