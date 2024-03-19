@@ -20,6 +20,7 @@ object ItemApi {
     private fun loadSkyblockItems() {
         Thread {
             val items = NetworkUtils.apiRequestAndParse("https://hysky.de/api/items")
+            items.remove("timestamp")
             skyblockItems = items
             if (items.entrySet().size > 0) {
                 skyblockItemsLoaded = true
@@ -53,6 +54,23 @@ object ItemApi {
                         println("Loaded Average Bin Prices from Moulberry NEU API!!")
                     }
                 }
+
+                println("Loading bazaar prices from hypixel api")
+                val bzPrices = NetworkUtils.apiRequestAndParse("https://api.hypixel.net/skyblock/bazaar", caching = true, useProxy = false)
+                if (bzPrices.entrySet().size > 0) {
+                    val bzItems = bzPrices.get("products").asJsonObject
+                    for (product in bzItems.entrySet()) {
+                        val quickStats = product.value.asJsonObject.get("quick_status").asJsonObject
+                        val sellPrice = quickStats.get("sellPrice").asDouble
+                        val buyPrice = quickStats.get("buyPrice").asDouble
+
+                        val productJson = JsonObject()
+                        productJson.addProperty("sellPrice",sellPrice)
+                        productJson.addProperty("buyPrice",buyPrice)
+
+                        skyblockItemPrices.add(product.key,productJson)
+                    }
+                }
             }
         }.start()
     }
@@ -60,11 +78,9 @@ object ItemApi {
     fun getItemIdFromName(displayName: String, ignoreFormatting: Boolean? = false): String? {
         return skyblockItems.entrySet().find { entry ->
             val itemName = entry.value.asJsonObject.get("displayname").asString
-            if (ignoreFormatting == true) {
-                itemName.clean()
-            } else {
-                itemName
-            } == displayName
+            val cleanedItemName = if (ignoreFormatting == true) itemName?.clean() else itemName
+            val cleanedDisplayName = if (ignoreFormatting == true) displayName.clean() else displayName
+            cleanedItemName == cleanedDisplayName
         }?.key
     }
 
