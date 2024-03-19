@@ -1,6 +1,7 @@
 package mrfast.sbt.managers
 
 import com.google.gson.JsonObject
+import mrfast.sbt.apis.ItemApi
 import mrfast.sbt.customevents.ProfileLoadEvent
 import mrfast.sbt.customevents.SkyblockInventoryItemEvent
 import mrfast.sbt.utils.Utils.clean
@@ -46,6 +47,7 @@ object SackManager {
                         continue
                     }
                     val material = component.unformattedText
+                    val itemId = ItemApi.getItemIdFromName(material,true)?: return
 
                     val oldValue = sacks.get(material)?.asDouble ?: 0.0
 
@@ -54,7 +56,8 @@ object SackManager {
                             SkyblockInventoryItemEvent.SackItemEvent(
                                 SkyblockInventoryItemEvent.EventType.GAINED,
                                 lastCapturedNumber,
-                                material
+                                material,
+                                itemId
                             )
                         )
                     } else {
@@ -62,7 +65,8 @@ object SackManager {
                             SkyblockInventoryItemEvent.SackItemEvent(
                                 SkyblockInventoryItemEvent.EventType.LOST,
                                 lastCapturedNumber,
-                                material
+                                material,
+                                itemId
                             )
                         )
                     }
