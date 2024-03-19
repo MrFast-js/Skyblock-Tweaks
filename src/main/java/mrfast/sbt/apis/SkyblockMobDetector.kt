@@ -2,6 +2,7 @@ package mrfast.sbt.apis
 
 import mrfast.sbt.config.categories.CustomizationConfig
 import mrfast.sbt.config.categories.DeveloperConfig
+import mrfast.sbt.config.categories.DeveloperConfig.showMobIdsThroughWalls
 import mrfast.sbt.customevents.SkyblockMobEvent
 import mrfast.sbt.utils.LocationUtils
 import mrfast.sbt.utils.RenderUtils
@@ -82,8 +83,10 @@ object SkyblockMobDetector {
     fun onRenderMob(event: SkyblockMobEvent.Render) {
         val sbMob = event.sbMob
         val show = CustomizationConfig.developerMode && DeveloperConfig.showMobIds
-        if (sbMob.skyblockMobId != null && CustomizationConfig.developerMode && Utils.mc.thePlayer.canEntityBeSeen(sbMob.skyblockMob) && show) {
+        val flag1 = showMobIdsThroughWalls || (Utils.mc.thePlayer.canEntityBeSeen(sbMob.skyblockMob) && !showMobIdsThroughWalls)
+        if (sbMob.skyblockMobId != null && CustomizationConfig.developerMode && flag1 && show) {
             val pos = Vec3(sbMob.skyblockMob.posX, sbMob.skyblockMob.posY + 1, sbMob.skyblockMob.posZ)
+
             GlStateManager.disableDepth()
             RenderUtils.draw3DString("§e${sbMob.skyblockMobId}", pos, event.partialTicks!!)
             GlStateManager.enableDepth()

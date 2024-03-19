@@ -20,18 +20,50 @@ object DeveloperConfig : Config() {
             name = "Show mob ids",
             description = "Shows skyblock mob ids on mobs in the world using Skyblock Mob Detector",
             category = "§eDeveloper",
-            subcategory = "Settings"
+            subcategory = "Settings",
+            isParent = true
     )
     var showMobIds = false
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Show mob ids through walls",
+        description = "",
+        category = "§eDeveloper",
+        subcategory = "Settings",
+        parentName = "Show mob ids"
+    )
+    var showMobIdsThroughWalls = false
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
         name = "Show item pickup log",
         description = "Shows items gained and lost, aswell as sack info",
         category = "§eDeveloper",
-        subcategory = "Settings"
+        subcategory = "Settings",
+        isParent = true
     )
     var itemPickupLog = false
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Show Material Ids",
+        description = "",
+        category = "§eDeveloper",
+        subcategory = "Settings",
+        parentName = "Show item pickup log"
+    )
+    var itemPickupLogItemIds = false
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Show Material Prices",
+        description = "",
+        category = "§eDeveloper",
+        subcategory = "Settings",
+        parentName = "Show item pickup log"
+    )
+    var itemPickupLogItemPrices = false
 
     @ConfigProperty(
             type = ConfigType.TOGGLE,

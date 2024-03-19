@@ -1,8 +1,12 @@
 package mrfast.sbt.features.general
 
+import com.google.gson.JsonObject
+import mrfast.sbt.apis.ItemApi
 import mrfast.sbt.config.GuiManager
 import mrfast.sbt.config.categories.CustomizationConfig
 import mrfast.sbt.config.categories.DeveloperConfig.itemPickupLog
+import mrfast.sbt.config.categories.DeveloperConfig.itemPickupLogItemIds
+import mrfast.sbt.config.categories.DeveloperConfig.itemPickupLogItemPrices
 import mrfast.sbt.customevents.SkyblockInventoryItemEvent
 import mrfast.sbt.utils.GuiUtils
 import mrfast.sbt.utils.Utils.formatNumber
@@ -19,6 +23,7 @@ object ItemPickupLog {
     class PickupEntry {
         var count: Int = 0
         var lastUpdated: Long = 0
+        var itemId: String = ""
     }
 
     @SubscribeEvent
@@ -27,6 +32,7 @@ object ItemPickupLog {
             val old = displayLines[event.materialName] ?: PickupEntry()
             old.lastUpdated = System.currentTimeMillis()
             old.count += event.amount
+            old.itemId = event.itemId
             displayLines[event.materialName] = old
         }
 
@@ -34,6 +40,7 @@ object ItemPickupLog {
             val old = displayLines[event.itemName] ?: PickupEntry()
             old.lastUpdated = System.currentTimeMillis()
             old.count += event.amount
+            old.itemId = event.itemId
             displayLines[event.itemName] = old
         }
     }
@@ -65,9 +72,24 @@ object ItemPickupLog {
                 if (entry.value.count == 0) continue
 
                 val entryName = entry.key
+                val materialId = entry.value.itemId
                 val colorSymbol = if (entry.value.count < 0) "§c-" else "§a+"
                 val count = abs(entry.value.count).formatNumber()
-                val display = "$colorSymbol $count §e$entryName"
+
+                var display = "$colorSymbol $count §e$entryName"
+
+                if (itemPickupLogItemIds) display += " §7$materialId"
+                if (itemPickupLogItemPrices) {
+                    val info = ItemApi.getItemPriceInfo(materialId) ?: JsonObject()
+                    val price = if (info.has("sellPrice")) {
+                        info.get("sellPrice").asDouble * entry.value.count
+                    } else {
+                        (info.get("lowestBin")?.asDouble ?: 0.0) * entry.value.count
+                    }
+
+                    display += " §6$${price.formatNumber()}"
+                }
+
                 GuiUtils.drawText(display, 0f, (10 * drawnEntries).toFloat(), GuiUtils.TextStyle.BLACK_OUTLINE)
                 drawnEntries++
             }
