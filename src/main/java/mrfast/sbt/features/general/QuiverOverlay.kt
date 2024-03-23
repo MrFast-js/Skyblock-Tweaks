@@ -65,7 +65,7 @@ object QuiverOverlay {
         override fun draw() {
             GuiUtils.renderItemStackOnScreen(ItemApi.createItemStack(currentArrowId), 0f, 0f, 16f, 16f)
             var display = (if(quiverOverlayType) "$currentArrow " else "") + "§r§7x${currentArrowCount.formatNumber()}"
-            if(currentArrow == "") display = "§cHold bow to show arrow"
+            if(currentArrow == "") display = ""
 
             GuiUtils.drawText(display, 17f, 3f, GuiUtils.TextStyle.DROP_SHADOW)
             this.width = Utils.mc.fontRendererObj.getStringWidth(display.clean()) + 17
