@@ -11,8 +11,10 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.item.ItemStack
 import org.lwjgl.opengl.GL11
+import org.lwjgl.opengl.GL14
 import java.awt.Color
 import kotlin.math.sqrt
+
 
 object GuiUtils {
 
@@ -103,4 +105,59 @@ object GuiUtils {
         val inv = chest.lowerChestInventory
         return inv.displayName.unformattedText.trim()
     }
+
+    /**
+     * Taken from NotEnoughUpdates under GNU LGPL v3.0 license
+     * @link https://github.com/NotEnoughUpdates/NotEnoughUpdates/blob/master/COPYING
+     * @author Linnea Gräf
+     */
+    fun drawTexture(
+        x: Float,
+        y: Float,
+        width: Float,
+        height: Float,
+        uMin: Float,
+        uMax: Float,
+        vMin: Float,
+        vMax: Float,
+        filter: Int
+    ) {
+        GlStateManager.enableTexture2D()
+        GlStateManager.enableBlend()
+        GlStateManager.tryBlendFuncSeparate(
+            GL11.GL_SRC_ALPHA,
+            GL11.GL_ONE_MINUS_SRC_ALPHA,
+            GL11.GL_ONE,
+            GL11.GL_ONE_MINUS_SRC_ALPHA
+        )
+        GL14.glBlendFuncSeparate(
+            GL11.GL_SRC_ALPHA,
+            GL11.GL_ONE_MINUS_SRC_ALPHA,
+            GL11.GL_ONE,
+            GL11.GL_ONE_MINUS_SRC_ALPHA
+        )
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, filter)
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, filter)
+        val tessellator = Tessellator.getInstance()
+        val worldrenderer = tessellator.worldRenderer
+        worldrenderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX)
+        worldrenderer
+            .pos(x.toDouble(), (y + height).toDouble(), 0.0)
+            .tex(uMin.toDouble(), vMax.toDouble()).endVertex()
+        worldrenderer
+            .pos((x + width).toDouble(), (y + height).toDouble(), 0.0)
+            .tex(uMax.toDouble(), vMax.toDouble()).endVertex()
+        worldrenderer
+            .pos((x + width).toDouble(), y.toDouble(), 0.0)
+            .tex(uMax.toDouble(), vMin.toDouble()).endVertex()
+        worldrenderer
+            .pos(x.toDouble(), y.toDouble(), 0.0)
+            .tex(uMin.toDouble(), vMin.toDouble()).endVertex()
+        tessellator.draw()
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST)
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST)
+        GlStateManager.disableBlend()
+    }
+
+
 }
