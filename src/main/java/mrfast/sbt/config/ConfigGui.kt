@@ -537,7 +537,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
             val unhovered = Color(200, 200, 200)
             val hovered = Color(255, 255, 255)
 
-            val resetImg = UIImage.ofResource("/skyblocktweaks/gui/reset.png").constrain {
+            val resetImg = UIImage.ofResource("/assets/skyblocktweaks/gui/reset.png").constrain {
                 width = 10.pixels
                 height = 11.pixels
                 y = CenterConstraint()
@@ -588,7 +588,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
             }
         }
         if (feature.type == ConfigType.KEYBIND) {
-            val button = UIImage.ofResource("/skyblocktweaks/gui/button.png").constrain {
+            val button = UIImage.ofResource("/assets/skyblocktweaks/gui/button.png").constrain {
                 width = 88.pixels
                 height = 24.pixels
                 y = CenterConstraint()
@@ -596,7 +596,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
             } childOf featureComponent
             ignoredHeights.add(button)
 
-            val resetImg = UIImage.ofResource("/skyblocktweaks/gui/reset.png").constrain {
+            val resetImg = UIImage.ofResource("/assets/skyblocktweaks/gui/reset.png").constrain {
                 width = 10.pixels
                 height = 11.pixels
                 y = CenterConstraint()
@@ -699,7 +699,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
             val unhovered = Color(200, 200, 200)
             val hovered = Color(255, 255, 255)
 
-            val settingsGear = UIImage.ofResourceCached("/skyblocktweaks/gui/gear.png").constrain {
+            val settingsGear = UIImage.ofResourceCached("/assets/skyblocktweaks/gui/gear.png").constrain {
                 x = SiblingConstraintFixed(5f, true)
                 y = CenterConstraint()
                 height = 16.pixels
