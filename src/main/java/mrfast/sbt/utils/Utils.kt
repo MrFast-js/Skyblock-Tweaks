@@ -46,6 +46,26 @@ object Utils {
     fun Number.formatNumber(): String {
         return String.format("%,.0f", this.toDouble())
     }
+    fun Number.abbreviateNumber(): String {
+        val num = this.toDouble()
+        return when {
+            num <= -1_000_000_000_000 || num >= 1_000_000_000_000 -> String.format("%.1fT", num / 1_000_000_000_000)
+            num <= -1_000_000_000 || num >= 1_000_000_000 -> String.format("%.1fB", num / 1_000_000_000)
+            num <= -1_000_000 || num >= 1_000_000 -> String.format("%.1fM", num / 1_000_000)
+            num <= -1_000 || num >= 1_000 -> String.format("%.1fk", num / 1_000)
+            else -> String.format("%.0f", num)
+        }
+    }
+
+    fun Long.toFormattedTime(): String {
+        val seconds = this / 1000
+        val hours = seconds / 3600
+        val minutes = (seconds % 3600) / 60
+        val remainingSeconds = seconds % 60
+
+        return "${if (hours > 0) "${hours}h " else ""}${if (minutes > 0) "${minutes}m " else ""}${remainingSeconds}s"
+    }
+
 
     fun clamp(min: Double,value: Double,max:Double): Double {
         return max.coerceAtMost(value.coerceAtLeast(min))
