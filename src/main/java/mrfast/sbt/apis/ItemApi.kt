@@ -34,6 +34,7 @@ object ItemApi {
                             skyblockItemPrices.add(it.key, JsonObject())
                         }
                         skyblockItemPrices.get(it.key).asJsonObject.addProperty("lowestBin", it.value.asLong)
+                        skyblockItemPrices.get(it.key).asJsonObject.addProperty("worth", it.value.asLong)
                     }
                     println("Loaded Lowest Bin Prices from Moulberry NEU API!!")
 
@@ -56,7 +57,11 @@ object ItemApi {
                 }
 
                 println("Loading bazaar prices from hypixel api")
-                val bzPrices = NetworkUtils.apiRequestAndParse("https://api.hypixel.net/skyblock/bazaar", caching = true, useProxy = false)
+                val bzPrices = NetworkUtils.apiRequestAndParse(
+                    "https://api.hypixel.net/skyblock/bazaar",
+                    caching = true,
+                    useProxy = false
+                )
                 if (bzPrices.entrySet().size > 0) {
                     val bzItems = bzPrices.get("products").asJsonObject
                     for (product in bzItems.entrySet()) {
@@ -65,10 +70,11 @@ object ItemApi {
                         val buyPrice = quickStats.get("buyPrice").asDouble
 
                         val productJson = JsonObject()
-                        productJson.addProperty("sellPrice",sellPrice)
-                        productJson.addProperty("buyPrice",buyPrice)
+                        productJson.addProperty("sellPrice", sellPrice)
+                        productJson.addProperty("buyPrice", buyPrice)
+                        productJson.addProperty("worth", sellPrice)
 
-                        skyblockItemPrices.add(product.key,productJson)
+                        skyblockItemPrices.add(product.key, productJson)
                     }
                 }
             }
