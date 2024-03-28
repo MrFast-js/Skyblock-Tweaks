@@ -4,6 +4,7 @@ import com.google.gson.JsonObject
 import mrfast.sbt.utils.ItemUtils.getSkyblockId
 import mrfast.sbt.utils.NetworkUtils
 import mrfast.sbt.utils.Utils.clean
+import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.JsonToNBT
 
@@ -90,6 +91,10 @@ object ItemApi {
         }?.key
     }
 
+    fun createItemStackSkull(uuid:String) {
+
+    }
+
 
     fun createItemStack(itemId: String): ItemStack? {
         // Assuming skyblockItems is a map containing NBT data as strings
@@ -105,8 +110,13 @@ object ItemApi {
         }
 
         // Create ItemStack with NBT and item ID
-        val itemStack = ItemStack(net.minecraft.item.Item.getByNameOrId(mcItemId))
+        val itemStack = ItemStack(Item.getByNameOrId(mcItemId))
         itemStack.tagCompound = nbtCompound
+
+        // If item is a skull set to meta 3 for custom skull
+        if (mcItemId == "minecraft:skull") {
+            itemStack.itemDamage = 3
+        }
 
         return itemStack
     }
@@ -117,6 +127,10 @@ object ItemApi {
 
     fun getItemInfo(itemId: String): JsonObject? {
         return skyblockItems.get(itemId)?.asJsonObject
+    }
+
+    fun getSkyblockItems(): JsonObject {
+        return skyblockItems
     }
 
     fun getItemInfo(stack: ItemStack): JsonObject? {
