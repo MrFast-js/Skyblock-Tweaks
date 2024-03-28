@@ -6,6 +6,9 @@ import gg.essential.elementa.constraints.PaddingConstraint
 import gg.essential.elementa.constraints.SizeConstraint
 import gg.essential.elementa.constraints.resolution.ConstraintVisitor
 
+/*
+Modified size constraint that gets the lowest height of everything combines
+ */
 class LPosChildSizeConstraint(private val excludedItems: MutableList<UIComponent> = mutableListOf()) : SizeConstraint {
     override var cachedValue = 0f
     override var recalculate = true
