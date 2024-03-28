@@ -27,13 +27,13 @@ object DevUtils {
         return JsonParser().parse(string)
     }
 
-    private fun convertNBTtoJSON(nbt: NBTTagCompound, showList: Boolean = false): JsonObject {
+    private fun convertNBTtoJSON(nbt: NBTTagCompound): JsonObject {
         val jsonObject = JsonObject()
         for (key in nbt.keySet) {
             val tag = nbt.getTag(key)
             val jsonElement = when (tag) {
                 is NBTTagCompound -> convertNBTtoJSON(tag)
-                is NBTTagList -> if (showList) convertNBTListToJSON(tag) else JsonNull.INSTANCE
+                is NBTTagList -> convertNBTListToJSON(tag)
                 else -> JsonParser().parse(tag.toString())
             }
             jsonObject.add(key, jsonElement)
@@ -42,11 +42,9 @@ object DevUtils {
     }
 
     private fun convertNBTListToJSON(nbtList: NBTTagList): JsonArray {
-        println(nbtList)
         val jsonArray = JsonArray()
         for (i in 0 until nbtList.tagCount()) {
             val tag = nbtList.get(i)
-            println(tag)
 
             when (tag) {
                 is NBTTagString -> jsonArray.add(JsonPrimitive(tag.string))
@@ -68,7 +66,8 @@ object DevUtils {
 
     @SubscribeEvent
     fun onToolTip(event: ItemTooltipEvent) {
-        if (event.itemStack.getExtraAttributes() != null && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) && CustomizationConfig.developerMode) {
+        if(!CustomizationConfig.developerMode) return
+        if (event.itemStack.getExtraAttributes() != null && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
             if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
                 event.toolTip.clear()
                 val id = event.itemStack.getSkyblockId()?:return
@@ -90,7 +89,12 @@ object DevUtils {
                 event.toolTip.addAll(nbt)
             }
         }
-        if (Keyboard.isKeyDown(Keyboard.KEY_C) && !copyingTooltip && CustomizationConfig.developerMode) {
+        if(event.itemStack!=null && Keyboard.isKeyDown(Keyboard.KEY_RCONTROL)) {
+            val nbt = prettyPrintNBTtoString(event.itemStack.serializeNBT()).replace("\"", "").split("\n")
+            event.toolTip.clear()
+            event.toolTip.addAll(nbt)
+        }
+        if (Keyboard.isKeyDown(Keyboard.KEY_C) && !copyingTooltip ) {
             copyingTooltip = true
             Utils.setTimeout({
                 copyingTooltip = false
