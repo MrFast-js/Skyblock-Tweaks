@@ -6,10 +6,12 @@ import mrfast.sbt.apis.PlayerStats
 import mrfast.sbt.apis.SkyblockMobDetector
 import mrfast.sbt.commands.ConfigCommand
 import mrfast.sbt.commands.DebugCommand
+import mrfast.sbt.commands.GPTCommand
 import mrfast.sbt.config.Config
 import mrfast.sbt.config.ConfigGui
 import mrfast.sbt.config.GuiManager
 import mrfast.sbt.features.general.*
+import mrfast.sbt.features.generalProfitTracker.GeneralProfitTracker
 import mrfast.sbt.features.statDisplays.RiftTimeBarDisplay
 import mrfast.sbt.features.partyfinder.PartyFinderJoinInfo
 import mrfast.sbt.features.statDisplays.*
@@ -83,6 +85,8 @@ class SkyblockTweaks {
         MinecraftForge.EVENT_BUS.register(LowHealthTint)
         MinecraftForge.EVENT_BUS.register(ItemPickupLog)
         MinecraftForge.EVENT_BUS.register(QuiverOverlay) // Quiver Overlay
+        MinecraftForge.EVENT_BUS.register(GeneralProfitTracker) // Quiver Overlay
+
 
         // Stop above hotbar elements from rendering
         MinecraftForge.EVENT_BUS.register(HideHotbarElements)
@@ -97,6 +101,7 @@ class SkyblockTweaks {
         // Commands
         ClientCommandHandler.instance.registerCommand(ConfigCommand())
         ClientCommandHandler.instance.registerCommand(DebugCommand())
+        ClientCommandHandler.instance.registerCommand(GPTCommand())
 
         // Checks mod folder for version of Skyblock Features your using
         val modList = Loader.instance().modList
