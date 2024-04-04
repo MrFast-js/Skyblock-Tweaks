@@ -197,6 +197,30 @@ class ProfitTrackerGui : WindowScreen(ElementaVersion.V2) {
         drawFilteredItems()
         drawCollectedItems(fontRenderer)
         drawItemPickerPopup()
+
+        val moneyAreaX = guiLeft + 145 - 4
+        val moneyAreaY = guiTop + 92 - 5
+
+        if (mouseX > moneyAreaX && mouseX < moneyAreaX + 105 && mouseY > moneyAreaY && mouseY < moneyAreaY + 16 && started) {
+            // Calculate session time
+            val currentTime = System.currentTimeMillis()
+            val sessionTime = currentTime - sessionStartedAt - pausedDuration
+            val coinsPerMs = totalWorth.toDouble() / sessionTime.toDouble()
+            val coinsPerSec = coinsPerMs * 1000F
+            val coinsPerMin = coinsPerSec * 60F
+            val coinsPerHr = coinsPerMin * 60F
+            val formatted = "§6$${coinsPerHr.abbreviateNumber()} / Hour"
+
+            net.minecraftforge.fml.client.config.GuiUtils.drawHoveringText(
+                listOf("§eYour currently earning", formatted),
+                mouseX,
+                mouseY,
+                Utils.mc.displayWidth,
+                Utils.mc.displayHeight,
+                -1,
+                Utils.mc.fontRendererObj
+            )
+        }
     }
 
     private fun drawTimerControls() {
@@ -276,7 +300,7 @@ class ProfitTrackerGui : WindowScreen(ElementaVersion.V2) {
         val maxWidth = 100 - 12
 
         for ((i, entry) in sortedItems.withIndex()) {
-            if (i > 8) continue
+            if (i >= 8) continue
             val itemId = entry.key
             val itemWorth = entry.value.first
             val itemCount = entry.value.second
@@ -549,7 +573,7 @@ class ProfitTrackerGui : WindowScreen(ElementaVersion.V2) {
     override fun onScreenClose() {
         super.onScreenClose()
 
-        DataManager.saveProfileData("GPTwhitelist", whitelistItems)
-        DataManager.saveProfileData("GPTblacklist", blacklistItems)
+        DataManager.saveData("GPTwhitelist", whitelistItems)
+        DataManager.saveData("GPTblacklist", blacklistItems)
     }
 }
