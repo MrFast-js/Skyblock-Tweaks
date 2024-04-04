@@ -4,9 +4,9 @@ import com.google.gson.JsonObject
 import mrfast.sbt.apis.ItemApi
 import mrfast.sbt.config.GuiManager
 import mrfast.sbt.config.categories.CustomizationConfig
-import mrfast.sbt.config.categories.DeveloperConfig.itemPickupLog
-import mrfast.sbt.config.categories.DeveloperConfig.itemPickupLogItemIds
-import mrfast.sbt.config.categories.DeveloperConfig.itemPickupLogItemPrices
+import mrfast.sbt.config.categories.GeneralConfig.itemPickupLog
+import mrfast.sbt.config.categories.GeneralConfig.itemPickupLogItemIds
+import mrfast.sbt.config.categories.GeneralConfig.itemPickupLogItemPrices
 import mrfast.sbt.customevents.SkyblockInventoryItemEvent
 import mrfast.sbt.utils.GuiUtils
 import mrfast.sbt.utils.Utils.formatNumber
@@ -96,7 +96,7 @@ object ItemPickupLog {
         }
 
         override fun isActive(): Boolean {
-            return itemPickupLog && CustomizationConfig.developerMode
+            return itemPickupLog
         }
 
         override fun isVisible(): Boolean {

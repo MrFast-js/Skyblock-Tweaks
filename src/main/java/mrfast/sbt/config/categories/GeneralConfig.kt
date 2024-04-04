@@ -291,4 +291,34 @@ object GeneralConfig : Config() {
         risky = true
     )
     var autoPartyChat = false
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Show item pickup log",
+        description = "Shows items gained and lost, aswell as sack info",
+        category = "General",
+        subcategory = "Item Pickup Log",
+        isParent = true
+    )
+    var itemPickupLog = false
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Show Material Ids",
+        description = "",
+        category = "General",
+        subcategory = "Item Pickup Log",
+        parentName = "Show item pickup log"
+    )
+    var itemPickupLogItemIds = false
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Show Material Prices",
+        description = "",
+        category = "General",
+        subcategory = "Item Pickup Log",
+        parentName = "Show item pickup log"
+    )
+    var itemPickupLogItemPrices = true
 }

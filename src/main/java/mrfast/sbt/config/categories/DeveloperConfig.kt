@@ -36,36 +36,6 @@ object DeveloperConfig : Config() {
     var showMobIdsThroughWalls = false
 
     @ConfigProperty(
-        type = ConfigType.TOGGLE,
-        name = "Show item pickup log",
-        description = "Shows items gained and lost, aswell as sack info",
-        category = "§eDeveloper",
-        subcategory = "Settings",
-        isParent = true
-    )
-    var itemPickupLog = false
-
-    @ConfigProperty(
-        type = ConfigType.TOGGLE,
-        name = "Show Material Ids",
-        description = "",
-        category = "§eDeveloper",
-        subcategory = "Settings",
-        parentName = "Show item pickup log"
-    )
-    var itemPickupLogItemIds = false
-
-    @ConfigProperty(
-        type = ConfigType.TOGGLE,
-        name = "Show Material Prices",
-        description = "",
-        category = "§eDeveloper",
-        subcategory = "Settings",
-        parentName = "Show item pickup log"
-    )
-    var itemPickupLogItemPrices = false
-
-    @ConfigProperty(
             type = ConfigType.TOGGLE,
             name = "Show item abilities",
             description = "Shows when a skyblock item uses its ability, used to create features with listening for item abilities",
