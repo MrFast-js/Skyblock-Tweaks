@@ -91,12 +91,10 @@ object ItemApi {
         }?.key
     }
 
-    fun createItemStackSkull(uuid:String) {
-
-    }
-
-
+    private val itemStackCache = mutableMapOf<String, ItemStack>()
     fun createItemStack(itemId: String): ItemStack? {
+        if (itemStackCache.contains(itemId)) return itemStackCache[itemId]
+
         // Assuming skyblockItems is a map containing NBT data as strings
         val nbtString = skyblockItems[itemId]?.asJsonObject?.get("nbttag")?.asString ?: return null
         val mcItemId = skyblockItems[itemId]?.asJsonObject?.get("itemid")?.asString ?: return null
@@ -117,7 +115,7 @@ object ItemApi {
         if (mcItemId == "minecraft:skull") {
             itemStack.itemDamage = 3
         }
-
+        itemStackCache[itemId] = itemStack
         return itemStack
     }
 
