@@ -1,6 +1,9 @@
 package mrfast.sbt.features.generalProfitTracker
 
+import com.google.gson.JsonArray
+import mrfast.sbt.customevents.ProfileLoadEvent
 import mrfast.sbt.customevents.SkyblockInventoryItemEvent
+import mrfast.sbt.managers.DataManager
 import mrfast.sbt.utils.Utils
 import net.minecraft.client.gui.inventory.GuiInventory
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -13,26 +16,27 @@ object GeneralProfitTracker {
     var started = false
     var paused = false
     var pausedDuration: Long = 0
-    var selectedFilterMode = "Whitelist"
-    val whitelistItems = mutableListOf(
-        "IRON_SWORD",
-        "HYPERION",
-        "ROTTEN_FLESH",
-        "BONE",
-        "SUPERBOOM_TNT",
-        "NEW_YEAR_CAKE",
-        "JUJU_SHORTBOW",
+    var selectedFilterMode = "Blacklist"
+    var whitelistItems = mutableListOf(
         "ADD_ITEM"
     )
-    val blacklistItems = mutableListOf(
-        "IRON_SWORD",
-        "HYPERION",
-        "ROTTEN_FLESH",
-        "BONE",
-        "SUPERBOOM_TNT",
-        "NEW_YEAR_CAKE",
-        "JUJU_SHORTBOW"
+    var blacklistItems = mutableListOf(
+        "ADD_ITEM"
     )
+
+    @SubscribeEvent
+    fun onProfileConfigLoad(event: ProfileLoadEvent) {
+        val wL = DataManager.getProfileDataDefault("GPTwhitelist",JsonArray()) as JsonArray
+        val bL = DataManager.getProfileDataDefault("GPTblacklist",JsonArray()) as JsonArray
+
+        blacklistItems.clear()
+        whitelistItems.clear()
+        for (item in wL) whitelistItems.add(item.asString)
+        for (item in bL) blacklistItems.add(item.asString)
+
+        if(!whitelistItems.contains("ADD_ITEM")) whitelistItems.add("ADD_ITEM")
+        if(!blacklistItems.contains("ADD_ITEM")) blacklistItems.add("ADD_ITEM")
+    }
 
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
@@ -71,6 +75,4 @@ object GeneralProfitTracker {
             itemsGainedDuringSession.remove(event.itemId)
         }
     }
-
-
 }
