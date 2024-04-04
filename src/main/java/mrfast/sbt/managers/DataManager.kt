@@ -104,6 +104,10 @@ object DataManager {
         return convertFromJsonElement(dataJson[dataName])
     }
 
+    fun getDataDefault(dataName: String, obj: Any?): Any? {
+        return convertFromJsonElement(dataJson[dataName]) ?: obj
+    }
+
     // Works with data names such as "subset1.list.option2" or even just "option2"
     fun saveProfileData(dataName: String, dataValue: Any) {
         if (currentProfileId == null) {
@@ -161,9 +165,7 @@ object DataManager {
     }
 
     fun getProfileDataDefault(dataName: String, obj: Any?): Any? {
-        return if (getProfileData(dataName) == null) {
-            obj
-        } else getProfileData(dataName)
+        return getProfileData(dataName) ?: obj
     }
 
     fun getProfileData(dataName: String): Any? {

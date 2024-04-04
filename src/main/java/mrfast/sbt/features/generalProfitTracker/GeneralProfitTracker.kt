@@ -26,8 +26,8 @@ object GeneralProfitTracker {
 
     @SubscribeEvent
     fun onProfileConfigLoad(event: ProfileLoadEvent) {
-        val wL = DataManager.getProfileDataDefault("GPTwhitelist",JsonArray()) as JsonArray
-        val bL = DataManager.getProfileDataDefault("GPTblacklist",JsonArray()) as JsonArray
+        val wL = DataManager.getDataDefault("GPTwhitelist",JsonArray()) as JsonArray
+        val bL = DataManager.getDataDefault("GPTblacklist",JsonArray()) as JsonArray
 
         blacklistItems.clear()
         whitelistItems.clear()
