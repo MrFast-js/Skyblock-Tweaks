@@ -3,6 +3,7 @@ package mrfast.sbt.features.generalProfitTracker
 import gg.essential.api.utils.GuiUtil
 import gg.essential.elementa.ElementaVersion
 import gg.essential.elementa.WindowScreen
+import gg.essential.universal.UKeyboard
 import gg.essential.universal.UMatrixStack
 import mrfast.sbt.apis.ItemApi
 import mrfast.sbt.features.generalProfitTracker.GeneralProfitTracker.blacklistItems
@@ -12,6 +13,7 @@ import mrfast.sbt.features.generalProfitTracker.GeneralProfitTracker.selectedFil
 import mrfast.sbt.features.generalProfitTracker.GeneralProfitTracker.sessionStartedAt
 import mrfast.sbt.features.generalProfitTracker.GeneralProfitTracker.started
 import mrfast.sbt.features.generalProfitTracker.GeneralProfitTracker.whitelistItems
+import mrfast.sbt.managers.DataManager
 import mrfast.sbt.utils.GuiUtils
 import mrfast.sbt.utils.Utils
 import mrfast.sbt.utils.Utils.abbreviateNumber
@@ -20,13 +22,19 @@ import mrfast.sbt.utils.Utils.formatNumber
 import mrfast.sbt.utils.Utils.toFormattedTime
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.FontRenderer
+import net.minecraft.client.gui.GuiTextField
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.init.Blocks
+import net.minecraft.item.Item
+import net.minecraft.item.ItemStack
 import net.minecraft.util.ResourceLocation
+import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Mouse
 import org.lwjgl.opengl.GL11
 import kotlin.math.floor
 import kotlin.math.min
+
 
 class ProfitTrackerGui : WindowScreen(ElementaVersion.V2) {
     private val fontRenderer = Utils.mc.fontRendererObj
@@ -35,11 +43,33 @@ class ProfitTrackerGui : WindowScreen(ElementaVersion.V2) {
     private val boxTexture = ResourceLocation("skyblocktweaks", "gui/box.png")
     private val startStopButton = Button(40F, 12F, 142, 66)
     private val pauseButton = Button(40F, 12F, 185, 66)
+
     private var mouseX = 0.0
     private var mouseY = 0.0
 
     private var itemPickerPopupX = 0.0
     private var itemPickerPopupY = 0.0
+    private var searchField: GuiTextField? = null
+
+    init {
+        Keyboard.enableRepeatEvents(true)
+        searchField = GuiTextField(
+            0,
+            fontRenderer,
+            0,
+            0,
+            75,
+            14
+        )
+        setupTextInput()
+    }
+
+    private fun setupTextInput() {
+        val sf = searchField ?: return
+        sf.maxStringLength = 15
+        sf.enableBackgroundDrawing = true
+        sf.setTextColor(0xFFFFFF)
+    }
 
     private val newItemButtons = mutableMapOf<String, Button>()
 
@@ -56,10 +86,15 @@ class ProfitTrackerGui : WindowScreen(ElementaVersion.V2) {
         var onClicked: Runnable? = null
     }
 
+    override fun onKeyPressed(keyCode: Int, typedChar: Char, modifiers: UKeyboard.Modifiers?) {
+        super.onKeyPressed(keyCode, typedChar, modifiers)
+
+        startingItemPopupOffset = 0
+        this.searchField?.textboxKeyTyped(typedChar, keyCode)
+    }
+
     override fun onMouseClicked(mouseX: Double, mouseY: Double, mouseButton: Int) {
         super.onMouseClicked(mouseX, mouseY, mouseButton)
-        this.mouseX = mouseX
-        this.mouseY = mouseY
 
         if (startStopButton.isClicked(mouseX, mouseY, guiLeft, guiTop)) {
             started = !started
@@ -75,6 +110,7 @@ class ProfitTrackerGui : WindowScreen(ElementaVersion.V2) {
         if (pauseButton.isClicked(mouseX, mouseY, guiLeft, guiTop)) {
             paused = !paused
         }
+
         val itemButtonsCopy = newItemButtons.toMap()
 
         for (value in itemButtonsCopy.values) {
@@ -89,6 +125,9 @@ class ProfitTrackerGui : WindowScreen(ElementaVersion.V2) {
     override fun onDrawScreen(matrixStack: UMatrixStack, mouseX: Int, mouseY: Int, partialTicks: Float) {
         super.onDrawScreen(matrixStack, mouseX, mouseY, partialTicks)
         val res = ScaledResolution(Utils.mc)
+
+        this.mouseX = mouseX.toDouble()
+        this.mouseY = mouseY.toDouble()
 
         val mainBoxWidth = 256F
         val mainBoxHeight = 213F
@@ -282,7 +321,7 @@ class ProfitTrackerGui : WindowScreen(ElementaVersion.V2) {
         for ((index, itemId) in selectedList.withIndex()) {
             val x = ((index % blocksPerRow) * 20)
             val y = floor(index.toFloat() / blocksPerRow) * 20f
-            if (index > 35) continue
+            if (index > 34) continue
             drawItemButton(x, y, itemId)
         }
         GlStateManager.popMatrix()
@@ -309,9 +348,8 @@ class ProfitTrackerGui : WindowScreen(ElementaVersion.V2) {
 
     private fun openPickerPopup() {
         itemPickerPopupX = mouseX
-        itemPickerPopupY = mouseY
-
-
+        val minY = Utils.mc.displayHeight / 2 - 128F
+        itemPickerPopupY = min(minY.toDouble(), mouseY)
     }
 
     private fun drawItemButton(x: Float, y: Float, itemId: String) {
@@ -326,14 +364,13 @@ class ProfitTrackerGui : WindowScreen(ElementaVersion.V2) {
                     openPickerPopup()
                     return@Runnable
                 }
-                println("NEED TO REMOVE $itemId")
                 removeItem(itemId)
             }
         }
 
+        GlStateManager.color(1f, 1f, 1f)
         GlStateManager.pushMatrix()
         Minecraft.getMinecraft().textureManager.bindTexture(boxTexture);
-        GlStateManager.color(1f, 1f, 1f)
 
         if (addItem) {
             GuiUtils.drawTexture(
@@ -362,14 +399,57 @@ class ProfitTrackerGui : WindowScreen(ElementaVersion.V2) {
                 GL11.GL_NEAREST
             )
             GuiUtils.renderItemStackOnScreen(item, guiLeft + 18 + x + 1, guiTop + 49 + y + 1, 16f, 16f)
+
+            if (mouseX > guiLeft + 18 + x && mouseX < guiLeft + 18 + x + itemButtonWidth &&
+                mouseY > guiTop + 49 + y && mouseY < guiTop + 49 + y + itemButtonHeight
+            ) {
+                if (item != null) {
+                    GlStateManager.pushMatrix()
+                    GlStateManager.color(1f, 1f, 1f, 0.4f)
+
+                    GuiUtils.renderItemStackOnScreen(
+                        ItemStack(Item.getItemFromBlock(Blocks.barrier)),
+                        guiLeft + 18 + x + 1,
+                        guiTop + 49 + y + 1,
+                        16f,
+                        16f
+                    )
+                    GlStateManager.color(1f, 1f, 1f, 1f)
+
+                    net.minecraftforge.fml.client.config.GuiUtils.drawHoveringText(
+                        listOf(item.displayName),
+                        mouseX.toInt(),
+                        mouseY.toInt(),
+                        Utils.mc.displayWidth,
+                        Utils.mc.displayHeight,
+                        -1,
+                        Utils.mc.fontRendererObj
+                    )
+                    GlStateManager.popMatrix()
+                }
+            }
         }
         GlStateManager.popMatrix()
+    }
+
+    private var startingItemPopupOffset = 0
+
+    override fun onMouseScrolled(delta: Double) {
+        super.onMouseScrolled(delta)
+
+        if (delta > 0) {
+            if (startingItemPopupOffset >= 5) {
+                startingItemPopupOffset -= 5
+            }
+        } else {
+            startingItemPopupOffset += 5
+        }
     }
 
     private fun drawItemPickerPopup() {
         if (itemPickerPopupX != 0.0) {
             GlStateManager.pushMatrix()
-            GlStateManager.translate(0f, 0f, 200f)
+            GlStateManager.translate(0f, 0f, 100f)
             Minecraft.getMinecraft().textureManager.bindTexture(boxTexture);
             GuiUtils.drawTexture(
                 itemPickerPopupX.toFloat(),
@@ -382,9 +462,10 @@ class ProfitTrackerGui : WindowScreen(ElementaVersion.V2) {
                 (0 + 125F) / 213F,
                 GL11.GL_NEAREST
             )
+            GlStateManager.popMatrix()
+
             val startingItemsX = itemPickerPopupX + 10
             val startingItemsY = itemPickerPopupY + 29
-            var index = 0
 
             // Close popup on lost focus
             if (mouseClicking) {
@@ -394,12 +475,27 @@ class ProfitTrackerGui : WindowScreen(ElementaVersion.V2) {
                 }
             }
 
+            var rawIndex = -1
+            var drawn = 0
+            val maxItemsToShow = 24 // Maximum number of items to show in the grid
             for ((itemId, skyblockItem) in ItemApi.getSkyblockItems().entrySet()) {
-                if (index > 24) continue
                 val stack = ItemApi.createItemStack(itemId) ?: continue
-                val x = startingItemsX + ((index % 5) * 18) - 2
-                val y = startingItemsY + (floor(index.toFloat() / 5) * 18f) - 2
+                if (stack.displayName.endsWith(")")) continue
 
+                val search = searchField?.text?.toLowerCase() as CharSequence
+                val matchesSearch =
+                    stack.displayName.clean().toLowerCase().contains(search) || itemId.toLowerCase().contains(search)
+                if (!matchesSearch) continue
+
+                rawIndex++
+                if (rawIndex < startingItemPopupOffset || rawIndex > startingItemPopupOffset + maxItemsToShow) continue
+                drawn++
+                val relativeIndex = rawIndex - startingItemPopupOffset // Adjusted index considering offset
+                val x = startingItemsX + ((relativeIndex % 5) * 18) - 2
+                val y = startingItemsY + (floor(relativeIndex.toFloat() / 5) * 18f) - 2
+
+                GlStateManager.pushMatrix()
+                GlStateManager.translate(0f, 0f, 105f)
                 GuiUtils.renderItemStackOnScreen(
                     stack,
                     x.toFloat(),
@@ -407,23 +503,53 @@ class ProfitTrackerGui : WindowScreen(ElementaVersion.V2) {
                     16f,
                     16f
                 )
+                val itemName = skyblockItem.asJsonObject.get("displayname").asString
+                val itemLore = skyblockItem.asJsonObject.getAsJsonArray("lore")
+                val textToShow = mutableListOf(itemName)
+                itemLore?.forEach { loreItem ->
+                    textToShow.add(loreItem.asString)
+                }
+
+                if (mouseX > x.toFloat() && mouseX < x + 16 && mouseY > y.toFloat() && mouseY < y + 16) {
+                    net.minecraftforge.fml.client.config.GuiUtils.drawHoveringText(
+                        textToShow,
+                        mouseX.toInt(),
+                        mouseY.toInt(),
+                        Utils.mc.displayWidth,
+                        Utils.mc.displayHeight,
+                        -1,
+                        Utils.mc.fontRendererObj
+                    )
+                }
+
                 if (mouseClicking) {
                     if (mouseX > x.toFloat() && mouseX < x + 16 && mouseY > y.toFloat() && mouseY < y + 16) {
-                        println("NEED TO ADD $itemId")
                         addItem(itemId)
                     }
                 }
-                index++
+                GlStateManager.popMatrix()
             }
+            if (drawn == 0 && startingItemPopupOffset > 0) {
+                startingItemPopupOffset -= 5
+            }
+
+            GlStateManager.pushMatrix()
+            GlStateManager.translate(0f, 0f, 110f)
+            searchField?.visible = true
+            searchField?.setCanLoseFocus(false)
+            searchField?.isFocused = true
+            searchField?.enableBackgroundDrawing = false
+            searchField?.xPosition = startingItemsX.toInt() - 1
+            searchField?.yPosition = itemPickerPopupY.toInt() + 9
+            searchField?.drawTextBox()
             GlStateManager.popMatrix()
         }
     }
 
     override fun onScreenClose() {
         super.onScreenClose()
-    }
 
-    init {
-
+        DataManager.saveProfileData("GPTwhitelist", whitelistItems)
+        DataManager.saveProfileData("GPTblacklist", blacklistItems)
     }
 }
