@@ -19,20 +19,18 @@ import java.nio.file.Paths
 
 object DataManager {
     private val saveDataFilePath = ConfigManager.modDirectoryPath.resolve("profilesData.json")
-    private var pfidSentInChat = false
+    private var dataFile: File = saveDataFilePath
+    private var dataJson = JsonObject()
+    private var profileIds = mutableMapOf<String,String>() // UUID, PFID
 
-    @SubscribeEvent
-    fun onWorldLoad(event: WorldEvent.Load?) {
-        pfidSentInChat = false
-        // Use api request to get profile id because no Profile id message is sent because only one profile
-        Utils.setTimeout({
-            if (!pfidSentInChat) {
-                pfidSentInChat = true
-                if (currentProfileId == null) {
-                    sendProfileIdCommand()
-                }
+    init {
+        loadDataFromFile()
+        if (dataJson.has("profileIds")) {
+            // Load past profile ids from files
+            for (entry in dataJson["profileIds"].asJsonObject.entrySet()) {
+                profileIds[entry.key] = entry.value.asString
             }
-        }, 7000)
+        }
     }
 
     private var listenForProfileId = false
@@ -47,42 +45,38 @@ object DataManager {
     fun onChat(event: ClientChatReceivedEvent) {
         val clean = event.message.unformattedText.clean()
         val profileIdPattern = Regex("Profile ID: (\\S+)")
-        val suggestPattern = Regex("CLICK THIS TO SUGGEST IT IN CHAT \\[(NO )?DASHES\\]")
+        val suggestPattern = Regex("CLICK THIS TO SUGGEST IT IN CHAT .*")
+        val firstJoinPattern = Regex("Latest update: SkyBlock .*") // First startup, get profile id
 
         if (event.type.toInt() == 2) return
 
+        if(clean.matches(firstJoinPattern)) {
+            sendProfileIdCommand()
+        }
+
         if (clean.matches(profileIdPattern)) {
-            pfidSentInChat = true
             val groups = profileIdPattern.find(clean)?.groupValues ?: return
 
             if (groups.size >= 2) {
                 val newProfileId = groups[1]
-                if (currentProfileId == null || currentProfileId != newProfileId || !sentInitialLoad) {
+                val currentProfile = profileIds[Utils.mc.thePlayer.uniqueID.toString()]
+
+                if (currentProfile == null || currentProfile != newProfileId || !sentInitialLoad) {
                     sentInitialLoad = true
                     MinecraftForge.EVENT_BUS.post(ProfileLoadEvent())
                 }
-                currentProfileId = newProfileId
-                dataJson.addProperty("currentProfileId", newProfileId)
+                profileIds[Utils.mc.thePlayer.uniqueID.toString()] = newProfileId
+                dataJson.add("profileIds", convertToJsonObject(profileIds))
                 saveDataToFile()
             }
             if (listenForProfileId) event.isCanceled = true
         }
 
         if (clean.matches(suggestPattern) && listenForProfileId) {
-            listenForProfileId = !clean.contains("[DASHES]")
             event.isCanceled = true
-        }
-    }
-
-
-    private var dataFile: File = saveDataFilePath
-    private var dataJson = JsonObject()
-    private var currentProfileId: String? = null
-
-    init {
-        loadDataFromFile()
-        if (dataJson.has("currentProfileId")) {
-            currentProfileId = dataJson["currentProfileId"].asString
+            if(clean.contains("[NO DASHES]")) {
+                listenForProfileId = false
+            }
         }
     }
 
@@ -101,19 +95,17 @@ object DataManager {
     }
 
     fun getData(dataName: String?): Any? {
-        return convertFromJsonElement(dataJson[dataName])
+        if(dataJson.has(dataName)) return convertFromJsonElement(dataJson[dataName])
+        return null
     }
 
     fun getDataDefault(dataName: String, obj: Any?): Any? {
-        return convertFromJsonElement(dataJson[dataName]) ?: obj
+        return getData(dataName) ?: obj
     }
 
     // Works with data names such as "subset1.list.option2" or even just "option2"
     fun saveProfileData(dataName: String, dataValue: Any) {
-        if (currentProfileId == null) {
-            println("NO PFID RETURNING")
-            return
-        }
+        val currentProfileId = profileIds[Utils.mc.thePlayer.uniqueID.toString()] ?: return
         var profileJson = dataJson.getAsJsonObject(currentProfileId)
         if (profileJson == null) {
             profileJson = JsonObject()
@@ -169,6 +161,8 @@ object DataManager {
     }
 
     fun getProfileData(dataName: String): Any? {
+        val currentProfileId = profileIds[Utils.mc.thePlayer.uniqueID.toString()]
+
         var profileJson = dataJson.getAsJsonObject(currentProfileId) ?: return null
         val parts = dataName.split("\\.".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
         for (i in 0 until parts.size - 1) {
