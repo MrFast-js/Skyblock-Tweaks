@@ -96,8 +96,9 @@ object ItemApi {
         if (itemStackCache.contains(itemId)) return itemStackCache[itemId]
 
         // Assuming skyblockItems is a map containing NBT data as strings
-        val nbtString = skyblockItems[itemId]?.asJsonObject?.get("nbttag")?.asString ?: return null
-        val mcItemId = skyblockItems[itemId]?.asJsonObject?.get("itemid")?.asString ?: return null
+        val itemJson = skyblockItems[itemId]?.asJsonObject?: return null
+        val nbtString = itemJson.get("nbttag")?.asString ?: return null
+        val mcItemId = itemJson.get("itemid")?.asString ?: return null
 
         // Parse NBT string
         val nbtCompound = try {
@@ -111,10 +112,10 @@ object ItemApi {
         val itemStack = ItemStack(Item.getByNameOrId(mcItemId))
         itemStack.tagCompound = nbtCompound
 
-        // If item is a skull set to meta 3 for custom skull
-        if (mcItemId == "minecraft:skull") {
-            itemStack.itemDamage = 3
+        if(itemJson.has("damage")) {
+            itemStack.itemDamage = itemJson.get("damage").asInt
         }
+
         itemStackCache[itemId] = itemStack
         return itemStack
     }
