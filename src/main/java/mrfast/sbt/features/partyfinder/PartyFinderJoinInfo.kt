@@ -22,6 +22,8 @@ object PartyFinderJoinInfo {
     @SubscribeEvent
     fun onChatMessage(event: ClientChatReceivedEvent) {
         if (!DungeonConfig.partyfinderJoinInfo) return
+        if (event.type.toInt() == 2) return
+
         val msg = event.message.unformattedText.clean()
         val regex = "^Party Finder > ([^\\s]+) joined the dungeon group! \\(([^ ]+) Level (\\d+)\\)\$"
         if (msg.matches(regex)) {
