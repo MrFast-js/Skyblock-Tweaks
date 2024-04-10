@@ -2,6 +2,7 @@ package mrfast.sbt.features.generalProfitTracker
 
 import com.google.gson.JsonArray
 import mrfast.sbt.customevents.ProfileLoadEvent
+import mrfast.sbt.customevents.PurseChangeEvent
 import mrfast.sbt.customevents.SkyblockInventoryItemEvent
 import mrfast.sbt.managers.DataManager
 import mrfast.sbt.utils.Utils
@@ -14,6 +15,7 @@ object GeneralProfitTracker {
     var itemsGainedDuringSession = mutableMapOf<String, Int>()
     var sessionStartedAt = System.currentTimeMillis()
     var started = false
+    var purseGainLoss = 0
     var paused = false
     var pausedDuration: Long = 0
     var selectedFilterMode = "Blacklist"
@@ -23,6 +25,13 @@ object GeneralProfitTracker {
     var blacklistItems = mutableListOf(
         "ADD_ITEM"
     )
+
+    @SubscribeEvent
+    fun onPurseChange(event: PurseChangeEvent) {
+        if (!started || paused) return
+
+        purseGainLoss += event.amount
+    }
 
     @SubscribeEvent
     fun onProfileConfigLoad(event: ProfileLoadEvent) {
@@ -71,7 +80,7 @@ object GeneralProfitTracker {
             itemsGainedDuringSession[event.itemId] = lastCount + event.amount
         }
 
-        if (itemsGainedDuringSession[event.itemId]!! <= 0) {
+        if (itemsGainedDuringSession[event.itemId]!! == 0) {
             itemsGainedDuringSession.remove(event.itemId)
         }
     }

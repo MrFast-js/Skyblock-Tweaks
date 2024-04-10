@@ -9,6 +9,7 @@ import mrfast.sbt.apis.ItemApi
 import mrfast.sbt.features.generalProfitTracker.GeneralProfitTracker.blacklistItems
 import mrfast.sbt.features.generalProfitTracker.GeneralProfitTracker.paused
 import mrfast.sbt.features.generalProfitTracker.GeneralProfitTracker.pausedDuration
+import mrfast.sbt.features.generalProfitTracker.GeneralProfitTracker.purseGainLoss
 import mrfast.sbt.features.generalProfitTracker.GeneralProfitTracker.selectedFilterMode
 import mrfast.sbt.features.generalProfitTracker.GeneralProfitTracker.sessionStartedAt
 import mrfast.sbt.features.generalProfitTracker.GeneralProfitTracker.started
@@ -103,6 +104,7 @@ class ProfitTrackerGui : WindowScreen(ElementaVersion.V2) {
             if (started) {
                 sessionStartedAt = System.currentTimeMillis()
                 GeneralProfitTracker.itemsGainedDuringSession.clear()
+                purseGainLoss = 0
             }
             pausedDuration = 0
             paused = false
@@ -292,7 +294,7 @@ class ProfitTrackerGui : WindowScreen(ElementaVersion.V2) {
 
             totalItemWorth[itemId] = Pair(multiValue, itemCount)
         }
-
+        totalItemWorth["SKYBLOCK_COIN"] = Pair(purseGainLoss.toLong(), 1)
         val sortedItems = totalItemWorth.entries.sortedByDescending { it.value.first }
 
 //        sort then loop from high -> low
