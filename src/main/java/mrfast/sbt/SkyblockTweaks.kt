@@ -62,6 +62,7 @@ class SkyblockTweaks {
         MinecraftForge.EVENT_BUS.register(VersionManager)
         MinecraftForge.EVENT_BUS.register(DataManager)
         MinecraftForge.EVENT_BUS.register(PartyManager)
+        MinecraftForge.EVENT_BUS.register(PurseManager)
         MinecraftForge.EVENT_BUS.register(InventoryItemManager)
         MinecraftForge.EVENT_BUS.register(SackManager)
 
@@ -85,8 +86,7 @@ class SkyblockTweaks {
         MinecraftForge.EVENT_BUS.register(LowHealthTint)
         MinecraftForge.EVENT_BUS.register(ItemPickupLog)
         MinecraftForge.EVENT_BUS.register(QuiverOverlay) // Quiver Overlay
-        MinecraftForge.EVENT_BUS.register(GeneralProfitTracker) // Quiver Overlay
-
+        MinecraftForge.EVENT_BUS.register(GeneralProfitTracker)
 
         // Stop above hotbar elements from rendering
         MinecraftForge.EVENT_BUS.register(HideHotbarElements)
