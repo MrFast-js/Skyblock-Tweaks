@@ -95,8 +95,40 @@ object ItemApi {
     fun createItemStack(itemId: String): ItemStack? {
         if (itemStackCache.contains(itemId)) return itemStackCache[itemId]
 
+        if (itemId == "SKYBLOCK_COIN") {
+            val itemJson = skyblockItems["COIN_TALISMAN"]?.asJsonObject ?: return null
+            var nbtString = itemJson.get("nbttag")?.asString ?: return null
+            val mcItemId = itemJson.get("itemid")?.asString ?: return null
+            nbtString = nbtString.replace(
+                "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDUyZGNhNjhjOGY4YWY1MzNmYjczN2ZhZWVhY2JlNzE3Yjk2ODc2N2ZjMTg4MjRkYzJkMzdhYzc4OWZjNzcifX19",
+                "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTM4MDcxNzIxY2M1YjRjZDQwNmNlNDMxYTEzZjg2MDgzYTg5NzNlMTA2NGQyZjg4OTc4Njk5MzBlZTZlNTIzNyJ9fX0="
+            )
+            nbtString = nbtString.replace("ff6fbcd7-5138-36b9-a3dc-4c52af38c20d","2070f6cb-f5db-367a-acd0-64d39a7e5d1b")
+            nbtString = nbtString.replace("COIN_TALISMAN","")
+
+            // Parse NBT string
+            val nbtCompound = try {
+                JsonToNBT.getTagFromJson(nbtString)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                return null
+            }
+
+            // Create ItemStack with NBT and item ID
+            val itemStack = ItemStack(Item.getByNameOrId(mcItemId))
+            itemStack.tagCompound = nbtCompound
+            itemStack.setStackDisplayName("§6Skyblock Coins")
+
+            if (itemJson.has("damage")) {
+                itemStack.itemDamage = itemJson.get("damage").asInt
+            }
+
+            itemStackCache[itemId] = itemStack
+            return itemStack
+        }
+
         // Assuming skyblockItems is a map containing NBT data as strings
-        val itemJson = skyblockItems[itemId]?.asJsonObject?: return null
+        val itemJson = skyblockItems[itemId]?.asJsonObject ?: return null
         val nbtString = itemJson.get("nbttag")?.asString ?: return null
         val mcItemId = itemJson.get("itemid")?.asString ?: return null
 
@@ -112,7 +144,7 @@ object ItemApi {
         val itemStack = ItemStack(Item.getByNameOrId(mcItemId))
         itemStack.tagCompound = nbtCompound
 
-        if(itemJson.has("damage")) {
+        if (itemJson.has("damage")) {
             itemStack.itemDamage = itemJson.get("damage").asInt
         }
 
