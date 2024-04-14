@@ -1,12 +1,12 @@
 package mrfast.sbt.managers
 
-import mrfast.sbt.apis.ItemApi
 import mrfast.sbt.customevents.SkyblockInventoryItemEvent
 import mrfast.sbt.utils.ItemUtils.getSkyblockId
 import mrfast.sbt.utils.LocationUtils
 import mrfast.sbt.utils.Utils
 import mrfast.sbt.utils.Utils.getRegexGroups
 import mrfast.sbt.utils.Utils.matches
+import net.minecraft.item.ItemStack
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
@@ -17,7 +17,7 @@ import kotlin.math.abs
 object InventoryItemManager {
     private var previousInventory = mutableMapOf<String, Int>()
     private var preOpenInventory = mutableMapOf<String, Int>()
-    private var itemIds = mutableMapOf<String, String>()
+    private var items = mutableMapOf<String, Pair<String, ItemStack>>()
     private var isOpen = false
     private var ignoreStacksRegex = listOf("^§8Quiver.*", "^§aSkyBlock Menu §7\\(Click\\)", "^§bMagical Map")
 
@@ -47,7 +47,7 @@ object InventoryItemManager {
         val mainInventory = Utils.mc.thePlayer.inventory.mainInventory
 
         loop@ for (element in mainInventory) {
-            if(element==null) continue
+            if (element == null) continue
             var displayName = element.displayName ?: "Empty slot"
             // Filters
             for (regex in ignoreStacksRegex) {
@@ -61,7 +61,7 @@ object InventoryItemManager {
             if (displayName.matches(npcSellingStackRegex)) {
                 displayName = displayName.getRegexGroups(npcSellingStackRegex)?.group(1) ?: continue
             }
-            itemIds[displayName] = element.getSkyblockId() ?: ""
+            items[displayName] = Pair(element.getSkyblockId() ?: "", element)
 
             val itemCount = element.stackSize ?: 0
             inventoryState.merge(displayName, itemCount, Int::plus)
@@ -81,7 +81,7 @@ object InventoryItemManager {
             // Check if there is a change in count
             if (countDifference != 0) {
                 val itemName = if (displayName != "Empty slot") displayName else getPreviousItemName()
-                val itemId = itemIds[itemName] ?: return
+                val item = items[itemName] ?: return
 
                 if (countDifference > 0) {
                     MinecraftForge.EVENT_BUS.post(
@@ -89,7 +89,8 @@ object InventoryItemManager {
                             SkyblockInventoryItemEvent.EventType.GAINED,
                             countDifference,
                             itemName,
-                            itemId
+                            item.first,
+                            item.second
                         )
                     )
                 } else {
@@ -98,7 +99,8 @@ object InventoryItemManager {
                             SkyblockInventoryItemEvent.EventType.LOST,
                             -abs(countDifference),
                             itemName,
-                            itemId
+                            item.first,
+                            item.second
                         )
                     )
                 }
@@ -109,13 +111,14 @@ object InventoryItemManager {
         previous.forEach { (displayName, previousCount) ->
             val currentCount = current[displayName] ?: 0
             if (previousCount > 0 && currentCount == 0) {
-                val itemId = itemIds[displayName] ?: return
+                val item = items[displayName] ?: return
                 MinecraftForge.EVENT_BUS.post(
                     SkyblockInventoryItemEvent.ItemStackEvent(
                         SkyblockInventoryItemEvent.EventType.LOST,
                         -abs(previousCount),
                         displayName,
-                        itemId
+                        item.first,
+                        item.second
                     )
                 )
             }

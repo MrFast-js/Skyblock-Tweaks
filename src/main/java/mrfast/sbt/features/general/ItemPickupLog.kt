@@ -3,20 +3,18 @@ package mrfast.sbt.features.general
 import com.google.gson.JsonObject
 import mrfast.sbt.apis.ItemApi
 import mrfast.sbt.config.GuiManager
-import mrfast.sbt.config.categories.CustomizationConfig
 import mrfast.sbt.config.categories.GeneralConfig.itemPickupLog
 import mrfast.sbt.config.categories.GeneralConfig.itemPickupLogItemIds
 import mrfast.sbt.config.categories.GeneralConfig.itemPickupLogItemPrices
 import mrfast.sbt.customevents.SkyblockInventoryItemEvent
 import mrfast.sbt.utils.GuiUtils
+import mrfast.sbt.utils.ItemUtils.getLore
+import mrfast.sbt.utils.Utils.clean
 import mrfast.sbt.utils.Utils.formatNumber
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import kotlin.math.abs
 
 
-/*
-THIS IS NOT A FEATURE, THIS IS FOR DEBUGGING AND TESTING PURPOSES ONLY
- */
 object ItemPickupLog {
     var displayLines = mutableMapOf<String, PickupEntry>()
 
@@ -37,6 +35,9 @@ object ItemPickupLog {
         }
 
         if (event is SkyblockInventoryItemEvent.ItemStackEvent) {
+            if (event.itemName.clean() == "Enchanted Book") {
+                event.itemName = event.stack.getLore()[0]
+            }
             val old = displayLines[event.itemName] ?: PickupEntry()
             old.lastUpdated = System.currentTimeMillis()
             old.count += event.amount

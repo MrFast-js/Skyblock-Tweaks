@@ -103,8 +103,8 @@ object ItemApi {
                 "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDUyZGNhNjhjOGY4YWY1MzNmYjczN2ZhZWVhY2JlNzE3Yjk2ODc2N2ZjMTg4MjRkYzJkMzdhYzc4OWZjNzcifX19",
                 "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTM4MDcxNzIxY2M1YjRjZDQwNmNlNDMxYTEzZjg2MDgzYTg5NzNlMTA2NGQyZjg4OTc4Njk5MzBlZTZlNTIzNyJ9fX0="
             )
-            nbtString = nbtString.replace("ff6fbcd7-5138-36b9-a3dc-4c52af38c20d","2070f6cb-f5db-367a-acd0-64d39a7e5d1b")
-            nbtString = nbtString.replace("COIN_TALISMAN","")
+            nbtString = nbtString.replace("ff6fbcd7-5138-36b9-a3dc-4c52af38c20d", "2070f6cb-f5db-367a-acd0-64d39a7e5d1b")
+            nbtString = nbtString.replace("COIN_TALISMAN", "")
 
             // Parse NBT string
             val nbtCompound = try {
@@ -153,6 +153,11 @@ object ItemApi {
     }
 
     fun getItemPriceInfo(itemId: String): JsonObject? {
+        if(!skyblockItemPrices.has(itemId) && itemId.contains(";")) {
+            // REJUVENATE;1  -> ENCHANTMENT_REJUVENATE_1
+            return getItemPriceInfo("ENCHANTMENT_${itemId.replace(";","_")}")
+        }
+
         return skyblockItemPrices.get(itemId)?.asJsonObject
     }
 

@@ -16,6 +16,7 @@ import mrfast.sbt.features.generalProfitTracker.GeneralProfitTracker.started
 import mrfast.sbt.features.generalProfitTracker.GeneralProfitTracker.whitelistItems
 import mrfast.sbt.managers.DataManager
 import mrfast.sbt.utils.GuiUtils
+import mrfast.sbt.utils.ItemUtils.getLore
 import mrfast.sbt.utils.Utils
 import mrfast.sbt.utils.Utils.abbreviateNumber
 import mrfast.sbt.utils.Utils.clean
@@ -310,10 +311,17 @@ class ProfitTrackerGui : WindowScreen(ElementaVersion.V2) {
             tempWorth += itemWorth
 
             val countText = if (itemCount > 1) "§8x${itemCount.abbreviateNumber()} " else ""
-            val itemNameShort = if (itemStack.displayName.clean().length > 17) itemStack.displayName.substring(
+            var displayName = itemStack.displayName
+
+            if (itemStack.displayName.clean() == "Enchanted Book") {
+                displayName = itemStack.getLore()[0]
+            }
+
+            val itemNameShort = if (displayName.clean().length > 17) displayName.substring(
                 0,
                 14
-            ) + "§8..." else itemStack.displayName
+            ) + "§8..." else displayName
+
             val renderText = "$countText$itemNameShort §r- $${itemWorth.abbreviateNumber()}"
 
             val textWidth = fontRenderer.getStringWidth(renderText.clean())
@@ -442,8 +450,13 @@ class ProfitTrackerGui : WindowScreen(ElementaVersion.V2) {
                     )
                     GlStateManager.color(1f, 1f, 1f, 1f)
 
+                    var hoverText = item.displayName
+                    if (item.displayName.clean() == "Enchanted Book") {
+                        hoverText = item.getLore()[0]
+                    }
+
                     net.minecraftforge.fml.client.config.GuiUtils.drawHoveringText(
-                        listOf(item.displayName),
+                        listOf(hoverText),
                         mouseX.toInt(),
                         mouseY.toInt(),
                         Utils.mc.displayWidth,
@@ -510,7 +523,8 @@ class ProfitTrackerGui : WindowScreen(ElementaVersion.V2) {
 
                 val search = searchField?.text?.toLowerCase() as CharSequence
                 val matchesSearch =
-                    stack.displayName.clean().toLowerCase().contains(search) || itemId.toLowerCase().contains(search)
+                    stack.displayName.clean().toLowerCase().contains(search) || itemId.toLowerCase()
+                        .contains(search) || itemId.toLowerCase().replace("_", " ").contains(search)
                 if (!matchesSearch) continue
 
                 rawIndex++
