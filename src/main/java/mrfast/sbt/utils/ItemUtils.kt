@@ -55,6 +55,17 @@ object ItemUtils {
         return null
     }
 
+    fun ItemStack.getSkyblockEnchants(): MutableMap<String, Int> {
+        val attributes = this.getExtraAttributes() ?: return mutableMapOf()
+        val enchants = attributes.getCompoundTag("enchantments")
+        val enchantsOut = mutableMapOf<String, Int>()
+        for (enchantment in enchants.keySet) {
+            val lvl = enchants.getInteger(enchantment)
+            enchantsOut[enchantment] = lvl
+        }
+        return enchantsOut
+    }
+
     fun ItemStack.getLore(): MutableList<String> {
         val lore = mutableListOf<String>()
 
