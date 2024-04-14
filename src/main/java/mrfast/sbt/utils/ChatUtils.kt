@@ -10,10 +10,16 @@ object ChatUtils {
     fun sendPlayerMessage(message: String) {
         Minecraft.getMinecraft().thePlayer?.sendChatMessage(message)
     }
-    fun sendClientMessage(message: String) {
-        Minecraft.getMinecraft().ingameGUI.chatGUI.printChatMessage(ChatComponentText(modChatPrefix+message))
+
+    fun sendClientMessage(message: String, prefix: Boolean?= false) {
+        Minecraft.getMinecraft().ingameGUI.chatGUI.printChatMessage(ChatComponentText((if(prefix == true) (modChatPrefix) else "") + message))
     }
-    fun sendClientMessage(message: IChatComponent) {
-        Minecraft.getMinecraft().ingameGUI.chatGUI.printChatMessage(ChatComponentText(modChatPrefix).appendSibling(message))
+
+    fun sendClientMessage(message: IChatComponent, prefix: Boolean?= false) {
+        Minecraft.getMinecraft().ingameGUI.chatGUI.printChatMessage(
+            ChatComponentText(if(prefix == true) modChatPrefix else "").appendSibling(
+                message
+            )
+        )
     }
 }

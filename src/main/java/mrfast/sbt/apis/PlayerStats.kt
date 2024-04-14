@@ -1,6 +1,7 @@
 package mrfast.sbt.apis
 
 import mrfast.sbt.config.categories.GeneralConfig
+import mrfast.sbt.customevents.WorldLoadEvent
 import mrfast.sbt.utils.Utils.clean
 import net.minecraft.util.ChatComponentText
 import net.minecraftforge.client.event.ClientChatReceivedEvent
@@ -24,7 +25,7 @@ object PlayerStats {
     var riftTimeSeconds = 0
 
     @SubscribeEvent
-    fun onWorldChange(event: WorldEvent.Load) {
+    fun onWorldChange(event: WorldLoadEvent) {
         maxRiftTime = 0
     }
 

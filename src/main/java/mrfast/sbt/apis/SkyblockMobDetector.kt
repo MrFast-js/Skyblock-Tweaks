@@ -4,6 +4,7 @@ import mrfast.sbt.config.categories.CustomizationConfig
 import mrfast.sbt.config.categories.DeveloperConfig
 import mrfast.sbt.config.categories.DeveloperConfig.showMobIdsThroughWalls
 import mrfast.sbt.customevents.SkyblockMobEvent
+import mrfast.sbt.customevents.WorldLoadEvent
 import mrfast.sbt.utils.LocationUtils
 import mrfast.sbt.utils.RenderUtils
 import mrfast.sbt.utils.Utils
@@ -28,7 +29,7 @@ object SkyblockMobDetector {
     }
 
     @SubscribeEvent
-    fun onWorldChange(event: WorldEvent.Load) {
+    fun onWorldChange(event: WorldLoadEvent) {
         skyblockMobHashMap.clear()
     }
 

@@ -2,6 +2,7 @@ package mrfast.sbt.apis
 
 import mrfast.sbt.config.categories.DeveloperConfig.showItemAbilities
 import mrfast.sbt.customevents.UseItemAbilityEvent
+import mrfast.sbt.customevents.WorldLoadEvent
 import mrfast.sbt.utils.*
 import mrfast.sbt.utils.ItemUtils.getLore
 import mrfast.sbt.utils.ItemUtils.getSkyblockId
@@ -94,7 +95,7 @@ object ItemAbilities {
     }
 
     @SubscribeEvent
-    fun onWorldChange(event: WorldEvent.Load?) {
+    fun onWorldLoad(event: WorldLoadEvent) {
         activeCooldowns.clear()
         itemCooldowns.clear()
         cooldownReduction = -1

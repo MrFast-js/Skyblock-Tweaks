@@ -45,6 +45,16 @@ object DeveloperConfig : Config() {
     var showItemAbilities = false
 
     @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Show location updates",
+        description = "Shows in chat when the location packet is received",
+        category = "§eDeveloper",
+        subcategory = "Settings"
+    )
+    var showLocationUpdates = false
+
+
+    @ConfigProperty(
             type = ConfigType.TOGGLE,
             name = "Show Inspector in Guis",
             category = "§eDeveloper",

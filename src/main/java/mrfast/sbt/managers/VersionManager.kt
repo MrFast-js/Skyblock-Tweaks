@@ -4,6 +4,7 @@ import moe.nea.libautoupdate.*
 import mrfast.sbt.SkyblockTweaks.Companion.MOD_ID
 import mrfast.sbt.SkyblockTweaks.Companion.MOD_VERSION
 import mrfast.sbt.config.categories.CustomizationConfig
+import mrfast.sbt.customevents.WorldLoadEvent
 import mrfast.sbt.utils.ChatUtils
 import mrfast.sbt.utils.Utils
 import net.minecraft.event.ClickEvent
@@ -35,7 +36,7 @@ object VersionManager {
 
 
     @SubscribeEvent
-    fun onWorldLoad(event: WorldEvent.Load) {
+    fun onWorldLoad(event: WorldLoadEvent) {
         silentUpdateCheck()
     }
 

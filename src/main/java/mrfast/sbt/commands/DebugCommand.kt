@@ -2,6 +2,11 @@ package mrfast.sbt.commands
 
 import com.mojang.realmsclient.gui.ChatFormatting
 import mrfast.sbt.utils.*
+import mrfast.sbt.utils.Utils.sendToServer
+import net.hypixel.modapi.packet.impl.serverbound.ServerboundLocationPacket
+import net.hypixel.modapi.packet.impl.serverbound.ServerboundPartyInfoPacket
+import net.hypixel.modapi.packet.impl.serverbound.ServerboundPingPacket
+import net.hypixel.modapi.packet.impl.serverbound.ServerboundPlayerInfoPacket
 import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.command.CommandBase
 import net.minecraft.command.CommandException
@@ -62,7 +67,15 @@ class DebugCommand : CommandBase() {
                     ChatUtils.sendClientMessage(ChatFormatting.RED.toString() + "You must be holding an item!")
                 }
             }
-
+            "HAPI" -> {
+                when (args[1]) {
+                    "loc" -> ServerboundLocationPacket().sendToServer()
+                    "ping" -> ServerboundPingPacket().sendToServer()
+                    "party" -> ServerboundPartyInfoPacket().sendToServer()
+                    "player" -> ServerboundPlayerInfoPacket().sendToServer()
+                    else -> invalidUsage()
+                }
+            }
             "sidebar" -> sidebarData
             "log" -> copyLog()
             "tablist", "tab" -> tablistData

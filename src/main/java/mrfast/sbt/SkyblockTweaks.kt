@@ -10,6 +10,9 @@ import mrfast.sbt.commands.GPTCommand
 import mrfast.sbt.config.Config
 import mrfast.sbt.config.ConfigGui
 import mrfast.sbt.config.GuiManager
+import mrfast.sbt.config.categories.DeveloperConfig
+import mrfast.sbt.customevents.PacketEvent
+import mrfast.sbt.customevents.WorldLoadEvent
 import mrfast.sbt.features.general.*
 import mrfast.sbt.features.generalProfitTracker.GeneralProfitTracker
 import mrfast.sbt.features.statDisplays.RiftTimeBarDisplay
@@ -19,9 +22,19 @@ import mrfast.sbt.managers.*
 import mrfast.sbt.utils.DevUtils
 import mrfast.sbt.utils.LocationUtils
 import mrfast.sbt.utils.SocketUtils
+import mrfast.sbt.utils.Utils
+import net.hypixel.modapi.HypixelModAPI
+import net.hypixel.modapi.handler.ClientboundPacketHandler
+import net.hypixel.modapi.packet.impl.clientbound.ClientboundLocationPacket
+import net.hypixel.modapi.packet.impl.clientbound.ClientboundPartyInfoPacket
+import net.hypixel.modapi.packet.impl.clientbound.ClientboundPingPacket
+import net.hypixel.modapi.packet.impl.clientbound.ClientboundPlayerInfoPacket
+import net.hypixel.modapi.serializer.PacketSerializer
+import net.minecraft.network.play.server.S3FPacketCustomPayload
 import net.minecraftforge.client.ClientCommandHandler
 import net.minecraftforge.client.event.GuiScreenEvent.KeyboardInputEvent
 import net.minecraftforge.common.MinecraftForge
+import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.Loader
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.event.FMLInitializationEvent
@@ -45,9 +58,26 @@ class SkyblockTweaks {
         config.loadConfig()
     }
 
+    @SubscribeEvent
+    fun onPacketReceive(event: PacketEvent.Received) {
+        if(event.packet is S3FPacketCustomPayload) {
+            if(event.packet.channelName.startsWith("hypixel:")) {
+                HypixelModAPI.getInstance().handle(event.packet.channelName, PacketSerializer(event.packet.bufferData))
+            }
+        }
+    }
+
     @Mod.EventHandler
     fun init(event: FMLInitializationEvent?) {
         MinecraftForge.EVENT_BUS.register(this)
+
+        HypixelModAPI.getInstance().registerHandler(object : ClientboundPacketHandler {
+            override fun onLocationPacket(packet: ClientboundLocationPacket) {
+                println(packet.toString())
+
+            }
+        })
+
 
         // Apis
         MinecraftForge.EVENT_BUS.register(ItemApi)
@@ -126,5 +156,19 @@ class SkyblockTweaks {
         if (ConfigGui.listeningForKeybind && Keyboard.getEventKey() == Keyboard.KEY_ESCAPE) {
             event.setCanceled(true)
         }
+    }
+
+    // Sends custom event for the world loading, only once, as WorldEvent.Load is called twice
+    private var alreadySent = false
+    @SubscribeEvent
+    fun onWorldChange(event: WorldEvent.Load) {
+        if(alreadySent) return
+        alreadySent = true
+
+        MinecraftForge.EVENT_BUS.post(WorldLoadEvent())
+
+        Utils.setTimeout({
+            alreadySent = false
+        },2000)
     }
 }

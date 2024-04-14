@@ -1,6 +1,19 @@
 package mrfast.sbt.utils
 
+import io.netty.buffer.Unpooled
+import mrfast.sbt.utils.Utils.sendToServer
+import net.hypixel.modapi.HypixelModAPI
+import net.hypixel.modapi.packet.HypixelPacket
+import net.hypixel.modapi.packet.PacketRegistry
+import net.hypixel.modapi.packet.impl.serverbound.ServerboundLocationPacket
+import net.hypixel.modapi.packet.impl.serverbound.ServerboundPartyInfoPacket
+import net.hypixel.modapi.packet.impl.serverbound.ServerboundPingPacket
+import net.hypixel.modapi.packet.impl.serverbound.ServerboundPlayerInfoPacket
+import net.hypixel.modapi.serializer.PacketSerializer
 import net.minecraft.client.Minecraft
+import net.minecraft.client.entity.EntityPlayerSP
+import net.minecraft.network.PacketBuffer
+import net.minecraft.network.play.client.C17PacketCustomPayload
 import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
 import java.util.regex.Matcher
@@ -14,7 +27,9 @@ object Utils {
             Thread.sleep(delayMillis)
             runnable()
         }.start()
+
     }
+
 
     /**
      * Cleans all minecraft formatting from text
@@ -22,6 +37,7 @@ object Utils {
     fun String.clean(): String {
         return this.replace("§[0-9a-zA-Z]".toRegex(), "")
     }
+
     /**
      * Cleans all minecraft color formatting from text
      */
@@ -38,7 +54,7 @@ object Utils {
     fun String.getRegexGroups(regex: String): Matcher? {
         val pattern = Pattern.compile(regex)
         val matcher = pattern.matcher(this)
-        if(!matcher.find()) return null
+        if (!matcher.find()) return null
 
         return matcher
     }
@@ -46,6 +62,7 @@ object Utils {
     fun Number.formatNumber(): String {
         return String.format("%,.0f", this.toDouble())
     }
+
     fun Number.abbreviateNumber(): String {
         val num = this.toDouble()
         return when {
@@ -67,7 +84,7 @@ object Utils {
     }
 
 
-    fun clamp(min: Double,value: Double,max:Double): Double {
+    fun clamp(min: Double, value: Double, max: Double): Double {
         return max.coerceAtMost(value.coerceAtLeast(min))
     }
 
@@ -79,5 +96,12 @@ object Utils {
 
     fun playSound(soundName: String, pitch: Double) {
         mc.thePlayer.playSound(soundName, 1.0F, pitch.toFloat())
+    }
+
+    private val packetBuffer = PacketBuffer(Unpooled.buffer())
+    private val serializer = PacketSerializer(packetBuffer)
+    fun HypixelPacket.sendToServer() {
+        this.write(serializer)
+        mc.thePlayer.sendQueue.addToSendQueue(C17PacketCustomPayload(this.identifier, packetBuffer))
     }
 }

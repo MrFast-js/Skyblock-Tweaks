@@ -1,10 +1,15 @@
 package mrfast.sbt.utils
 
-import com.google.gson.Gson
-import com.google.gson.JsonObject
+import mrfast.sbt.config.categories.DeveloperConfig
+import mrfast.sbt.customevents.WorldLoadEvent
 import mrfast.sbt.utils.Utils.clean
-import net.minecraftforge.client.event.ClientChatReceivedEvent
-import net.minecraftforge.event.world.WorldEvent
+import mrfast.sbt.utils.Utils.sendToServer
+import net.hypixel.modapi.HypixelModAPI
+import net.hypixel.modapi.handler.ClientboundPacketHandler
+import net.hypixel.modapi.packet.impl.clientbound.ClientboundLocationPacket
+import net.hypixel.modapi.packet.impl.serverbound.ServerboundLocationPacket
+import net.minecraft.event.HoverEvent
+import net.minecraft.util.ChatComponentText
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object LocationUtils {
@@ -13,74 +18,69 @@ object LocationUtils {
     var currentIsland = ""
     var currentArea = ""
     var dungeonFloor = 0
-    private var newWorld = false
-    private var listeningForLocraw = false
 
     @SubscribeEvent
-    fun onWorldChange(event: WorldEvent.Load) {
-        if (newWorld) return
-
-        newWorld = true
-        listeningForLocraw = true
+    fun onWorldChange(event: WorldLoadEvent) {
         inSkyblock = false
-        limboCount = 0
         currentArea = ""
         currentIsland = ""
 
         Utils.setTimeout({
-            if(!listeningForLocraw) return@setTimeout
-
-            newWorld = false
             updatePlayerLocation()
-            ChatUtils.sendPlayerMessage("/locraw")
         }, 1000)
     }
 
-    private val gson = Gson()
-    private var limboCount = 0
-    @SubscribeEvent
-    fun onChat(event:ClientChatReceivedEvent) {
-        if(!listeningForLocraw) return
-
-        if(event.message.formattedText.clean().startsWith("{\"server\":\"")) {
-            val clean = event.message.formattedText.substring(0,event.message.formattedText.indexOf("}")+1).clean()
-            val obj = gson.fromJson(clean,JsonObject::class.java)
-
-            event.isCanceled = true
-
-            if(obj.has("map")) {
-                listeningForLocraw = false
-                currentIsland = obj.get("map").asString
-            }
-            if(obj.has("mode")) {
-                inDungeons = (obj.get("mode").asString == "Dungeon")
-            }
-            if(obj.has("gametype")) {
-                inSkyblock = (obj.get("gametype").asString == "SKYBLOCK")
-            }
-            if(obj.get("server").asString == "limbo") {
-                if(limboCount>2) {
-                    listeningForLocraw = false
-                    println("Player is actually on afk limbo")
-                    return
+    init {
+        HypixelModAPI.getInstance().registerHandler(object : ClientboundPacketHandler {
+            override fun onLocationPacket(packet: ClientboundLocationPacket?) {
+                if (packet != null) {
+                    if (packet.map.isPresent) {
+                        currentIsland = packet.map.get()
+                    }
+                    if (packet.serverType.isPresent) {
+                        inSkyblock = packet.serverType.get().name == "SkyBlock"
+                    }
+                    if (DeveloperConfig.showLocationUpdates) {
+                        sendDeveloperInfo(packet)
+                    }
                 }
-
-                println("GOT LIMBO! RESENDING LOCRAW")
-                limboCount++
-                Utils.setTimeout({
-                    ChatUtils.sendPlayerMessage("/locraw")
-                },400)
             }
-        }
+        })
     }
 
+    private fun sendDeveloperInfo(packet:ClientboundLocationPacket) {
+        val chatMessage = ChatComponentText("")
+
+        fun addComponentWithTitle(title: String, content: String, hoverText: String? = null) {
+            val comp = ChatComponentText(title)
+            comp.chatStyle.chatHoverEvent = HoverEvent(HoverEvent.Action.SHOW_TEXT, ChatComponentText(hoverText ?: content))
+            chatMessage.appendSibling(comp)
+        }
+
+        packet.map.ifPresent { addComponentWithTitle("§a[Map] ", it) }
+        packet.mode.ifPresent { addComponentWithTitle("§2[Mode] ", it) }
+        addComponentWithTitle("§b[Environment] ",
+            "Name: ${packet.environment.name}\n" +
+                    "Id: ${packet.environment.id}\n" +
+                    "Ordinal: ${packet.environment.ordinal}"
+        )
+        addComponentWithTitle("§3[Proxy] ", packet.proxyName)
+        addComponentWithTitle("§e[Serv. Name] ", packet.serverName)
+        packet.serverType.ifPresent { addComponentWithTitle("§6[Serv. Type] ", it.name) }
+
+        ChatUtils.sendClientMessage(chatMessage,false)
+    }
+
+
     private fun updatePlayerLocation() {
+        ServerboundLocationPacket().sendToServer()
         for (line in ScoreboardUtils.getSidebarLines(true)) {
             val clean = line.clean()
-            if(clean.contains("⏣")) {
+            if (clean.contains("⏣")) {
                 currentArea = clean.split("⏣ ")[1]
-                if(currentArea.contains("The Catacombs (")) {
-                    dungeonFloor = currentArea.replace("[^0-9]".toRegex(),"").toInt()
+                if (currentArea.contains("The Catacombs (")) {
+                    dungeonFloor = currentArea.replace("[^0-9]".toRegex(), "").toInt()
+                    inDungeons = true
                 }
             }
         }

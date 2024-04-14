@@ -2,6 +2,7 @@ package mrfast.sbt.managers
 
 import mrfast.sbt.config.categories.GeneralConfig
 import mrfast.sbt.customevents.SlotClickedEvent
+import mrfast.sbt.customevents.WorldLoadEvent
 import mrfast.sbt.utils.ChatUtils
 import mrfast.sbt.utils.GuiUtils.chestName
 import mrfast.sbt.utils.ItemUtils.getLore
@@ -9,7 +10,12 @@ import mrfast.sbt.utils.Utils
 import mrfast.sbt.utils.Utils.clean
 import mrfast.sbt.utils.Utils.getRegexGroups
 import mrfast.sbt.utils.Utils.matches
+import mrfast.sbt.utils.Utils.sendToServer
 import mrfast.sbt.utils.Utils.setTimeout
+import net.hypixel.modapi.HypixelModAPI
+import net.hypixel.modapi.handler.ClientboundPacketHandler
+import net.hypixel.modapi.packet.impl.clientbound.ClientboundPartyInfoPacket
+import net.hypixel.modapi.packet.impl.serverbound.ServerboundPartyInfoPacket
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -17,6 +23,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object PartyManager {
     var partyMembers = mutableMapOf<String, PartyMember>()
     private var playerInParty = false
+    private var firstLoad = false
 
     class PartyMember(var name: String) {
         var leader = false
@@ -34,6 +41,28 @@ object PartyManager {
         // Just get name
         noRankName = noRankName.split(" ")[0]
         return noRankName
+    }
+
+    @SubscribeEvent
+    fun onWorldLoad(event: WorldLoadEvent) {
+        if (firstLoad) return
+
+        setTimeout({
+            updatePartyInfo()
+        }, 2000)
+    }
+
+    init {
+        HypixelModAPI.getInstance().registerHandler(object : ClientboundPacketHandler {
+            override fun onPartyInfoPacket(packet: ClientboundPartyInfoPacket?) {
+                if (packet != null) {
+                    playerInParty = packet.isInParty
+                    firstLoad = true
+                    // TODO: add uuid -> username for this so it works but currently that would be API intensive to send potentially 5+ requests even with caching if its a large party
+                    // packet.members
+                }
+            }
+        })
     }
 
     @SubscribeEvent
@@ -55,16 +84,15 @@ object PartyManager {
                 hadProblemJoiningParty = false
 
                 for (line in event.slot.stack.getLore()) {
-                    if(line.clean().startsWith("Requires")) return
+                    if (line.clean().startsWith("Requires")) return
                 }
-
 
                 setTimeout({
                     if (hadProblemJoiningParty) return@setTimeout
 
                     // Clear all old party members but self
                     partyMembers.entries.removeIf { it.key != Utils.mc.thePlayer.name }
-                    if(partyMembers.isEmpty()) {
+                    if (partyMembers.isEmpty()) {
                         addSelfToParty()
                     }
 
@@ -72,7 +100,7 @@ object PartyManager {
                         val regex = "^(\\w+):\\s(\\w+)\\s\\((\\d+)\\)$"
                         val clean = line.clean().trim()
                         if (clean.matches(regex)) {
-                            val matcher = clean.getRegexGroups(regex)?:return@setTimeout
+                            val matcher = clean.getRegexGroups(regex) ?: return@setTimeout
                             val playerName = matcher.group(1)
                             val className = matcher.group(2)
                             val classLvl = matcher.group(3)
@@ -95,7 +123,7 @@ object PartyManager {
     private fun addSelfToParty() {
         // Add self to party
         partyMembers[Utils.mc.thePlayer.name] = PartyMember(Utils.mc.thePlayer.name)
-        if(GeneralConfig.autoPartyChat && !playerInParty) {
+        if (GeneralConfig.autoPartyChat && !playerInParty) {
             ChatUtils.sendPlayerMessage("/chat p")
         }
     }
@@ -121,7 +149,7 @@ object PartyManager {
         if (clean.startsWith("You have been kicked from the party")) {
             partyMembers.clear()
             playerInParty = false
-            if(GeneralConfig.autoPartyChat) {
+            if (GeneralConfig.autoPartyChat) {
                 ChatUtils.sendPlayerMessage("/chat a")
             }
         }
@@ -154,7 +182,7 @@ object PartyManager {
             clean.startsWith("You are not currently in a party.")
         ) {
             partyMembers.clear()
-            if(GeneralConfig.autoPartyChat && playerInParty) {
+            if (GeneralConfig.autoPartyChat && playerInParty) {
                 ChatUtils.sendPlayerMessage("/chat a")
             }
             playerInParty = false
@@ -185,7 +213,7 @@ object PartyManager {
     private fun handleDungeonPartyFinder(clean: String) {
         val regex = "^Party Finder > ([^\\s]+) joined the dungeon group! \\(([^ ]+) Level (\\d+)\\)\$"
         if (clean.matches(regex)) {
-            val matcher = clean.getRegexGroups(regex)?:return
+            val matcher = clean.getRegexGroups(regex) ?: return
             val playerName = matcher.group(1)
             val className = matcher.group(2)
             val classLvl = matcher.group(3)
@@ -203,5 +231,9 @@ object PartyManager {
         ) {
             hadProblemJoiningParty = true
         }
+    }
+
+    private fun updatePartyInfo() {
+        ServerboundPartyInfoPacket().sendToServer()
     }
 }
