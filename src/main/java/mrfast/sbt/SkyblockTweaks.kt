@@ -25,13 +25,6 @@ import mrfast.sbt.utils.DevUtils
 import mrfast.sbt.utils.LocationUtils
 import mrfast.sbt.utils.SocketUtils
 import mrfast.sbt.utils.Utils
-import net.hypixel.modapi.HypixelModAPI
-import net.hypixel.modapi.handler.ClientboundPacketHandler
-import net.hypixel.modapi.packet.impl.clientbound.ClientboundLocationPacket
-import net.hypixel.modapi.packet.impl.clientbound.ClientboundPartyInfoPacket
-import net.hypixel.modapi.packet.impl.clientbound.ClientboundPingPacket
-import net.hypixel.modapi.packet.impl.clientbound.ClientboundPlayerInfoPacket
-import net.hypixel.modapi.serializer.PacketSerializer
 import net.minecraft.network.play.server.S3FPacketCustomPayload
 import net.minecraftforge.client.ClientCommandHandler
 import net.minecraftforge.client.event.GuiScreenEvent.KeyboardInputEvent
@@ -60,25 +53,10 @@ class SkyblockTweaks {
         config.loadConfig()
     }
 
-    @SubscribeEvent
-    fun onPacketReceive(event: PacketEvent.Received) {
-        if(event.packet is S3FPacketCustomPayload) {
-            if(event.packet.channelName.startsWith("hypixel:")) {
-                HypixelModAPI.getInstance().handle(event.packet.channelName, PacketSerializer(event.packet.bufferData))
-            }
-        }
-    }
-
     @Mod.EventHandler
     fun init(event: FMLInitializationEvent?) {
         MinecraftForge.EVENT_BUS.register(this)
 
-        HypixelModAPI.getInstance().registerHandler(object : ClientboundPacketHandler {
-            override fun onLocationPacket(packet: ClientboundLocationPacket) {
-                println(packet.toString())
-
-            }
-        })
         MinecraftForge.EVENT_BUS.register(PathTracer)
 
         // Apis

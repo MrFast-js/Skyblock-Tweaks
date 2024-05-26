@@ -1,19 +1,6 @@
 package mrfast.sbt.utils
 
-import io.netty.buffer.Unpooled
-import mrfast.sbt.utils.Utils.sendToServer
-import net.hypixel.modapi.HypixelModAPI
-import net.hypixel.modapi.packet.HypixelPacket
-import net.hypixel.modapi.packet.PacketRegistry
-import net.hypixel.modapi.packet.impl.serverbound.ServerboundLocationPacket
-import net.hypixel.modapi.packet.impl.serverbound.ServerboundPartyInfoPacket
-import net.hypixel.modapi.packet.impl.serverbound.ServerboundPingPacket
-import net.hypixel.modapi.packet.impl.serverbound.ServerboundPlayerInfoPacket
-import net.hypixel.modapi.serializer.PacketSerializer
 import net.minecraft.client.Minecraft
-import net.minecraft.client.entity.EntityPlayerSP
-import net.minecraft.network.PacketBuffer
-import net.minecraft.network.play.client.C17PacketCustomPayload
 import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
 import java.util.regex.Matcher
@@ -96,12 +83,5 @@ object Utils {
 
     fun playSound(soundName: String, pitch: Double) {
         mc.thePlayer.playSound(soundName, 1.0F, pitch.toFloat())
-    }
-
-    private val packetBuffer = PacketBuffer(Unpooled.buffer())
-    private val serializer = PacketSerializer(packetBuffer)
-    fun HypixelPacket.sendToServer() {
-        this.write(serializer)
-        mc.thePlayer.sendQueue.addToSendQueue(C17PacketCustomPayload(this.identifier, packetBuffer))
     }
 }
