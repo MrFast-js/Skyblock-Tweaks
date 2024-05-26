@@ -7,6 +7,7 @@ import mrfast.sbt.apis.SkyblockMobDetector
 import mrfast.sbt.commands.ConfigCommand
 import mrfast.sbt.commands.DebugCommand
 import mrfast.sbt.commands.GPTCommand
+import mrfast.sbt.commands.PathCommand
 import mrfast.sbt.config.Config
 import mrfast.sbt.config.ConfigGui
 import mrfast.sbt.config.GuiManager
@@ -15,6 +16,7 @@ import mrfast.sbt.customevents.PacketEvent
 import mrfast.sbt.customevents.WorldLoadEvent
 import mrfast.sbt.features.general.*
 import mrfast.sbt.features.generalProfitTracker.GeneralProfitTracker
+import mrfast.sbt.features.mining.PathTracer
 import mrfast.sbt.features.statDisplays.RiftTimeBarDisplay
 import mrfast.sbt.features.partyfinder.PartyFinderJoinInfo
 import mrfast.sbt.features.statDisplays.*
@@ -77,7 +79,7 @@ class SkyblockTweaks {
 
             }
         })
-
+        MinecraftForge.EVENT_BUS.register(PathTracer)
 
         // Apis
         MinecraftForge.EVENT_BUS.register(ItemApi)
@@ -132,6 +134,7 @@ class SkyblockTweaks {
         ClientCommandHandler.instance.registerCommand(ConfigCommand())
         ClientCommandHandler.instance.registerCommand(DebugCommand())
         ClientCommandHandler.instance.registerCommand(GPTCommand())
+        ClientCommandHandler.instance.registerCommand(PathCommand())
 
         // Checks mod folder for version of Skyblock Features your using
         val modList = Loader.instance().modList

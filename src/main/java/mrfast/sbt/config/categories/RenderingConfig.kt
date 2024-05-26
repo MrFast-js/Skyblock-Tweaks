@@ -16,6 +16,44 @@ object RenderingConfig : Config() {
         subcategory = "Misc"
     )
     var disableDamageTint = false
+
+    @ConfigProperty(
+        type = ConfigType.COLOR,
+        name = "Main Path Color",
+        description = "Main color used when drawing the loaded path. This will display if points are §a< 3§r blocks away.",
+        category = "Rendering",
+        subcategory = "Path Tracing §7(/path)"
+    )
+    var pathTracingColor1 = Color(0x55FF91)
+
+    @ConfigProperty(
+        type = ConfigType.COLOR,
+        name = "Secondary Path Color",
+        description = "Secondary color used when drawing the loaded path. This will display if points are §c> 3§r blocks away.",
+        category = "Rendering",
+        subcategory = "Path Tracing §7(/path)"
+    )
+    var pathTracingColor2 = Color(0x5590FF)
+
+    @ConfigProperty(
+        type = ConfigType.NUMBER,
+        name = "Path Render Range",
+        description = "Max distance to render path points at. The lower this is the better your fps will be.",
+        category = "Rendering",
+        subcategory = "Path Tracing §7(/path)"
+    )
+    var pathRenderRange = 0
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Draw Through Walls",
+        description = "",
+        category = "Rendering",
+        subcategory = "Path Tracing §7(/path)"
+    )
+    var pathThroughWalls = true
+
+
 //    @ConfigProperty(
 //            type = ConfigType.TOGGLE,
 //            name = "Glowing Dungeon Teammates",
