@@ -118,7 +118,8 @@ object NetworkUtils {
                         }
                         if (statusCode != 200) {
                             ChatUtils.sendClientMessage(
-                                "§cServer Error: ${parsedJson.get("cause").asString} §e§o${parsedJson.get("err_code")} $modifiedUrlString"
+                                "§cServer Error: ${parsedJson.get("cause").asString} §e§o${parsedJson.get("err_code")} $modifiedUrlString",
+                                true
                             )
                             return JsonObject()
                         }
