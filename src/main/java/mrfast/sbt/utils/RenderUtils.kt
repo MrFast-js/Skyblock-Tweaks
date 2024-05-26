@@ -70,8 +70,6 @@ object RenderUtils {
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
         GlStateManager.disableLighting()
         GlStateManager.disableCull()
-        GlStateManager.depthMask(false)
-        GlStateManager.disableDepth()
 
         GL11.glLineWidth(thickness.toFloat())
         GL11.glBegin(GL11.GL_LINES)
@@ -80,8 +78,6 @@ object RenderUtils {
         GL11.glVertex3d(toX, toY, toZ)
         GL11.glEnd()
 
-        GlStateManager.enableDepth()
-        GlStateManager.depthMask(true)
         GlStateManager.enableCull()
         GlStateManager.enableLighting()
         GlStateManager.disableBlend()

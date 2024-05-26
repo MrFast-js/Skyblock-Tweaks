@@ -33,13 +33,17 @@ class NumberInputComponent(initValue: Int) : UIBlock() {
         textInput.setText(initValue.toString())
         intValue = initValue
 
+
         textInput.onKeyType { typedChar, keyCode ->
             box.setColor(Color(0x232323))
 
             val cleanNumber: String = textInput.getText().replace("[^0-9]".toRegex(), "")
-            try { intValue = cleanNumber.toInt() } catch (_: Exception) {}
+            try {
+                intValue = cleanNumber.toInt()
+            } catch (_: Exception) {}
 
             textInput.setText(cleanNumber)
+            this@NumberInputComponent.keyType(typedChar,keyCode)
         }
 
         textInput.onFocusLost {
