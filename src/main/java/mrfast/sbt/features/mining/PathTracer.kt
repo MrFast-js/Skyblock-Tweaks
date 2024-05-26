@@ -39,11 +39,14 @@ object PathTracer {
     fun onRenderWorld(event: RenderWorldLastEvent) {
         if (Utils.mc.thePlayer != null) {
             GlStateManager.pushMatrix()
-            if (pathThroughWalls) GlStateManager.disableDepth()
+            if (pathThroughWalls) {
+                GlStateManager.disableDepth()
+            }
             var previousPoint: Vec3? = null
             for (point in pathPoints) {
                 if (Utils.mc.thePlayer.positionVector.distanceTo(point) > pathRenderRange) {
-                    break
+                    previousPoint = null
+                    continue
                 }
                 if (previousPoint == null) {
                     previousPoint = point
@@ -69,9 +72,10 @@ object PathTracer {
                     previousPoint = point
                 }
             }
-            GlStateManager.enableDepth()
+            if (pathThroughWalls) {
+                GlStateManager.enableDepth()
+            }
             GlStateManager.popMatrix()
-
         }
     }
 

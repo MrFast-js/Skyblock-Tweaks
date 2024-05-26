@@ -42,7 +42,7 @@ object RenderingConfig : Config() {
         category = "Rendering",
         subcategory = "Path Tracing §7(/path)"
     )
-    var pathRenderRange = 0
+    var pathRenderRange = 75
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
@@ -52,7 +52,6 @@ object RenderingConfig : Config() {
         subcategory = "Path Tracing §7(/path)"
     )
     var pathThroughWalls = true
-
 
 //    @ConfigProperty(
 //            type = ConfigType.TOGGLE,
