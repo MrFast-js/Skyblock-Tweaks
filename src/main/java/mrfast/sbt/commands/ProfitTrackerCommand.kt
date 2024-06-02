@@ -12,8 +12,8 @@ class ProfitTrackerCommand : CommandBase() {
         return "profittracker"
     }
 
-    override fun getCommandAliases(): String {
-        return "pft";
+    override fun getCommandAliases(): List<String> {
+        return Lists.newArrayList("pft")
     }
 
     override fun getCommandUsage(sender: ICommandSender?): String {

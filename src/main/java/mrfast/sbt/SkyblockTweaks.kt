@@ -6,7 +6,7 @@ import mrfast.sbt.apis.PlayerStats
 import mrfast.sbt.apis.SkyblockMobDetector
 import mrfast.sbt.commands.ConfigCommand
 import mrfast.sbt.commands.DebugCommand
-import mrfast.sbt.commands.GPTCommand
+import mrfast.sbt.commands.ProfitTrackerCommand
 import mrfast.sbt.commands.PathCommand
 import mrfast.sbt.config.Config
 import mrfast.sbt.config.ConfigGui
@@ -90,7 +90,7 @@ class SkyblockTweaks {
         MinecraftForge.EVENT_BUS.register(PartyFinderJoinInfo) // Party Finder
         MinecraftForge.EVENT_BUS.register(NewYearsCakeHelper) // Cake bag sorting helper
         MinecraftForge.EVENT_BUS.register(TrashHighlighter) // Trash Highlighter
-        MinecraftForge.EVENT_BUS.register(RiftTimeBarDisplay) // Rift Bar
+        MinecraftForge.EVENT_BUS.register(RiftTimeBar) // Rift Bar
 
         // Overlays
         MinecraftForge.EVENT_BUS.register(LowHealthTint)
@@ -111,7 +111,7 @@ class SkyblockTweaks {
         // Commands
         ClientCommandHandler.instance.registerCommand(ConfigCommand())
         ClientCommandHandler.instance.registerCommand(DebugCommand())
-        ClientCommandHandler.instance.registerCommand(ProfileTrackerCommand())
+        ClientCommandHandler.instance.registerCommand(ProfitTrackerCommand())
         ClientCommandHandler.instance.registerCommand(PathCommand())
 
         // Checks mod folder for version of Skyblock Features your using
