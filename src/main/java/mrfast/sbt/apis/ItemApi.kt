@@ -153,7 +153,7 @@ object ItemApi {
     }
 
     fun getItemPriceInfo(itemId: String): JsonObject? {
-        if(!skyblockItemPrices.has(itemId) && itemId.contains(";")) {
+        if (!skyblockItemPrices.has(itemId) && itemId.contains(";")) {
             // REJUVENATE;1  -> ENCHANTMENT_REJUVENATE_1
             return getItemPriceInfo("ENCHANTMENT_${itemId.replace(";","_")}")
         }

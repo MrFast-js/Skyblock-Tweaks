@@ -15,11 +15,11 @@ import mrfast.sbt.config.categories.DeveloperConfig
 import mrfast.sbt.customevents.PacketEvent
 import mrfast.sbt.customevents.WorldLoadEvent
 import mrfast.sbt.features.general.*
-import mrfast.sbt.features.generalProfitTracker.GeneralProfitTracker
+import mrfast.sbt.features.profit_tracking.ProfitTracker
 import mrfast.sbt.features.mining.PathTracer
-import mrfast.sbt.features.statDisplays.RiftTimeBarDisplay
 import mrfast.sbt.features.partyfinder.PartyFinderJoinInfo
-import mrfast.sbt.features.statDisplays.*
+import mrfast.sbt.features.stats.number.*
+import mrfast.sbt.features.stats.bar.*
 import mrfast.sbt.managers.*
 import mrfast.sbt.utils.DevUtils
 import mrfast.sbt.utils.LocationUtils
@@ -96,7 +96,7 @@ class SkyblockTweaks {
         MinecraftForge.EVENT_BUS.register(LowHealthTint)
         MinecraftForge.EVENT_BUS.register(ItemPickupLog)
         MinecraftForge.EVENT_BUS.register(QuiverOverlay) // Quiver Overlay
-        MinecraftForge.EVENT_BUS.register(GeneralProfitTracker)
+        MinecraftForge.EVENT_BUS.register(ProfitTracker)
 
         // Stop above hotbar elements from rendering
         MinecraftForge.EVENT_BUS.register(HideHotbarElements)
@@ -143,7 +143,7 @@ class SkyblockTweaks {
     private var alreadySent = false
     @SubscribeEvent
     fun onWorldChange(event: WorldEvent.Load) {
-        if(alreadySent) return
+        if (alreadySent) return
         alreadySent = true
 
         MinecraftForge.EVENT_BUS.post(WorldLoadEvent())

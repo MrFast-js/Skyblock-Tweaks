@@ -12,12 +12,12 @@ object ChatUtils {
     }
 
     fun sendClientMessage(message: String, prefix: Boolean?= false) {
-        Minecraft.getMinecraft().ingameGUI.chatGUI.printChatMessage(ChatComponentText((if(prefix == true) (modChatPrefix) else "") + message))
+        Minecraft.getMinecraft().ingameGUI.chatGUI.printChatMessage(ChatComponentText((if (prefix == true) (modChatPrefix) else "") + message))
     }
 
     fun sendClientMessage(message: IChatComponent, prefix: Boolean?= false) {
         Minecraft.getMinecraft().ingameGUI.chatGUI.printChatMessage(
-            ChatComponentText(if(prefix == true) modChatPrefix else "").appendSibling(
+            ChatComponentText(if (prefix == true) modChatPrefix else "").appendSibling(
                 message
             )
         )

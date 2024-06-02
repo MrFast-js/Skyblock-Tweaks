@@ -66,7 +66,7 @@ object DevUtils {
 
     @SubscribeEvent
     fun onToolTip(event: ItemTooltipEvent) {
-        if(!CustomizationConfig.developerMode) return
+        if (!CustomizationConfig.developerMode) return
         if (event.itemStack.getExtraAttributes() != null && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
             if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
                 event.toolTip.clear()
@@ -89,7 +89,7 @@ object DevUtils {
                 event.toolTip.addAll(nbt)
             }
         }
-        if(event.itemStack!=null && Keyboard.isKeyDown(Keyboard.KEY_RCONTROL)) {
+        if (event.itemStack!=null && Keyboard.isKeyDown(Keyboard.KEY_RCONTROL)) {
             val nbt = prettyPrintNBTtoString(event.itemStack.serializeNBT()).replace("\"", "").split("\n")
             event.toolTip.clear()
             event.toolTip.addAll(nbt)

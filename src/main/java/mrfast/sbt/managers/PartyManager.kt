@@ -55,7 +55,7 @@ object PartyManager {
                 hadProblemJoiningParty = false
 
                 for (line in event.slot.stack.getLore()) {
-                    if(line.clean().startsWith("Requires")) return
+                    if (line.clean().startsWith("Requires")) return
                 }
 
 
@@ -64,7 +64,7 @@ object PartyManager {
 
                     // Clear all old party members but self
                     partyMembers.entries.removeIf { it.key != Utils.mc.thePlayer.name }
-                    if(partyMembers.isEmpty()) {
+                    if (partyMembers.isEmpty()) {
                         addSelfToParty()
                     }
 
@@ -95,7 +95,7 @@ object PartyManager {
     private fun addSelfToParty() {
         // Add self to party
         partyMembers[Utils.mc.thePlayer.name] = PartyMember(Utils.mc.thePlayer.name)
-        if(GeneralConfig.autoPartyChat && !playerInParty) {
+        if (GeneralConfig.autoPartyChat && !playerInParty) {
             ChatUtils.sendPlayerMessage("/chat p")
         }
     }
@@ -121,7 +121,7 @@ object PartyManager {
         if (clean.startsWith("You have been kicked from the party")) {
             partyMembers.clear()
             playerInParty = false
-            if(GeneralConfig.autoPartyChat) {
+            if (GeneralConfig.autoPartyChat) {
                 ChatUtils.sendPlayerMessage("/chat a")
             }
         }
@@ -154,7 +154,7 @@ object PartyManager {
             clean.startsWith("You are not currently in a party.")
         ) {
             partyMembers.clear()
-            if(GeneralConfig.autoPartyChat && playerInParty) {
+            if (GeneralConfig.autoPartyChat && playerInParty) {
                 ChatUtils.sendPlayerMessage("/chat a")
             }
             playerInParty = false

@@ -50,7 +50,7 @@ object DataManager {
 
         if (event.type.toInt() == 2) return
 
-        if(clean.matches(firstJoinPattern)) {
+        if (clean.matches(firstJoinPattern)) {
             sendProfileIdCommand()
         }
 
@@ -74,7 +74,7 @@ object DataManager {
 
         if (clean.matches(suggestPattern) && listenForProfileId) {
             event.isCanceled = true
-            if(clean.contains("[NO DASHES]")) {
+            if (clean.contains("[NO DASHES]")) {
                 listenForProfileId = false
             }
         }
@@ -95,7 +95,7 @@ object DataManager {
     }
 
     fun getData(dataName: String?): Any? {
-        if(dataJson.has(dataName)) return convertFromJsonElement(dataJson[dataName])
+        if (dataJson.has(dataName)) return convertFromJsonElement(dataJson[dataName])
         return null
     }
 

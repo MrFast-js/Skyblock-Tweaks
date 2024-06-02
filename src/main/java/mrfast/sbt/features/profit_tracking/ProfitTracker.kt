@@ -1,4 +1,4 @@
-package mrfast.sbt.features.generalProfitTracker
+package mrfast.sbt.features.profit_tracking
 
 import com.google.gson.JsonArray
 import mrfast.sbt.customevents.ProfileLoadEvent
@@ -82,7 +82,7 @@ object ProfitTracker {
 
         if (event is SkyblockInventoryItemEvent.ItemStackEvent) {
             val id = getCustomItemId(event)
-            if(filterOutItem(id)) return
+            if (filterOutItem(id)) return
 
             val lastCount = itemsGainedDuringSession[id] ?: 0
             itemsGainedDuringSession[id] = lastCount + event.amount

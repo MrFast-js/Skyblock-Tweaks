@@ -119,10 +119,10 @@ object TrashHighlighter {
             } catch (ignored: ConcurrentModificationException) {
             }
             if (trash) {
-                if(trashHighlightType == "Slot") {
+                if (trashHighlightType == "Slot") {
                     Gui.drawRect(x, y, x + 16, y + 16, Color(255, 0, 0, 100).rgb)
                 }
-                if(trashHighlightType == "Border") {
+                if (trashHighlightType == "Border") {
                     Gui.drawRect(x, y, x + 16, y + 1, Color(255, 0, 0, 255).rgb)
                     Gui.drawRect(x, y, x + 1, y + 16, Color(255, 0, 0, 255).rgb)
                     Gui.drawRect(x + 15, y, x + 16, y + 16, Color(255, 0, 0, 255).rgb)

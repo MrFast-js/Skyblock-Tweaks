@@ -1,18 +1,18 @@
 package mrfast.sbt.commands
 
 import gg.essential.api.utils.GuiUtil
-import mrfast.sbt.features.generalProfitTracker.ProfitTrackerGui
+import mrfast.sbt.features.profit_tracking.ProfitTrackerGui
 import net.minecraft.command.CommandBase
 import net.minecraft.command.ICommandSender
 
-class GPTCommand : CommandBase() {
+class ProfitTrackerCommand : CommandBase() {
 
     override fun getCommandName(): String {
-        return "gpt"
+        return "profittracker"
     }
 
     override fun getCommandUsage(sender: ICommandSender?): String {
-        return "/gpt"
+        return "/profittracker"
     }
 
     override fun processCommand(sender: ICommandSender?, args: Array<out String>?) {

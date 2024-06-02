@@ -105,7 +105,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
 
         animateBorder()
 
-        if(showInspector) {
+        if (showInspector) {
             Inspector(background) childOf window
         }
         // Use 70% width, max 600px

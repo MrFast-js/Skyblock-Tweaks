@@ -1,4 +1,4 @@
-package mrfast.sbt.features.statDisplays
+package mrfast.sbt.features.stats.bar
 
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.universal.UMatrixStack
@@ -11,7 +11,7 @@ import mrfast.sbt.config.categories.GeneralConfig.manaBarOverflowColor
 import mrfast.sbt.config.categories.GeneralConfig.manaBarShowOverflow
 import mrfast.sbt.utils.LocationUtils
 
-object ManaBarDisplay {
+object ManaBar {
     init {
         ManaBarGui()
     }
@@ -30,7 +30,7 @@ object ManaBarDisplay {
             val max = PlayerStats.maxMana
             val mana = PlayerStats.mana
             val overflow = PlayerStats.overflowMana
-            val total = max + if(manaBarShowOverflow) overflow else 0
+            val total = max + if (manaBarShowOverflow) overflow else 0
             val manaFillPerc = mana.toDouble() / total
             val overflowFillPerc = overflow.toDouble() / total
             val borderWidth = 2f

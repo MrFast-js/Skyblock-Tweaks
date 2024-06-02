@@ -2,9 +2,9 @@
   {
     "modid": "skyblocktweaks",
     "name": "Skyblock Tweaks",
-    "description": "A Simple Hypixel Skyblock Mod that tweaks your Hypixel Skyblock Experience for the better",
+    "description": "A Hypixel Skyblock Mod that simplifies your life",
     "version": "${version}",
-    "mcversion": "${mcversion}",
+    "mcversion": "1.8.9",
     "url": "",
     "updateUrl": "",
     "authorList": ["MrFast"],

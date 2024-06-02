@@ -1,4 +1,4 @@
-package mrfast.sbt.features.statDisplays
+package mrfast.sbt.features.stats.number
 
 import mrfast.sbt.apis.PlayerStats
 import mrfast.sbt.config.categories.GeneralConfig
@@ -8,28 +8,28 @@ import mrfast.sbt.utils.LocationUtils
 import mrfast.sbt.utils.Utils
 import mrfast.sbt.utils.Utils.formatNumber
 
-object DefenseDisplay {
+object DefenseNumber {
     init {
-        DefenseDisplayGui()
+        DefenseNumberGui()
     }
 
-    class DefenseDisplayGui : GuiManager.Element() {
+    class DefenseNumberGui : GuiManager.Element() {
         init {
             this.relativeX = 0.371875
             this.relativeY = 0.842593
-            this.elementName = "Defense Display"
+            this.elementName = "Defense Number"
             this.addToList()
             this.height = Utils.mc.fontRendererObj.FONT_HEIGHT
         }
 
         override fun draw() {
-            val display = "§a${PlayerStats.defense.formatNumber()}"
-            GuiUtils.drawText(display, 0f, 0f, GuiUtils.TextStyle.BLACK_OUTLINE)
-            this.width = Utils.mc.fontRendererObj.getStringWidth(display)+1
+            val number = "§a${PlayerStats.defense.formatNumber()}"
+            GuiUtils.drawText(number, 0f, 0f, GuiUtils.TextStyle.BLACK_OUTLINE)
+            this.width = Utils.mc.fontRendererObj.getStringWidth(number)+1
         }
 
         override fun isActive(): Boolean {
-            return GeneralConfig.defenseDisplay && LocationUtils.inSkyblock
+            return GeneralConfig.defenseNumber && LocationUtils.inSkyblock
         }
 
         override fun isVisible(): Boolean {

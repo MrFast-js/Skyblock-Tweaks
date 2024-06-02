@@ -21,7 +21,7 @@ object GuiManager {
     @SubscribeEvent
     fun onRender(event: RenderGameOverlayEvent.Post) {
         if (event.type == RenderGameOverlayEvent.ElementType.HOTBAR) {
-            if(Utils.mc.currentScreen is GuiEditor) return
+            if (Utils.mc.currentScreen is GuiEditor) return
             for (guiElement in guiElements) {
                 if (guiElement.isActive()) {
                     if (!showall && !guiElement.isVisible()) continue
@@ -45,7 +45,7 @@ object GuiManager {
             FileWriter(configFile).use { writer ->
                 gson.toJson(guiElements, writer)
             }
-            if(CustomizationConfig.developerMode) {
+            if (CustomizationConfig.developerMode) {
                 println("Config saved successfully.")
             }
         } catch (e: Exception) {
