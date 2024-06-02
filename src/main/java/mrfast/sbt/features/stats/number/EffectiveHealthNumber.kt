@@ -13,7 +13,7 @@ object EffectiveHealthNumber {
         EffectiveHealthNumberGui()
     }
 
-    class EffectiveHealthDisplayGui : GuiManager.Element() {
+    class EffectiveHealthNumberGui : GuiManager.Element() {
         init {
             this.relativeX = 0.371875
             this.relativeY = 0.842593
