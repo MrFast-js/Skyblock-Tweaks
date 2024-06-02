@@ -77,14 +77,14 @@ class SkyblockTweaks {
         MinecraftForge.EVENT_BUS.register(SackManager)
 
         // Stat Displays
-        MinecraftForge.EVENT_BUS.register(HealthDisplay)
-        MinecraftForge.EVENT_BUS.register(HealthBarDisplay)
-        MinecraftForge.EVENT_BUS.register(DefenseDisplay)
-        MinecraftForge.EVENT_BUS.register(EffectiveHealthDisplay)
-        MinecraftForge.EVENT_BUS.register(ManaDisplay)
-        MinecraftForge.EVENT_BUS.register(ManaBarDisplay)
-        MinecraftForge.EVENT_BUS.register(SpeedDisplay)
-        MinecraftForge.EVENT_BUS.register(OverflowManaDisplay)
+        MinecraftForge.EVENT_BUS.register(HealthNumber)
+        MinecraftForge.EVENT_BUS.register(HealthBar)
+        MinecraftForge.EVENT_BUS.register(DefenseNumber)
+        MinecraftForge.EVENT_BUS.register(EffectiveHealthNumber)
+        MinecraftForge.EVENT_BUS.register(ManaNumber)
+        MinecraftForge.EVENT_BUS.register(ManaBar)
+        MinecraftForge.EVENT_BUS.register(SpeedNumber)
+        MinecraftForge.EVENT_BUS.register(OverflowManaNumber)
         MinecraftForge.EVENT_BUS.register(PartyDisplay)
 
         MinecraftForge.EVENT_BUS.register(PartyFinderJoinInfo) // Party Finder
@@ -111,7 +111,7 @@ class SkyblockTweaks {
         // Commands
         ClientCommandHandler.instance.registerCommand(ConfigCommand())
         ClientCommandHandler.instance.registerCommand(DebugCommand())
-        ClientCommandHandler.instance.registerCommand(GPTCommand())
+        ClientCommandHandler.instance.registerCommand(ProfileTrackerCommand())
         ClientCommandHandler.instance.registerCommand(PathCommand())
 
         // Checks mod folder for version of Skyblock Features your using

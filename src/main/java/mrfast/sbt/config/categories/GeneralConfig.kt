@@ -170,57 +170,57 @@ object GeneralConfig : Config() {
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
-        name = "Health Display",
+        name = "Health Number",
         description = "Movable health display",
         category = "General",
         subcategory = "Stat Displays"
     )
-    var healthDisplay = false
+    var healthNumber = false
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
-        name = "Speed Display",
+        name = "Speed Number",
         description = "Movable Speed display",
         category = "General",
         subcategory = "Stat Displays"
     )
-    var speedDisplay = false
+    var speedNumber = false
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
-        name = "Effective Health Display",
+        name = "Effective Health Number",
         description = "Movable Effective Health display",
         category = "General",
         subcategory = "Stat Displays"
     )
-    var effectiveHealthDisplay = false
+    var effectiveHealthNumber = false
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
-        name = "Mana Display",
+        name = "Mana Number",
         description = "Movable mana",
         category = "General",
         subcategory = "Stat Displays"
     )
-    var manaDisplay = false
+    var manaNumber = false
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
-        name = "Overflow Mana Display",
+        name = "Overflow Mana Number",
         description = "Movable overflow mana display",
         category = "General",
         subcategory = "Stat Displays"
     )
-    var overflowManaDisplay = false
+    var overflowManaNumber = false
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
-        name = "Defense Display",
+        name = "Defense Number",
         description = "Movable defense display",
         category = "General",
         subcategory = "Stat Displays"
     )
-    var defenseDisplay = false
+    var defenseNumber = false
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
@@ -245,7 +245,7 @@ object GeneralConfig : Config() {
     @ConfigProperty(
         type = ConfigType.TOGGLE,
         name = "Hide Hunger Bar",
-        description = "Hide the food icons above hotbar",
+        description = "Hide the hunger bar",
         category = "General",
         subcategory = "Stat Displays",
         parentName = "Cleaner Hotbar Area"
@@ -255,7 +255,7 @@ object GeneralConfig : Config() {
     @ConfigProperty(
         type = ConfigType.TOGGLE,
         name = "Hide Health Hearts",
-        description = "Hide the health icons above hotbar",
+        description = "Hide the Vanilla health bar",
         category = "General",
         subcategory = "Stat Displays",
         parentName = "Cleaner Hotbar Area"
@@ -304,7 +304,7 @@ object GeneralConfig : Config() {
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
-        name = "Show Material Ids",
+        name = "Show Material IDs",
         description = "",
         category = "General",
         subcategory = "Item Pickup Log",

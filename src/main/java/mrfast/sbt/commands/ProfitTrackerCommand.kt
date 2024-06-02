@@ -4,11 +4,16 @@ import gg.essential.api.utils.GuiUtil
 import mrfast.sbt.features.profit_tracking.ProfitTrackerGui
 import net.minecraft.command.CommandBase
 import net.minecraft.command.ICommandSender
+import com.google.common.collect.Lists
 
 class ProfitTrackerCommand : CommandBase() {
 
     override fun getCommandName(): String {
         return "profittracker"
+    }
+
+    override fun getCommandAliases(): String {
+        return "pft";
     }
 
     override fun getCommandUsage(sender: ICommandSender?): String {
