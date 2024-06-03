@@ -11,13 +11,13 @@
   </p>
 </div>
 
-This is a Hypixel Skyblock mod that simplifies your life by focusing on QoL changes, and compatibility with other mods.
+[![Downloads](https://img.shields.io/github/downloads/mrfast-js/skyblock-tweaks/total?label=Downloads&color=brightgreen&style=flat-square)](https://github.com/MrFast-js/Skyblock-Tweaks) [![Style Guide](https://img.shields.io/badge/Style%20Guide-Own-brightgreen?style=flat-square)](https://codeberg.org/thatonecoder/style-guidelines)
 
-[![Style Guide](https://img.shields.io/badge/Style%20Guide-Own-brightgreen?style=flat-square)](https://codeberg.org/thatonecoder/style-guidelines)
+This is a Hypixel Skyblock mod that simplifies your life by focusing on QoL changes, and compatibility with other mods.
 
 ### Feature Highlights
 
-##### Want the full feature list? Click [here](FEATURE_LIST.md).
+##### Want to see the full feature list? Click [here](FEATURE_LIST.md).
 
 ### License
 This project is distributed under the `GPL 3.0-or-later` license. Check the `LICENSE` file for more information.
