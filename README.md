@@ -11,7 +11,14 @@
   </p>
 </div>
 
-[![Downloads](https://img.shields.io/github/downloads/mrfast-js/skyblock-tweaks/total?label=Downloads&color=brightgreen&style=flat-square)](https://github.com/MrFast-js/Skyblock-Tweaks) [![Style Guide](https://img.shields.io/badge/Style%20Guide-Own-brightgreen?style=flat-square)](https://codeberg.org/thatonecoder/style-guidelines)
+<div align="center">
+  <a href="https://github.com/MrFast-js/Skyblock-Tweaks/releases">
+    <img src="https://img.shields.io/github/downloads/mrfast-js/skyblock-tweaks/total?label=Downloads&color=brightgreen&style=flat-square alt="Downloads"> </a>&nbsp;
+    <a href="https://codeberg.org/thatonecoder/style-guidelines>
+      <img src="https://img.shields.io/badge/Style%20Guide-Own-brightgreen?style=flat-square alt="Style Guide">
+    </a>
+</div>
+<br><br>
 
 This is a Hypixel Skyblock mod that simplifies your life by focusing on QoL changes, and compatibility with other mods.
 
