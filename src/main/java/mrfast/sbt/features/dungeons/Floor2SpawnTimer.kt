@@ -1,6 +1,7 @@
 package mrfast.sbt.features.dungeons
 
 import mrfast.sbt.config.categories.DungeonConfig
+import mrfast.sbt.utils.LocationUtils
 import mrfast.sbt.utils.RenderUtils
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.util.BlockPos
@@ -20,7 +21,7 @@ object Floor2SpawnTimer {
 
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {
-        if(!DungeonConfig.floor2SpawnTimer) return
+        if(!DungeonConfig.floor2SpawnTimer || LocationUtils.dungeonFloor!=2) return
 
         if (event.phase != TickEvent.Phase.START) return
 
@@ -35,7 +36,7 @@ object Floor2SpawnTimer {
 
     @SubscribeEvent
     fun onChat(event: ClientChatReceivedEvent) {
-        if(!DungeonConfig.floor2SpawnTimer) return
+        if(!DungeonConfig.floor2SpawnTimer || LocationUtils.dungeonFloor!=2) return
 
         val clean = event.message.unformattedText
         if (clean == "[BOSS] Scarf: If you can beat my Undeads, I'll personally grant you the privilege to replace them.") {
@@ -45,7 +46,8 @@ object Floor2SpawnTimer {
 
     @SubscribeEvent
     fun onRender3d(event: RenderWorldLastEvent) {
-        if(!DungeonConfig.floor2SpawnTimer) return
+        if(!DungeonConfig.floor2SpawnTimer || LocationUtils.dungeonFloor!=2) return
+
         if (startCounting) {
             GlStateManager.pushMatrix()
             GlStateManager.scale(2f,2f,2f)
