@@ -20,7 +20,7 @@ object RenderingConfig : Config() {
     @ConfigProperty(
         type = ConfigType.COLOR,
         name = "Main Path Color",
-        description = "Main color used when drawing the loaded path. This will display if points are §a< 3§r blocks away.",
+        description = "Main color used when drawing the loaded path. \nThis will display if points are §a< 3§r blocks away.",
         category = "Rendering",
         subcategory = "Path Tracing §7(/path)"
     )
@@ -29,7 +29,7 @@ object RenderingConfig : Config() {
     @ConfigProperty(
         type = ConfigType.COLOR,
         name = "Secondary Path Color",
-        description = "Secondary color used when drawing the loaded path. This will display if points are §c> 3§r blocks away.",
+        description = "Secondary color used when drawing the loaded path. \nThis will display if points are §c> 3§r blocks away.",
         category = "Rendering",
         subcategory = "Path Tracing §7(/path)"
     )

@@ -11,13 +11,11 @@ import mrfast.sbt.commands.PathCommand
 import mrfast.sbt.config.Config
 import mrfast.sbt.config.ConfigGui
 import mrfast.sbt.config.GuiManager
-import mrfast.sbt.config.categories.DeveloperConfig
-import mrfast.sbt.customevents.PacketEvent
 import mrfast.sbt.customevents.WorldLoadEvent
+import mrfast.sbt.features.dungeons.Floor2SpawnTimer
 import mrfast.sbt.features.general.*
 import mrfast.sbt.features.generalProfitTracker.GeneralProfitTracker
 import mrfast.sbt.features.mining.PathTracer
-import mrfast.sbt.features.statDisplays.RiftTimeBarDisplay
 import mrfast.sbt.features.partyfinder.PartyFinderJoinInfo
 import mrfast.sbt.features.statDisplays.*
 import mrfast.sbt.managers.*
@@ -25,7 +23,6 @@ import mrfast.sbt.utils.DevUtils
 import mrfast.sbt.utils.LocationUtils
 import mrfast.sbt.utils.SocketUtils
 import mrfast.sbt.utils.Utils
-import net.minecraft.network.play.server.S3FPacketCustomPayload
 import net.minecraftforge.client.ClientCommandHandler
 import net.minecraftforge.client.event.GuiScreenEvent.KeyboardInputEvent
 import net.minecraftforge.common.MinecraftForge
@@ -86,6 +83,8 @@ class SkyblockTweaks {
         MinecraftForge.EVENT_BUS.register(SpeedDisplay)
         MinecraftForge.EVENT_BUS.register(OverflowManaDisplay)
         MinecraftForge.EVENT_BUS.register(PartyDisplay)
+
+        MinecraftForge.EVENT_BUS.register(Floor2SpawnTimer)
 
         MinecraftForge.EVENT_BUS.register(PartyFinderJoinInfo) // Party Finder
         MinecraftForge.EVENT_BUS.register(NewYearsCakeHelper) // Cake bag sorting helper
