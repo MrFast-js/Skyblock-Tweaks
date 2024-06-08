@@ -21,7 +21,7 @@ object Floor2SpawnTimer {
 
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {
-        if(!DungeonConfig.floor2SpawnTimer || LocationUtils.dungeonFloor!=2) return
+        if (!DungeonConfig.floor2SpawnTimer || LocationUtils.dungeonFloor != 2) return
 
         if (event.phase != TickEvent.Phase.START) return
 
@@ -36,7 +36,7 @@ object Floor2SpawnTimer {
 
     @SubscribeEvent
     fun onChat(event: ClientChatReceivedEvent) {
-        if(!DungeonConfig.floor2SpawnTimer || LocationUtils.dungeonFloor!=2) return
+        if (!DungeonConfig.floor2SpawnTimer || LocationUtils.dungeonFloor != 2) return
 
         val clean = event.message.unformattedText
         if (clean == "[BOSS] Scarf: If you can beat my Undeads, I'll personally grant you the privilege to replace them.") {
@@ -46,24 +46,24 @@ object Floor2SpawnTimer {
 
     @SubscribeEvent
     fun onRender3d(event: RenderWorldLastEvent) {
-        if(!DungeonConfig.floor2SpawnTimer || LocationUtils.dungeonFloor!=2) return
+        if (!DungeonConfig.floor2SpawnTimer || LocationUtils.dungeonFloor != 2) return
 
         if (startCounting) {
             GlStateManager.pushMatrix()
-            GlStateManager.scale(2f,2f,2f)
+            GlStateManager.scale(2f, 2f, 2f)
             if (time + 0.2 > 0) {
-                RenderUtils.draw3DString("Warrior §e${(time + 0.2).format(1)}s", Vec3(warriorPos),event.partialTicks)
+                RenderUtils.draw3DString("Warrior §e${(time + 0.2).format(1)}s", Vec3(warriorPos), event.partialTicks)
             }
             if (time + 0.3 > 0) {
-                RenderUtils.draw3DString("Priest §e${(time + 0.3).format(1)}s", Vec3(priestPos),event.partialTicks)
+                RenderUtils.draw3DString("Priest §e${(time + 0.3).format(1)}s", Vec3(priestPos), event.partialTicks)
             }
             if (time + 0.4 > 0) {
-                RenderUtils.draw3DString("Mage §e${(time + 0.4).format(1)}s", Vec3(magePos),event.partialTicks)
+                RenderUtils.draw3DString("Mage §e${(time + 0.4).format(1)}s", Vec3(magePos), event.partialTicks)
             }
             if (time + 0.5 > 0) {
-                RenderUtils.draw3DString("Archer §e${(time + 0.5).format(1)}s", Vec3(archPos),event.partialTicks)
+                RenderUtils.draw3DString("Archer §e${(time + 0.5).format(1)}s", Vec3(archPos), event.partialTicks)
             }
-            GlStateManager.scale(1/2f,1/2f,1/2f)
+            GlStateManager.scale(1 / 2f, 1 / 2f, 1 / 2f)
             GlStateManager.popMatrix()
         }
     }
