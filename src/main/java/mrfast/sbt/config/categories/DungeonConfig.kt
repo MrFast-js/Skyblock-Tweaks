@@ -36,6 +36,16 @@ object DungeonConfig : Config() {
     )
     var partyfinderJoinInfo_showHotbar = false
 
+
+    @ConfigProperty(
+            type = ConfigType.TOGGLE,
+            name = "Floor 2 Spawn Timer",
+            description = "Renders timers showing when the §dPriest§f, §cWarrior§f, §aArcher§f, §bMage§f will spawn.",
+            category = "§1§rDungeons",
+            subcategory = "Spawn Timers"
+    )
+    var floor2SpawnTimer = true
+
 //
 //    @ConfigProperty(
 //            type = ConfigType.TOGGLE,
