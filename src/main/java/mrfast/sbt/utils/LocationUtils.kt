@@ -55,7 +55,7 @@ object LocationUtils {
                 currentIsland = obj.get("map").asString
             }
             if(obj.has("mode")) {
-                inDungeons = (obj.get("mode").asString == "Dungeon")
+                inDungeons = (obj.get("mode").asString == "dungeon")
             }
             if(obj.has("gametype")) {
                 inSkyblock = (obj.get("gametype").asString == "SKYBLOCK")
