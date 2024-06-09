@@ -82,6 +82,7 @@ object GuiManager {
         var scale = 1.0
         var relativeX: Double = 0.0
         var relativeY: Double = 0.0
+        var needsExample = false
         var height = 1
         var width = 1
         var elementName = "Element Name"
@@ -92,6 +93,11 @@ object GuiManager {
         }
 
         open fun draw() {
+
+        }
+
+        // Will be called during gui editing so the user can see what the feature is even if its not explicitly showing right then
+        open fun drawExample() {
 
         }
 

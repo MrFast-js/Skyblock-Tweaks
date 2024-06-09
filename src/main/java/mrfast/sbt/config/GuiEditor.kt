@@ -84,7 +84,13 @@ class GuiEditor : GuiScreen() {
             GlStateManager.translate(x, y, 0.0)
             GlStateManager.scale(element.scale, element.scale, 1.0)
 
-            element.draw()
+            GlStateManager.pushMatrix()
+            if(element.needsExample) {
+                element.drawExample()
+            } else {
+                element.draw()
+            }
+            GlStateManager.popMatrix()
 
             GlStateManager.scale(1 / element.scale, 1 / element.scale, 1.0)
             GlStateManager.translate(-x, -y, 0.0)
