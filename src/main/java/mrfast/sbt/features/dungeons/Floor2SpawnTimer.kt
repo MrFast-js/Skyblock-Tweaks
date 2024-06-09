@@ -4,7 +4,6 @@ import mrfast.sbt.config.categories.DungeonConfig
 import mrfast.sbt.utils.LocationUtils
 import mrfast.sbt.utils.RenderUtils
 import net.minecraft.client.renderer.GlStateManager
-import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -12,12 +11,14 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
 object Floor2SpawnTimer {
-    private var startCounting = false
-    private var time = 7.75
-    private val priestPos = BlockPos(-29, 71, -4)
-    private val warriorPos = BlockPos(13, 71, -4)
-    private val magePos = BlockPos(13, 71, -23)
-    private val archPos = BlockPos(-29, 71, -23)
+    private var startMinionCount = false
+    private var startBossCount = false
+
+    private var time = 0.0
+    private val priestPos = Vec3(-28.5, 72.5, -3.5)
+    private val warriorPos = Vec3(14.5, 72.5, -3.5)
+    private val magePos = Vec3(14.5, 72.5, -22.5)
+    private val archPos = Vec3(-28.5, 72.5, -22.5)
 
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {
@@ -25,11 +26,11 @@ object Floor2SpawnTimer {
 
         if (event.phase != TickEvent.Phase.START) return
 
-        if (startCounting) {
+        if (startMinionCount || startBossCount) {
             time -= 0.05
             if (time <= -5) {
-                startCounting = false
-                time = 7.75
+                startMinionCount = false
+                startBossCount = false
             }
         }
     }
@@ -40,7 +41,13 @@ object Floor2SpawnTimer {
 
         val clean = event.message.unformattedText
         if (clean == "[BOSS] Scarf: If you can beat my Undeads, I'll personally grant you the privilege to replace them.") {
-            startCounting = true
+            time = 7.75
+            startMinionCount = true
+        }
+        if (clean == "[BOSS] Scarf: Those toys are not strong enough I see.") {
+            time = 10.0
+            startBossCount = true
+            // Spawns 8 seconds after, do same countdown stuff
         }
     }
 
@@ -48,20 +55,29 @@ object Floor2SpawnTimer {
     fun onRender3d(event: RenderWorldLastEvent) {
         if (!DungeonConfig.floor2SpawnTimer || LocationUtils.dungeonFloor != 2) return
 
-        if (startCounting) {
+        if (startMinionCount) {
             GlStateManager.pushMatrix()
             GlStateManager.scale(2f, 2f, 2f)
             if (time + 0.2 > 0) {
-                RenderUtils.draw3DString("Warrior §e${(time + 0.2).format(1)}s", Vec3(warriorPos), event.partialTicks)
+                RenderUtils.draw3DString("§cWarrior §e${(time + 0.2).format(1)}s", warriorPos, event.partialTicks)
             }
             if (time + 0.3 > 0) {
-                RenderUtils.draw3DString("Priest §e${(time + 0.3).format(1)}s", Vec3(priestPos), event.partialTicks)
+                RenderUtils.draw3DString("§dPriest §e${(time + 0.3).format(1)}s", priestPos, event.partialTicks)
             }
             if (time + 0.4 > 0) {
-                RenderUtils.draw3DString("Mage §e${(time + 0.4).format(1)}s", Vec3(magePos), event.partialTicks)
+                RenderUtils.draw3DString("§bMage §e${(time + 0.4).format(1)}s", magePos, event.partialTicks)
             }
             if (time + 0.5 > 0) {
-                RenderUtils.draw3DString("Archer §e${(time + 0.5).format(1)}s", Vec3(archPos), event.partialTicks)
+                RenderUtils.draw3DString("§aArcher §e${(time + 0.5).format(1)}s", archPos, event.partialTicks)
+            }
+            GlStateManager.scale(1 / 2f, 1 / 2f, 1 / 2f)
+            GlStateManager.popMatrix()
+        }
+        if(startBossCount) {
+            GlStateManager.pushMatrix()
+            GlStateManager.scale(2f, 2f, 2f)
+            if (time > 0) {
+                RenderUtils.draw3DString("§6Scarf §e${(time + 0.4).format(1)}s", Vec3(-7.5, 72.0, -10.5), event.partialTicks)
             }
             GlStateManager.scale(1 / 2f, 1 / 2f, 1 / 2f)
             GlStateManager.popMatrix()
