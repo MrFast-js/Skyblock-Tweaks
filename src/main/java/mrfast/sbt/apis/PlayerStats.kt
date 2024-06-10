@@ -80,9 +80,9 @@ object PlayerStats {
         val split: List<String> = actionBarSegment.split("/")
         health = split[0].toInt()
         maxHealth = split[1].toInt()
-        effectiveHealth = (health * (1f + defense / 100f).toInt())
-        maxEffectiveHealth = (maxHealth * (1f + defense / 100f).toInt())
-        damageReduction = (defense * (1.0 + defense + 100.0)
+        effectiveHealth = (health * (1 + defense / 100))
+        maxEffectiveHealth = (maxHealth * (1 + defense / 100))
+        damageReduction = (defense * (1.0 + defense + 100.0).roundToTwoDecimalPlaces())
         absorption = max(health - maxHealth, 0)
     }
 
