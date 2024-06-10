@@ -1,4 +1,4 @@
-package mrfast.sbt.features.stats.bar
+package mrfast.sbt.features.hud.bar
 
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.universal.UMatrixStack

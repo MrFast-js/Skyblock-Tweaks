@@ -1,4 +1,4 @@
-package mrfast.sbt.features.stats.number
+package mrfast.sbt.features.hud.number
 
 import mrfast.sbt.apis.PlayerStats
 import mrfast.sbt.config.categories.GeneralConfig
@@ -8,29 +8,28 @@ import mrfast.sbt.utils.LocationUtils
 import mrfast.sbt.utils.Utils
 import mrfast.sbt.utils.Utils.formatNumber
 
-object HealthNumber {
+object OverflowManaNumber {
     init {
-        HealthNumberGui()
+        OverflowManaNumberGui()
     }
 
-    class HealthNumberGui : GuiManager.Element() {
+    class OverflowManaNumberGui : GuiManager.Element() {
         init {
             this.relativeX = 0.371875
             this.relativeY = 0.842593
-            this.elementName = "Health Number"
+            this.elementName = "Overflow Mana Number"
             this.addToList()
             this.height = Utils.mc.fontRendererObj.FONT_HEIGHT
         }
 
         override fun draw() {
-            val color = if (PlayerStats.health>PlayerStats.maxHealth) "§6" else "§c"
-            val number = "$color${PlayerStats.health.formatNumber()}§c/${PlayerStats.maxHealth.formatNumber()}"
+            val number = "§3${PlayerStats.overflowMana.formatNumber()}ʬ"
             GuiUtils.drawText(number, 0f, 0f, GuiUtils.TextStyle.BLACK_OUTLINE)
             this.width = Utils.mc.fontRendererObj.getStringWidth(number) + 1
         }
 
         override fun isActive(): Boolean {
-            return GeneralConfig.healthNumber && LocationUtils.inSkyblock
+            return GeneralConfig.overflowManaNumber && LocationUtils.inSkyblock
         }
 
         override fun isVisible(): Boolean {

@@ -1,35 +1,36 @@
-package mrfast.sbt.features.stats.number
+package mrfast.sbt.features.hud.number
 
-import mrfast.sbt.apis.PlayerStats
 import mrfast.sbt.config.categories.GeneralConfig
 import mrfast.sbt.config.GuiManager
 import mrfast.sbt.utils.GuiUtils
 import mrfast.sbt.utils.LocationUtils
 import mrfast.sbt.utils.Utils
 import mrfast.sbt.utils.Utils.formatNumber
+import net.minecraft.client.Minecraft
 
-object EffectiveHealthNumber {
+object SpeedNumber {
     init {
-        EffectiveHealthNumberGui()
+        SpeedNumberGui()
     }
 
-    class EffectiveHealthNumberGui : GuiManager.Element() {
+    class SpeedNumberGui : GuiManager.Element() {
         init {
             this.relativeX = 0.371875
             this.relativeY = 0.842593
-            this.elementName = "Effective Health Number"
+            this.elementName = "Speed Number"
             this.addToList()
             this.height = Utils.mc.fontRendererObj.FONT_HEIGHT
         }
 
         override fun draw() {
-            val number = "§2${PlayerStats.effectiveHealth.formatNumber()}"
+            val speed = ((Minecraft.getMinecraft().thePlayer?.capabilities?.walkSpeed ?: 0f) * 1000).toFloat();
+            val number = "§r${speed.formatNumber()}%"
             GuiUtils.drawText(number, 0f, 0f, GuiUtils.TextStyle.BLACK_OUTLINE)
             this.width = Utils.mc.fontRendererObj.getStringWidth(number) + 1
         }
 
         override fun isActive(): Boolean {
-            return GeneralConfig.effectiveHealthNumber && LocationUtils.inSkyblock
+            return GeneralConfig.speedNumber && LocationUtils.inSkyblock
         }
 
         override fun isVisible(): Boolean {

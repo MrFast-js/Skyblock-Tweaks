@@ -81,6 +81,8 @@ object PlayerStats {
         health = split[0].toInt()
         maxHealth = split[1].toInt()
         effectiveHealth = (health * (1f + defense / 100f).toInt())
+        maxEffectiveHealth = (maxHealth * (1f + defense / 100f).toInt())
+        damageReduction = (defense * (1.0 + defense + 100.0)
         absorption = max(health - maxHealth, 0)
     }
 

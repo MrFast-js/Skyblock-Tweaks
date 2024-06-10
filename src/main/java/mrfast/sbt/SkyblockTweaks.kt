@@ -18,8 +18,8 @@ import mrfast.sbt.features.general.*
 import mrfast.sbt.features.profitTracking.ProfitTracker
 import mrfast.sbt.features.mining.PathTracer
 import mrfast.sbt.features.partyfinder.PartyFinderJoinInfo
-import mrfast.sbt.features.stats.number.*
-import mrfast.sbt.features.stats.bar.*
+import mrfast.sbt.features.hud.number.*
+import mrfast.sbt.features.hud.bar.*
 import mrfast.sbt.managers.*
 import mrfast.sbt.utils.DevUtils
 import mrfast.sbt.utils.LocationUtils
