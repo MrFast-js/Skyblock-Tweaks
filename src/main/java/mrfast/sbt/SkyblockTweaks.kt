@@ -15,7 +15,7 @@ import mrfast.sbt.customevents.WorldLoadEvent
 import mrfast.sbt.features.dungeons.FireFreezeHelper
 import mrfast.sbt.features.dungeons.Floor2SpawnTimer
 import mrfast.sbt.features.general.*
-import mrfast.sbt.features.profit_tracking.ProfitTracker
+import mrfast.sbt.features.profitTracking.ProfitTracker
 import mrfast.sbt.features.mining.PathTracer
 import mrfast.sbt.features.partyfinder.PartyFinderJoinInfo
 import mrfast.sbt.features.stats.number.*

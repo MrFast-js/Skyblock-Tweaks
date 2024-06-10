@@ -1,7 +1,7 @@
 package mrfast.sbt.commands
 
 import gg.essential.api.utils.GuiUtil
-import mrfast.sbt.features.profit_tracking.ProfitTrackerGui
+import mrfast.sbt.features.profitTracking.ProfitTrackerGui
 import net.minecraft.command.CommandBase
 import net.minecraft.command.ICommandSender
 import com.google.common.collect.Lists

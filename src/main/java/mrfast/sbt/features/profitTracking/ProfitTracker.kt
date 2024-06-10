@@ -1,4 +1,4 @@
-package mrfast.sbt.features.profit_tracking
+package mrfast.sbt.features.profitTracking
 
 import com.google.gson.JsonArray
 import mrfast.sbt.customevents.ProfileLoadEvent

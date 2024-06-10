@@ -1,4 +1,4 @@
-package mrfast.sbt.features.profit_tracking
+package mrfast.sbt.features.profitTracking
 
 import gg.essential.api.utils.GuiUtil
 import gg.essential.elementa.ElementaVersion
@@ -6,14 +6,14 @@ import gg.essential.elementa.WindowScreen
 import gg.essential.universal.UKeyboard
 import gg.essential.universal.UMatrixStack
 import mrfast.sbt.apis.ItemApi
-import mrfast.sbt.features.profit_tracking.ProfitTracker.blacklistItems
-import mrfast.sbt.features.profit_tracking.ProfitTracker.paused
-import mrfast.sbt.features.profit_tracking.ProfitTracker.pausedDuration
-import mrfast.sbt.features.profit_tracking.ProfitTracker.purseGainLoss
-import mrfast.sbt.features.profit_tracking.ProfitTracker.selectedFilterMode
-import mrfast.sbt.features.profit_tracking.ProfitTracker.sessionStartedAt
-import mrfast.sbt.features.profit_tracking.ProfitTracker.started
-import mrfast.sbt.features.profit_tracking.ProfitTracker.whitelistItems
+import mrfast.sbt.features.profitTracking.ProfitTracker.blacklistItems
+import mrfast.sbt.features.profitTracking.ProfitTracker.paused
+import mrfast.sbt.features.profitTracking.ProfitTracker.pausedDuration
+import mrfast.sbt.features.profitTracking.ProfitTracker.purseGainLoss
+import mrfast.sbt.features.profitTracking.ProfitTracker.selectedFilterMode
+import mrfast.sbt.features.profitTracking.ProfitTracker.sessionStartedAt
+import mrfast.sbt.features.profitTracking.ProfitTracker.started
+import mrfast.sbt.features.profitTracking.ProfitTracker.whitelistItems
 import mrfast.sbt.managers.DataManager
 import mrfast.sbt.utils.GuiUtils
 import mrfast.sbt.utils.ItemUtils.getLore

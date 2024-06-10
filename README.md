@@ -15,9 +15,6 @@
   <a href="https://github.com/MrFast-js/Skyblock-Tweaks/releases">
     <img src="https://img.shields.io/github/downloads/mrfast-js/skyblock-tweaks/total?label=Downloads&color=brightgreen&style=flat-square" alt="Downloads"> 
   </a>&nbsp;
-  <a href="https://codeberg.org/thatonecoder/style-guidelines">
-    <img src="https://img.shields.io/badge/Style%20Guide-Own-brightgreen?style=flat-square" alt="Style Guide">
-  </a>
 </div>
 <br><br>
 
