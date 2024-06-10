@@ -4,8 +4,10 @@ import net.minecraft.item.ItemStack
 import net.minecraft.nbt.CompressedStreamTools
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraftforge.common.util.Constants
+import org.apache.commons.codec.binary.Base64InputStream
 import java.io.ByteArrayInputStream
 import java.io.IOException
+import java.nio.charset.StandardCharsets
 import java.util.*
 
 object ItemUtils {
@@ -109,5 +111,22 @@ object ItemUtils {
         }
 
         return itemStack
+    }
+
+    fun decodeBase64Item(data: String?): ItemStack? {
+        if (data != null) {
+            try {
+                // Decode base64 string and read compressed NBT data
+                val decodedBytes = Base64InputStream(ByteArrayInputStream(data.toByteArray(StandardCharsets.UTF_8)))
+                val taglist = CompressedStreamTools.readCompressed(decodedBytes)
+                val compound = taglist.getTagList("i", 10).getCompoundTagAt(0)
+
+                // Step 4: Load item stack from NBT
+                return ItemStack.loadItemStackFromNBT(compound)
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }
+        return null
     }
 }

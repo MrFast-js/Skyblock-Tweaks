@@ -49,7 +49,7 @@ object ItemApi {
                             }
                             val item = skyblockItemPrices.get(it.key).asJsonObject
                             it.value.asJsonObject.entrySet().forEach { priceStat ->
-                                item.add(priceStat.key, priceStat.value)
+                                item.add(priceStat.key+"_avg", priceStat.value)
                             }
                         }
 

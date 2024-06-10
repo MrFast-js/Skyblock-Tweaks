@@ -11,7 +11,7 @@ object MiscellaneousConfig : Config() {
     @ConfigProperty(
         type = ConfigType.TOGGLE,
         name = "Cake Bag Sorting Helper",
-        description = "Provides a easy tool to help sort your new year cake bag in order.§b low years -> high years",
+        description = "Provides a easy tool to help sort your new year cake bag in order.§b Low years -> High years",
         category = "Miscellaneous",
         subcategory = "New Years Cakes"
     )

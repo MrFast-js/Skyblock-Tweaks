@@ -13,6 +13,7 @@ object LocationUtils {
     var currentIsland = ""
     var currentArea = ""
     var dungeonFloor = 0
+    var inMasterMode = false
     private var newWorld = false
     private var listeningForLocraw = false
 
@@ -23,6 +24,7 @@ object LocationUtils {
         newWorld = true
         listeningForLocraw = true
         inSkyblock = false
+        inMasterMode = false
         limboCount = 0
         currentArea = ""
         currentIsland = ""
@@ -52,9 +54,11 @@ object LocationUtils {
                 listeningForLocraw = false
                 currentIsland = obj.get("map").asString
             }
+
             if (obj.has("mode")) {
-                inDungeons = (obj.get("mode").asString == "Dungeon")
+                inDungeons = (obj.get("mode").asString == "dungeon")
             }
+
             if (obj.has("gametype")) {
                 inSkyblock = (obj.get("gametype").asString == "SKYBLOCK")
             }
@@ -76,9 +80,15 @@ object LocationUtils {
     private fun updatePlayerLocation() {
         for (line in ScoreboardUtils.getSidebarLines(true)) {
             val clean = line.clean()
+
             if (clean.contains("⏣")) {
                 currentArea = clean.split("⏣ ")[1]
+
                 if (currentArea.contains("The Catacombs (")) {
+                    if (currentArea.contains("(M")) {
+                        inMasterMode = true
+                    }
+
                     dungeonFloor = currentArea.replace("[^0-9]".toRegex(),"").toInt()
                 }
             }

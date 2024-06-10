@@ -36,6 +36,25 @@ object DungeonConfig : Config() {
     )
     var partyfinderJoinInfo_showHotbar = false
 
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Floor 2 Spawn Timers",
+        description = "Renders timers showing when the §dPriest§r, §cWarrior§f, §aArcher§r, §bMage§r, §6Scarf§r will spawn.",
+        category = "§1§rDungeons",
+        subcategory = "Spawn Timers"
+    )
+    var floor2SpawnTimer = true
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Fire Freeze Timer",
+        description = "Timer showing when to perfectly freeze boss. \n§cWorks on F2, F3, M2, M3",
+        category = "§1§rDungeons",
+        subcategory = "Spawn Timers"
+    )
+    var fireFreezeTimer = true
+
 //
 //    @ConfigProperty(
 //            type = ConfigType.TOGGLE,
