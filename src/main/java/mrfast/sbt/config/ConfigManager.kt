@@ -161,11 +161,11 @@ abstract class ConfigManager {
 
 enum class ConfigType {
     TOGGLE,
+    LABEL,
     COLOR,
     DROPDOWN,
     BUTTON,
     NUMBER,
-    CHECKBOX,
     KEYBIND,
     TEXT
 }

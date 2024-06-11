@@ -384,7 +384,10 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
                     textScale = 1.8.pixels
                 } childOf subcategoryComponent
 
-                for (feature in subcategory.features.values) {
+                val comparator = compareByDescending<String> { it }
+                val sortedFeatures = subcategory.features.toSortedMap(comparator)
+
+                for (feature in sortedFeatures.values) {
                     val isChild = feature.parentName.isNotEmpty()
                     if (isChild) continue
 
@@ -500,6 +503,15 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
                 feature.field.set(SkyblockTweaks.config, toggleSwitch.activated)
             }
             ignoredHeights.add(toggleSwitch)
+        }
+        if (feature.type == ConfigType.LABEL) {
+            val invisibleBox = UIBlock(Color(0, 0, 0, 0)).constrain {
+                width = 20.pixels
+                height = 18.pixels
+                y = CenterConstraint()
+                x = 10.pixels(alignOpposite = true)
+            } childOf featureComponent
+            ignoredHeights.add(invisibleBox)
         }
         if (feature.type == ConfigType.NUMBER) {
             val numberInput = NumberInputComponent(feature.value as Int).constrain {
@@ -667,11 +679,11 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
         }
         if (feature.type == ConfigType.BUTTON) {
             val button = UIBlock(Color.DARK_GRAY).constrain {
-                width = 70.pixels   
+                width = 70.pixels
                 height = 18.pixels
                 y = CenterConstraint()
                 x = 10.pixels(alignOpposite = true)
-            } childOf featureComponent effect OutlineEffect(CustomizationConfig.enabledSwitchColor,1f)
+            } childOf featureComponent effect OutlineEffect(CustomizationConfig.enabledSwitchColor, 1f)
 
             button.onMouseEnterRunnable {
                 button.animate {

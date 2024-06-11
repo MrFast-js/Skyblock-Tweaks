@@ -64,9 +64,9 @@ object CustomizationConfig : Config() {
     var selectedTheme = "Default"
 
     @ConfigProperty(
-        type = ConfigType.TOGGLE,
+        type = ConfigType.LABEL,
         name = "Custom Menu Colors",
-        description = "",
+        description = "Allows changing of almost every color in this gui!",
         category = "§2§rCustomization",
         subcategory = "Theme",
         isParent = true

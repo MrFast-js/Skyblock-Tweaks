@@ -13,7 +13,7 @@ open class Config : ConfigManager() {
         //FishingConfig,
         //EventsConfig,
         DungeonConfig,
-        //AuctionFlipperConfig,
+        AuctionHouseConfig,
         MiscellaneousConfig,
         //OverlaysConfig,
         RiftConfig,

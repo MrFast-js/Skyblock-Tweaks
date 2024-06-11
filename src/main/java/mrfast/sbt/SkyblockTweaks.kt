@@ -12,6 +12,7 @@ import mrfast.sbt.config.Config
 import mrfast.sbt.config.ConfigGui
 import mrfast.sbt.config.GuiManager
 import mrfast.sbt.customevents.WorldLoadEvent
+import mrfast.sbt.features.auctionHouse.AuctionFlipper
 import mrfast.sbt.features.dungeons.FireFreezeHelper
 import mrfast.sbt.features.dungeons.Floor2SpawnTimer
 import mrfast.sbt.features.general.*
@@ -98,6 +99,8 @@ class SkyblockTweaks {
         MinecraftForge.EVENT_BUS.register(LowHealthTint)
         MinecraftForge.EVENT_BUS.register(ItemPickupLog)
         MinecraftForge.EVENT_BUS.register(QuiverOverlay) // Quiver Overlay
+
+        MinecraftForge.EVENT_BUS.register(AuctionFlipper)
         MinecraftForge.EVENT_BUS.register(ProfitTracker)
 
         // Stop above hotbar elements from rendering
@@ -109,6 +112,7 @@ class SkyblockTweaks {
         // Api's
         MinecraftForge.EVENT_BUS.register(PlayerStats)
         MinecraftForge.EVENT_BUS.register(ItemAbilities)
+
 
         // Commands
         ClientCommandHandler.instance.registerCommand(ConfigCommand())
