@@ -5,12 +5,9 @@ import mrfast.sbt.apis.ItemApi
 import mrfast.sbt.config.categories.AuctionHouseConfig
 import mrfast.sbt.customevents.SocketMessageEvent
 import mrfast.sbt.managers.PurseManager
-import mrfast.sbt.utils.ChatUtils
-import mrfast.sbt.utils.ItemUtils
+import mrfast.sbt.utils.*
 import mrfast.sbt.utils.ItemUtils.getLore
 import mrfast.sbt.utils.ItemUtils.getSkyblockId
-import mrfast.sbt.utils.NetworkUtils
-import mrfast.sbt.utils.Utils
 import mrfast.sbt.utils.Utils.abbreviateNumber
 import mrfast.sbt.utils.Utils.clean
 import mrfast.sbt.utils.Utils.formatNumber
@@ -80,7 +77,7 @@ object AuctionFlipper {
     // Wait for notification from webserver socket that auction house api updated
     @SubscribeEvent
     fun onSocketMessage(event: SocketMessageEvent) {
-        if (!AuctionHouseConfig.auctionFlipper) return
+        if (!AuctionHouseConfig.auctionFlipper || Utils.mc.theWorld == null || !LocationUtils.inSkyblock) return
 
         if (event.type == "event" && event.message == "AuctionUpdate") {
             scanAuctionHouse()
