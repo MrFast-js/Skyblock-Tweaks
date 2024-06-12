@@ -20,6 +20,9 @@ object PlayerStats {
 
     var defense = 0
     var effectiveHealth = 0
+    var maxEffectiveHealth = 0
+    
+    var damageReduction = 0.0
 
     var maxRiftTime = 0
     var riftTimeSeconds = 0
@@ -82,7 +85,7 @@ object PlayerStats {
         maxHealth = split[1].toInt()
         effectiveHealth = (health * (1 + defense / 100))
         maxEffectiveHealth = (maxHealth * (1 + defense / 100))
-        damageReduction = (defense * (1.0 + defense + 100.0).roundToTwoDecimalPlaces())
+        damageReduction = ((defense * (1.0 + defense + 100.0)) * 100).toInt() / 100.0
         absorption = max(health - maxHealth, 0)
     }
 
