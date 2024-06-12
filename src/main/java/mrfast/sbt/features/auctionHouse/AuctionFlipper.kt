@@ -56,9 +56,11 @@ object AuctionFlipper {
             if (endTime != null && bin == false) {
                 timeRemaining = (endTime!! - System.currentTimeMillis()).toFormattedTime()
             }
+            // Example: buying item for 20m, selling for 35m
+            val profitPercent = (((sellFor!!.toFloat() / price.toFloat()) - 1) * 100).toInt()
 
             val notification =
-                "§eSB§9T§6 >> $auctionType ${itemStack?.displayName} §a${price.abbreviateNumber()} -> ${(price + profit!!).abbreviateNumber()} §2(+${profit!!.abbreviateNumber()} §4${((sellFor!!.toFloat() - price.toFloat()) / price.toFloat()) * 100}%§2) §e${timeRemaining}"
+                "§eSB§9T§6 >> $auctionType ${itemStack?.displayName} §a${price.abbreviateNumber()} -> ${(price + profit!!).abbreviateNumber()} §2(+${profit!!.abbreviateNumber()} §4$profitPercent%§2) §e${timeRemaining}"
 
             val chatComponent = ChatComponentText(notification)
             chatComponent.chatStyle.chatClickEvent =
@@ -241,7 +243,7 @@ object AuctionFlipper {
         }
         // Filter out based on if the percentage of profit, example buying for 100k and selling for 300k is 200% profit
         if (auctionFlip.sellFor != null) {
-            if ((auctionFlip.sellFor!!.toFloat() - auctionFlip.price.toFloat()) / auctionFlip.price.toFloat() <= AuctionHouseConfig.AF_minimumPercent / 100) {
+            if (auctionFlip.sellFor!!.toFloat() / auctionFlip.price.toFloat() <= AuctionHouseConfig.AF_minimumPercent / 100) {
                 return
             }
         }
