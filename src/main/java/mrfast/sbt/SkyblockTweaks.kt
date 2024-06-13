@@ -6,7 +6,7 @@ import mrfast.sbt.apis.PlayerStats
 import mrfast.sbt.apis.SkyblockMobDetector
 import mrfast.sbt.commands.ConfigCommand
 import mrfast.sbt.commands.DebugCommand
-import mrfast.sbt.commands.GPTCommand
+import mrfast.sbt.commands.ProfitTrackerCommand
 import mrfast.sbt.commands.PathCommand
 import mrfast.sbt.config.Config
 import mrfast.sbt.config.ConfigGui
@@ -16,10 +16,11 @@ import mrfast.sbt.features.auctionHouse.AuctionFlipper
 import mrfast.sbt.features.dungeons.FireFreezeHelper
 import mrfast.sbt.features.dungeons.Floor2SpawnTimer
 import mrfast.sbt.features.general.*
-import mrfast.sbt.features.generalProfitTracker.GeneralProfitTracker
+import mrfast.sbt.features.profitTracking.ProfitTracker
 import mrfast.sbt.features.mining.PathTracer
 import mrfast.sbt.features.partyfinder.PartyFinderJoinInfo
-import mrfast.sbt.features.statDisplays.*
+import mrfast.sbt.features.hud.number.*
+import mrfast.sbt.features.hud.bar.*
 import mrfast.sbt.managers.*
 import mrfast.sbt.utils.DevUtils
 import mrfast.sbt.utils.LocationUtils
@@ -76,14 +77,14 @@ class SkyblockTweaks {
         MinecraftForge.EVENT_BUS.register(SackManager)
 
         // Stat Displays
-        MinecraftForge.EVENT_BUS.register(HealthDisplay)
-        MinecraftForge.EVENT_BUS.register(HealthBarDisplay)
-        MinecraftForge.EVENT_BUS.register(DefenseDisplay)
-        MinecraftForge.EVENT_BUS.register(EffectiveHealthDisplay)
-        MinecraftForge.EVENT_BUS.register(ManaDisplay)
-        MinecraftForge.EVENT_BUS.register(ManaBarDisplay)
-        MinecraftForge.EVENT_BUS.register(SpeedDisplay)
-        MinecraftForge.EVENT_BUS.register(OverflowManaDisplay)
+        MinecraftForge.EVENT_BUS.register(HealthNumber)
+        MinecraftForge.EVENT_BUS.register(HealthBar)
+        MinecraftForge.EVENT_BUS.register(DefenseNumber)
+        MinecraftForge.EVENT_BUS.register(EffectiveHealthNumber)
+        MinecraftForge.EVENT_BUS.register(ManaNumber)
+        MinecraftForge.EVENT_BUS.register(ManaBar)
+        MinecraftForge.EVENT_BUS.register(SpeedNumber)
+        MinecraftForge.EVENT_BUS.register(OverflowManaNumber)
         MinecraftForge.EVENT_BUS.register(PartyDisplay)
 
         MinecraftForge.EVENT_BUS.register(Floor2SpawnTimer)
@@ -92,7 +93,7 @@ class SkyblockTweaks {
         MinecraftForge.EVENT_BUS.register(PartyFinderJoinInfo) // Party Finder
         MinecraftForge.EVENT_BUS.register(NewYearsCakeHelper) // Cake bag sorting helper
         MinecraftForge.EVENT_BUS.register(TrashHighlighter) // Trash Highlighter
-        MinecraftForge.EVENT_BUS.register(RiftTimeBarDisplay) // Rift Bar
+        MinecraftForge.EVENT_BUS.register(RiftTimeBar) // Rift Bar
 
         // Overlays
         MinecraftForge.EVENT_BUS.register(LowHealthTint)
@@ -100,7 +101,7 @@ class SkyblockTweaks {
         MinecraftForge.EVENT_BUS.register(QuiverOverlay) // Quiver Overlay
 
         MinecraftForge.EVENT_BUS.register(AuctionFlipper)
-        MinecraftForge.EVENT_BUS.register(GeneralProfitTracker)
+        MinecraftForge.EVENT_BUS.register(ProfitTracker)
 
         // Stop above hotbar elements from rendering
         MinecraftForge.EVENT_BUS.register(HideHotbarElements)
@@ -116,7 +117,7 @@ class SkyblockTweaks {
         // Commands
         ClientCommandHandler.instance.registerCommand(ConfigCommand())
         ClientCommandHandler.instance.registerCommand(DebugCommand())
-        ClientCommandHandler.instance.registerCommand(GPTCommand())
+        ClientCommandHandler.instance.registerCommand(ProfitTrackerCommand())
         ClientCommandHandler.instance.registerCommand(PathCommand())
 
         // Checks mod folder for version of Skyblock Features your using
@@ -148,7 +149,7 @@ class SkyblockTweaks {
     private var alreadySent = false
     @SubscribeEvent
     fun onWorldChange(event: WorldEvent.Load) {
-        if(alreadySent) return
+        if (alreadySent) return
         alreadySent = true
 
         MinecraftForge.EVENT_BUS.post(WorldLoadEvent())

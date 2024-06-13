@@ -1,4 +1,4 @@
-package mrfast.sbt.features.generalProfitTracker
+package mrfast.sbt.features.profitTracking
 
 import gg.essential.api.utils.GuiUtil
 import gg.essential.elementa.ElementaVersion
@@ -6,14 +6,14 @@ import gg.essential.elementa.WindowScreen
 import gg.essential.universal.UKeyboard
 import gg.essential.universal.UMatrixStack
 import mrfast.sbt.apis.ItemApi
-import mrfast.sbt.features.generalProfitTracker.GeneralProfitTracker.blacklistItems
-import mrfast.sbt.features.generalProfitTracker.GeneralProfitTracker.paused
-import mrfast.sbt.features.generalProfitTracker.GeneralProfitTracker.pausedDuration
-import mrfast.sbt.features.generalProfitTracker.GeneralProfitTracker.purseGainLoss
-import mrfast.sbt.features.generalProfitTracker.GeneralProfitTracker.selectedFilterMode
-import mrfast.sbt.features.generalProfitTracker.GeneralProfitTracker.sessionStartedAt
-import mrfast.sbt.features.generalProfitTracker.GeneralProfitTracker.started
-import mrfast.sbt.features.generalProfitTracker.GeneralProfitTracker.whitelistItems
+import mrfast.sbt.features.profitTracking.ProfitTracker.blacklistItems
+import mrfast.sbt.features.profitTracking.ProfitTracker.paused
+import mrfast.sbt.features.profitTracking.ProfitTracker.pausedDuration
+import mrfast.sbt.features.profitTracking.ProfitTracker.purseGainLoss
+import mrfast.sbt.features.profitTracking.ProfitTracker.selectedFilterMode
+import mrfast.sbt.features.profitTracking.ProfitTracker.sessionStartedAt
+import mrfast.sbt.features.profitTracking.ProfitTracker.started
+import mrfast.sbt.features.profitTracking.ProfitTracker.whitelistItems
 import mrfast.sbt.managers.DataManager
 import mrfast.sbt.utils.GuiUtils
 import mrfast.sbt.utils.ItemUtils.getLore
@@ -104,7 +104,7 @@ class ProfitTrackerGui : WindowScreen(ElementaVersion.V2) {
             // Clicking Started runs this
             if (started) {
                 sessionStartedAt = System.currentTimeMillis()
-                GeneralProfitTracker.itemsGainedDuringSession.clear()
+                ProfitTracker.itemsGainedDuringSession.clear()
                 purseGainLoss = 0
             }
             pausedDuration = 0
@@ -283,7 +283,7 @@ class ProfitTrackerGui : WindowScreen(ElementaVersion.V2) {
 
     private var totalWorth = 0L
     private fun drawCollectedItems(fontRenderer: FontRenderer) {
-        val items = GeneralProfitTracker.itemsGainedDuringSession
+        val items = ProfitTracker.itemsGainedDuringSession
         val totalItemWorth = mutableMapOf<String, Pair<Long, Int>>()
 
         // Populate totalItemWorth map

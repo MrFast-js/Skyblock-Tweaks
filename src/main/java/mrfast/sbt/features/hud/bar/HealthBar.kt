@@ -1,4 +1,4 @@
-package mrfast.sbt.features.statDisplays
+package mrfast.sbt.features.hud.bar
 
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.universal.UMatrixStack
@@ -10,7 +10,7 @@ import mrfast.sbt.config.categories.GeneralConfig.healthBarBarColor
 import mrfast.sbt.config.categories.GeneralConfig.healthBarHealthColor
 import mrfast.sbt.utils.LocationUtils
 
-object HealthBarDisplay {
+object HealthBar {
     init {
         HealthBarGui()
     }

@@ -1,4 +1,4 @@
-package mrfast.sbt.features.generalProfitTracker
+package mrfast.sbt.features.profitTracking
 
 import com.google.gson.JsonArray
 import mrfast.sbt.customevents.ProfileLoadEvent
@@ -12,7 +12,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 
-object GeneralProfitTracker {
+object ProfitTracker {
     var itemsGainedDuringSession = mutableMapOf<String, Int>()
     var sessionStartedAt = System.currentTimeMillis()
     var started = false
@@ -20,6 +20,7 @@ object GeneralProfitTracker {
     var paused = false
     var pausedDuration: Long = 0
     var selectedFilterMode = "Blacklist"
+
     var whitelistItems = mutableListOf(
         "ADD_ITEM"
     )
@@ -60,6 +61,7 @@ object GeneralProfitTracker {
     @SubscribeEvent
     fun onItemGainLoss(event: SkyblockInventoryItemEvent.InventoryItemEvent) {
         if (!started || paused) return
+
         // Stop from counting gains from items pulled/put into chests
         if (Utils.mc.currentScreen != null) {
             if (Utils.mc.currentScreen !is GuiInventory) {
@@ -67,7 +69,7 @@ object GeneralProfitTracker {
             }
         }
 
-        if(filterOutItem(event.itemId)) return
+        if (filterOutItem(event.itemId)) return
 
         if (event is SkyblockInventoryItemEvent.SackItemEvent) {
             val lastCount = itemsGainedDuringSession[event.itemId] ?: 0
@@ -80,7 +82,7 @@ object GeneralProfitTracker {
 
         if (event is SkyblockInventoryItemEvent.ItemStackEvent) {
             val id = getCustomItemId(event)
-            if(filterOutItem(id)) return
+            if (filterOutItem(id)) return
 
             val lastCount = itemsGainedDuringSession[id] ?: 0
             itemsGainedDuringSession[id] = lastCount + event.amount
@@ -102,6 +104,7 @@ object GeneralProfitTracker {
 
     private fun getCustomItemId(event: SkyblockInventoryItemEvent.ItemStackEvent): String {
         var id = event.itemId
+
         if (id == "ENCHANTED_BOOK") {
             val enchants = event.stack.getSkyblockEnchants()
             for (enchant in enchants) {

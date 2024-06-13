@@ -12,7 +12,7 @@ object GeneralConfig : Config() {
     @ConfigProperty(
         type = ConfigType.TOGGLE,
         name = "Low Health Tint",
-        description = "As your health decreases your screen will start to get §cred",
+        description = "As your health decreases, your screen will start to get §cred",
         category = "General",
         subcategory = "Low Health"
     )
@@ -20,8 +20,8 @@ object GeneralConfig : Config() {
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
-        name = "Cleaner Action Bar",
-        description = "Hides Health, Mana and other attributes from action bar",
+        name = "Clean Action Bar",
+        description = "Hides Health, Mana, and other attributes from the action bar",
         category = "General",
         subcategory = "Stat Displays",
         isParent = true
@@ -34,7 +34,7 @@ object GeneralConfig : Config() {
         description = "Hides health from action bar",
         category = "General",
         subcategory = "Stat Displays",
-        parentName = "Cleaner Action Bar"
+        parentName = "Clean Action Bar"
     )
     var hideHealthFromBar = true
 
@@ -44,7 +44,7 @@ object GeneralConfig : Config() {
         description = "Hides mana from action bar",
         category = "General",
         subcategory = "Stat Displays",
-        parentName = "Cleaner Action Bar"
+        parentName = "Clean Action Bar"
     )
     var hideManaFromBar = true
 
@@ -54,7 +54,7 @@ object GeneralConfig : Config() {
         description = "Hides overflow mana from action bar",
         category = "General",
         subcategory = "Stat Displays",
-        parentName = "Cleaner Action Bar"
+        parentName = "Clean Action Bar"
     )
     var hideOverflowManaFromBar = true
 
@@ -64,7 +64,7 @@ object GeneralConfig : Config() {
         description = "Hides rift time from action bar",
         category = "General",
         subcategory = "Stat Displays",
-        parentName = "Cleaner Action Bar"
+        parentName = "Clean Action Bar"
     )
     var hideRiftTimeFromBar = false
 
@@ -74,7 +74,7 @@ object GeneralConfig : Config() {
         description = "Hides defense from action bar",
         category = "General",
         subcategory = "Stat Displays",
-        parentName = "Cleaner Action Bar"
+        parentName = "Clean Action Bar"
     )
     var hideDefenseFromBar = true
 
@@ -170,57 +170,88 @@ object GeneralConfig : Config() {
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
-        name = "Health Display",
+        name = "Health Number",
         description = "Movable health display",
         category = "General",
-        subcategory = "Stat Displays"
+        subcategory = "Stat Displays",
+        isParent = true
     )
-    var healthDisplay = false
+    var healthNumber = false
+
+    @ConfigProperty(
+        type = ConfigType.COLOR,
+        name = "Show Max Health",
+        description = "",
+        category = "General",
+        subcategory = "Stat Displays",
+        parentName = "Health Number"
+    )
+    var showMaxHealth = true
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
-        name = "Speed Display",
+        name = "Speed Number",
         description = "Movable Speed display",
         category = "General",
         subcategory = "Stat Displays"
     )
-    var speedDisplay = false
+    var speedNumber = false
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
-        name = "Effective Health Display",
+        name = "Effective Health Number",
         description = "Movable Effective Health display",
         category = "General",
-        subcategory = "Stat Displays"
+        subcategory = "Stat Displays",
+        isParent = true
     )
-    var effectiveHealthDisplay = false
+    var effectiveHealthNumber = false
+
+    @ConfigProperty(
+        type = ConfigType.COLOR,
+        name = "Show Max Effective Health",
+        description = "",
+        category = "General",
+        subcategory = "Stat Displays",
+        parentName = "Effective Health Number"
+    )
+    var showMaxEffectiveHealth = false
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
-        name = "Mana Display",
+        name = "Mana Number",
         description = "Movable mana",
         category = "General",
         subcategory = "Stat Displays"
     )
-    var manaDisplay = false
+    var manaNumber = false
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
-        name = "Overflow Mana Display",
+        name = "Overflow Mana Number",
         description = "Movable overflow mana display",
         category = "General",
         subcategory = "Stat Displays"
     )
-    var overflowManaDisplay = false
+    var overflowManaNumber = false
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
-        name = "Defense Display",
+        name = "Defense Number",
         description = "Movable defense display",
         category = "General",
         subcategory = "Stat Displays"
     )
-    var defenseDisplay = false
+    var defenseNumber = false
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Damage Reduction Percentage",
+        description = "Movable damage reduction percentage display",
+        category = "General",
+        subcategory = "Stat Displays"
+    )
+    var damageReductionPercentage = false
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
@@ -245,7 +276,7 @@ object GeneralConfig : Config() {
     @ConfigProperty(
         type = ConfigType.TOGGLE,
         name = "Hide Hunger Bar",
-        description = "Hide the food icons above hotbar",
+        description = "Hide the hunger bar",
         category = "General",
         subcategory = "Stat Displays",
         parentName = "Cleaner Hotbar Area"
@@ -255,7 +286,7 @@ object GeneralConfig : Config() {
     @ConfigProperty(
         type = ConfigType.TOGGLE,
         name = "Hide Health Hearts",
-        description = "Hide the health icons above hotbar",
+        description = "Hide the Vanilla health bar",
         category = "General",
         subcategory = "Stat Displays",
         parentName = "Cleaner Hotbar Area"
@@ -304,7 +335,7 @@ object GeneralConfig : Config() {
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
-        name = "Show Material Ids",
+        name = "Show Material IDs",
         description = "",
         category = "General",
         subcategory = "Item Pickup Log",

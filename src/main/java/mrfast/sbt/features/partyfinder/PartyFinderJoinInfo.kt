@@ -122,7 +122,7 @@ object PartyFinderJoinInfo {
             items.append((if (term) "§aTerm ✔" else "§cTerm ✘") + "   ")
             items.append((if (clay) "§aClay ✔" else "§cClay ✘") + "   ")
 
-            if(DungeonConfig.partyfinderJoinInfo_showHotbar) {
+            if (DungeonConfig.partyfinderJoinInfo_showHotbar) {
                 val hotbar = ChatComponentText("")
 
                 for ((index, itemStack) in inventory.withIndex().take(9)) {

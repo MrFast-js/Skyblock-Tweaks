@@ -165,7 +165,7 @@ tasks.shadowJar {
 
 tasks.assemble.get().dependsOn(tasks.remapJar)
 
-if(project.hasProperty("toModsFolder")) {
+if (project.hasProperty("toModsFolder")) {
     tasks.register("finalize") {
         doLast {
             project.exec {

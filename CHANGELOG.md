@@ -1,5 +1,5 @@
 # v1.0.0 Beta 1
-As this is the first beta there may be features that don't work or arent implemented yet. Report any bugs in the discord, thank you!
+As this is the first beta there may be features that don't work or aren't implemented yet. Report any bugs in the Discord server, thank you!
 Open the config using /sbt
 Edit GUI locations with "/sbt edit" this will have a button in the future
 ### Changes

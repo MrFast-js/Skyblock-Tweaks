@@ -1,4 +1,4 @@
-package mrfast.sbt.features.statDisplays
+package mrfast.sbt.features.hud.bar
 
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.universal.UMatrixStack
@@ -7,7 +7,7 @@ import mrfast.sbt.config.GuiManager
 import mrfast.sbt.config.categories.RiftConfig
 import mrfast.sbt.utils.LocationUtils
 
-object RiftTimeBarDisplay {
+object RiftTimeBar {
     init {
         RiftBarGui()
     }

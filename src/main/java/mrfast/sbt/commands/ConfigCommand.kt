@@ -22,11 +22,11 @@ class ConfigCommand : CommandBase() {
 
     override fun processCommand(sender: ICommandSender?, args: Array<out String>?) {
         if (args != null) {
-            if(args.isNotEmpty()) {
+            if (args.isNotEmpty()) {
                 when {
                     args[0] == "edit" -> GuiUtil.open(GuiEditor())
                     args[0] == "update" -> {
-                        if(args.size<2) {
+                        if (args.size<2) {
                             ChatUtils.sendClientMessage("§cInvalid Usage! §e/sbt update check|pre|full")
                             return
                         }

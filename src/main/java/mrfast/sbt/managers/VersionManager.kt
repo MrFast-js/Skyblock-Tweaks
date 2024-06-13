@@ -61,7 +61,7 @@ object VersionManager {
                                     .setChatClickEvent(
                                         ClickEvent(
                                             ClickEvent.Action.RUN_COMMAND,
-                                            "/sbt update ${if(updateVersion.contains("BETA")) updatePreference else "latest"}"
+                                            "/sbt update ${if (updateVersion.contains("BETA")) updatePreference else "latest"}"
                                         )
                                     )
                                     .setChatHoverEvent(

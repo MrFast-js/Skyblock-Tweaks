@@ -22,13 +22,13 @@ object PartyDisplay {
         }
 
         override fun draw() {
-            if(PartyManager.partyMembers.isEmpty()) return
-            if(PartyManager.partyMembers.size==1 && PartyManager.partyMembers.keys.contains(Utils.mc.thePlayer.name)) return
+            if (PartyManager.partyMembers.isEmpty()) return
+            if (PartyManager.partyMembers.size==1 && PartyManager.partyMembers.keys.contains(Utils.mc.thePlayer.name)) return
 
             var display = "§9§lParty Members §r§7(${PartyManager.partyMembers.size})"
             for (partyMember in PartyManager.partyMembers.values) {
                 var name = if (partyMember.leader) "§n"+partyMember.name else partyMember.name
-                if(partyMember.name.equals(Utils.mc.thePlayer.name)) {
+                if (partyMember.name.equals(Utils.mc.thePlayer.name)) {
                     name = "§a${partyMember.name}"
                 }
                 display += "\n §e• §3${name}"
