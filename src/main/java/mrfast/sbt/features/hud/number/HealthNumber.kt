@@ -23,10 +23,13 @@ object HealthNumber {
         }
 
         override fun draw() {
-            val color = if (PlayerStats.health > PlayerStats.maxHealth) "§6" else "§c"
-            val maxHealth = if (GeneralConfig.showMaxHealth) "§c/${PlayerStats.maxHealth.formatNumber()}" else ""
-            val number = "$color${PlayerStats.health.formatNumber()} $maxHealth"
-            GuiUtils.drawText(number, 0f, 0f, GuiUtils.TextStyle.BLACK_OUTLINE)
+            val color =
+                if (PlayerStats.health > PlayerStats.maxHealth) GeneralConfig.healthDisplayAbsorptionColor else GeneralConfig.healthDisplayColor
+
+            val maxHealth = if (GeneralConfig.showMaxHealth) "/${PlayerStats.maxHealth.formatNumber()}" else ""
+            val number = "${PlayerStats.health.formatNumber()}$maxHealth"
+
+            GuiUtils.drawText(number, 0f, 0f, GuiUtils.TextStyle.BLACK_OUTLINE, color)
             this.width = Utils.mc.fontRendererObj.getStringWidth(number) + 1
         }
 

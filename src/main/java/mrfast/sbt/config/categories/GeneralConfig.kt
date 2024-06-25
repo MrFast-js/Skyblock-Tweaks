@@ -179,14 +179,34 @@ object GeneralConfig : Config() {
     var healthNumber = false
 
     @ConfigProperty(
-        type = ConfigType.COLOR,
+        type = ConfigType.TOGGLE,
         name = "Show Max Health",
-        description = "",
+        description = "Will display your current health our of max health.",
         category = "General",
         subcategory = "Stat Displays",
         parentName = "Health Number"
     )
     var showMaxHealth = true
+
+    @ConfigProperty(
+        type = ConfigType.COLOR,
+        name = "Normal Color",
+        description = "Change color from the default §cRed",
+        category = "General",
+        subcategory = "Stat Displays",
+        parentName = "Health Number"
+    )
+    var healthDisplayColor = Color(255,85,85)
+
+    @ConfigProperty(
+        type = ConfigType.COLOR,
+        name = "Absorption Color",
+        description = "Change color from the default §6Gold",
+        category = "General",
+        subcategory = "Stat Displays",
+        parentName = "Health Number"
+    )
+    var healthDisplayAbsorptionColor = Color(255,170,0)
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
@@ -208,7 +228,7 @@ object GeneralConfig : Config() {
     var effectiveHealthNumber = false
 
     @ConfigProperty(
-        type = ConfigType.COLOR,
+        type = ConfigType.TOGGLE,
         name = "Show Max Effective Health",
         description = "",
         category = "General",
@@ -243,15 +263,6 @@ object GeneralConfig : Config() {
         subcategory = "Stat Displays"
     )
     var defenseNumber = false
-
-    @ConfigProperty(
-        type = ConfigType.TOGGLE,
-        name = "Damage Reduction Percentage",
-        description = "Movable damage reduction percentage display",
-        category = "General",
-        subcategory = "Stat Displays"
-    )
-    var damageReductionPercentage = false
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
