@@ -213,9 +213,20 @@ object GeneralConfig : Config() {
         name = "Speed Number",
         description = "Movable Speed display",
         category = "General",
-        subcategory = "Stat Displays"
+        subcategory = "Stat Displays",
+        isParent = true
     )
     var speedNumber = false
+
+    @ConfigProperty(
+        type = ConfigType.COLOR,
+        name = "Color",
+        description = "Change color from the default §6Gold",
+        category = "General",
+        subcategory = "Stat Displays",
+        parentName = "Speed Number"
+    )
+    var speedNumberColor = Color(255,255,255)
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
@@ -238,13 +249,34 @@ object GeneralConfig : Config() {
     var showMaxEffectiveHealth = false
 
     @ConfigProperty(
+        type = ConfigType.COLOR,
+        name = "Color",
+        description = "Change color from the default §2Green",
+        category = "General",
+        subcategory = "Stat Displays",
+        parentName = "Effective Health Number"
+    )
+    var effectiveHealthNumberColor = Color(0,170,0)
+
+    @ConfigProperty(
         type = ConfigType.TOGGLE,
         name = "Mana Number",
         description = "Movable mana",
         category = "General",
-        subcategory = "Stat Displays"
+        subcategory = "Stat Displays",
+        isParent = true
     )
     var manaNumber = false
+
+    @ConfigProperty(
+        type = ConfigType.COLOR,
+        name = "Color",
+        description = "Change color from the default §9Blue",
+        category = "General",
+        subcategory = "Stat Displays",
+        parentName = "Mana Number"
+    )
+    var manaNumberColor = Color(85,85,255)
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
@@ -254,6 +286,16 @@ object GeneralConfig : Config() {
         subcategory = "Stat Displays"
     )
     var overflowManaNumber = false
+
+    @ConfigProperty(
+        type = ConfigType.COLOR,
+        name = "Color",
+        description = "Change color from the default §3Aqua",
+        category = "General",
+        subcategory = "Stat Displays",
+        parentName = "Overflow Mana Number"
+    )
+    var manaOverflowNumberColor = Color(85,85,255)
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
@@ -266,7 +308,7 @@ object GeneralConfig : Config() {
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
-        name = "Cleaner Hotbar Area",
+        name = "Cleaner Hotbar Hud",
         description = "Hides elements like hunger bar, armor bar",
         category = "General",
         subcategory = "Stat Displays",
@@ -280,7 +322,7 @@ object GeneralConfig : Config() {
         description = "Hide the armor icons above health bar",
         category = "General",
         subcategory = "Stat Displays",
-        parentName = "Cleaner Hotbar Area"
+        parentName = "Cleaner Hotbar Hud"
     )
     var hideArmorBar = true
 
@@ -290,7 +332,7 @@ object GeneralConfig : Config() {
         description = "Hide the hunger bar",
         category = "General",
         subcategory = "Stat Displays",
-        parentName = "Cleaner Hotbar Area"
+        parentName = "Cleaner Hotbar Hud"
     )
     var hideHungerBar = true
 
@@ -300,7 +342,7 @@ object GeneralConfig : Config() {
         description = "Hide the Vanilla health bar",
         category = "General",
         subcategory = "Stat Displays",
-        parentName = "Cleaner Hotbar Area"
+        parentName = "Cleaner Hotbar Hud"
     )
     var hideHealthHearts = false
 
@@ -310,7 +352,7 @@ object GeneralConfig : Config() {
         description = "Hide the air bubble icons above hotbar when underwater",
         category = "General",
         subcategory = "Stat Displays",
-        parentName = "Cleaner Hotbar Area"
+        parentName = "Cleaner Hotbar Hud"
     )
     var hideAirBubbles = false
 

@@ -3,6 +3,7 @@ package mrfast.sbt.features.hud.number
 import mrfast.sbt.apis.PlayerStats
 import mrfast.sbt.config.categories.GeneralConfig
 import mrfast.sbt.config.GuiManager
+import mrfast.sbt.config.categories.GeneralConfig.manaOverflowNumberColor
 import mrfast.sbt.utils.GuiUtils
 import mrfast.sbt.utils.LocationUtils
 import mrfast.sbt.utils.Utils
@@ -24,7 +25,7 @@ object OverflowManaNumber {
 
         override fun draw() {
             val number = "§3${PlayerStats.overflowMana.formatNumber()}ʬ"
-            GuiUtils.drawText(number, 0f, 0f, GuiUtils.TextStyle.BLACK_OUTLINE)
+            GuiUtils.drawText(number, 0f, 0f, GuiUtils.TextStyle.BLACK_OUTLINE, manaOverflowNumberColor)
             this.width = Utils.mc.fontRendererObj.getStringWidth(number) + 1
         }
 

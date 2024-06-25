@@ -3,6 +3,7 @@ package mrfast.sbt.features.hud.number
 import mrfast.sbt.apis.PlayerStats
 import mrfast.sbt.config.categories.GeneralConfig
 import mrfast.sbt.config.GuiManager
+import mrfast.sbt.config.categories.GeneralConfig.manaNumberColor
 import mrfast.sbt.utils.GuiUtils
 import mrfast.sbt.utils.LocationUtils
 import mrfast.sbt.utils.Utils
@@ -23,8 +24,8 @@ object ManaNumber {
         }
 
         override fun draw() {
-            val number = "§9${PlayerStats.mana.formatNumber()}/${PlayerStats.maxMana.formatNumber()}"
-            GuiUtils.drawText(number, 0f, 0f, GuiUtils.TextStyle.BLACK_OUTLINE)
+            val number = "${PlayerStats.mana.formatNumber()}/${PlayerStats.maxMana.formatNumber()}"
+            GuiUtils.drawText(number, 0f, 0f, GuiUtils.TextStyle.BLACK_OUTLINE,manaNumberColor)
             this.width = Utils.mc.fontRendererObj.getStringWidth(number) + 1
         }
 
