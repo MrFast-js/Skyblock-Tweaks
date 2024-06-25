@@ -24,7 +24,7 @@ object GuiUtils {
     }
 
     fun drawText(text: String, x: Float, y: Float, style: TextStyle) {
-        drawText(text, x, y, style, Color(0x000000))
+        drawText(text, x, y, style, Color(0xFFFFFF))
     }
 
     fun drawText(text: String, x: Float, y: Float, style: TextStyle, coreColor: Color) {
