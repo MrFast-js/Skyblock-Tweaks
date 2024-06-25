@@ -221,9 +221,10 @@ object AuctionFlipper {
         /*
         Coin filters: Purse limit, price, profit, percentage
          */
-        // Filter out auctions that are going to take too long to finish, Example: Auctions over an hour
+        // Filter out auctions that are going to take too long to finish, Example: Auctions over an hour or already ended
         if (auctionFlip.endTime != null) {
-            if (auctionFlip.bin == false && auctionFlip.endTime!! - System.currentTimeMillis() > AuctionHouseConfig.AF_minimumTime * 1000 * 60) {
+            val msTillEnd = auctionFlip.endTime!! - System.currentTimeMillis();
+            if (auctionFlip.bin == false && msTillEnd > AuctionHouseConfig.AF_minimumTime * 1000 * 60 || msTillEnd < 0) {
                 return
             }
         }
@@ -231,7 +232,6 @@ object AuctionFlipper {
         // Filter out auctions that don't make it past the profit requirement
         if (auctionFlip.profit != null) {
             if (auctionFlip.profit!! < AuctionHouseConfig.AF_profitMargin) {
-
                 return
             }
         }
