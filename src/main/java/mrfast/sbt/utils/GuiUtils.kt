@@ -24,6 +24,10 @@ object GuiUtils {
     }
 
     fun drawText(text: String, x: Float, y: Float, style: TextStyle) {
+        drawText(text, x, y, style, Color(0x000000))
+    }
+
+    fun drawText(text: String, x: Float, y: Float, style: TextStyle, coreColor: Color) {
         val shadowText: String = text.cleanColor()
 
         GlStateManager.translate(0f, 0f, 200f)
@@ -38,7 +42,7 @@ object GuiUtils {
             text,
             x + 1,
             y + 1,
-            0xFFFFFF,
+            coreColor.rgb,
             style == TextStyle.DROP_SHADOW
         )
         GlStateManager.translate(0f, 0f, -200f)
