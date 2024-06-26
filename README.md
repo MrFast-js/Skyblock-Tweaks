@@ -14,14 +14,6 @@
         <img src="https://img.shields.io/github/downloads/mrfast-js/skyblockfeatures/total?label=Downloads&logo=Github&logoColor=FFFFFF&labelColor=262626&color=0074D4&style=for-the-badge" alt="downloads">
     </a>
 </div>
-<style>
-  a {
-    text-decoration: none; /* Remove underline */
-  }
-  a:hover {
-    text-decoration: none; /* Ensure no underline on hover */
-  }
-</style>
 
 ## Top Features
 
