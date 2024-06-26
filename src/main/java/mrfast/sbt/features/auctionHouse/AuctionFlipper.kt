@@ -17,6 +17,7 @@ import net.minecraft.event.HoverEvent
 import net.minecraft.item.ItemStack
 import net.minecraft.util.ChatComponentText
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent
 
 /*
 This is an auction flipper that scans the Hypixel Auction API based off of current lowest bins, and 3 day price averages.
@@ -24,6 +25,28 @@ There is no storing of pricing data on SBT's server end, thus making it vulnerab
  */
 object AuctionFlipper {
     var auctionsNotified = 0
+
+    private var sentStartingText = false
+
+    @SubscribeEvent
+    fun onTick(event: TickEvent.ClientTickEvent) {
+        if (AuctionHouseConfig.auctionFlipper) {
+            if (!sentStartingText) {
+                sentStartingText = true;
+                val notificationText =
+                    ChatComponentText("§eSB§9T§6 >> §aThe Auction Flipper is now active! §7Allow for a full minute for flips to appear.")
+
+                Utils.setTimeout({
+                    Utils.playSound("random.orb", 0.1)
+                    ChatUtils.sendClientMessage("", false)
+                    ChatUtils.sendClientMessage(notificationText, false)
+                    ChatUtils.sendClientMessage("", false)
+                }, 500)
+            }
+        } else {
+            sentStartingText = false;
+        }
+    }
 
     class AuctionFlip(
         var bin: Boolean? = null,
@@ -60,7 +83,7 @@ object AuctionFlipper {
             val profitPercent = (((sellFor!!.toFloat() / price.toFloat()) - 1) * 100).toInt()
 
             val notification =
-                "§eSB§9T§6 >> $auctionType ${itemStack?.displayName} §a${price.abbreviateNumber()} -> ${(price + profit!!).abbreviateNumber()} §2(+${profit!!.abbreviateNumber()} §4$profitPercent%§2) §e${timeRemaining}"
+                "§eSB§9T§6 >> $auctionType ${itemStack?.displayName} §a${price.abbreviateNumber()}§3➜§a${(price + profit!!).abbreviateNumber()} §2(+${profit!!.abbreviateNumber()} §4$profitPercent%§2) §e${timeRemaining}"
 
             val chatComponent = ChatComponentText(notification)
             chatComponent.chatStyle.chatClickEvent =
@@ -94,6 +117,11 @@ object AuctionFlipper {
         Thread {
             auctionsNotified = 0
             checkedAuctions = 0
+
+            ChatUtils.sendClientMessage("", false)
+            ChatUtils.sendClientMessage("§eSB§9T§6 >> §7Starting Auction House Scan..")
+            ChatUtils.sendClientMessage("", false)
+
             for (page in 0..maxPagesToScan) {
                 val auctionHousePageJson = NetworkUtils.apiRequestAndParse(
                     "https://api.hypixel.net/skyblock/auctions?page=${page}",
@@ -106,7 +134,9 @@ object AuctionFlipper {
             }
 
             Utils.setTimeout({
-                ChatUtils.sendClientMessage("§eSB§9T§6 >> §7Scanned ${checkedAuctions.formatNumber()} auctions! ${auctionsNotified.formatNumber()} auctions matched your filter")
+                ChatUtils.sendClientMessage("", false)
+                ChatUtils.sendClientMessage("§eSB§9T§6 >> §7Scanned §9${checkedAuctions.formatNumber()}§7 auctions! §3${auctionsNotified.formatNumber()}§7 matched your filter.")
+                ChatUtils.sendClientMessage("", false)
             }, 1000)
         }.start()
     }
