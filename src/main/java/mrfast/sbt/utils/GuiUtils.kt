@@ -1,5 +1,6 @@
 package mrfast.sbt.utils
 
+import gg.essential.elementa.state.BasicState
 import mrfast.sbt.utils.Utils.cleanColor
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.Gui
@@ -9,14 +10,31 @@ import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.inventory.ContainerChest
+import net.minecraft.inventory.Slot
 import net.minecraft.item.ItemStack
 import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL14
 import java.awt.Color
+import java.util.*
 import kotlin.math.sqrt
 
 
 object GuiUtils {
+    var rainbowColor = BasicState(Color.CYAN)
+    var rainbowHueCount = 0
+
+    init {
+        Timer().scheduleAtFixedRate(object : TimerTask() {
+            override fun run() {
+                rainbowHueCount += 5
+                val hue = rainbowHueCount % 360
+                if (rainbowHueCount > 360) rainbowHueCount = 0
+
+                val outlineColor = Color.HSBtoRGB(hue.toFloat() / 360f, 1f, 1f)
+                rainbowColor.set(Color(outlineColor))
+            }
+        }, 0, 100)
+    }
 
     enum class TextStyle {
         DROP_SHADOW,
@@ -62,6 +80,33 @@ object GuiUtils {
         Minecraft.getMinecraft().renderItem.renderItemOverlays(Utils.mc.fontRendererObj, stack, 0, 0)
         RenderHelper.disableStandardItemLighting()
         GlStateManager.popMatrix()
+    }
+
+    fun highlightSlot(slot: Slot, backgroundColor: Color) {
+        Gui.drawRect(
+            slot.xDisplayPosition,
+            slot.yDisplayPosition,
+            slot.xDisplayPosition + 16,
+            slot.yDisplayPosition + 16,
+            backgroundColor.rgb
+        )
+    }
+
+    class Button(var width: Float, var height: Float, var x: Int, var y: Int) {
+        var onClicked: Runnable? = null
+
+        fun isClicked(mouseX: Double, mouseY: Double, guiLeft: Float, guiTop: Float): Boolean {
+            val clicked =
+                (mouseX >= (x + guiLeft) && mouseX <= (x + guiLeft) + width && mouseY >= (y + guiTop) && mouseY <= (y + guiTop) + height)
+            if (clicked) {
+                this.onClicked?.run()
+            }
+            return clicked
+        }
+
+        fun isHovered(mouseX: Double, mouseY: Double, guiLeft: Float, guiTop: Float): Boolean {
+            return (mouseX >= (x + guiLeft) && mouseX <= (x + guiLeft) + width && mouseY >= (y + guiTop) && mouseY <= (y + guiTop) + height)
+        }
     }
 
     fun drawOutlinedSquare(x: Int, y: Int, width: Int, height: Int, backgroundColor: Color, borderColor: Color) {
