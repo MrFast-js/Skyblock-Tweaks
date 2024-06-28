@@ -2,12 +2,14 @@ package mrfast.sbt.mixins.transformers;
 
 import mrfast.sbt.customevents.SlotClickedEvent;
 import mrfast.sbt.customevents.SlotDrawnEvent;
+import mrfast.sbt.customevents.GuiContainerBackgroundDrawnEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.inventory.Slot;
 import net.minecraftforge.common.MinecraftForge;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -23,7 +25,6 @@ public class MixinGuiContainer {
         }
     }
 
-
     @Inject(method = "drawSlot", at = @At("HEAD"))
     private void preSlotDrawnEvent(Slot slotIn, CallbackInfo ci) {
         MinecraftForge.EVENT_BUS.post(new SlotDrawnEvent.Pre(slotIn, (GuiContainer) Minecraft.getMinecraft().currentScreen));
@@ -37,5 +38,18 @@ public class MixinGuiContainer {
             GlStateManager.translate(0, 0, -275f);
         } catch (Exception ignored) {
         }
+    }
+
+    @Shadow
+    protected int guiLeft;
+
+    @Shadow
+    protected int guiTop;
+
+    @Inject(method = "drawScreen", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/inventory/GuiContainer;drawGuiContainerBackgroundLayer(FII)V", ordinal = 0, shift = At.Shift.AFTER))
+    private void onGuiContainerDrawn(int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
+        GlStateManager.translate(guiLeft, guiTop, 0);
+        MinecraftForge.EVENT_BUS.post(new GuiContainerBackgroundDrawnEvent((GuiContainer) Minecraft.getMinecraft().currentScreen, mouseX, mouseY));
+        GlStateManager.translate(-guiLeft, -guiTop, 0);
     }
 }
