@@ -57,6 +57,7 @@ object AuctionFlipper {
         var price: Long = 0
         var profit: Long? = null
         var sellFor: Long? = null
+        var bidderUUID: String? = null
         var volume: Int? = null
         var itemID: String? = null
         var itemStack: ItemStack? = null
@@ -144,9 +145,11 @@ object AuctionFlipper {
     //
     private fun handleAuctionPage(page: JsonObject) {
         val auctions = page.getAsJsonArray("auctions")
-        for (auction in auctions) {
-            handleAuction(auction as JsonObject)
-        }
+        Thread {
+            for (auction in auctions) {
+                handleAuction(auction as JsonObject)
+            }
+        }.start()
     }
 
     var checkedAuctions = 0
@@ -158,6 +161,10 @@ object AuctionFlipper {
         val auctioneer = auction.get("auctioneer").asString
         val auctionUUID = auction.get("uuid").asString
         val auctionFlip = AuctionFlip(bin, endTime, auctioneer, auctionUUID)
+
+        if (auction.get("bids").asJsonArray.size() > 0) {
+            auctionFlip.bidderUUID = auction.get("bids").asJsonArray.last().asJsonObject.get("bidder").asString
+        }
 
         // Get Auction Price
         auctionFlip.price = auction.get("starting_bid").asLong
@@ -184,18 +191,7 @@ object AuctionFlipper {
     // Calculate how much profit an auction will yeild
     // Will find a 'base price' for the item, found by using average bin ideally, with the lowest bin as a backup
     private fun calcAuctionProfit(auctionFlip: AuctionFlip, pricingData: JsonObject) {
-        var baseItemPrice = -1L
-        val lowestBin: Long?
-        val averageBin: Long?
-
-        if (pricingData.has("price_avg")) {
-            averageBin = pricingData.get("price_avg").asLong
-            baseItemPrice = averageBin
-        }
-        if (pricingData.has("lowestBin")) {
-            lowestBin = pricingData.get("lowestBin").asLong
-            baseItemPrice = lowestBin
-        }
+        var baseItemPrice = pricingData.get("basePrice").asLong
 
         if (auctionFlip.price < baseItemPrice) {
             auctionFlip.profit = baseItemPrice - auctionFlip.price
@@ -212,6 +208,10 @@ object AuctionFlipper {
     // Filters for various things
     // Example options: No Runes, No Pets, No Furniture, no pet skins, no armor skins
     private fun filterOutAuction(auctionFlip: AuctionFlip) {
+        // Filter out auctions that your already the top bid on
+        if (auctionFlip.bidderUUID?.equals(Utils.mc.thePlayer.uniqueID.toString().replace("-", "")) == true) {
+            return
+        }
         // Filter out runes
         if (AuctionHouseConfig.AF_runeFilter && auctionFlip.itemID?.contains("_RUNE") == true) {
             return
