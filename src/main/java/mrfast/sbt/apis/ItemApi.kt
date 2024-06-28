@@ -35,7 +35,7 @@ object ItemApi {
                             skyblockItemPrices.add(it.key, JsonObject())
                         }
                         skyblockItemPrices.get(it.key).asJsonObject.addProperty("lowestBin", it.value.asLong)
-                        skyblockItemPrices.get(it.key).asJsonObject.addProperty("worth", it.value.asLong)
+                        skyblockItemPrices.get(it.key).asJsonObject.addProperty("basePrice", it.value.asLong)
                     }
                     println("Loaded Lowest Bin Prices from Moulberry NEU API!!")
 
@@ -47,9 +47,42 @@ object ItemApi {
                             if (!skyblockItemPrices.has(it.key)) {
                                 skyblockItemPrices.add(it.key, JsonObject())
                             }
+
                             val item = skyblockItemPrices.get(it.key).asJsonObject
                             it.value.asJsonObject.entrySet().forEach { priceStat ->
-                                item.add(priceStat.key+"_avg", priceStat.value)
+                                item.add(priceStat.key + "_avg", priceStat.value)
+                            }
+
+                            if (item.has("price_avg")) {
+                                item.addProperty(
+                                    "basePrice",
+                                    item.get("price_avg").asLong
+                                )
+                            }
+
+                            // Change 'worth' depending on available prices and anti market manipulations math, requires lbin & abin
+                            if (skyblockItemPrices.get(it.key).asJsonObject.has("lowestBin") && skyblockItemPrices.get(
+                                    it.key
+                                ).asJsonObject.has("price_avg")
+                            ) {
+                                val lbin = item.get("lowestBin").asDouble
+                                var abin = item.get("price_avg").asDouble
+                                if (item.has("clean_price_avg")) {
+                                    abin = item.get("clean_price_avg").asDouble
+                                }
+
+                                var basePrice = (abin * 0.4 + lbin * 0.6)
+
+                                // If the lowest bin is more than average bin * 50% it can be inferred that likely the lowest bin is currently high or possibly manipulated
+                                // Find a semi middle ground that is fair, but much more weighted towards lbin for selling faster
+                                if (lbin > abin + 300_000 || lbin > abin * 1.5) {
+                                    basePrice = (abin * 0.6 + lbin * 0.4)
+                                }
+                                if (lbin > abin + 500_00) {
+                                    basePrice = lbin - 100_000
+                                }
+
+                                item.addProperty("basePrice", basePrice.toLong())
                             }
                         }
 
@@ -73,7 +106,7 @@ object ItemApi {
                         val productJson = JsonObject()
                         productJson.addProperty("sellPrice", sellPrice)
                         productJson.addProperty("buyPrice", buyPrice)
-                        productJson.addProperty("worth", sellPrice)
+                        productJson.addProperty("basePrice", sellPrice)
 
                         skyblockItemPrices.add(product.key, productJson)
                     }
@@ -103,7 +136,8 @@ object ItemApi {
                 "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDUyZGNhNjhjOGY4YWY1MzNmYjczN2ZhZWVhY2JlNzE3Yjk2ODc2N2ZjMTg4MjRkYzJkMzdhYzc4OWZjNzcifX19",
                 "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTM4MDcxNzIxY2M1YjRjZDQwNmNlNDMxYTEzZjg2MDgzYTg5NzNlMTA2NGQyZjg4OTc4Njk5MzBlZTZlNTIzNyJ9fX0="
             )
-            nbtString = nbtString.replace("ff6fbcd7-5138-36b9-a3dc-4c52af38c20d", "2070f6cb-f5db-367a-acd0-64d39a7e5d1b")
+            nbtString =
+                nbtString.replace("ff6fbcd7-5138-36b9-a3dc-4c52af38c20d", "2070f6cb-f5db-367a-acd0-64d39a7e5d1b")
             nbtString = nbtString.replace("COIN_TALISMAN", "")
 
             // Parse NBT string
@@ -155,7 +189,7 @@ object ItemApi {
     fun getItemPriceInfo(itemId: String): JsonObject? {
         if (!skyblockItemPrices.has(itemId) && itemId.contains(";")) {
             // REJUVENATE;1  -> ENCHANTMENT_REJUVENATE_1
-            return getItemPriceInfo("ENCHANTMENT_${itemId.replace(";","_")}")
+            return getItemPriceInfo("ENCHANTMENT_${itemId.replace(";", "_")}")
         }
 
         return skyblockItemPrices.get(itemId)?.asJsonObject

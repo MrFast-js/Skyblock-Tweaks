@@ -1,5 +1,6 @@
 package mrfast.sbt.utils
 
+import mrfast.sbt.apis.ItemApi
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.CompressedStreamTools
 import net.minecraft.nbt.NBTTagCompound
@@ -16,6 +17,12 @@ object ItemUtils {
         return Utils.mc.thePlayer.heldItem
     }
 
+    fun ItemStack.getItemUUID(): String? {
+        val nbt = this.getExtraAttributes() ?: return null
+        if (!nbt.hasKey("uuid")) return null
+        return nbt.getString("uuid")
+    }
+
     fun ItemStack.getSkyblockId(): String? {
         val nbt = this.getExtraAttributes() ?: return null
 
@@ -28,12 +35,14 @@ object ItemUtils {
                 val tierInt = petTierToInt(petInfo.get("tier").asString)
                 "${petInfo.get("type").asString};$tierInt"
             }
+
             nbt.hasKey("runes") -> {
                 val runeType = nbt.getCompoundTag("runes")?.keySet?.firstOrNull()
                 runeType?.let {
                     "${runeType}_RUNE;${nbt.getCompoundTag("runes").getInteger(runeType)}"
                 }
             }
+
             else -> id
         }
     }
@@ -128,5 +137,13 @@ object ItemUtils {
             }
         }
         return null
+    }
+
+    fun ItemStack.getItemBasePrice(): Double {
+        val id = this.getSkyblockId() ?: return -1.0;
+        if (ItemApi.getItemPriceInfo(id) != null) {
+            return ItemApi.getItemPriceInfo(id)?.get("basePrice")?.asDouble ?: 0.0
+        }
+        return 0.0
     }
 }
