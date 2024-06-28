@@ -62,6 +62,14 @@ object DeveloperConfig : Config() {
     )
     var showInspector = false
 
+    @ConfigProperty(
+        type = ConfigType.NUMBER,
+        name = "Value Tester",
+        category = "§eDeveloper",
+        subcategory = "Settings"
+    )
+    var valueTest = 200
+
 //    @ConfigProperty(
 //            type = ConfigType.TOGGLE,
 //            name = "Log Debug info for Auction Flipper",
