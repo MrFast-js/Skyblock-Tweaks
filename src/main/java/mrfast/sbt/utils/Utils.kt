@@ -1,6 +1,9 @@
 package mrfast.sbt.utils
 
 import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.inventory.GuiChest
+import net.minecraft.inventory.ContainerChest
+import net.minecraft.inventory.IInventory
 import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
 import java.util.regex.Matcher
@@ -14,22 +17,25 @@ object Utils {
             Thread.sleep(delayMillis)
             runnable()
         }.start()
-
     }
 
 
-    /**
+    /*
      * Cleans all minecraft formatting from text
      */
     fun String.clean(): String {
         return this.replace("§[0-9a-zA-Z]".toRegex(), "")
     }
 
-    /**
+    /*
      * Cleans all minecraft color formatting from text
      */
     fun String.cleanColor(): String {
         return this.replace(Regex("(?i)§[0-9A-F]"), "")
+    }
+
+    fun String.getStringWidth(): Int {
+        return mc.fontRendererObj.getStringWidth(this)
     }
 
     fun String.matches(regex: String): Boolean {
@@ -70,11 +76,6 @@ object Utils {
         return "${if (hours > 0) "${hours}h " else ""}${if (minutes > 0) "${minutes}m " else ""}${remainingSeconds}s"
     }
 
-
-    fun clamp(min: Double, value: Double, max: Double): Double {
-        return max.coerceAtMost(value.coerceAtLeast(min))
-    }
-
     fun copyToClipboard(text: String) {
         val stringSelection = StringSelection(text)
         val clipboard = Toolkit.getDefaultToolkit().systemClipboard
@@ -83,5 +84,9 @@ object Utils {
 
     fun playSound(soundName: String, pitch: Double) {
         mc.thePlayer.playSound(soundName, 1.0F, pitch.toFloat())
+    }
+
+    fun GuiChest.getInventory(): IInventory {
+        return ((this.inventorySlots) as ContainerChest).lowerChestInventory
     }
 }

@@ -75,6 +75,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
             }
         }
     }
+    private var updateBorderTimer = Timer()
 
     override fun onScreenClose() {
         super.onScreenClose()
@@ -103,6 +104,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
             setHeightAnimation(Animations.IN_OUT_EXP, 0.35f, MinConstraint(70.percent, 400.pixels), 0.2f)
         }
 
+        updateBorderTimer.cancel()
         animateBorder()
 
         if (showInspector) {
@@ -328,21 +330,16 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
     }
 
 
-    private var updateBorderTimer = Timer()
-    private var hueCounter = 0.0
     private fun animateBorder() {
         updateBorderTimer = Timer()
         updateBorderTimer.scheduleAtFixedRate(object : TimerTask() {
             override fun run() {
-
                 if (!CustomizationConfig.chromaConfigBorder) {
                     mainBorderColor.set(Color(0, 255, 255))
                     return
+                } else {
+                    mainBorderColor.set(mrfast.sbt.utils.GuiUtils.rainbowColor.get())
                 }
-                hueCounter += 5
-                val hue = hueCounter % 360
-                val outlineColor = Color.HSBtoRGB(hue.toFloat() / 360f, 1f, 1f)
-                mainBorderColor.set(Color(outlineColor))
             }
         }, 0, 100)
     }
@@ -494,255 +491,259 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
         featureList: ScrollComponent
     ) {
         val ignoredHeights = mutableListOf<UIComponent>()
-
-        if (feature.type == ConfigType.TOGGLE) {
-            val toggleSwitch = ToggleSwitchComponent(feature.value as Boolean).constrain {
-                x = 10.pixels(alignOpposite = true)
-            } childOf featureComponent
-            toggleSwitch.onMouseClick {
-                feature.field.set(SkyblockTweaks.config, toggleSwitch.activated)
+        try {
+            if (feature.type == ConfigType.TOGGLE) {
+                val toggleSwitch = ToggleSwitchComponent(feature.value as Boolean).constrain {
+                    x = 10.pixels(alignOpposite = true)
+                } childOf featureComponent
+                toggleSwitch.onMouseClick {
+                    feature.field.set(SkyblockTweaks.config, toggleSwitch.activated)
+                }
+                ignoredHeights.add(toggleSwitch)
             }
-            ignoredHeights.add(toggleSwitch)
-        }
-        if (feature.type == ConfigType.LABEL) {
-            val invisibleBox = UIBlock(Color(0, 0, 0, 0)).constrain {
-                width = 20.pixels
-                height = 18.pixels
-                y = CenterConstraint()
-                x = 10.pixels(alignOpposite = true)
-            } childOf featureComponent
-            ignoredHeights.add(invisibleBox)
-        }
-        if (feature.type == ConfigType.NUMBER) {
-            val numberInput = NumberInputComponent(feature.value as Int).constrain {
-                x = 10.pixels(alignOpposite = true)
-            } childOf featureComponent
-            numberInput.onKeyType { typedChar, keyCode ->
-                feature.field.set(SkyblockTweaks.config, numberInput.intValue)
+            if (feature.type == ConfigType.LABEL) {
+                val invisibleBox = UIBlock(Color(0, 0, 0, 0)).constrain {
+                    width = 20.pixels
+                    height = 18.pixels
+                    y = CenterConstraint()
+                    x = 10.pixels(alignOpposite = true)
+                } childOf featureComponent
+                ignoredHeights.add(invisibleBox)
             }
-            ignoredHeights.add(numberInput)
-        }
-        if (feature.type == ConfigType.TEXT) {
-            val textInput = TextInputComponent(feature.value as String).constrain {
-                x = 10.pixels(alignOpposite = true)
-            } childOf featureComponent
-
-            textInput.onKeyType { typedChar, keyCode ->
-                feature.field.set(SkyblockTweaks.config, textInput.text)
+            if (feature.type == ConfigType.NUMBER) {
+                val numberInput = NumberInputComponent(feature.value as Int).constrain {
+                    x = 10.pixels(alignOpposite = true)
+                } childOf featureComponent
+                numberInput.onKeyType { typedChar, keyCode ->
+                    feature.field.set(SkyblockTweaks.config, numberInput.intValue)
+                }
+                ignoredHeights.add(numberInput)
             }
-            ignoredHeights.add(textInput)
+            if (feature.type == ConfigType.TEXT) {
+                val textInput = TextInputComponent(feature.value as String).constrain {
+                    x = 10.pixels(alignOpposite = true)
+                } childOf featureComponent
 
-        }
-        if (feature.type == ConfigType.COLOR) {
-            val colorValue = feature.value as Color
-            val colorPicker = ColorComponent(colorValue, false).constrain {
-                x = 10.pixels(alignOpposite = true)
-            } childOf featureComponent
+                textInput.onKeyType { typedChar, keyCode ->
+                    feature.field.set(SkyblockTweaks.config, textInput.text)
+                }
+                ignoredHeights.add(textInput)
 
-            val colorDisplay = UIBlock(colorValue.constraint).constrain {
-                width = 16.pixels
-                height = 16.pixels
-                y = CenterConstraint()
-                x = SiblingConstraintFixed(3f, true)
-            } childOf featureComponent
+            }
+            if (feature.type == ConfigType.COLOR) {
+                val colorValue = feature.value as Color
+                val colorPicker = ColorComponent(colorValue, false).constrain {
+                    x = 10.pixels(alignOpposite = true)
+                } childOf featureComponent
 
-            val unhovered = Color(200, 200, 200)
-            val hovered = Color(255, 255, 255)
+                val colorDisplay = UIBlock(colorValue.constraint).constrain {
+                    width = 16.pixels
+                    height = 16.pixels
+                    y = CenterConstraint()
+                    x = SiblingConstraintFixed(3f, true)
+                } childOf featureComponent
 
-            val resetImg = UIImage.ofResource("/assets/skyblocktweaks/gui/reset.png").constrain {
-                width = 10.pixels
-                height = 11.pixels
-                y = CenterConstraint()
-                x = SiblingConstraintFixed(3f, true)
-                color = unhovered.constraint
-            } childOf featureComponent
+                val unhovered = Color(200, 200, 200)
+                val hovered = Color(255, 255, 255)
 
-            resetImg.onMouseEnterRunnable {
-                resetImg.animate {
-                    setColorAnimation(Animations.OUT_EXP, 0.5f, hovered.constraint)
+                val resetImg = UIImage.ofResource("/assets/skyblocktweaks/gui/reset.png").constrain {
+                    width = 10.pixels
+                    height = 11.pixels
+                    y = CenterConstraint()
+                    x = SiblingConstraintFixed(3f, true)
+                    color = unhovered.constraint
+                } childOf featureComponent
+
+                resetImg.onMouseEnterRunnable {
+                    resetImg.animate {
+                        setColorAnimation(Animations.OUT_EXP, 0.5f, hovered.constraint)
+                    }
+                }
+                resetImg.onMouseLeaveRunnable {
+                    resetImg.animate {
+                        setColorAnimation(Animations.OUT_EXP, 0.5f, unhovered.constraint)
+                    }
+                }
+
+                resetImg.onMouseClick {
+                    val defaultValue = ConfigManager.defaultMap[feature.field.name] ?: Color.GRAY
+
+                    feature.field.set(SkyblockTweaks.config, defaultValue)
+                    colorDisplay.setColor(defaultValue as Color)
+                }
+
+                colorPicker.onValueChange { value: Any? ->
+                    colorDisplay.setColor(value as Color)
+                    feature.field.set(SkyblockTweaks.config, value)
+                }
+
+                ignoredHeights.addAll(mutableListOf(colorDisplay, resetImg, featureComponent.children[1]))
+            }
+            if (feature.type == ConfigType.DROPDOWN) {
+                var selected = feature.dropdownOptions.indexOf(feature.value)
+                if (selected == -1) selected = 0
+                val selector = SelectorComponent(selected, feature.dropdownOptions.toList()).constrain {
+                    x = 10.pixels(alignOpposite = true)
+                } childOf featureComponent
+
+                selector.onValueChange { value: Any? ->
+                    feature.field.set(SkyblockTweaks.config, feature.dropdownOptions[value as Int])
+
+                    if (feature.field.name == "selectedTheme") {
+                        SkyblockTweaks.config.saveConfig()
+                        updateThemeColors()
+                        GuiUtil.open(ConfigGui())
+                    }
                 }
             }
-            resetImg.onMouseLeaveRunnable {
-                resetImg.animate {
-                    setColorAnimation(Animations.OUT_EXP, 0.5f, unhovered.constraint)
+            if (feature.type == ConfigType.KEYBIND) {
+                val button = UIImage.ofResource("/assets/skyblocktweaks/gui/button.png").constrain {
+                    width = 88.pixels
+                    height = 24.pixels
+                    y = CenterConstraint()
+                    x = 10.pixels(alignOpposite = true)
+                } childOf featureComponent
+                ignoredHeights.add(button)
+
+                val resetImg = UIImage.ofResource("/assets/skyblocktweaks/gui/reset.png").constrain {
+                    width = 10.pixels
+                    height = 11.pixels
+                    y = CenterConstraint()
+                    x = SiblingConstraintFixed(3f, true)
+                } childOf featureComponent
+                ignoredHeights.add(resetImg)
+
+                val keycode = feature.value as Int
+                var currentKey = "NONE"
+                if (keycode != -1) {
+                    currentKey = Keyboard.getKeyName(keycode)
                 }
-            }
+                val buttonText = UIText(currentKey).constrain {
+                    x = CenterConstraint()
+                    y = CenterConstraint()
+                } childOf button
 
-            resetImg.onMouseClick {
-                val defaultValue = ConfigManager.defaultMap[feature.field.name] ?: Color.GRAY
+                button.onMouseClickConsumer {
+                    if (listeningForKeybind) return@onMouseClickConsumer
+                    listeningForKeybind = true
+                    // Set listening style, similar to minecrafts keybind system
+                    buttonText.setText("§r> §e" + buttonText.getText() + "§r <")
 
-                feature.field.set(SkyblockTweaks.config, defaultValue)
-                colorDisplay.setColor(defaultValue as Color)
-            }
+                    Thread {
+                        var keyPressed = false
+                        while (!keyPressed && listeningForKeybind) {
+                            for (i in 0 until Keyboard.KEYBOARD_SIZE) {
+                                if (Keyboard.isKeyDown(i)) {
+                                    Utils.setTimeout({
+                                        listeningForKeybind = false
+                                    }, 100)
 
-            colorPicker.onValueChange { value: Any? ->
-                colorDisplay.setColor(value as Color)
-                feature.field.set(SkyblockTweaks.config, value)
-            }
+                                    val newKeyName = Keyboard.getKeyName(i)
 
-            ignoredHeights.addAll(mutableListOf(colorDisplay, resetImg, featureComponent.children[1]))
-        }
-        if (feature.type == ConfigType.DROPDOWN) {
-            var selected = feature.dropdownOptions.indexOf(feature.value)
-            if (selected == -1) selected = 0
-            val selector = SelectorComponent(selected, feature.dropdownOptions.toList()).constrain {
-                x = 10.pixels(alignOpposite = true)
-            } childOf featureComponent
+                                    // Reset if ESCAPE is pressed
+                                    if (i == 1) {
+                                        buttonText.setText("NONE")
+                                        listeningForKeybind = false
+                                        break
+                                    }
+                                    buttonText.setText(newKeyName)
+                                    keyPressed = true
+                                    feature.field.set(SkyblockTweaks.config, i)
 
-            selector.onValueChange { value: Any? ->
-                feature.field.set(SkyblockTweaks.config, feature.dropdownOptions[value as Int])
-
-                if (feature.field.name == "selectedTheme") {
-                    SkyblockTweaks.config.saveConfig()
-                    updateThemeColors()
-                    GuiUtil.open(ConfigGui())
-                }
-            }
-        }
-        if (feature.type == ConfigType.KEYBIND) {
-            val button = UIImage.ofResource("/assets/skyblocktweaks/gui/button.png").constrain {
-                width = 88.pixels
-                height = 24.pixels
-                y = CenterConstraint()
-                x = 10.pixels(alignOpposite = true)
-            } childOf featureComponent
-            ignoredHeights.add(button)
-
-            val resetImg = UIImage.ofResource("/assets/skyblocktweaks/gui/reset.png").constrain {
-                width = 10.pixels
-                height = 11.pixels
-                y = CenterConstraint()
-                x = SiblingConstraintFixed(3f, true)
-            } childOf featureComponent
-            ignoredHeights.add(resetImg)
-
-            val keycode = feature.value as Int
-            var currentKey = "NONE"
-            if (keycode != -1) {
-                currentKey = Keyboard.getKeyName(keycode)
-            }
-            val buttonText = UIText(currentKey).constrain {
-                x = CenterConstraint()
-                y = CenterConstraint()
-            } childOf button
-
-            button.onMouseClickConsumer {
-                if (listeningForKeybind) return@onMouseClickConsumer
-                listeningForKeybind = true
-                // Set listening style, similar to minecrafts keybind system
-                buttonText.setText("§r> §e" + buttonText.getText() + "§r <")
-
-                Thread {
-                    var keyPressed = false
-                    while (!keyPressed && listeningForKeybind) {
-                        for (i in 0 until Keyboard.KEYBOARD_SIZE) {
-                            if (Keyboard.isKeyDown(i)) {
-                                Utils.setTimeout({
-                                    listeningForKeybind = false
-                                }, 100)
-
-                                val newKeyName = Keyboard.getKeyName(i)
-
-                                // Reset if ESCAPE is pressed
-                                if (i == 1) {
-                                    buttonText.setText("NONE")
-                                    listeningForKeybind = false
                                     break
                                 }
-                                buttonText.setText(newKeyName)
-                                keyPressed = true
-                                feature.field.set(SkyblockTweaks.config, i)
+                            }
 
-                                break
+                            // Add a small delay to avoid excessive CPU usage
+                            try {
+                                Thread.sleep(100)
+                            } catch (e: InterruptedException) {
+                                e.printStackTrace()
                             }
                         }
+                    }.start()
+                }
 
-                        // Add a small delay to avoid excessive CPU usage
-                        try {
-                            Thread.sleep(100)
-                        } catch (e: InterruptedException) {
-                            e.printStackTrace()
+                resetImg.onMouseClick {
+                    val defaultValue = ConfigManager.defaultMap[feature.field.name]
+                    var newCurrentKey: String? = "NONE"
+                    if (defaultValue != -1) newCurrentKey = Keyboard.getKeyName(defaultValue as Int)
+
+                    listeningForKeybind = false
+                    buttonText.setText(newCurrentKey!!)
+                    feature.field.set(SkyblockTweaks.config, defaultValue)
+                }
+            }
+            if (feature.type == ConfigType.BUTTON) {
+                val button = UIBlock(Color.DARK_GRAY).constrain {
+                    width = 70.pixels
+                    height = 18.pixels
+                    y = CenterConstraint()
+                    x = 10.pixels(alignOpposite = true)
+                } childOf featureComponent effect OutlineEffect(CustomizationConfig.enabledSwitchColor, 1f)
+
+                button.onMouseEnterRunnable {
+                    button.animate {
+                        setColorAnimation(Animations.OUT_EXP, 0.5f, headerBackgroundColor.constraint)
+                    }
+                }
+                button.onMouseLeaveRunnable {
+                    button.animate {
+                        setColorAnimation(Animations.OUT_EXP, 0.5f, headerBackgroundColor.constraint)
+                    }
+                }
+
+                val buttonText = UIText(feature.placeholder).constrain {
+                    x = CenterConstraint()
+                    y = CenterConstraint()
+                } childOf button
+
+                button.onMouseClick {
+                    (feature.value as Runnable).run()
+                }
+                ignoredHeights.add(button)
+            }
+
+            if (feature.isParent) {
+                val unhovered = Color(200, 200, 200)
+                val hovered = Color(255, 255, 255)
+
+                val settingsGear = UIImage.ofResourceCached("/assets/skyblocktweaks/gui/gear.png").constrain {
+                    x = SiblingConstraintFixed(5f, true)
+                    y = CenterConstraint()
+                    height = 16.pixels
+                    width = 16.pixels
+                    color = unhovered.constraint
+                } childOf featureComponent
+
+                settingsGear.onMouseEnterRunnable {
+                    settingsGear.animate {
+                        setColorAnimation(Animations.OUT_EXP, 0.5f, hovered.constraint)
+                    }
+                }
+                settingsGear.onMouseLeaveRunnable {
+                    settingsGear.animate {
+                        setColorAnimation(Animations.OUT_EXP, 0.5f, unhovered.constraint)
+                    }
+                }
+                settingsGear.onMouseClick {
+                    feature.optionsHidden = !feature.optionsHidden
+
+                    if (!feature.optionsHidden) {
+                        feature.optionElements.values.forEach {
+                            it.unhide(true)
+                        }
+                    } else {
+                        feature.optionElements.values.forEach {
+                            it.hide(false)
                         }
                     }
-                }.start()
-            }
-
-            resetImg.onMouseClick {
-                val defaultValue = ConfigManager.defaultMap[feature.field.name]
-                var newCurrentKey: String? = "NONE"
-                if (defaultValue != -1) newCurrentKey = Keyboard.getKeyName(defaultValue as Int)
-
-                listeningForKeybind = false
-                buttonText.setText(newCurrentKey!!)
-                feature.field.set(SkyblockTweaks.config, defaultValue)
-            }
-        }
-        if (feature.type == ConfigType.BUTTON) {
-            val button = UIBlock(Color.DARK_GRAY).constrain {
-                width = 70.pixels
-                height = 18.pixels
-                y = CenterConstraint()
-                x = 10.pixels(alignOpposite = true)
-            } childOf featureComponent effect OutlineEffect(CustomizationConfig.enabledSwitchColor, 1f)
-
-            button.onMouseEnterRunnable {
-                button.animate {
-                    setColorAnimation(Animations.OUT_EXP, 0.5f, headerBackgroundColor.constraint)
                 }
+                ignoredHeights.add(settingsGear)
             }
-            button.onMouseLeaveRunnable {
-                button.animate {
-                    setColorAnimation(Animations.OUT_EXP, 0.5f, headerBackgroundColor.constraint)
-                }
-            }
-
-            val buttonText = UIText(feature.placeholder).constrain {
-                x = CenterConstraint()
-                y = CenterConstraint()
-            } childOf button
-
-            button.onMouseClick {
-                (feature.value as Runnable).run()
-            }
-            ignoredHeights.add(button)
-        }
-
-        if (feature.isParent) {
-            val unhovered = Color(200, 200, 200)
-            val hovered = Color(255, 255, 255)
-
-            val settingsGear = UIImage.ofResourceCached("/assets/skyblocktweaks/gui/gear.png").constrain {
-                x = SiblingConstraintFixed(5f, true)
-                y = CenterConstraint()
-                height = 16.pixels
-                width = 16.pixels
-                color = unhovered.constraint
-            } childOf featureComponent
-
-            settingsGear.onMouseEnterRunnable {
-                settingsGear.animate {
-                    setColorAnimation(Animations.OUT_EXP, 0.5f, hovered.constraint)
-                }
-            }
-            settingsGear.onMouseLeaveRunnable {
-                settingsGear.animate {
-                    setColorAnimation(Animations.OUT_EXP, 0.5f, unhovered.constraint)
-                }
-            }
-            settingsGear.onMouseClick {
-                feature.optionsHidden = !feature.optionsHidden
-
-                if (!feature.optionsHidden) {
-                    feature.optionElements.values.forEach {
-                        it.unhide(true)
-                    }
-                } else {
-                    feature.optionElements.values.forEach {
-                        it.hide(false)
-                    }
-                }
-            }
-            ignoredHeights.add(settingsGear)
+        } catch (e:Exception) {
+            println("FEATURE ${feature.name} had a problem! value: ${feature.value}")
+            e.printStackTrace()
         }
 
         // Stop the setting options from effecting total height

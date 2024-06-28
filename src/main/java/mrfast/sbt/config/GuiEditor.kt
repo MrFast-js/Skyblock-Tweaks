@@ -85,7 +85,7 @@ class GuiEditor : GuiScreen() {
             GlStateManager.scale(element.scale, element.scale, 1.0)
 
             GlStateManager.pushMatrix()
-            if(element.needsExample) {
+            if (element.needsExample) {
                 element.drawExample()
             } else {
                 element.draw()
@@ -160,7 +160,7 @@ class GuiEditor : GuiScreen() {
         if (wheel != 0) {
             selectedElement?.let {
                 it.scale += 0.5 * if (wheel > 0) 1 else -1
-                it.scale = Utils.clamp(0.5, it.scale, 4.0)
+                it.scale = it.scale.coerceIn(0.5, 4.0)
             }
         }
     }
