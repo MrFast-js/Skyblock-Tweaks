@@ -598,8 +598,8 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
             }
             if (feature.type == ConfigType.KEYBIND) {
                 val button = UIImage.ofResource("/assets/skyblocktweaks/gui/button.png").constrain {
-                    width = 88.pixels
-                    height = 24.pixels
+                    width = 66.pixels
+                    height = 20.pixels
                     y = CenterConstraint()
                     x = 10.pixels(alignOpposite = true)
                 } childOf featureComponent
