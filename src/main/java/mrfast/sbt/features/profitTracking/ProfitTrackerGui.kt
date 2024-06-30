@@ -420,15 +420,17 @@ class ProfitTrackerGui : WindowScreen(ElementaVersion.V2) {
                 (152 + itemButtonHeight) / 213F,
                 GL11.GL_NEAREST
             )
+
             GuiUtils.renderItemStackOnScreen(item, guiLeft + 18 + x + 1, guiTop + 49 + y + 1, 16f, 16f)
 
             if (mouseX > guiLeft + 18 + x && mouseX < guiLeft + 18 + x + itemButtonWidth &&
                 mouseY > guiTop + 49 + y && mouseY < guiTop + 49 + y + itemButtonHeight
             ) {
                 if (item != null) {
-                    GlStateManager.pushMatrix()
-                    GlStateManager.color(1f, 1f, 1f, 0.4f)
 
+                    GlStateManager.pushMatrix()
+                    GlStateManager.pushAttrib()
+                    GlStateManager.translate(0f, 0f, 20f)
                     GuiUtils.renderItemStackOnScreen(
                         ItemStack(Item.getItemFromBlock(Blocks.barrier)),
                         guiLeft + 18 + x + 1,
@@ -436,13 +438,18 @@ class ProfitTrackerGui : WindowScreen(ElementaVersion.V2) {
                         16f,
                         16f
                     )
-                    GlStateManager.color(1f, 1f, 1f, 1f)
+                    GlStateManager.translate(0f, 0f, -20f)
+                    GlStateManager.popAttrib()
+                    GlStateManager.popMatrix()
 
+                    GlStateManager.pushMatrix()
                     var hoverText = item.displayName
                     if (item.displayName.clean() == "Enchanted Book") {
                         hoverText = item.getLore()[0]
                     }
 
+                    GlStateManager.pushMatrix()
+                    GlStateManager.pushAttrib()
                     net.minecraftforge.fml.client.config.GuiUtils.drawHoveringText(
                         listOf(hoverText),
                         mouseX.toInt(),
@@ -452,6 +459,10 @@ class ProfitTrackerGui : WindowScreen(ElementaVersion.V2) {
                         -1,
                         Utils.mc.fontRendererObj
                     )
+                    GlStateManager.popAttrib()
+                    GlStateManager.popMatrix()
+
+
                     GlStateManager.popMatrix()
                 }
             }
