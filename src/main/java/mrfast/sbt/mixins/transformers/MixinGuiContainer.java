@@ -49,7 +49,7 @@ public class MixinGuiContainer {
     @Inject(method = "drawScreen", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/inventory/GuiContainer;drawGuiContainerBackgroundLayer(FII)V", ordinal = 0, shift = At.Shift.AFTER))
     private void onGuiContainerDrawn(int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
         GlStateManager.translate(guiLeft, guiTop, 0);
-        MinecraftForge.EVENT_BUS.post(new GuiContainerBackgroundDrawnEvent((GuiContainer) Minecraft.getMinecraft().currentScreen, mouseX, mouseY));
+        MinecraftForge.EVENT_BUS.post(new GuiContainerBackgroundDrawnEvent((GuiContainer) Minecraft.getMinecraft().currentScreen, mouseX, mouseY, guiLeft, guiTop));
         GlStateManager.translate(-guiLeft, -guiTop, 0);
     }
 }
