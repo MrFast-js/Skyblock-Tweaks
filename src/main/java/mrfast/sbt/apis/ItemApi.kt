@@ -7,27 +7,35 @@ import mrfast.sbt.utils.Utils.clean
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.JsonToNBT
+import java.util.*
 
 object ItemApi {
     private var skyblockItems = JsonObject()
     private var skyblockItemPrices = JsonObject()
-    var skyblockItemsLoaded = false
+    private var skyblockItemsLoaded = false
 
     init {
         println("Loading Skyblock Items from HySky API")
-        loadSkyblockItems()
+        loadSkyblockItems(true)
+
+        // Update Item Prices every ~15 Minutes
+        Timer().scheduleAtFixedRate(object : TimerTask() {
+            override fun run() {
+                loadSkyblockItems(false)
+            }
+        }, 0, 1000 * 60 * 15)
     }
 
-    private fun loadSkyblockItems() {
+    private fun loadSkyblockItems(logging: Boolean) {
         Thread {
             val items = NetworkUtils.apiRequestAndParse("https://hysky.de/api/items")
             items.remove("timestamp")
             skyblockItems = items
             if (items.entrySet().size > 0) {
                 skyblockItemsLoaded = true
-                println("Loaded Skyblock Items from HySky API!!")
+                if(logging) println("Loaded Skyblock Items from HySky API!!")
 
-                println("Loading Lowest Bin Prices from Moulberry NEU API")
+                if(logging) println("Loading Lowest Bin Prices from Moulberry NEU API")
                 val lowestBins = NetworkUtils.apiRequestAndParse("https://moulberry.codes/lowestbin.json")
                 if (lowestBins.entrySet().size > 0) {
                     lowestBins.entrySet().forEach {
@@ -37,9 +45,9 @@ object ItemApi {
                         skyblockItemPrices.get(it.key).asJsonObject.addProperty("lowestBin", it.value.asLong)
                         skyblockItemPrices.get(it.key).asJsonObject.addProperty("basePrice", it.value.asLong)
                     }
-                    println("Loaded Lowest Bin Prices from Moulberry NEU API!!")
+                    if(logging) println("Loaded Lowest Bin Prices from Moulberry NEU API!!")
 
-                    println("Loading Average Bin Prices from Moulberry NEU API")
+                    if(logging) println("Loading Average Bin Prices from Moulberry NEU API")
                     val averageBins =
                         NetworkUtils.apiRequestAndParse("https://moulberry.codes/auction_averages/3day.json")
                     if (averageBins.entrySet().size > 0) {
@@ -86,11 +94,11 @@ object ItemApi {
                             }
                         }
 
-                        println("Loaded Average Bin Prices from Moulberry NEU API!!")
+                        if(logging) println("Loaded Average Bin Prices from Moulberry NEU API!!")
                     }
                 }
 
-                println("Loading bazaar prices from hypixel api")
+                if(logging) println("Loading bazaar prices from hypixel api")
                 val bzPrices = NetworkUtils.apiRequestAndParse(
                     "https://api.hypixel.net/skyblock/bazaar",
                     caching = true,
@@ -128,6 +136,7 @@ object ItemApi {
     fun createItemStack(itemId: String): ItemStack? {
         if (itemStackCache.contains(itemId)) return itemStackCache[itemId]
 
+        // Use coin talisman as texture for skyblock_coin
         if (itemId == "SKYBLOCK_COIN") {
             val itemJson = skyblockItems["COIN_TALISMAN"]?.asJsonObject ?: return null
             var nbtString = itemJson.get("nbttag")?.asString ?: return null
