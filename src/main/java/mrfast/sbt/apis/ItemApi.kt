@@ -114,6 +114,15 @@ object ItemApi {
                         val productJson = JsonObject()
                         productJson.addProperty("sellPrice", sellPrice)
                         productJson.addProperty("buyPrice", buyPrice)
+
+                        val buySummary = product.value.asJsonObject.getAsJsonArray("buy_summary")
+                        val avgBuyPricePerUnit = buySummary.map { it.asJsonObject.get("pricePerUnit").asDouble }.average()
+                        productJson.addProperty("avg_buyPricePerUnit", avgBuyPricePerUnit)
+
+                        val sellSummary = product.value.asJsonObject.getAsJsonArray("sell_summary")
+                        val avgSellPricePerUnit = sellSummary.map { it.asJsonObject.get("pricePerUnit").asDouble }.average()
+                        productJson.addProperty("avg_sellPricePerUnit", avgSellPricePerUnit)
+
                         productJson.addProperty("basePrice", sellPrice)
 
                         skyblockItemPrices.add(product.key, productJson)
