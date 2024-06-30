@@ -381,7 +381,7 @@ object AuctionMenuOverlays {
         }
 
         override fun isActive(event: Event): Boolean {
-            if (event !is SignDrawnEvent) return false
+            if (!AuctionHouseConfig.auctionSellingOverlay || event !is SignDrawnEvent) return false
             if (event.sign.signText[3].unformattedText == "starting bid") {
                 return true
             }

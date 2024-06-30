@@ -328,4 +328,13 @@ object AuctionHouseConfig : Config() {
         subcategory = "Overlays"
     )
     var auctionViewOverlay = true
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Auction Selling Price Overlay",
+        description = "Shows useful information when selling an item including suggested price to sell at.",
+        category = "§1§rAuction House",
+        subcategory = "Overlays"
+    )
+    var auctionSellingOverlay = true
 }
