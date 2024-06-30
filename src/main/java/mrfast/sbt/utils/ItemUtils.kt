@@ -146,4 +146,29 @@ object ItemUtils {
         }
         return 0.0
     }
+
+    fun getSuggestListingPrice(itemStack: ItemStack): Int? {
+        val itemID = itemStack.getSkyblockId()!!
+        val pricingData = ItemApi.getItemPriceInfo(itemID) ?: return null
+
+        val lbin = if (pricingData.has("lowestBin")) pricingData.get("lowestBin").asDouble else null
+        val abin = if (pricingData.has("price_avg")) pricingData.get("price_avg").asDouble else null
+
+        val suggestedListingPrice = when {
+            lbin != null && abin != null -> Math.round((lbin * 0.6 + abin * 0.4) * 0.99).toInt()
+            lbin != null -> Math.round(lbin - 1000).toInt()
+            abin != null -> Math.round(abin - 1000).toInt()
+            else -> 0
+        }
+
+        var bonusPricing = 0.0
+        val extraAttributes = itemStack.getExtraAttributes()!!
+
+        if (extraAttributes.hasKey("rarity_upgrades") && !extraAttributes.hasKey("item_tier")) {
+            val recombInfo = ItemApi.getItemPriceInfo("RECOMBOBULATOR_3000")
+            bonusPricing += recombInfo?.get("sellPrice")!!.asInt * 0.6
+        }
+
+        return (suggestedListingPrice + bonusPricing).toInt()
+    }
 }
