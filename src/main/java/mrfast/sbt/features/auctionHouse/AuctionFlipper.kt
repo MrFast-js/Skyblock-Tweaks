@@ -1,6 +1,7 @@
 package mrfast.sbt.features.auctionHouse
 
 import com.google.gson.JsonObject
+import com.mojang.realmsclient.gui.ChatFormatting
 import mrfast.sbt.apis.ItemApi
 import mrfast.sbt.config.categories.AuctionHouseConfig
 import mrfast.sbt.customevents.SocketMessageEvent
@@ -18,6 +19,9 @@ import net.minecraft.item.ItemStack
 import net.minecraft.util.ChatComponentText
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.lwjgl.input.Keyboard
+import org.lwjgl.input.Mouse
+
 
 /*
 This is an auction flipper that scans the Hypixel Auction API based off of current lowest bins, and 3 day price averages.
@@ -27,6 +31,8 @@ object AuctionFlipper {
     var auctionsNotified = 0
 
     private var sentStartingText = false
+    private var sentBestAuction = false
+    private var lastBestAuctionKeybindState = false
 
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {
@@ -43,6 +49,28 @@ object AuctionFlipper {
                     ChatUtils.sendClientMessage("", false)
                 }, 500)
             }
+
+            try {
+                val currentKeyState = Mouse.isButtonDown(AuctionHouseConfig.autoAuctionFlipOpenKeybind!!) || Keyboard.isKeyDown(
+                    AuctionHouseConfig.autoAuctionFlipOpenKeybind!!
+                )
+                if (Utils.mc.currentScreen == null) {
+                    if (currentKeyState) {
+                        if (sentAuctionFlips.isNotEmpty() && !sentBestAuction) {
+                            sentBestAuction = true
+                            val bestAuction = sentAuctionFlips[0]
+                            ChatUtils.sendPlayerMessage("/viewauction " + bestAuction.auctionUUID)
+                            sentAuctionFlips.remove(bestAuction)
+
+                            Utils.setTimeout({ sentBestAuction = false }, 1000)
+                        }
+                    }
+                    if (lastBestAuctionKeybindState != currentKeyState && currentKeyState) {
+                        ChatUtils.sendClientMessage(ChatFormatting.RED.toString() + "Best flip not found! Keep holding to open next.")
+                    }
+                    lastBestAuctionKeybindState = currentKeyState
+                }
+            } catch (_: Exception) { }
         } else {
             sentStartingText = false;
         }
@@ -84,7 +112,7 @@ object AuctionFlipper {
             val profitPercent = (((sellFor!!.toFloat() / price.toFloat()) - 1) * 100).toInt()
 
             val notification =
-                "§eSB§9T§6 >> $auctionType ${itemStack?.displayName} §a${price.abbreviateNumber()}§3➜§a${(price + profit!!).abbreviateNumber()} §2(+${profit!!.abbreviateNumber()} §4$profitPercent%§2) §e${timeRemaining}"
+                "§eSB§9T§6 >> $auctionType ${itemStack?.displayName} §a${price.abbreviateNumber()}§3➜§a${(sellFor!!).abbreviateNumber()} §2(+${profit!!.abbreviateNumber()} §4$profitPercent%§2) §e${timeRemaining}"
 
             val chatComponent = ChatComponentText(notification)
             chatComponent.chatStyle.chatClickEvent =
@@ -92,13 +120,20 @@ object AuctionFlipper {
             chatComponent.chatStyle.chatHoverEvent =
                 HoverEvent(HoverEvent.Action.SHOW_TEXT, ChatComponentText("§a/viewauction $auctionUUID"))
 
-            if (AuctionHouseConfig.AF_notificationSound) {
+            if (AuctionHouseConfig.AF_notificationSound && !cooldown) {
+                cooldown = true
                 Utils.playSound("note.pling", 0.5)
+                // Use cooldown to prevent sounds from multiplying and breaking your headphones
+                Utils.setTimeout({
+                    cooldown = false
+                }, 150)
             }
             ChatUtils.sendClientMessage(chatComponent, prefix = false)
             auctionsNotified++
         }
     }
+
+    var cooldown = false
 
     // Wait for notification from webserver socket that auction house api updated
     @SubscribeEvent
@@ -118,6 +153,7 @@ object AuctionFlipper {
         Thread {
             auctionsNotified = 0
             checkedAuctions = 0
+            sentAuctionFlips.clear()
 
             ChatUtils.sendClientMessage("", false)
             ChatUtils.sendClientMessage("§eSB§9T§6 >> §7Starting Auction House Scan..")
@@ -191,19 +227,23 @@ object AuctionFlipper {
     // Calculate how much profit an auction will yeild
     // Will find a 'base price' for the item, found by using average bin ideally, with the lowest bin as a backup
     private fun calcAuctionProfit(auctionFlip: AuctionFlip, pricingData: JsonObject) {
-        var baseItemPrice = pricingData.get("basePrice").asLong
+        val suggestedListingPrice = ItemUtils.getSuggestListingPrice(auctionFlip.itemStack!!)!!
 
-        if (auctionFlip.price < baseItemPrice) {
-            auctionFlip.profit = baseItemPrice - auctionFlip.price
+        if (auctionFlip.price < suggestedListingPrice) {
+            // Already take out 8% accounting for your upcoming bid
+            val nextBidPrice = (auctionFlip.price * 1.08).toLong()
+            auctionFlip.profit = suggestedListingPrice - nextBidPrice
             if (pricingData.has("sales_avg")) {
                 auctionFlip.volume = pricingData.get("sales_avg").asInt
             }
-            /*@TODO: Find best price to sell item at*/
-            auctionFlip.sellFor = baseItemPrice
+
+            auctionFlip.sellFor = suggestedListingPrice.toLong()
 
             filterOutAuction(auctionFlip)
         }
     }
+
+    val sentAuctionFlips = mutableListOf<AuctionFlip>()
 
     // Filters for various things
     // Example options: No Runes, No Pets, No Furniture, no pet skins, no armor skins
@@ -233,9 +273,8 @@ object AuctionFlipper {
             return
         }
         // Filter out Pet Skins & Armor Skins
-        if (AuctionHouseConfig.AF_skinFilter && (auctionFlip.itemID?.contains("SKIN") == true || auctionFlip.itemStack?.displayName?.contains(
-                "skin"
-            ) == true)
+        if (AuctionHouseConfig.AF_skinFilter && (auctionFlip.itemID?.contains("SKIN") == true || auctionFlip.itemStack!!.displayName.clean()
+                .contains("Skin"))
         ) {
             return
         }
@@ -285,6 +324,9 @@ object AuctionFlipper {
         if (auctionsNotified > AuctionHouseConfig.AF_maxNotifications) {
             return
         }
+
+        sentAuctionFlips.add(auctionFlip)
+        sentAuctionFlips.sortBy { auctionFlip.profit }
 
         auctionFlip.sendToChat()
     }

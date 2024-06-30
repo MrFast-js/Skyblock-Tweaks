@@ -4,6 +4,7 @@ import mrfast.sbt.config.Config
 import mrfast.sbt.config.ConfigProperty
 import mrfast.sbt.config.ConfigType
 import org.lwjgl.input.Keyboard
+import java.awt.Color
 
 
 object AuctionHouseConfig : Config() {
@@ -72,6 +73,16 @@ object AuctionHouseConfig : Config() {
 //        parentName = "Highlight Auctions Status"
 //    )
 //    var lostAuctionColor = Color(0xF48361)
+
+//    @ConfigProperty(
+//        type = ConfigType.LABEL,
+//        name = "Item Value Calculation",
+//        description = "Choose between full slot highlight and border highlight",
+//        category = "§1§rAuction House",
+//        subcategory = "Item Value Calculation",
+//        isParent = true
+//    )
+//    var itemValueCalculations = true
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
@@ -201,14 +212,15 @@ object AuctionHouseConfig : Config() {
 //    )
 //    var autoAuctionFlipOpen = false
 
-//    @ConfigProperty(
-//        type = ConfigType.KEYBIND,
-//        name = "Open Best Flip Keybind",
-//        description = "Opens up the bid menu for the item with the highest profit.",
-//        category = "§1§rAuction House",
-//        subcategory = "Auction Flipper"
-//    )
-//    var autoAuctionFlipOpenKeybind = Keyboard.KEY_F
+    @ConfigProperty(
+        type = ConfigType.KEYBIND,
+        name = "Open Best Flip Keybind",
+        description = "Opens up the bid menu for the item with the highest profit.",
+        category = "§1§rAuction House",
+        subcategory = "Auction Flipper",
+        parentName = "Auction Flipper"
+    )
+    var autoAuctionFlipOpenKeybind: Int? = Keyboard.KEY_F
 
 //    @ConfigProperty(
 //        type = ConfigType.TOGGLE,
@@ -279,12 +291,41 @@ object AuctionHouseConfig : Config() {
     )
     var AF_runeFilter = false
 
-//    @ConfigProperty(
-//        type = ConfigType.TEXT,
-//        name = "Blacklist",
-//        description = "Filters out any blacklisted items. Seperate with §a;§r.§aExample: 'bonemerang;stick'",
-//        category = "§1§rAuction House",
-//        subcategory = "§1§rAuction Flipper Filter"
-//    )
-//    var autoAuctionBlacklist = "bonemerang;soldier;jungle pick;"
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Highlight Losing Auctions",
+        description = "Highlights auctions that you dont have the top bid on.",
+        category = "§1§rAuction House",
+        subcategory = "Overlays",
+        isParent = true
+    )
+    var highlightLosingAuctions = true
+
+    @ConfigProperty(
+        type = ConfigType.COLOR,
+        name = "Color",
+        description = "",
+        category = "§1§rAuction House",
+        subcategory = "Overlays",
+        parentName = "Highlight Losing Auctions"
+    )
+    var highlightLosingAuctionsColor = Color.RED
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Bidding Overlay",
+        description = "Shows useful information when looking at all your bids.",
+        category = "§1§rAuction House",
+        subcategory = "Overlays"
+    )
+    var biddingOverlay = true
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Auction View Overlay",
+        description = "Shows useful information when viewing a specific auction such as potential profit from flipping it.",
+        category = "§1§rAuction House",
+        subcategory = "Overlays"
+    )
+    var auctionViewOverlay = true
 }

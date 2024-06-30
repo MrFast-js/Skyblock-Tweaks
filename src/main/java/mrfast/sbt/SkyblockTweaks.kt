@@ -4,17 +4,13 @@ import mrfast.sbt.apis.ItemAbilities
 import mrfast.sbt.apis.ItemApi
 import mrfast.sbt.apis.PlayerStats
 import mrfast.sbt.apis.SkyblockMobDetector
-import mrfast.sbt.commands.ConfigCommand
-import mrfast.sbt.commands.DebugCommand
-import mrfast.sbt.commands.ProfitTrackerCommand
-import mrfast.sbt.commands.PathCommand
+import mrfast.sbt.commands.*
 import mrfast.sbt.config.Config
 import mrfast.sbt.config.ConfigGui
 import mrfast.sbt.config.GuiManager
 import mrfast.sbt.customevents.WorldLoadEvent
-import mrfast.sbt.features.auctionHouse.AuctionFlipper
-import mrfast.sbt.features.dungeons.FireFreezeHelper
-import mrfast.sbt.features.dungeons.Floor2SpawnTimer
+import mrfast.sbt.features.auctionHouse.*
+import mrfast.sbt.features.dungeons.*
 import mrfast.sbt.features.general.*
 import mrfast.sbt.features.profitTracking.ProfitTracker
 import mrfast.sbt.features.mining.PathTracer
@@ -75,6 +71,7 @@ class SkyblockTweaks {
         MinecraftForge.EVENT_BUS.register(PurseManager)
         MinecraftForge.EVENT_BUS.register(InventoryItemManager)
         MinecraftForge.EVENT_BUS.register(SackManager)
+        MinecraftForge.EVENT_BUS.register(OverlayManager)
 
         // Stat Displays
         MinecraftForge.EVENT_BUS.register(HealthNumber)
@@ -89,6 +86,7 @@ class SkyblockTweaks {
 
         MinecraftForge.EVENT_BUS.register(Floor2SpawnTimer)
         MinecraftForge.EVENT_BUS.register(FireFreezeHelper)
+        MinecraftForge.EVENT_BUS.register(AuctionMenuOverlays)
 
         MinecraftForge.EVENT_BUS.register(PartyFinderJoinInfo) // Party Finder
         MinecraftForge.EVENT_BUS.register(NewYearsCakeHelper) // Cake bag sorting helper
