@@ -162,7 +162,6 @@ object AuctionFlipper {
 
         for (page in 0..maxPagesToScan) {
             Thread {
-
                 val auctionHousePageJson = NetworkUtils.apiRequestAndParse(
                     "https://api.hypixel.net/skyblock/auctions?page=${page}",
                     useProxy = false,
@@ -171,15 +170,15 @@ object AuctionFlipper {
                 if (!auctionHousePageJson.get("success").asBoolean) return@Thread
 
                 handleAuctionPage(auctionHousePageJson)
-
-                if (page == maxPagesToScan - 1) {
-                    Utils.setTimeout({
-                        ChatUtils.sendClientMessage("", false)
-                        ChatUtils.sendClientMessage("§eSB§9T§6 >> §7Scanned §9${checkedAuctions.formatNumber()}§7 auctions! §3${auctionsNotified.formatNumber()}§7 matched your filter.")
-                        ChatUtils.sendClientMessage("", false)
-                    }, 1000)
-                }
             }.start()
+
+            if (page == maxPagesToScan - 1) {
+                Utils.setTimeout({
+                    ChatUtils.sendClientMessage("", false)
+                    ChatUtils.sendClientMessage("§eSB§9T§6 >> §7Scanned §9${checkedAuctions.formatNumber()}§7 auctions! §3${auctionsNotified.formatNumber()}§7 matched your filter.")
+                    ChatUtils.sendClientMessage("", false)
+                }, 5000)
+            }
         }
     }
 
@@ -284,13 +283,13 @@ object AuctionFlipper {
             return
         }
         // Block BIN auctions if enabled
-        if (!AuctionHouseConfig.AF_binFlips && auctionFlip.bin == true) {
+        if (/*!AuctionHouseConfig.AF_binFlips &&*/ auctionFlip.bin == true) {
             return
         }
-        // Block BIN auctions if enabled
-        if (!AuctionHouseConfig.AF_AucFlips && auctionFlip.bin == false) {
-            return
-        }
+        // Block auctions if enabled
+//        if (!AuctionHouseConfig.AF_AucFlips && auctionFlip.bin == false) {
+//            return
+//        }
 
         /*
         Coin filters: Purse limit, price, profit, percentage
