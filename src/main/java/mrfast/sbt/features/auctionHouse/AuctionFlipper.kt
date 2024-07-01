@@ -2,6 +2,10 @@ package mrfast.sbt.features.auctionHouse
 
 import com.google.gson.JsonObject
 import com.mojang.realmsclient.gui.ChatFormatting
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import mrfast.sbt.apis.ItemApi
 import mrfast.sbt.config.categories.AuctionHouseConfig
 import mrfast.sbt.customevents.SocketMessageEvent
@@ -160,36 +164,33 @@ object AuctionFlipper {
         ChatUtils.sendClientMessage("§eSB§9T§6 >> §7Starting Auction House Scan..")
         ChatUtils.sendClientMessage("", false)
 
-        for (page in 0..maxPagesToScan) {
-            Thread {
-                val auctionHousePageJson = NetworkUtils.apiRequestAndParse(
-                    "https://api.hypixel.net/skyblock/auctions?page=${page}",
-                    useProxy = false,
-                    caching = false
-                )
-                if (!auctionHousePageJson.get("success").asBoolean) return@Thread
-
-                handleAuctionPage(auctionHousePageJson)
-            }.start()
-
-            if (page == maxPagesToScan - 1) {
-                Utils.setTimeout({
-                    ChatUtils.sendClientMessage("", false)
-                    ChatUtils.sendClientMessage("§eSB§9T§6 >> §7Scanned §9${checkedAuctions.formatNumber()}§7 auctions! §3${auctionsNotified.formatNumber()}§7 matched your filter.")
-                    ChatUtils.sendClientMessage("", false)
-                }, 5000)
+        runBlocking {
+            for (page in 0..maxPagesToScan) {
+                launch(Dispatchers.IO) {
+                    val auctionHousePageJson = NetworkUtils.apiRequestAndParse(
+                        "https://api.hypixel.net/skyblock/auctions?page=${page}",
+                        useProxy = false,
+                        caching = false
+                    )
+                    if (auctionHousePageJson.get("success").asBoolean) {
+                        handleAuctionPage(auctionHousePageJson)
+                    }
+                }
             }
+
+            delay(5000)
+            ChatUtils.sendClientMessage("", false)
+            ChatUtils.sendClientMessage("§eSB§9T§6 >> §7Scanned §9${checkedAuctions.formatNumber()}§7 auctions! §3${auctionsNotified.formatNumber()}§7 matched your filter.")
+            ChatUtils.sendClientMessage("", false)
         }
     }
 
     //
     private fun handleAuctionPage(page: JsonObject) {
         val auctions = page.getAsJsonArray("auctions")
-        Thread {
-            for (auction in auctions) {
-                handleAuction(auction as JsonObject)
-            }
-        }.start()
+        for (auction in auctions) {
+            handleAuction(auction as JsonObject)
+        }
     }
 
     var checkedAuctions = 0
@@ -263,6 +264,12 @@ object AuctionFlipper {
         // Filter out furniture items
         if (AuctionHouseConfig.AF_furnitureFilter && auctionFlip.itemStack?.getLore().toString()
                 .contains("Furniture")
+        ) {
+            return
+        }
+        // Filter out decoration items
+        if (AuctionHouseConfig.AF_furnitureFilter && auctionFlip.itemStack?.getLore().toString()
+                .contains("Decoration")
         ) {
             return
         }

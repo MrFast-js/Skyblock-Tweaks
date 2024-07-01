@@ -266,18 +266,25 @@ object AuctionMenuOverlays {
                 Element(
                     5f,
                     5f,
+                    "§rItem Price: §d${lastViewedAuction!!.price.formatNumber()}",
+                    null,
+                    null
+                ),
+                Element(
+                    5f,
+                    18f,
                     "§rLowest BIN: §6${if (pricingData.has("lowestBin")) pricingData.get("lowestBin").asInt.formatNumber() else "§cUnknown"}",
                     null,
                     null
                 ), Element(
                     5f,
-                    15f,
+                    28f,
                     "§rAverage BIN: §3${if (pricingData.has("price_avg")) pricingData.get("price_avg").asInt.formatNumber() else "§cUnknown"}",
                     null,
                     null
                 ), Element(
                     5f,
-                    30f,
+                    43f,
                     "§rResell Profit: ${coloredSymbol}${resellProfit.formatNumber()}",
                     listOf(
                         "§e§lFlip Potential",
@@ -344,7 +351,7 @@ object AuctionMenuOverlays {
                 ), Element(
                     7f,
                     43f,
-                    "§rSug. Price: §a${if (sellingAuction?.suggestedListingPrice != 0) sellingAuction?.suggestedListingPrice?.formatNumber() else "§cUnknown"}",
+                    "§rSug Price: §a${if (sellingAuction?.suggestedListingPrice != 0) sellingAuction?.suggestedListingPrice?.formatNumber() else "§cUnknown"}",
                     listOf(
                         "§e§lSuggested Listing Price",
                         "§7Click to set §6${sellingAuction?.suggestedListingPrice?.formatNumber()} §7as price",

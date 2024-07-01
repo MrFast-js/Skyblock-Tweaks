@@ -51,13 +51,15 @@ object AuctionHouseConfig : Config() {
 //    var AF_AucFlips = true
 
 //    @ConfigProperty(
-//        type = ConfigType.TOGGLE,
-//        name = "Use Item Price Estimation",
-//        description = "Adds value to the auctions based off of enchants, stars, drill parts, hot potato books, etc. §cThis may over-value items!",
+//        type = ConfigType.DROPDOWN,
+//        name = "Item Value Method",
+//        description = "Choose how the flipper values its found items, this can be a combination of custom settings or a preset",
 //        category = "§1§rAuction House",
-//        subcategory = "Auction Flipper"
+//        subcategory = "Auction Flipper",
+//        dropdownOptions = ["Lowest BIN", "Average BIN", "Smart"],
+//        parentName = "Auction Flipper"
 //    )
-//    var AF_priceEstimation = false
+//    var itemValueMethod = "Smart"
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
@@ -170,7 +172,7 @@ object AuctionHouseConfig : Config() {
     @ConfigProperty(
         type = ConfigType.TOGGLE,
         name = "Filter Out Pets",
-        description = "Filters out pets from Auto Flipper",
+        description = "Filters out pets from Auction Flipper",
         category = "§1§rAuction House",
         subcategory = "Auction Flipper",
         parentName = "Auction Flipper Filters"
@@ -180,7 +182,7 @@ object AuctionHouseConfig : Config() {
     @ConfigProperty(
         type = ConfigType.TOGGLE,
         name = "Filter Out Skins",
-        description = "Filters out minion skins, armor skins, and pet skins from Auto Flipper",
+        description = "Filters out minion skins, armor skins, and pet skins from Auction Flipper",
         category = "§1§rAuction House",
         subcategory = "Auction Flipper",
         parentName = "Auction Flipper Filters"
@@ -190,17 +192,27 @@ object AuctionHouseConfig : Config() {
     @ConfigProperty(
         type = ConfigType.TOGGLE,
         name = "Filter Out Furniture",
-        description = "Filters out furniture from Auto Flipper",
+        description = "Filters out furniture from Auction Flipper",
         category = "§1§rAuction House",
         subcategory = "Auction Flipper",
         parentName = "Auction Flipper Filters"
     )
-    var AF_furnitureFilter = false
+    var AF_furnitureFilter = true
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Filter Out Decorations",
+        description = "Filters out decorations from Auction Flipper",
+        category = "§1§rAuction House",
+        subcategory = "Auction Flipper",
+        parentName = "Auction Flipper Filters"
+    )
+    var AF_decorationFilter = true
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
         name = "Filter Out Dyes",
-        description = "Filters out dyes from Auto Flipper",
+        description = "Filters out dyes from Auction Flipper",
         category = "§1§rAuction House",
         subcategory = "Auction Flipper",
         parentName = "Auction Flipper Filters"
@@ -210,12 +222,12 @@ object AuctionHouseConfig : Config() {
     @ConfigProperty(
         type = ConfigType.TOGGLE,
         name = "Filter Out Runes",
-        description = "Filters out runes from Auto Flipper",
+        description = "Filters out runes from Auction Flipper",
         category = "§1§rAuction House",
         subcategory = "Auction Flipper",
         parentName = "Auction Flipper Filters"
     )
-    var AF_runeFilter = false
+    var AF_runeFilter = true
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
