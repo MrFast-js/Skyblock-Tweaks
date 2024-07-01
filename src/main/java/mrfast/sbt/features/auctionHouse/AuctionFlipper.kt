@@ -51,9 +51,10 @@ object AuctionFlipper {
             }
 
             try {
-                val currentKeyState = Mouse.isButtonDown(AuctionHouseConfig.autoAuctionFlipOpenKeybind!!) || Keyboard.isKeyDown(
-                    AuctionHouseConfig.autoAuctionFlipOpenKeybind!!
-                )
+                val currentKeyState =
+                    Mouse.isButtonDown(AuctionHouseConfig.autoAuctionFlipOpenKeybind!!) || Keyboard.isKeyDown(
+                        AuctionHouseConfig.autoAuctionFlipOpenKeybind!!
+                    )
                 if (Utils.mc.currentScreen == null) {
                     if (currentKeyState) {
                         if (sentAuctionFlips.isNotEmpty() && !sentBestAuction) {
@@ -70,7 +71,8 @@ object AuctionFlipper {
                     }
                     lastBestAuctionKeybindState = currentKeyState
                 }
-            } catch (_: Exception) { }
+            } catch (_: Exception) {
+            }
         } else {
             sentStartingText = false;
         }
@@ -150,32 +152,35 @@ object AuctionFlipper {
     // Scans each page of auction house for potential flips
     // Each Page = 1000 Auctions
     private fun scanAuctionHouse() {
-        Thread {
-            auctionsNotified = 0
-            checkedAuctions = 0
-            sentAuctionFlips.clear()
+        auctionsNotified = 0
+        checkedAuctions = 0
+        sentAuctionFlips.clear()
 
-            ChatUtils.sendClientMessage("", false)
-            ChatUtils.sendClientMessage("§eSB§9T§6 >> §7Starting Auction House Scan..")
-            ChatUtils.sendClientMessage("", false)
+        ChatUtils.sendClientMessage("", false)
+        ChatUtils.sendClientMessage("§eSB§9T§6 >> §7Starting Auction House Scan..")
+        ChatUtils.sendClientMessage("", false)
 
-            for (page in 0..maxPagesToScan) {
+        for (page in 0..maxPagesToScan) {
+            Thread {
+
                 val auctionHousePageJson = NetworkUtils.apiRequestAndParse(
                     "https://api.hypixel.net/skyblock/auctions?page=${page}",
                     useProxy = false,
                     caching = false
                 )
-                if (!auctionHousePageJson.get("success").asBoolean) continue
+                if (!auctionHousePageJson.get("success").asBoolean) return@Thread
 
                 handleAuctionPage(auctionHousePageJson)
-            }
 
-            Utils.setTimeout({
-                ChatUtils.sendClientMessage("", false)
-                ChatUtils.sendClientMessage("§eSB§9T§6 >> §7Scanned §9${checkedAuctions.formatNumber()}§7 auctions! §3${auctionsNotified.formatNumber()}§7 matched your filter.")
-                ChatUtils.sendClientMessage("", false)
-            }, 1000)
-        }.start()
+                if (page == maxPagesToScan - 1) {
+                    Utils.setTimeout({
+                        ChatUtils.sendClientMessage("", false)
+                        ChatUtils.sendClientMessage("§eSB§9T§6 >> §7Scanned §9${checkedAuctions.formatNumber()}§7 auctions! §3${auctionsNotified.formatNumber()}§7 matched your filter.")
+                        ChatUtils.sendClientMessage("", false)
+                    }, 1000)
+                }
+            }.start()
+        }
     }
 
     //
