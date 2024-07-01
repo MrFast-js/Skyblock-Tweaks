@@ -274,12 +274,6 @@ object AuctionMenuOverlays {
                 ), Element(
                     5f,
                     30f,
-                    "§rEnds in: §e${if (pricingData.has("price_avg")) pricingData.get("price_avg").asInt.formatNumber() else "§cUnknown"}",
-                    null,
-                    null
-                ), Element(
-                    5f,
-                    40f,
                     "§rResell Profit: ${coloredSymbol}${resellProfit.formatNumber()}",
                     listOf(
                         "§e§lFlip Potential",
