@@ -8,81 +8,6 @@ import java.awt.Color
 
 
 object AuctionHouseConfig : Config() {
-//    @ConfigProperty(
-//        type = ConfigType.TOGGLE,
-//        name = "Highlight Auction Flips",
-//        description = "Highlights auctions that have a certain amount of profit or more.",
-//        category = "§1§rAuction House",
-//        subcategory = "Auction Utils",
-//        isParent = true
-//    )
-//    var highlightAuctionProfit = false
-//
-//    @ConfigProperty(
-//        type = ConfigType.NUMBER,
-//        name = "Minimum Profit Margin",
-//        description = "Highlights auctions that have this margin",
-//        category = "§1§rAuction House",
-//        subcategory = "Auction Utils",
-//        parentName = "Highlight Auction Flips"
-//    )
-//    var highlightAuctionProfitMargin = 100000
-
-//    @ConfigProperty(
-//        type = ConfigType.TOGGLE,
-//        name = "Highlight Auctions Status",
-//        description = "Highlights auctions in the \"View Bids\" menu based off of if its outbid, ended, sold to someone else.",
-//        category = "§1§rAuction House",
-//        subcategory = "Auction Utils",
-//        isParent = true
-//    )
-//    var highlightAuctionStatus = true
-//
-//    @ConfigProperty(
-//        type = ConfigType.COLOR,
-//        name = "Winning Auctions",
-//        category = "§1§rAuction House",
-//        subcategory = "Auction Utils",
-//        parentName = "Highlight Auctions Status"
-//    )
-//    var winningAuctionColor = Color(0x669bbc)
-//
-//    @ConfigProperty(
-//        type = ConfigType.COLOR,
-//        name = "Collect Auction",
-//        category = "§1§rAuction House",
-//        subcategory = "Auction Utils",
-//        parentName = "Highlight Auctions Status"
-//    )
-//    var collectAuctionColor = Color(0x003049)
-//
-//    @ConfigProperty(
-//        type = ConfigType.COLOR,
-//        name = "Outbid Auctions",
-//        category = "§1§rAuction House",
-//        subcategory = "Auction Utils",
-//        parentName = "Highlight Auctions Status"
-//    )
-//    var outbidAuctionColor = Color(0xe9c46a)
-//
-//    @ConfigProperty(
-//        type = ConfigType.COLOR,
-//        name = "Lost Auctions",
-//        category = "§1§rAuction House",
-//        subcategory = "Auction Utils",
-//        parentName = "Highlight Auctions Status"
-//    )
-//    var lostAuctionColor = Color(0xF48361)
-
-//    @ConfigProperty(
-//        type = ConfigType.LABEL,
-//        name = "Item Value Calculation",
-//        description = "Choose between full slot highlight and border highlight",
-//        category = "§1§rAuction House",
-//        subcategory = "Item Value Calculation",
-//        isParent = true
-//    )
-//    var itemValueCalculations = true
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
@@ -104,25 +29,26 @@ object AuctionHouseConfig : Config() {
 //    )
 //    var aucFlipperKeybind = -1
 
-    @ConfigProperty(
-        type = ConfigType.TOGGLE,
-        name = "Include BIN Flips",
-        description = "Allows for BIN auctions to be shown. §cThis is risky you need to know what your doing.",
-        category = "§1§rAuction House",
-        subcategory = "Auction Flipper",
-        parentName = "Auction Flipper"
-    )
-    var AF_binFlips = false
+    // REMINDER TO UNCOMMENT CODE INSIDE AUCTION FLIPPER TO MAKE THIS WORK
+//    @ConfigProperty(
+//        type = ConfigType.TOGGLE,
+//        name = "Include BIN Flips",
+//        description = "Allows for BIN auctions to be shown. §cThis is risky you need to know what your doing.",
+//        category = "§1§rAuction House",
+//        subcategory = "Auction Flipper",
+//        parentName = "Auction Flipper"
+//    )
+//    var AF_binFlips = false
 
-    @ConfigProperty(
-        type = ConfigType.TOGGLE,
-        name = "Include Auction Flips",
-        description = "Allows for normal auctions to be shown.",
-        category = "§1§rAuction House",
-        subcategory = "Auction Flipper",
-        parentName = "Auction Flipper"
-    )
-    var AF_AucFlips = true
+//    @ConfigProperty(
+//        type = ConfigType.TOGGLE,
+//        name = "Include Auction Flips",
+//        description = "Allows for normal auctions to be shown.",
+//        category = "§1§rAuction House",
+//        subcategory = "Auction Flipper",
+//        parentName = "Auction Flipper"
+//    )
+//    var AF_AucFlips = true
 
 //    @ConfigProperty(
 //        type = ConfigType.TOGGLE,
@@ -337,4 +263,45 @@ object AuctionHouseConfig : Config() {
         subcategory = "Overlays"
     )
     var auctionSellingOverlay = true
+
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Custom Outbid Notifications",
+        description = "Allows customization of the default hypixel outbid notifications.",
+        category = "§1§rAuction House",
+        subcategory = "Chat",
+        isParent = true
+    )
+    var customOutbidNotifications = true
+
+    @ConfigProperty(
+        type = ConfigType.TEXT,
+        name = "Customize Notification",
+        description = "Use variables §a{bidder}, {item}, {amount} §rinside your text and they'll be used.",
+        category = "§1§rAuction House",
+        subcategory = "Chat",
+        parentName = "Custom Outbid Notifications"
+    )
+    var customOutbidNotificationsText = "&c&l[OUTBID] &f{item} &eby &6{amount} coins &e&lCLICK!"
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Play Sound",
+        description = "Plays a sound when your outbid on an auction",
+        category = "§1§rAuction House",
+        subcategory = "Chat",
+        parentName = "Custom Outbid Notifications"
+    )
+    var customOutbidNotificationsPlaySound = true
+
+//    @ConfigProperty(
+//        type = ConfigType.TOGGLE,
+//        name = "Prevent Spam",
+//        description = "Stops the same auction from showing up multiple times if you havent bid on it since.",
+//        category = "§1§rAuction House",
+//        subcategory = "Chat",
+//        parentName = "Custom Outbid Notifications"
+//    )
+//    var customOutbidNotificationsStopSpam = true
 }

@@ -87,6 +87,7 @@ class SkyblockTweaks {
         MinecraftForge.EVENT_BUS.register(Floor2SpawnTimer)
         MinecraftForge.EVENT_BUS.register(FireFreezeHelper)
         MinecraftForge.EVENT_BUS.register(AuctionMenuOverlays)
+        MinecraftForge.EVENT_BUS.register(AuctionNotificationSimplifier)
 
         MinecraftForge.EVENT_BUS.register(PartyFinderJoinInfo) // Party Finder
         MinecraftForge.EVENT_BUS.register(NewYearsCakeHelper) // Cake bag sorting helper
