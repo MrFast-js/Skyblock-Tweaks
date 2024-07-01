@@ -15,13 +15,13 @@ class TextInputComponent(initValue: String, placeholder: String = "") : UIBlock(
             color = Color(0x232323).constraint
             x = 0.pixels
             y = CenterConstraint()
-            width = 58.pixels
+            width = 154.pixels
             height = 16.pixels
         } effect OutlineEffect(Color(0x606060), 1f)
 
         val textInput = UITextInput(placeholder).constrain {
             color = Color(0xBBBBBB).constraint
-            width = 54.pixels
+            width = 150.pixels
             height = 16.pixels
             x = 3.pixels
             y = 4.pixels
@@ -35,6 +35,7 @@ class TextInputComponent(initValue: String, placeholder: String = "") : UIBlock(
 
         textInput.onKeyType { typedChar, keyCode ->
             text = textInput.getText()
+            this@TextInputComponent.keyType(typedChar, keyCode)
         }
     }
 }

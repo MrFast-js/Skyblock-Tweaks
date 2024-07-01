@@ -278,7 +278,7 @@ object AuctionHouseConfig : Config() {
     @ConfigProperty(
         type = ConfigType.TEXT,
         name = "Customize Notification",
-        description = "Use variables §a{bidder}, {item}, {amount} §rinside your text and they'll be used.",
+        description = "Use §a{bidder}§r, §a{item}§r, and §a{amount}\n§r in your text to insert their values.",
         category = "§1§rAuction House",
         subcategory = "Chat",
         parentName = "Custom Outbid Notifications"

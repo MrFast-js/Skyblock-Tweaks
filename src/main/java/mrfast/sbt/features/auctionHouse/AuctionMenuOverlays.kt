@@ -146,7 +146,11 @@ object AuctionMenuOverlays {
 
     private fun setAuctionPricingData(auction: Auction) {
         auction.pricingData = ItemApi.getItemPriceInfo(auction.stack?.getSkyblockId()!!)
-        auction.suggestedListingPrice = ItemUtils.getSuggestListingPrice(auction.stack!!)!!
+
+        val stack = auction.stack ?: return
+        val suggestedListingPrice = ItemUtils.getSuggestListingPrice(stack) ?: return
+
+        auction.suggestedListingPrice = suggestedListingPrice
         auction.profit = auction.suggestedListingPrice - auction.price
     }
 
