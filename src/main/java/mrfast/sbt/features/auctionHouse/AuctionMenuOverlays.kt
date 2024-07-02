@@ -7,6 +7,7 @@ import mrfast.sbt.customevents.GuiContainerBackgroundDrawnEvent
 import mrfast.sbt.customevents.SignDrawnEvent
 import mrfast.sbt.managers.OverlayManager
 import mrfast.sbt.utils.GuiUtils
+import mrfast.sbt.utils.GuiUtils.Element
 import mrfast.sbt.utils.GuiUtils.chestName
 import mrfast.sbt.utils.ItemUtils
 import mrfast.sbt.utils.ItemUtils.getItemUUID
@@ -391,56 +392,6 @@ object AuctionMenuOverlays {
                 return true
             }
             return false
-        }
-    }
-
-    class Element(
-        var x: Float,
-        var y: Float,
-        var text: String,
-        var hoverText: List<String>?,
-        var onClick: Runnable? = null,
-        var drawBackground: Boolean = false
-    ) {
-        var width = 0
-        var height = Utils.mc.fontRendererObj.FONT_HEIGHT
-
-        init {
-            width = text.getStringWidth()
-        }
-
-        fun draw(mouseX: Int, mouseY: Int, originX: Int = 0, originY: Int = 0) {
-            val actualX = x + originX
-            val actualY = y + originY
-
-            if (drawBackground) {
-                GuiUtils.drawOutlinedSquare(
-                    (x - 2).toInt(), (y - 2).toInt(), width + 5, height + 5, Color(40, 40, 40), Color(40, 40, 40)
-                )
-            }
-
-            GuiUtils.drawText(text, x, y, GuiUtils.TextStyle.DROP_SHADOW)
-
-            if (mouseX > actualX && mouseY > actualY && mouseX < actualX + width && mouseY < actualY + height) {
-                if (hoverText != null) {
-                    GlStateManager.pushMatrix()
-                    GlStateManager.pushAttrib()
-                    net.minecraftforge.fml.client.config.GuiUtils.drawHoveringText(
-                        hoverText,
-                        mouseX,
-                        mouseY,
-                        Utils.mc.displayWidth,
-                        Utils.mc.displayHeight,
-                        -1,
-                        Utils.mc.fontRendererObj
-                    )
-                    GlStateManager.popMatrix()
-                    GlStateManager.popAttrib()
-                }
-                if (onClick != null && Mouse.isButtonDown(0)) {
-                    onClick!!.run()
-                }
-            }
         }
     }
 }
