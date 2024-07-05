@@ -267,6 +267,9 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
         for ((count, category) in ConfigManager.categories.values.withIndex()) {
             val actualY = if (count == 0) 10.pixels else SiblingConstraintFixed(3f)
 
+            // Stop developer tab from showing if not in developer mode
+            if(category.name == "§eDeveloper" && !CustomizationConfig.developerMode) continue
+
             val categoryComponent = UIText(category.name).constrain {
                 x = CenterConstraint()
                 y = actualY
