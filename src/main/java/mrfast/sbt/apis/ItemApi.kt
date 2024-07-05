@@ -3,6 +3,7 @@ package mrfast.sbt.apis
 import com.google.gson.JsonObject
 import mrfast.sbt.utils.ItemUtils.getSkyblockId
 import mrfast.sbt.utils.NetworkUtils
+import mrfast.sbt.utils.Utils
 import mrfast.sbt.utils.Utils.clean
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
@@ -33,72 +34,80 @@ object ItemApi {
             skyblockItems = items
             if (items.entrySet().size > 0) {
                 skyblockItemsLoaded = true
-                if(logging) println("Loaded Skyblock Items from HySky API!!")
+                if (logging) println("Loaded Skyblock Items from HySky API!!")
 
-                if(logging) println("Loading Lowest Bin Prices from Moulberry NEU API")
-                val lowestBins = NetworkUtils.apiRequestAndParse("https://moulberry.codes/lowestbin.json")
-                if (lowestBins.entrySet().size > 0) {
-                    lowestBins.entrySet().forEach {
-                        if (!skyblockItemPrices.has(it.key)) {
-                            skyblockItemPrices.add(it.key, JsonObject())
-                        }
-                        skyblockItemPrices.get(it.key).asJsonObject.addProperty("lowestBin", it.value.asLong)
-                        skyblockItemPrices.get(it.key).asJsonObject.addProperty("basePrice", it.value.asLong)
-                    }
-                    if(logging) println("Loaded Lowest Bin Prices from Moulberry NEU API!!")
-
-                    if(logging) println("Loading Average Bin Prices from Moulberry NEU API")
-                    val averageBins =
-                        NetworkUtils.apiRequestAndParse("https://moulberry.codes/auction_averages/3day.json")
-                    if (averageBins.entrySet().size > 0) {
-                        averageBins.entrySet().forEach {
+                if (logging) println("Loading Lowest Bin Prices from Moulberry NEU API")
+                try {
+                    val lowestBins = NetworkUtils.apiRequestAndParse("https://moulberry.codes/lowestbin.json", caching = false)
+                    if (lowestBins.entrySet().size > 0) {
+                        lowestBins.entrySet().forEach {
                             if (!skyblockItemPrices.has(it.key)) {
                                 skyblockItemPrices.add(it.key, JsonObject())
                             }
-
-                            val item = skyblockItemPrices.get(it.key).asJsonObject
-                            it.value.asJsonObject.entrySet().forEach { priceStat ->
-                                item.add(priceStat.key + "_avg", priceStat.value)
-                            }
-
-                            if (item.has("price_avg")) {
-                                item.addProperty(
-                                    "basePrice",
-                                    item.get("price_avg").asLong
-                                )
-                            }
-
-                            // Change 'worth' depending on available prices and anti market manipulations math, requires lbin & abin
-                            if (skyblockItemPrices.get(it.key).asJsonObject.has("lowestBin") && skyblockItemPrices.get(
-                                    it.key
-                                ).asJsonObject.has("price_avg")
-                            ) {
-                                val lbin = item.get("lowestBin").asDouble
-                                var abin = item.get("price_avg").asDouble
-                                if (item.has("clean_price_avg")) {
-                                    abin = item.get("clean_price_avg").asDouble
-                                }
-
-                                var basePrice = (abin * 0.4 + lbin * 0.6)
-
-                                // If the lowest bin is more than average bin * 50% it can be inferred that likely the lowest bin is currently high or possibly manipulated
-                                // Find a semi middle ground that is fair, but much more weighted towards lbin for selling faster
-                                if (lbin > abin + 300_000 || lbin > abin * 1.5) {
-                                    basePrice = (abin * 0.6 + lbin * 0.4)
-                                }
-                                if (lbin > abin + 500_00) {
-                                    basePrice = lbin - 100_000
-                                }
-
-                                item.addProperty("basePrice", basePrice.toLong())
-                            }
+                            skyblockItemPrices.get(it.key).asJsonObject.addProperty("lowestBin", it.value.asLong)
+                            skyblockItemPrices.get(it.key).asJsonObject.addProperty("basePrice", it.value.asLong)
                         }
+                        if (logging) println("Loaded Lowest Bin Prices from Moulberry NEU API!!")
 
-                        if(logging) println("Loaded Average Bin Prices from Moulberry NEU API!!")
+                        if (logging) println("Loading Average Bin Prices from Moulberry NEU API")
+                        val averageBins =
+                            NetworkUtils.apiRequestAndParse("https://moulberry.codes/auction_averages/3day.json", caching = false)
+                        if (averageBins.entrySet().size > 0) {
+                            averageBins.entrySet().forEach {
+                                if (!skyblockItemPrices.has(it.key)) {
+                                    skyblockItemPrices.add(it.key, JsonObject())
+                                }
+
+                                val item = skyblockItemPrices.get(it.key).asJsonObject
+                                it.value.asJsonObject.entrySet().forEach { priceStat ->
+                                    item.add(priceStat.key + "_avg", priceStat.value)
+                                }
+
+                                if (item.has("price_avg")) {
+                                    item.addProperty(
+                                        "basePrice",
+                                        item.get("price_avg").asLong
+                                    )
+                                }
+
+                                // Change 'worth' depending on available prices and anti market manipulations math, requires lbin & abin
+                                if (skyblockItemPrices.get(it.key).asJsonObject.has("lowestBin") && skyblockItemPrices.get(
+                                        it.key
+                                    ).asJsonObject.has("price_avg")
+                                ) {
+                                    val lbin = item.get("lowestBin").asDouble
+                                    var abin = item.get("price_avg").asDouble
+                                    if (item.has("clean_price_avg")) {
+                                        abin = item.get("clean_price_avg").asDouble
+                                    }
+
+                                    var basePrice = (abin * 0.4 + lbin * 0.6)
+
+                                    // If the lowest bin is more than average bin * 50% it can be inferred that likely the lowest bin is currently high or possibly manipulated
+                                    // Find a semi middle ground that is fair, but much more weighted towards lbin for selling faster
+                                    if (lbin > abin + 300_000 || lbin > abin * 1.5) {
+                                        basePrice = (abin * 0.6 + lbin * 0.4)
+                                    }
+                                    if (lbin > abin + 500_00) {
+                                        basePrice = lbin - 100_000
+                                    }
+
+                                    item.addProperty("basePrice", basePrice.toLong())
+                                }
+                            }
+
+                            if (logging) println("Loaded Average Bin Prices from Moulberry NEU API!!")
+                        }
                     }
+                } catch (e: Exception) {
+                    println("There was a problem loading NEU Prices.. Retrying in 5 seconds..")
+                    Utils.setTimeout({
+                        loadSkyblockItems(logging)
+                    }, 5000)
+                    return@Thread
                 }
 
-                if(logging) println("Loading bazaar prices from hypixel api")
+                if (logging) println("Loading bazaar prices from hypixel api")
                 val bzPrices = NetworkUtils.apiRequestAndParse(
                     "https://api.hypixel.net/skyblock/bazaar",
                     caching = true,
@@ -115,12 +124,10 @@ object ItemApi {
                         productJson.addProperty("sellPrice", sellPrice)
                         productJson.addProperty("buyPrice", buyPrice)
 
-                        val buySummary = product.value.asJsonObject.getAsJsonArray("buy_summary")
-                        val avgBuyPricePerUnit = buySummary.map { it.asJsonObject.get("pricePerUnit").asDouble }.average()
+                        val avgBuyPricePerUnit = findWeightedAveragePPU(product.value.asJsonObject, "buy_summary")
                         productJson.addProperty("avg_buyPricePerUnit", avgBuyPricePerUnit)
 
-                        val sellSummary = product.value.asJsonObject.getAsJsonArray("sell_summary")
-                        val avgSellPricePerUnit = sellSummary.map { it.asJsonObject.get("pricePerUnit").asDouble }.average()
+                        val avgSellPricePerUnit = findWeightedAveragePPU(product.value.asJsonObject, "sell_summary")
                         productJson.addProperty("avg_sellPricePerUnit", avgSellPricePerUnit)
 
                         productJson.addProperty("basePrice", sellPrice)
@@ -130,6 +137,39 @@ object ItemApi {
                 }
             }
         }.start()
+    }
+
+    private fun findWeightedAveragePPU(product: JsonObject, type: String): Double {
+        val sellSummary = product.asJsonObject.getAsJsonArray(type)
+        val PPU_Entries = mutableListOf<Pair<Double, Int>>()
+
+        sellSummary.forEach {
+            val ppu = it.asJsonObject.get("pricePerUnit").asDouble
+            val orders = it.asJsonObject.get("orders").asInt
+            val amount = it.asJsonObject.get("amount").asInt
+
+            val weight = orders * amount
+            PPU_Entries.add(ppu to weight)
+        }
+
+        val filteredEntries = filterOutliers(PPU_Entries)
+        val totalWeightedSum = filteredEntries.sumOf { it.first * it.second }
+        val totalWeight = filteredEntries.sumOf { it.second }
+
+        return if (totalWeight != 0) totalWeightedSum / totalWeight else 0.0
+    }
+
+    fun filterOutliers(entries: List<Pair<Double, Int>>): List<Pair<Double, Int>> {
+        if (entries.size <= 1) return entries
+
+        val sortedEntries = entries.sortedBy { it.first }
+        val q1 = sortedEntries[(sortedEntries.size * 0.25).toInt()].first
+        val q3 = sortedEntries[(sortedEntries.size * 0.75).toInt()].first
+        val iqr = q3 - q1
+        val lowerFence = q1 - 1.5 * iqr
+        val upperFence = q3 + 1.5 * iqr
+
+        return entries.filter { it.first in lowerFence..upperFence }
     }
 
     fun getItemIdFromName(displayName: String, ignoreFormatting: Boolean? = false): String? {
