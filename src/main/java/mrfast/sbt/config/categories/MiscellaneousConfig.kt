@@ -93,7 +93,7 @@ object MiscellaneousConfig : Config() {
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
-        name = "Prevent Overpaying On Bazaar Materials",
+        name = "Bazaar Overpay Protection",
         description = "Stops from quickly buying potentially manipulated bazaar materials due to low supply.",
         category = "Miscellaneous",
         subcategory = "Bazaar",
@@ -107,7 +107,7 @@ object MiscellaneousConfig : Config() {
         description = "How much % past the average should it require to activate purchase protection.",
         category = "General",
         subcategory = "Miscellaneous",
-        parentName = "Prevent Overpaying On Bazaar Materials"
+        parentName = "Bazaar Overpay Protection"
     )
     var bazaarMaxOverpayPercent = 5.0
 

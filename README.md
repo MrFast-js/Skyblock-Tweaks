@@ -48,6 +48,14 @@
     <img src="https://i.imgur.com/PCZ8Jjq.png" alt="Dungeon Party Join">
   </details>
 
+- <details>
+    <summary>
+        <strong>Bazaar Overpay Protection</strong>
+    </summary>
+    <i>Stops from quickly buying potentially manipulated bazaar materials due to low supply.</i>
+    <img src="https://i.imgur.com/htfwwxp.png" alt="Bazaar Overpay Protection">
+  </details>
+
 - **Trash Highlighter** - _Customizable highlight on items to throw away_
 
 _More coming to README soon.._
