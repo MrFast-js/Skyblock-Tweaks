@@ -47,7 +47,8 @@ class DebugCommand : CommandBase() {
             if (args.size > 1) {
                 dist = args[1].replace("[^0-9]".toRegex(), "").toInt()
             }
-        } catch (ignored: Exception) { }
+        } catch (ignored: Exception) {
+        }
 
         when (args[0]) {
             "mobs" -> getMobData(mobs = true, distance = dist)
@@ -62,6 +63,7 @@ class DebugCommand : CommandBase() {
                     ChatUtils.sendClientMessage(ChatFormatting.RED.toString() + "You must be holding an item!")
                 }
             }
+
             "sidebar" -> sidebarData
             "log" -> copyLog()
             "tablist", "tab" -> tablistData
@@ -70,14 +72,11 @@ class DebugCommand : CommandBase() {
     }
 
     companion object {
-        var arguments: List<String> = mutableListOf("mobs", "tiles", "entities", "item", "sidebar", "tab")
+        var arguments: List<String> =
+            mutableListOf("mobs", "tiles", "entities", "item", "sidebar", "tab", "location", "log")
+
         fun invalidUsage() {
-            val usage =
-                StringBuilder(ChatFormatting.RED.toString() + "Invalid Usage! " + ChatFormatting.YELLOW + "/debug ")
-            for (arg in arguments) {
-                usage.append(arg).append(" ")
-            }
-            ChatUtils.sendClientMessage(usage.toString())
+            ChatUtils.sendClientMessage(ChatFormatting.RED.toString() + "Invalid Usage! " + ChatFormatting.YELLOW + "/debug <${arguments.joinToString()}>")
         }
 
         val sidebarData: Unit

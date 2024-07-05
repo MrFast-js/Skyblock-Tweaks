@@ -117,7 +117,7 @@ class SkyblockTweaks {
 
 
         // Commands
-        ClientCommandHandler.instance.registerCommand(ConfigCommand())
+        ClientCommandHandler.instance.registerCommand(SBTCommand())
         ClientCommandHandler.instance.registerCommand(DebugCommand())
         ClientCommandHandler.instance.registerCommand(ProfitTrackerCommand())
         ClientCommandHandler.instance.registerCommand(PathCommand())
