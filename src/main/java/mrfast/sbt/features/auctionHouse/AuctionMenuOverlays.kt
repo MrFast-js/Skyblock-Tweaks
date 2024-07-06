@@ -112,7 +112,7 @@ object AuctionMenuOverlays {
                 }
                 if (pastBids.size > 0) {
                     auction.otherBidder = pastBids[0]
-                    if(pastBids.size > 1) {
+                    if(pastBids.size > 1 && auction.otherBidder == Utils.mc.thePlayer.name) {
                         auction.otherBidder = pastBids[1]
                     }
                 }
