@@ -7,6 +7,7 @@ import mrfast.sbt.utils.GuiUtils.chestName
 import mrfast.sbt.utils.ItemUtils.getLore
 import mrfast.sbt.utils.Utils
 import mrfast.sbt.utils.Utils.clean
+import mrfast.sbt.utils.Utils.getNameNoRank
 import mrfast.sbt.utils.Utils.getRegexGroups
 import mrfast.sbt.utils.Utils.matches
 import mrfast.sbt.utils.Utils.setTimeout
@@ -25,15 +26,7 @@ object PartyManager {
     }
 
     private fun parsePlayerName(message: String): String {
-        val clean = message.clean()
-        var noRankName = clean
-        // Remove rank
-        if (clean.contains("]")) {
-            noRankName = clean.split("] ")[1]
-        }
-        // Just get name
-        noRankName = noRankName.split(" ")[0]
-        return noRankName
+        return message.getNameNoRank()
     }
 
     @SubscribeEvent

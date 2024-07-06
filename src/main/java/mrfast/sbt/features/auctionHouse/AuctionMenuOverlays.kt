@@ -6,6 +6,7 @@ import mrfast.sbt.config.categories.AuctionHouseConfig
 import mrfast.sbt.customevents.GuiContainerBackgroundDrawnEvent
 import mrfast.sbt.customevents.SignDrawnEvent
 import mrfast.sbt.managers.OverlayManager
+import mrfast.sbt.utils.ChatUtils
 import mrfast.sbt.utils.GuiUtils
 import mrfast.sbt.utils.GuiUtils.Element
 import mrfast.sbt.utils.GuiUtils.chestName
@@ -20,6 +21,8 @@ import mrfast.sbt.utils.Utils.formatNumber
 import mrfast.sbt.utils.Utils.getInventory
 import mrfast.sbt.utils.Utils.getStringWidth
 import mrfast.sbt.utils.Utils.matches
+import mrfast.sbt.utils.Utils.getNameNoRank
+import mrfast.sbt.utils.Utils.getRegexGroups
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.client.gui.inventory.GuiContainer
@@ -29,7 +32,6 @@ import net.minecraft.item.ItemStack
 import net.minecraft.util.ChatComponentText
 import net.minecraftforge.fml.common.eventhandler.Event
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import org.lwjgl.input.Mouse
 import java.awt.Color
 
 object AuctionMenuOverlays {
@@ -43,6 +45,8 @@ object AuctionMenuOverlays {
         var profit = 0
         var suggestedListingPrice = 0
         var winning: Boolean? = null
+        var seller: String? = null
+        var otherBidder: String? = null
         var pricingData: JsonObject? = null
         var stack: ItemStack? = null
         var ended = false
@@ -87,7 +91,7 @@ object AuctionMenuOverlays {
         if (containerName.contains("Auction View")) {
             val inventory = (event.gui as GuiChest).getInventory()
             val stack = inventory.getStackInSlot(13) ?: return
-            val uuid = stack.getItemUUID() ?: return
+            val uuid = stack.getItemUUID() ?: (stack.displayName + 13)
             val slot = (event.gui as GuiChest).inventorySlots.getSlot(13)
             val auction = Auction(slot, uuid)
             auction.stack = stack
@@ -97,6 +101,23 @@ object AuctionMenuOverlays {
             setAuctionPricingData(auction)
 
             // Increase price based off of next bid
+
+            if (inventory.getStackInSlot(33) != null) {
+                val bidHistory = inventory.getStackInSlot(33)
+                val pastBids = mutableListOf<String>()
+                for (line in bidHistory.getLore()) {
+                    if (line.clean().matches("By: (.*)")) {
+                        pastBids.add(line.clean().getRegexGroups("By: (.*)")!!.group(1).getNameNoRank())
+                    }
+                }
+                if (pastBids.size > 0) {
+                    auction.otherBidder = pastBids[0]
+                    if(pastBids.size > 1) {
+                        auction.otherBidder = pastBids[1]
+                    }
+                }
+            }
+
             if (auction.winning == false) {
                 val submitBidStack = inventory.getStackInSlot(29) ?: return
                 var newBidPrice = 0
@@ -117,7 +138,7 @@ object AuctionMenuOverlays {
         if (containerName == "Create BIN Auction" || containerName == "Create Auction") {
             val inventory = (event.gui as GuiChest).getInventory()
             val stack = inventory.getStackInSlot(13) ?: return
-            val uuid = stack.getItemUUID() ?: return
+            val uuid = stack.getItemUUID() ?: (stack.displayName + 13)
             val slot = (event.gui as GuiChest).inventorySlots.getSlot(13)
             val auction = Auction(slot, uuid)
             auction.stack = stack
@@ -295,6 +316,26 @@ object AuctionMenuOverlays {
                     null
                 )
             )
+
+            if (lastViewedAuction!!.otherBidder != null && lastViewedAuction!!.otherBidder != Utils.mc.thePlayer.name) {
+                lines.add(
+                    Element(
+                        7f,
+                        55f,
+                        "§9Party Bidder",
+                        listOf(
+                            "§e/party ${lastViewedAuction!!.otherBidder}",
+                            "§7Allows for a chance to negotiate",
+                            "§7if a player wont stop bidding"
+                        ),
+                        {
+                            Utils.mc.thePlayer.closeScreen()
+                            ChatUtils.sendPlayerMessage("/party ${lastViewedAuction!!.otherBidder}")
+                        },
+                        drawBackground = true
+                    )
+                )
+            }
 
             // Change z-depth in order to be above NEU inventory buttons
             val width =

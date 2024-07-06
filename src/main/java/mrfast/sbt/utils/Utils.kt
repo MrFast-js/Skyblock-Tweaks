@@ -34,6 +34,12 @@ object Utils {
         return this.replace(Regex("(?i)§[0-9A-F]"), "")
     }
 
+    fun String.getNameNoRank(): String {
+        val clean = this.clean()
+        val noRankName =  if (clean.contains("]")) clean.split("] ")[1] else clean
+        return noRankName.split(" ")[0]
+    }
+
     fun String.getStringWidth(): Int {
         return mc.fontRendererObj.getStringWidth(this)
     }

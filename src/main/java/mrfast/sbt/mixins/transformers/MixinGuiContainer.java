@@ -27,16 +27,17 @@ public class MixinGuiContainer {
 
     @Inject(method = "drawSlot", at = @At("HEAD"))
     private void preSlotDrawnEvent(Slot slotIn, CallbackInfo ci) {
-        MinecraftForge.EVENT_BUS.post(new SlotDrawnEvent.Pre(slotIn, (GuiContainer) Minecraft.getMinecraft().currentScreen));
+        if(Minecraft.getMinecraft().currentScreen!=null) {
+            MinecraftForge.EVENT_BUS.post(new SlotDrawnEvent.Pre(slotIn, (GuiContainer) Minecraft.getMinecraft().currentScreen));
+        }
     }
 
     @Inject(method = "drawSlot", at = @At("TAIL"))
     private void postSlotDrawnEvent(Slot slotIn, CallbackInfo ci) {
-        try {
+        if(Minecraft.getMinecraft().currentScreen!=null) {
             GlStateManager.translate(0, 0, 275f);
             MinecraftForge.EVENT_BUS.post(new SlotDrawnEvent.Post(slotIn, (GuiContainer) Minecraft.getMinecraft().currentScreen));
             GlStateManager.translate(0, 0, -275f);
-        } catch (Exception ignored) {
         }
     }
 
