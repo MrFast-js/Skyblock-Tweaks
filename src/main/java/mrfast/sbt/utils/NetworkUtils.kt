@@ -41,7 +41,6 @@ object NetworkUtils {
         }
 
         client = HttpClients.custom().setSSLSocketFactory(sslcsf).setUserAgent("Mozilla/5.0").build()
-        println("CREATED CUSTOM CLIENT")
     }
 
     data class CacheObject(val url: String, val response: JsonObject, val createdAt: Long = System.currentTimeMillis())
@@ -58,7 +57,7 @@ object NetworkUtils {
         }
         val isMyApi = modifiedUrlString.contains(myApiUrl)
 
-        if (CustomizationConfig.developerMode) {
+        if (CustomizationConfig.developerMode && DeveloperConfig.logNetworkRequests) {
             val message = if (modifiedUrlString.contains("#")) {
                 val url = modifiedUrlString.split("#")[0]
                 val reason = modifiedUrlString.split("#")[1]
@@ -72,7 +71,7 @@ object NetworkUtils {
         if (jsonCache.containsKey(modifiedUrlString) && caching) {
             val obj = jsonCache[modifiedUrlString]
             if ((System.currentTimeMillis() - obj!!.createdAt) < 1000 * 60 * 5) {
-                if (CustomizationConfig.developerMode) println("Using Cache For: $modifiedUrlString")
+                if (CustomizationConfig.developerMode && DeveloperConfig.logNetworkRequests) println("Using Cache For: $modifiedUrlString")
                 return obj.response
             }
         }

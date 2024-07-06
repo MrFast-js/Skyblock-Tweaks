@@ -36,6 +36,15 @@ object DeveloperConfig : Config() {
     var showMobIdsThroughWalls = false
 
     @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Log Network Requests",
+        description = "Log any requests to apis from the mod, to the console",
+        category = "§eDeveloper",
+        subcategory = "Settings"
+    )
+    var logNetworkRequests = false
+
+    @ConfigProperty(
             type = ConfigType.TOGGLE,
             name = "Show item abilities",
             description = "Shows when a skyblock item uses its ability, used to create features with listening for item abilities",
