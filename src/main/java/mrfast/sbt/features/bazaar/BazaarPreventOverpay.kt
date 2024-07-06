@@ -36,6 +36,8 @@ object BazaarPreventOverpay {
     @SubscribeEvent
     fun onSlotDrawn(event: SlotDrawnEvent.Post) {
         if (MiscellaneousConfig.bazaarManipulationProtection && inBuyItNowMenu) {
+            if(viewedProductPriceInfo == null) return
+
             val normalBuySlots = listOf(10, 12, 14, 13)
             if (normalBuySlots.contains(event.slot.slotIndex) && event.slot.hasStack) {
                 val averageBuyPricePerUnit = viewedProductPriceInfo!!.get("avg_buyPricePerUnit").asDouble
@@ -78,6 +80,7 @@ object BazaarPreventOverpay {
     @SubscribeEvent
     fun onTooltip(event: ItemTooltipEvent) {
         val itemName = event.itemStack.displayName.clean()
+        if(viewedProductPriceInfo == null) return
 
         if (MiscellaneousConfig.bazaarManipulationProtection && inBuyItNowMenu) {
             if (itemName.startsWith("Buy") || itemName.equals("Fill my inventory!") || itemName.equals("Custom Amount")) {
@@ -150,9 +153,9 @@ object BazaarPreventOverpay {
             val buyItNowStack = inventory.getStackInSlot(10) ?: return
             val itemStack = inventory.getStackInSlot(13) ?: return
 
-            val itemId = itemStack.getSkyblockId() ?: buyItNowStack.getSkyblockId()
+            val itemId = (itemStack.getSkyblockId() ?: buyItNowStack.getSkyblockId()) ?: return
 
-            viewedProductPriceInfo = ItemApi.getItemPriceInfo(itemId!!)
+            viewedProductPriceInfo = ItemApi.getItemPriceInfo(itemId)
             if (viewedProductPriceInfo == null) {
                 resetData()
                 return
