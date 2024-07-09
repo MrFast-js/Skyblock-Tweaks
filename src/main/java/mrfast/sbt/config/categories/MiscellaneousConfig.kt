@@ -90,36 +90,6 @@ object MiscellaneousConfig : Config() {
     )
     var quiverOverlayType = false
 
-
-    @ConfigProperty(
-        type = ConfigType.TOGGLE,
-        name = "Bazaar Overpay Protection",
-        description = "Stops from quickly buying potentially manipulated bazaar materials due to low supply.",
-        category = "Miscellaneous",
-        subcategory = "Bazaar",
-        isParent = true
-    )
-    var bazaarManipulationProtection = true
-
-    @ConfigProperty(
-        type = ConfigType.NUMBER,
-        name = "Maximum Overpay Percentage",
-        description = "How much % past the average should it require to activate purchase protection.",
-        category = "General",
-        subcategory = "Miscellaneous",
-        parentName = "Bazaar Overpay Protection"
-    )
-    var bazaarMaxOverpayPercent = 5.0
-
-    @ConfigProperty(
-        type = ConfigType.TOGGLE,
-        name = "Show Average Price Per Unit",
-        description = "Adds average price per unit when looking at an items overview in the bazaar",
-        category = "Miscellaneous",
-        subcategory = "Bazaar"
-    )
-    var bazaarAveragePPU = true
-
 //    @ConfigProperty(
 //            type = ConfigType.TOGGLE,
 //            name = "Fire Veil Timer",

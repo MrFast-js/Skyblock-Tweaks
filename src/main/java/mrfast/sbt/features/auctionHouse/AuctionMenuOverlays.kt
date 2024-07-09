@@ -112,7 +112,7 @@ object AuctionMenuOverlays {
                 }
                 if (pastBids.size > 0) {
                     auction.otherBidder = pastBids[0]
-                    if(pastBids.size > 1 && auction.otherBidder == Utils.mc.thePlayer.name) {
+                    if (pastBids.size > 1 && auction.otherBidder == Utils.mc.thePlayer.name) {
                         auction.otherBidder = pastBids[1]
                     }
                 }
@@ -167,7 +167,8 @@ object AuctionMenuOverlays {
     }
 
     private fun setAuctionPricingData(auction: Auction) {
-        auction.pricingData = ItemApi.getItemPriceInfo(auction.stack?.getSkyblockId()!!)
+        val id = auction.stack?.getSkyblockId() ?: return
+        auction.pricingData = ItemApi.getItemPriceInfo(id) ?: return
 
         val stack = auction.stack ?: return
         val suggestedListingPrice = ItemUtils.getSuggestListingPrice(stack) ?: return

@@ -10,7 +10,6 @@ import mrfast.sbt.config.ConfigGui
 import mrfast.sbt.config.GuiManager
 import mrfast.sbt.customevents.WorldLoadEvent
 import mrfast.sbt.features.auctionHouse.*
-import mrfast.sbt.features.bazaar.BazaarPreventOverpay
 import mrfast.sbt.features.dungeons.*
 import mrfast.sbt.features.general.*
 import mrfast.sbt.features.profitTracking.ProfitTracker
@@ -89,8 +88,6 @@ class SkyblockTweaks {
         MinecraftForge.EVENT_BUS.register(FireFreezeHelper)
         MinecraftForge.EVENT_BUS.register(AuctionMenuOverlays)
         MinecraftForge.EVENT_BUS.register(AuctionNotificationSimplifier)
-        MinecraftForge.EVENT_BUS.register(BazaarPreventOverpay)
-
 
         MinecraftForge.EVENT_BUS.register(PartyFinderJoinInfo) // Party Finder
         MinecraftForge.EVENT_BUS.register(NewYearsCakeHelper) // Cake bag sorting helper

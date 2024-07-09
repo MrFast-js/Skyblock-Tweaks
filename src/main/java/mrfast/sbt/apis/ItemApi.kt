@@ -123,13 +123,6 @@ object ItemApi {
                         val productJson = JsonObject()
                         productJson.addProperty("sellPrice", sellPrice)
                         productJson.addProperty("buyPrice", buyPrice)
-
-                        val avgBuyPricePerUnit = findWeightedAveragePPU(product.value.asJsonObject, "buy_summary")
-                        productJson.addProperty("avg_buyPricePerUnit", avgBuyPricePerUnit)
-
-                        val avgSellPricePerUnit = findWeightedAveragePPU(product.value.asJsonObject, "sell_summary")
-                        productJson.addProperty("avg_sellPricePerUnit", avgSellPricePerUnit)
-
                         productJson.addProperty("basePrice", sellPrice)
 
                         skyblockItemPrices.add(product.key, productJson)
@@ -137,39 +130,6 @@ object ItemApi {
                 }
             }
         }.start()
-    }
-
-    private fun findWeightedAveragePPU(product: JsonObject, type: String): Double {
-        val sellSummary = product.asJsonObject.getAsJsonArray(type)
-        val PPU_Entries = mutableListOf<Pair<Double, Int>>()
-
-        sellSummary.forEach {
-            val ppu = it.asJsonObject.get("pricePerUnit").asDouble
-            val orders = it.asJsonObject.get("orders").asInt
-            val amount = it.asJsonObject.get("amount").asInt
-
-            val weight = orders * amount
-            PPU_Entries.add(ppu to weight)
-        }
-
-        val filteredEntries = filterOutliers(PPU_Entries)
-        val totalWeightedSum = filteredEntries.sumOf { it.first * it.second }
-        val totalWeight = filteredEntries.sumOf { it.second }
-
-        return if (totalWeight != 0) totalWeightedSum / totalWeight else 0.0
-    }
-
-    fun filterOutliers(entries: List<Pair<Double, Int>>): List<Pair<Double, Int>> {
-        if (entries.size <= 1) return entries
-
-        val sortedEntries = entries.sortedBy { it.first }
-        val q1 = sortedEntries[(sortedEntries.size * 0.25).toInt()].first
-        val q3 = sortedEntries[(sortedEntries.size * 0.75).toInt()].first
-        val iqr = q3 - q1
-        val lowerFence = q1 - 1.5 * iqr
-        val upperFence = q3 + 1.5 * iqr
-
-        return entries.filter { it.first in lowerFence..upperFence }
     }
 
     fun getItemIdFromName(displayName: String, ignoreFormatting: Boolean? = false): String? {
