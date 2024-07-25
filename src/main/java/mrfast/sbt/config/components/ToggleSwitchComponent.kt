@@ -12,8 +12,6 @@ import java.awt.Color
 
 class ToggleSwitchComponent(initValue: Boolean) : UIRoundedRectangle(0f) {
     var activated = initValue
-    private var deactivatedColor = BasicState(Color.GRAY)
-    private var activatedColor = BasicState(CustomizationConfig.enabledSwitchColor)
 
     init {
         this.constrain {
@@ -22,7 +20,7 @@ class ToggleSwitchComponent(initValue: Boolean) : UIRoundedRectangle(0f) {
             radius = 9.pixels
             width = 32.pixels
             height = 16.pixels
-            color = if (activated) CustomizationConfig.enabledSwitchColor.constraint else deactivatedColor.constraint
+            color = if (activated) activatedColor.constraint else deactivatedColor.constraint
         }
 
         val block = UIRoundedRectangle(8f)
@@ -60,5 +58,10 @@ class ToggleSwitchComponent(initValue: Boolean) : UIRoundedRectangle(0f) {
             }
             Utils.mc.thePlayer.playSound("gui.button.press", 0.25f, 1f)
         }
+    }
+
+    companion object {
+        var deactivatedColor = BasicState(CustomizationConfig.offSwitchColor)
+        var activatedColor = BasicState(CustomizationConfig.onSwitchColor)
     }
 }

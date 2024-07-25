@@ -56,12 +56,12 @@ object CustomizationConfig : Config() {
     @ConfigProperty(
         type = ConfigType.DROPDOWN,
         name = "Config Gui Theme",
-        description = "Woah shapes and colors. §cRequires reopening this GUI",
+        description = "Woah shapes and colors.",
         category = "§2§rCustomization",
         subcategory = "Theme",
-        dropdownOptions = ["Default", "§eSpace", "§bOcean", "§3MacOS"]
+        dropdownOptions = ["Gray", "Dark + Cyan", "Dark + Orange"]
     )
-    var selectedTheme = "Default"
+    var selectedTheme = "Dark + Cyan"
 
     @ConfigProperty(
         type = ConfigType.LABEL,
@@ -75,13 +75,23 @@ object CustomizationConfig : Config() {
 
     @ConfigProperty(
         type = ConfigType.COLOR,
-        name = "Enabled Switch Color",
+        name = "Enabled Switch Background Color",
         description = "",
         category = "§2§rCustomization",
         subcategory = "Theme",
         parentName = "Custom Menu Colors"
     )
-    var enabledSwitchColor: Color = Color.GREEN
+    var onSwitchColor: Color = Color.GREEN
+
+    @ConfigProperty(
+        type = ConfigType.COLOR,
+        name = "Disabled Switch Background Color",
+        description = "",
+        category = "§2§rCustomization",
+        subcategory = "Theme",
+        parentName = "Custom Menu Colors"
+    )
+    var offSwitchColor: Color = Color.GRAY
 
     @ConfigProperty(
         type = ConfigType.COLOR,
@@ -92,6 +102,16 @@ object CustomizationConfig : Config() {
         parentName = "Custom Menu Colors"
     )
     var featureBorderColor: Color = Color.GRAY
+
+    @ConfigProperty(
+        type = ConfigType.COLOR,
+        name = "Window Border Color",
+        description = "",
+        category = "§2§rCustomization",
+        subcategory = "Theme",
+        parentName = "Custom Menu Colors"
+    )
+    var windowBorderColor: Color = Color.CYAN
 
     @ConfigProperty(
         type = ConfigType.COLOR,
@@ -121,7 +141,7 @@ object CustomizationConfig : Config() {
         subcategory = "Theme",
         parentName = "Custom Menu Colors"
     )
-    var mainBackgroundColor : Color = Color(22, 22, 22)
+    var mainBackgroundColor: Color = Color(22, 22, 22)
 
     @ConfigProperty(
         type = ConfigType.COLOR,
@@ -131,7 +151,7 @@ object CustomizationConfig : Config() {
         subcategory = "Theme",
         parentName = "Custom Menu Colors"
     )
-    var sidebarBackgroundColor : Color = Color(28, 28, 28)
+    var sidebarBackgroundColor: Color = Color(28, 28, 28)
 
     @ConfigProperty(
         type = ConfigType.COLOR,
