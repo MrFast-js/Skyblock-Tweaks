@@ -16,6 +16,15 @@ object DeveloperConfig : Config() {
     var modAPIURL = "https://app.mrfast-developer.com/"
 
     @ConfigProperty(
+        type = ConfigType.TEXT,
+        name = "Mod Websocket Url",
+        description = "§cDo not change this if you do not know what you're doing!",
+        category = "§eDeveloper",
+        subcategory = "Settings"
+    )
+    var modSocketURL = "ws://app.mrfast-developer.com:1512"
+
+    @ConfigProperty(
             type = ConfigType.TOGGLE,
             name = "Show mob ids",
             description = "Shows skyblock mob ids on mobs in the world using Skyblock Mob Detector",
@@ -61,7 +70,6 @@ object DeveloperConfig : Config() {
         subcategory = "Settings"
     )
     var showLocationUpdates = false
-
 
     @ConfigProperty(
             type = ConfigType.TOGGLE,

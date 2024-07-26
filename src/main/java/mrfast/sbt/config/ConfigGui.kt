@@ -23,6 +23,7 @@ import mrfast.sbt.managers.VersionManager
 import mrfast.sbt.config.categories.CustomizationConfig
 import mrfast.sbt.config.categories.DeveloperConfig.showInspector
 import mrfast.sbt.config.components.*
+import mrfast.sbt.utils.ChatUtils
 import mrfast.sbt.utils.SocketUtils
 import mrfast.sbt.utils.Utils
 import net.minecraft.client.Minecraft
@@ -139,11 +140,20 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
                 textScale = 1.6.pixels
             } childOf socketStatusButton
 
-            socketStatusButton.addTooltip(
-                setOf(
-                    if (SocketUtils.socketConnected) "§a∞ Connected to SBT Socket!" else "§c✕ Disconnected from SBT Socket!"
-                )
+            val lore = mutableSetOf(
+                if (SocketUtils.socketConnected) "§a∞ Connected to SBT Socket!" else "§c✕ Disconnected from SBT Socket!"
             )
+
+            if (!SocketUtils.socketConnected) {
+                socketStatusButton.onMouseClick {
+                    SocketUtils.setupSocket()
+                    ChatUtils.sendClientMessage("§eRe-attempting socket connection...", prefix = true)
+                    Utils.mc.displayGuiScreen(null)
+                }
+                lore.add("§eClick to re-attempt connection")
+            }
+
+            socketStatusButton.addTooltip(lore)
         }
 
         // Add some text to the panel
@@ -786,7 +796,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
             CustomizationConfig.onSwitchColor = Color(0x00ff00)
             CustomizationConfig.defaultCategoryColor = Color(0xb4b4b4)
         }
-        if (theme.startsWith("Dark + " )) {
+        if (theme.startsWith("Dark + ")) {
             CustomizationConfig.sidebarBackgroundColor = Color(0x0f0f0f)
             CustomizationConfig.mainBackgroundColor = Color(0x090909)
             CustomizationConfig.windowBorderColor = Color.GRAY
