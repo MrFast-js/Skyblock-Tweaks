@@ -41,8 +41,8 @@ object AuctionMenuOverlays {
     var sellingAuction: Auction? = null
 
     open class Auction(var slot: Slot, var uuid: String) {
-        var price = 0
-        var profit = 0
+        var price = 0L
+        var profit = 0L
         var suggestedListingPrice = 0
         var winning: Boolean? = null
         var seller: String? = null
@@ -120,10 +120,10 @@ object AuctionMenuOverlays {
 
             if (auction.winning == false) {
                 val submitBidStack = inventory.getStackInSlot(29) ?: return
-                var newBidPrice = 0
+                var newBidPrice = 0L
                 for (line in submitBidStack.getLore()) {
                     if (line.matches("New bid: (.*) coins")) {
-                        newBidPrice = line.clean().replace("\\D+".toRegex(), "").toInt()
+                        newBidPrice = line.clean().replace("\\D+".toRegex(), "").toLong()
                         break
                     }
                 }
@@ -186,7 +186,7 @@ object AuctionMenuOverlays {
                 auction.ended = true
             }
             if (line.clean().matches("(?:Starting bid|Top bid|Buy it now): (.*) coins")) {
-                auction.price = line.clean().replace("\\D+".toRegex(), "").toInt()
+                auction.price = line.clean().replace("\\D+".toRegex(), "").toLong()
             }
         }
     }
@@ -210,7 +210,7 @@ object AuctionMenuOverlays {
             val winningAuctions = biddedAuctions.filter { it.winning == true }.size
             val endedAuctions = biddedAuctions.filter { it.ended }.size
 
-            var totalFlipPotential = 0;
+            var totalFlipPotential = 0L;
             val flipList = mutableListOf("§e§lTotal Flip Profit", "§3===============")
 
             for (biddedAuction in biddedAuctions) {
