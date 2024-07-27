@@ -50,7 +50,7 @@ object HighlightCorrectLivid {
     }
 
     @SubscribeEvent
-    fun onRenderEntityOutlines(event: RenderEntityOutlineEvent.Xray) {
+    fun onRenderEntityOutlines(event: RenderEntityOutlineEvent.Normal) {
         if (!LocationUtils.inDungeons || LocationUtils.dungeonFloor != 5 || !highlightCorrectLivid) return
 
         if (lividEntity!=null) {
