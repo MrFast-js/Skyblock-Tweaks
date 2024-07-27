@@ -20,7 +20,7 @@ class ProfitTrackerCommand : CommandBase() {
         return "/profittracker"
     }
 
-    override fun processCommand(sender: ICommandSender?, args: Array<out String>?) {
+    override fun processCommand(sender: ICommandSender, args: Array<out String>) {
         GuiUtil.open(ProfitTrackerGui())
     }
 

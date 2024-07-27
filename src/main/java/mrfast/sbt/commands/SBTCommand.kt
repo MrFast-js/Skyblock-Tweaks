@@ -25,51 +25,49 @@ class SBTCommand : CommandBase() {
         return Lists.newArrayList("sbt")
     }
 
-    override fun processCommand(sender: ICommandSender?, args: Array<out String>?) {
-        if (args != null) {
-            if (args.isNotEmpty()) {
-                when {
-                    args[0] == "edit" -> GuiUtil.open(GuiEditor())
-                    args[0] == "update" -> {
-                        if (args.size < 2) {
-                            ChatUtils.sendClientMessage("§cInvalid Usage! §e/sbt update check|pre|full")
-                            return
-                        }
-                        when {
-                            args[1] == "close" -> {
-                                FMLCommonHandler.instance().exitJava(0, false)
-                            }
-
-                            args[1] == "check" -> {
-                                VersionManager.checkIfNeedUpdate()
-                            }
-
-                            args[1] == "pre" || args[1] == "beta" -> {
-                                CustomizationConfig.updateCheckType = "Pre (Beta Releases)"
-                                VersionManager.doUpdate()
-                            }
-
-                            args[1] == "full" || args[1] == "latest" -> {
-                                CustomizationConfig.updateCheckType = "Full (Full Releases)"
-                                VersionManager.doUpdate()
-                            }
-                        }
+    override fun processCommand(sender: ICommandSender, args: Array<out String>) {
+        if (args.isNotEmpty()) {
+            when {
+                args[0] == "edit" -> GuiUtil.open(GuiEditor())
+                args[0] == "update" -> {
+                    if (args.size < 2) {
+                        ChatUtils.sendClientMessage("§cInvalid Usage! §e/sbt update check|pre|full")
+                        return
                     }
+                    when {
+                        args[1] == "close" -> {
+                            FMLCommonHandler.instance().exitJava(0, false)
+                        }
 
-                    args[0] == "help" -> {
-                        ChatUtils.sendClientMessage(
-                            "§6===== §9§lSkyblock Tweaks Commands§r§6 =====\n" +
-                                    " §r§b• /sbt §3edit §f➡ §7Edit GUI locations\n" +
-                                    " §b• /sbt §3update §echeck | pre | full §f➡ §7Check for updates\n" +
-                                    " §b• /path §f➡ §7Create custom recorded paths to save and replay!\n" +
-                                    " §b• /pft §f➡ §7Opens profit tracker, tracking every item gained/loss\n" +
-                                    " §b• /sbtdebug §f➡ §7Debugging commands"
-                        )
+                        args[1] == "check" -> {
+                            VersionManager.checkIfNeedUpdate()
+                        }
+
+                        args[1] == "pre" || args[1] == "beta" -> {
+                            CustomizationConfig.updateCheckType = "Pre (Beta Releases)"
+                            VersionManager.doUpdate()
+                        }
+
+                        args[1] == "full" || args[1] == "latest" -> {
+                            CustomizationConfig.updateCheckType = "Full (Full Releases)"
+                            VersionManager.doUpdate()
+                        }
                     }
                 }
-            } else {
-                GuiUtil.open(ConfigGui())
+
+                args[0] == "help" -> {
+                    ChatUtils.sendClientMessage(
+                        "§6===== §9§lSkyblock Tweaks Commands§r§6 =====\n" +
+                                " §r§b• /sbt §3edit §f➡ §7Edit GUI locations\n" +
+                                " §b• /sbt §3update §echeck | pre | full §f➡ §7Check for updates\n" +
+                                " §b• /path §f➡ §7Create custom recorded paths to save and replay!\n" +
+                                " §b• /pft §f➡ §7Opens profit tracker, tracking every item gained/loss\n" +
+                                " §b• /sbtdebug §f➡ §7Debugging commands"
+                    )
+                }
             }
+        } else {
+            GuiUtil.open(ConfigGui())
         }
     }
 

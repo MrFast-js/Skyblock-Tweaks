@@ -16,6 +16,21 @@ import java.util.*
 
 
 class PathCommand : CommandBase() {
+    private var arguments = mutableListOf("start", "add", "record", "load", "unload", "list", "save", "delete")
+
+    private fun invalidUsage() {
+        val usage = ChatFormatting.RED.toString() + "Invalid Usage!\n" +
+                " §b• /path §3start §f➡ §7Starts the path creating process" + "\n" +
+                " §b• /path §3add §e<x> <y> <z> §f➡ §7Adds a point to the path your creating" + "\n" +
+                " §b• /path §3record §e<start|stop> §f➡ §7Starts/stops recording your movement on the path your creating" + "\n" +
+                " §b• /path §3load §e<path_name> §f➡ §7Loads a saved path" + "\n" +
+                " §b• /path §3unload §f➡ §7Unloads your current path" + "\n" +
+                " §b• /path §3list §f➡ §7Lists your saved paths" + "\n" +
+                " §b• /path §3save §e<path_name> §f➡ §7Saves created path as file" + "\n" +
+                " §b• /path §3delete §e<path_name> §f➡ §7Deletes a saved path"
+        ChatUtils.sendClientMessage(usage)
+    }
+
     override fun getCommandName(): String {
         return "path"
     }
@@ -32,8 +47,7 @@ class PathCommand : CommandBase() {
         return 0
     }
 
-    @Throws(CommandException::class)
-    override fun processCommand(arg0: ICommandSender, args: Array<String>) {
+    override fun processCommand(sender: ICommandSender, args: Array<out String>) {
         if (args.isEmpty()) {
             invalidUsage()
             return
@@ -107,8 +121,8 @@ class PathCommand : CommandBase() {
             }
 
             "list" -> {
-                ChatUtils.sendClientMessage("§9§l➜ Saved Paths:",true)
-                for ((pathName,value) in PathTracer.pathsAndPoints.entrySet()) {
+                ChatUtils.sendClientMessage("§9§l➜ Saved Paths:", true)
+                for ((pathName, value) in PathTracer.pathsAndPoints.entrySet()) {
                     val message = ChatComponentText(" §3${pathName}")
                     message.setChatStyle(
                         message.chatStyle
@@ -150,24 +164,6 @@ class PathCommand : CommandBase() {
             }
 
             else -> invalidUsage()
-        }
-    }
-
-    companion object {
-        var arguments: List<String> =
-            mutableListOf("start", "add", "record", "load", "unload", "list", "save", "delete")
-
-        fun invalidUsage() {
-            val usage = ChatFormatting.RED.toString() + "Invalid Usage!\n" +
-                    " §b• /path §3start §f➡ §7Starts the path creating process" + "\n" +
-                    " §b• /path §3add §e<x> <y> <z> §f➡ §7Adds a point to the path your creating" + "\n" +
-                    " §b• /path §3record §e<start|stop> §f➡ §7Starts/stops recording your movement on the path your creating" + "\n" +
-                    " §b• /path §3load §e<path_name> §f➡ §7Loads a saved path" + "\n" +
-                    " §b• /path §3unload §f➡ §7Unloads your current path" + "\n" +
-                    " §b• /path §3list §f➡ §7Lists your saved paths" + "\n" +
-                    " §b• /path §3save §e<path_name> §f➡ §7Saves created path as file" + "\n" +
-                    " §b• /path §3delete §e<path_name> §f➡ §7Deletes a saved path"
-            ChatUtils.sendClientMessage(usage)
         }
     }
 }
