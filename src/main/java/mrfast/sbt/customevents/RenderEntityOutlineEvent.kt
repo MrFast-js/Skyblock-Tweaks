@@ -1,6 +1,5 @@
 package mrfast.sbt.customevents
 
-import mrfast.sbt.customevents.RenderEntityOutlineEvent.Type
 import net.minecraft.client.Minecraft
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityArmorStand
@@ -15,17 +14,12 @@ import java.util.function.Function
  * @link https://github.com/BiscuitDevelopment/SkyblockAddons/blob/master/LICENSE
  * @author BiscuitDevelopment
  */
-class RenderEntityOutlineEvent(
-    /**
-     * The phase of the event (see [Type]
-     */
-    val type: Type,
+open class RenderEntityOutlineEvent(
     /**
      * The entities we can outline. Note that this set and [.entitiesToOutline] are disjoint at all times.
      */
     var entitiesToChooseFrom: HashSet<Entity>? = null
-) :
-    Event() {
+) : Event() {
     /**
      * The entities to outline. This is progressively cumulated from [.entitiesToChooseFrom]
      */
@@ -34,10 +28,9 @@ class RenderEntityOutlineEvent(
     /**
      * Constructs the event, given the type and optional entities to outline.
      *
-     *
      * This will modify {@param potentialEntities} internally, so make a copy before passing it if necessary.
      *
-     * @param theType           of the event (see [Type]
+     * @param potentialEntities the entities to outline
      */
     init {
         entitiesToChooseFrom?.let {
@@ -46,10 +39,9 @@ class RenderEntityOutlineEvent(
     }
 
     /**
-     * Conditionally queue entities around which to render entities
+     * Conditionally queue entities around which to render entities.
      * Selects from the pool of [.entitiesToChooseFrom] to speed up the predicate testing on subsequent calls.
      * Is more efficient (theoretically) than calling [.queueEntityToOutline] for each entity because lists are handled internally.
-     *
      *
      * This function loops through all entities and so is not very efficient.
      * It's advisable to encapsulate calls to this function with global checks (those not dependent on an individual entity) for efficiency purposes.
@@ -70,11 +62,10 @@ class RenderEntityOutlineEvent(
         }
     }
 
-
     /**
-     * Adds a single entity to the list of the entities to outline
+     * Adds a single entity to the list of the entities to outline.
      *
-     * @param entity       the entity to add
+     * @param entity the entity to add
      * @param outlineColor the color with which to outline
      */
     fun queueEntityToOutline(entity: Entity?, outlineColor: Color) {
@@ -88,7 +79,7 @@ class RenderEntityOutlineEvent(
     }
 
     /**
-     * Used for on-the-fly generation of entities. Driven by event handlers in a decentralized fashion
+     * Used for on-the-fly generation of entities. Driven by event handlers in a decentralized fashion.
      */
     private fun computeAndCacheEntitiesToChooseFrom() {
         val entities = Minecraft.getMinecraft().theWorld.loadedEntityList
@@ -99,13 +90,7 @@ class RenderEntityOutlineEvent(
         entitiesToOutline = HashMap(entitiesToChooseFrom!!.size)
     }
 
-    /**
-     * The phase of the event.
-     * [.XRAY] means that this directly precedes entities whose outlines are rendered through walls (Vanilla 1.9+)
-     * [.NO_XRAY] means that this directly precedes entities whose outlines are rendered only when visible to the client
-     */
-    enum class Type {
-        XRAY,
-        NO_XRAY
-    }
+    class Xray(entitiesToChooseFrom: HashSet<Entity>? = null) : RenderEntityOutlineEvent(entitiesToChooseFrom)
+
+    class Normal(entitiesToChooseFrom: HashSet<Entity>? = null) : RenderEntityOutlineEvent(entitiesToChooseFrom)
 }

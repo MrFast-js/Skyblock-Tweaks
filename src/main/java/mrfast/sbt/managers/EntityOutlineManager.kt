@@ -62,11 +62,10 @@ object EntityOutlineManager {
             if (mc.theWorld != null && shouldRenderEntityOutlines()) {
                 // These events need to be called in this specific order for the xray to have priority over the no xray
                 // Get all entities to render xray outlines
-                val xrayOutlineEvent = RenderEntityOutlineEvent(RenderEntityOutlineEvent.Type.XRAY, null)
+                val xrayOutlineEvent = RenderEntityOutlineEvent.Xray(null)
                 MinecraftForge.EVENT_BUS.post(xrayOutlineEvent)
                 // Get all entities to render no xray outlines, using pre-filtered entities (no need to test xray outlined entities)
-                val noxrayOutlineEvent = RenderEntityOutlineEvent(
-                    RenderEntityOutlineEvent.Type.NO_XRAY,
+                val noxrayOutlineEvent = RenderEntityOutlineEvent.Normal(
                     xrayOutlineEvent.entitiesToChooseFrom
                 )
                 MinecraftForge.EVENT_BUS.post(noxrayOutlineEvent)
@@ -234,10 +233,6 @@ object EntityOutlineManager {
                             } else {
                                 setNonLivingColor(value)
                             }
-                            GlStateManager.color(1f,0f,0f)
-                            GL11.glColor4f(1f,0f,0f,1f)
-                            setNonLivingColor(value)
-                            setLivingColor(Color(value))
 
                             renderManager.renderEntityStatic(key, partialTicks, true)
                         } catch (ignored: Exception) {

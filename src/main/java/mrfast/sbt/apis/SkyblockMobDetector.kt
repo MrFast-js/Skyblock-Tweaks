@@ -12,10 +12,10 @@ import mrfast.sbt.utils.Utils.clean
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityArmorStand
+import net.minecraft.entity.projectile.EntityArrow
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.common.MinecraftForge
-import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import java.util.regex.Matcher
@@ -42,7 +42,7 @@ object SkyblockMobDetector {
                 if (Utils.mc.thePlayer.getDistanceToEntity(entity) > 30) continue
                 val potentialMob = Utils.mc.theWorld.getEntityByID(entity.entityId - 1)
                     ?: Utils.mc.theWorld.getEntityByID(entity.entityId - 3)
-                if (potentialMob == null || !potentialMob.isEntityAlive) continue
+                if (potentialMob == null || !potentialMob.isEntityAlive || potentialMob is EntityArrow) continue
 
                 val sbMob = SkyblockMob(entity, potentialMob)
                 skyblockMobHashMap[entity] = sbMob
@@ -106,7 +106,7 @@ object SkyblockMobDetector {
         var matcher: Matcher? = null
 
         // Iterate through the regex patterns
-        val regexPatterns = arrayOf(normalMobRegex, slayerMobRegex, dungeonMobRegex)
+        val regexPatterns = listOf(normalMobRegex, slayerMobRegex, dungeonMobRegex)
         var regexBeingUsed: String? = null
         for (regex in regexPatterns) {
             pattern = Pattern.compile(regex)

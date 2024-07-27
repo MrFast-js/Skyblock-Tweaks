@@ -3,6 +3,7 @@ package mrfast.sbt.config.categories
 import mrfast.sbt.config.Config
 import mrfast.sbt.config.ConfigProperty
 import mrfast.sbt.config.ConfigType
+import java.awt.Color
 
 
 object DungeonConfig : Config() {
@@ -54,6 +55,46 @@ object DungeonConfig : Config() {
         subcategory = "Spawn Timers"
     )
     var fireFreezeTimer = true
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Highlight Starred Mobs",
+        description = "Makes all starred mobs in dungeons glow!",
+        category = "§1§rDungeons",
+        subcategory = "Highlights",
+        isParent = true
+    )
+    var glowingStarredMobs = false
+
+    @ConfigProperty(
+        type = ConfigType.COLOR,
+        name = "Color",
+        description = "",
+        category = "§1§rDungeons",
+        subcategory = "Highlights",
+        parentName = "Highlight Starred Mobs"
+    )
+    var glowingStarredMobsColor = Color(0xFFAA00)
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Highlight Correct Livid",
+        description = "Make the correct livid glowing inside the Floor 5 Boss Fight!",
+        category = "§1§rDungeons",
+        subcategory = "Highlights",
+        isParent = true
+    )
+    var highlightCorrectLivid = false
+
+    @ConfigProperty(
+        type = ConfigType.COLOR,
+        name = "Color",
+        description = "",
+        category = "§1§rDungeons",
+        subcategory = "Highlights",
+        parentName = "Highlight Starred Mobs"
+    )
+    var highlightCorrectLividColor = Color(0x00FFFF)
 
 //
 //    @ConfigProperty(
