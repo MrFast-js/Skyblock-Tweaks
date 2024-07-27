@@ -1,6 +1,9 @@
 package mrfast.sbt.utils
 
+import gg.essential.elementa.dsl.constraint
 import gg.essential.elementa.state.BasicState
+import gg.essential.universal.UMatrixStack
+import mrfast.sbt.config.components.OutlinedRoundedRectangle
 import mrfast.sbt.utils.Utils.cleanColor
 import mrfast.sbt.utils.Utils.getStringWidth
 import net.minecraft.client.Minecraft
@@ -230,8 +233,16 @@ object GuiUtils {
             val actualY = y + originY
 
             if (drawBackground) {
-                drawOutlinedSquare(
-                    (x - 2).toInt(), (y - 2).toInt(), width + 5, height + 5, Color(40, 40, 40), Color(40, 40, 40)
+                OutlinedRoundedRectangle.drawOutlinedRoundedRectangle(
+                    UMatrixStack(),
+                    x - 1,
+                    y - 1,
+                    width + 3f,
+                    height + 3f,
+                    3f,
+                    Color(40, 40, 40),
+                    Color(85,255,85).constraint,
+                    1f
                 )
             }
 

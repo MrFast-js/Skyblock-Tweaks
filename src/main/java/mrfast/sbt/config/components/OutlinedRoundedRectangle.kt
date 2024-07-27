@@ -27,8 +27,6 @@ class OutlinedRoundedRectangle(
             matrixStack: UMatrixStack,
             left: Float,
             top: Float,
-            right: Float,
-            bottom: Float,
             width: Float,
             height: Float,
             radius: Float,
@@ -38,8 +36,8 @@ class OutlinedRoundedRectangle(
         ) {
             val borderLeft = left - borderWidth
             val borderTop = top - borderWidth
-            val borderRight = right + borderWidth
-            val borderBottom = bottom + borderWidth
+            val borderRight = left + width + borderWidth
+            val borderBottom = top + height + borderWidth
             val adjustedRadius = radius + 1
             // Draw outline
             drawRoundedRectangle(
@@ -53,7 +51,7 @@ class OutlinedRoundedRectangle(
             )
 
             // Draw main thing
-            drawRoundedRectangle(matrixStack, left, top, width, height, radius, color)
+            drawRoundedRectangle(matrixStack, left, top, left + width, top + height, radius, color)
         }
     }
 }

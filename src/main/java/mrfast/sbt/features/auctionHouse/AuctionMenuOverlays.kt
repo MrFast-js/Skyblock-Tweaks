@@ -1,8 +1,12 @@
 package mrfast.sbt.features.auctionHouse
 
 import com.google.gson.JsonObject
+import gg.essential.elementa.dsl.constraint
+import gg.essential.elementa.state.constraint
+import gg.essential.universal.UMatrixStack
 import mrfast.sbt.apis.ItemApi
 import mrfast.sbt.config.categories.AuctionHouseConfig
+import mrfast.sbt.config.components.OutlinedRoundedRectangle
 import mrfast.sbt.customevents.GuiContainerBackgroundDrawnEvent
 import mrfast.sbt.customevents.SignDrawnEvent
 import mrfast.sbt.managers.OverlayManager
@@ -251,8 +255,16 @@ object AuctionMenuOverlays {
             val chestEvent = (event as GuiContainerBackgroundDrawnEvent)
             // Change z-depth in order to be above NEU inventory buttons
             GlStateManager.translate(0f, 0f, 52f)
-            GuiUtils.drawOutlinedSquare(
-                0, 0, width, 10 + 12 * lines.size, Color(18, 18, 18), GuiUtils.rainbowColor.get()
+            OutlinedRoundedRectangle.drawOutlinedRoundedRectangle(
+                UMatrixStack(),
+                2f,
+                0f,
+                width.toFloat(),
+                (10 + 12 * lines.size).toFloat(),
+                4f,
+                Color(18, 18, 18),
+                GuiUtils.rainbowColor.get().constraint,
+                2f
             )
 
             for (segment in lines) {
@@ -346,8 +358,16 @@ object AuctionMenuOverlays {
 
             // Change z-depth in order to be above NEU inventory buttons
             GlStateManager.translate(0f, 0f, 52f)
-            GuiUtils.drawOutlinedSquare(
-                0, 0, width, 10 + 12 * lines.size, Color(18, 18, 18), GuiUtils.rainbowColor.get()
+            OutlinedRoundedRectangle.drawOutlinedRoundedRectangle(
+                UMatrixStack(),
+                2f,
+                0f,
+                width.toFloat(),
+                (10 + 12 * lines.size).toFloat(),
+                4f,
+                Color(18, 18, 18),
+                GuiUtils.rainbowColor.get().constraint,
+                2f
             )
 
             for (segment in lines) {
@@ -416,8 +436,16 @@ object AuctionMenuOverlays {
                 )
             val sr = ScaledResolution(Utils.mc)
 
-            GuiUtils.drawOutlinedSquare(
-                0, 0, width, 10 + 12 * lines.size, Color(18, 18, 18), GuiUtils.rainbowColor.get()
+            OutlinedRoundedRectangle.drawOutlinedRoundedRectangle(
+                UMatrixStack(),
+                2f,
+                0f,
+                width.toFloat(),
+                (10 + 12 * lines.size).toFloat(),
+                4f,
+                Color(18, 18, 18),
+                GuiUtils.rainbowColor.get().constraint,
+                2f
             )
 
             for (segment in lines) {
