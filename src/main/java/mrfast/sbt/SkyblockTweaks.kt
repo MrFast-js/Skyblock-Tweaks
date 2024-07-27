@@ -105,6 +105,8 @@ class SkyblockTweaks {
         // Stop above hotbar elements from rendering
         MinecraftForge.EVENT_BUS.register(HideHotbarElements)
 
+        MinecraftForge.EVENT_BUS.register(EntityOutlineManager)
+
         // Gui
         MinecraftForge.EVENT_BUS.register(GuiManager)
 
