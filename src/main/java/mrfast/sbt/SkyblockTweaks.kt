@@ -10,6 +10,7 @@ import mrfast.sbt.config.ConfigGui
 import mrfast.sbt.config.GuiManager
 import mrfast.sbt.customevents.WorldLoadEvent
 import mrfast.sbt.features.auctionHouse.*
+import mrfast.sbt.features.crimsonIsle.CrimsonIsleMap
 import mrfast.sbt.features.dungeons.*
 import mrfast.sbt.features.general.*
 import mrfast.sbt.features.profitTracking.ProfitTracker
@@ -84,7 +85,7 @@ class SkyblockTweaks {
         MinecraftForge.EVENT_BUS.register(OverflowManaNumber)
         MinecraftForge.EVENT_BUS.register(PartyDisplay)
 
-        MinecraftForge.EVENT_BUS.register(Floor2SpawnTimer)
+        MinecraftForge.EVENT_BUS.register(ScarfSpawnTimers)
         MinecraftForge.EVENT_BUS.register(FireFreezeHelper)
         MinecraftForge.EVENT_BUS.register(AuctionMenuOverlays)
         MinecraftForge.EVENT_BUS.register(AuctionNotificationSimplifier)

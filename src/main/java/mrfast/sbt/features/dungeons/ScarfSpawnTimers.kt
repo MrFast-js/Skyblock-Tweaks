@@ -10,7 +10,7 @@ import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
-object Floor2SpawnTimer {
+object ScarfSpawnTimers {
     private var startMinionCount = false
     private var startBossCount = false
 

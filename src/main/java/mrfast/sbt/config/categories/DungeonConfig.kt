@@ -40,7 +40,7 @@ object DungeonConfig : Config() {
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
-        name = "Floor 2 Spawn Timers",
+        name = "Floor 2 Scarf Spawn Timers",
         description = "Renders timers showing when the §dPriest§r, §cWarrior§f, §aArcher§r, §bMage§r, §6Scarf§r will spawn.",
         category = "§1§rDungeons",
         subcategory = "Spawn Timers"
