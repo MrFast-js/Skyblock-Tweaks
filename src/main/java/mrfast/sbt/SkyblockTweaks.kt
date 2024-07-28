@@ -107,6 +107,7 @@ class SkyblockTweaks {
         MinecraftForge.EVENT_BUS.register(HideHotbarElements)
 
         MinecraftForge.EVENT_BUS.register(HighlightStarredMobs)
+        MinecraftForge.EVENT_BUS.register(CrimsonIsleMap)
         MinecraftForge.EVENT_BUS.register(HighlightCorrectLivid)
 
         MinecraftForge.EVENT_BUS.register(EntityOutlineManager)
