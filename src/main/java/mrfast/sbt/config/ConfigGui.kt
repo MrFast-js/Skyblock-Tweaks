@@ -156,6 +156,18 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
             socketStatusButton.addTooltip(lore)
         }
 
+        val editGuiLocationsButton = OutlinedRoundedRectangle(guiLineColorsState.constraint, 1f, 3f).constrain {
+            width = 16.pixels
+            height = 16.pixels
+            x = if(CustomizationConfig.developerMode) SiblingConstraintFixed(8f, false) else 8.pixels
+            y = CenterConstraint()
+            color = mainBackgroundColorState.constraint
+        } childOf header
+        val editGuiLocationsSymbol = UIText("✎").constrain { x = CenterConstraint();y = CenterConstraint();color = Color(0xFFFF55).constraint } childOf editGuiLocationsButton
+        editGuiLocationsSymbol.setTextScale(2.pixels)
+        editGuiLocationsButton.onMouseClick {GuiUtil.open(GuiEditor())}
+        editGuiLocationsButton.addTooltip(setOf("§eEdit Gui Locations"))
+
         // Add some text to the panel
         val modTitle = UIText("§eSkyblock §9Tweaks").constrain {
             x = CenterConstraint()
@@ -194,6 +206,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
 
         if (showUpdateButton) {
             val updateButton = OutlinedRoundedRectangle(guiLineColorsState.constraint, 1f, 3f).constrain {
+                color = mainBackgroundColorState.constraint
                 width = 16.pixels
                 height = 16.pixels
                 x = SiblingConstraintFixed(15f, true)
