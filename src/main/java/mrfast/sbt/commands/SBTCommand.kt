@@ -57,13 +57,16 @@ class SBTCommand : CommandBase() {
 
                 args[0] == "help" -> {
                     ChatUtils.sendClientMessage(
-                        "§6===== §9§lSkyblock Tweaks Commands§r§6 =====\n" +
-                                " §r§b• /sbt §3edit §f➡ §7Edit GUI locations\n" +
+                        "§6===== §9§lSkyblock Tweaks Commands§r§6 =====§r\n" +
+                                " §b• /sbt §3edit §f➡ §7Edit GUI locations\n" +
                                 " §b• /sbt §3update §echeck | pre | full §f➡ §7Check for updates\n" +
                                 " §b• /path §f➡ §7Create custom recorded paths to save and replay!\n" +
                                 " §b• /pft §f➡ §7Opens profit tracker, tracking every item gained/loss\n" +
                                 " §b• /sbtdebug §f➡ §7Debugging commands"
                     )
+                }
+                else -> {
+                    ChatUtils.sendClientMessage("§cInvalid subcommand, §7/sbt help§c for help")
                 }
             }
         } else {
