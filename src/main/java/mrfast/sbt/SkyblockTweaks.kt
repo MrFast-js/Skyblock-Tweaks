@@ -18,6 +18,9 @@ import mrfast.sbt.features.mining.PathTracer
 import mrfast.sbt.features.partyfinder.PartyFinderJoinInfo
 import mrfast.sbt.features.hud.number.*
 import mrfast.sbt.features.hud.bar.*
+import mrfast.sbt.features.slayers.GlowingBosses
+import mrfast.sbt.features.slayers.SlayerManager
+import mrfast.sbt.features.slayers.SlayerTimer
 import mrfast.sbt.managers.*
 import mrfast.sbt.utils.DevUtils
 import mrfast.sbt.utils.LocationUtils
@@ -70,6 +73,7 @@ class SkyblockTweaks {
         MinecraftForge.EVENT_BUS.register(DataManager)
         MinecraftForge.EVENT_BUS.register(PartyManager)
         MinecraftForge.EVENT_BUS.register(PurseManager)
+        MinecraftForge.EVENT_BUS.register(SlayerManager)
         MinecraftForge.EVENT_BUS.register(InventoryItemManager)
         MinecraftForge.EVENT_BUS.register(SackManager)
         MinecraftForge.EVENT_BUS.register(OverlayManager)
@@ -86,6 +90,8 @@ class SkyblockTweaks {
         MinecraftForge.EVENT_BUS.register(PartyDisplay)
 
         MinecraftForge.EVENT_BUS.register(ScarfSpawnTimers)
+        MinecraftForge.EVENT_BUS.register(GlowingBosses)
+        MinecraftForge.EVENT_BUS.register(SlayerTimer)
         MinecraftForge.EVENT_BUS.register(FireFreezeHelper)
         MinecraftForge.EVENT_BUS.register(AuctionMenuOverlays)
         MinecraftForge.EVENT_BUS.register(AuctionNotificationSimplifier)

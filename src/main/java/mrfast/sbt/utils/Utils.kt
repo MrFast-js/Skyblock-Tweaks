@@ -1,5 +1,6 @@
 package mrfast.sbt.utils
 
+import mrfast.sbt.utils.LevelingUtils.roundToTwoDecimalPlaces
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.inventory.ContainerChest
@@ -80,6 +81,12 @@ object Utils {
         val remainingSeconds = seconds % 60
 
         return "${if (hours > 0) "${hours}h " else ""}${if (minutes > 0) "${minutes}m " else ""}${remainingSeconds}s"
+    }
+
+    fun Long.toFormattedSeconds(): String {
+        val seconds = this / 1000.0
+
+        return "${seconds.roundToTwoDecimalPlaces()}s"
     }
 
     fun copyToClipboard(text: String) {

@@ -14,6 +14,7 @@ open class Config : ConfigManager() {
         AuctionHouseConfig,
         MiscellaneousConfig,
         CrimsonConfig,
+        SlayerConfig,
         //OverlaysConfig,
         RiftConfig,
         RenderingConfig,
