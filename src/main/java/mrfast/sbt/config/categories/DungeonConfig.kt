@@ -92,7 +92,7 @@ object DungeonConfig : Config() {
         description = "",
         category = "§1§rDungeons",
         subcategory = "Highlights",
-        parentName = "Highlight Starred Mobs"
+        parentName = "Highlight Correct Livid"
     )
     var highlightCorrectLividColor = Color(0x00FFFF)
 
