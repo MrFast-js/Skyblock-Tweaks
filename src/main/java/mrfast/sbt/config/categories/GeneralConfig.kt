@@ -1,11 +1,9 @@
 package mrfast.sbt.config.categories
 
-// Import the ConfigProperty annotation if it's in a different package
 import mrfast.sbt.config.Config
 import mrfast.sbt.config.ConfigProperty
 import mrfast.sbt.config.ConfigType
 import java.awt.Color
-
 
 object GeneralConfig : Config() {
 

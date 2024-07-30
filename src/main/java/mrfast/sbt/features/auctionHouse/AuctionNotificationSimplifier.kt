@@ -1,5 +1,6 @@
 package mrfast.sbt.features.auctionHouse
 
+import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.config.categories.AuctionHouseConfig
 import mrfast.sbt.utils.ChatUtils
 import mrfast.sbt.utils.Utils
@@ -7,6 +8,7 @@ import net.minecraft.util.ChatComponentText
 import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
+@SkyblockTweaks.EventComponent
 object AuctionNotificationSimplifier {
     private val outbidRegex = """§6\[Auction\] (.*) §eoutbid you by (.*) coins §efor (.*) §e§lCLICK""".toRegex()
 

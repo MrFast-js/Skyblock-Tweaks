@@ -1,30 +1,13 @@
 package mrfast.sbt
 
-import mrfast.sbt.apis.ItemAbilities
-import mrfast.sbt.apis.ItemApi
-import mrfast.sbt.apis.PlayerStats
-import mrfast.sbt.apis.SkyblockMobDetector
-import mrfast.sbt.commands.*
+import mrfast.sbt.commands.DebugCommand
+import mrfast.sbt.commands.PathCommand
+import mrfast.sbt.commands.ProfitTrackerCommand
+import mrfast.sbt.commands.SBTCommand
 import mrfast.sbt.config.Config
 import mrfast.sbt.config.ConfigGui
 import mrfast.sbt.config.GuiManager
 import mrfast.sbt.customevents.WorldLoadEvent
-import mrfast.sbt.features.auctionHouse.*
-import mrfast.sbt.features.crimsonIsle.CrimsonIsleMap
-import mrfast.sbt.features.dungeons.*
-import mrfast.sbt.features.general.*
-import mrfast.sbt.features.profitTracking.ProfitTracker
-import mrfast.sbt.features.mining.PathTracer
-import mrfast.sbt.features.partyfinder.PartyFinderJoinInfo
-import mrfast.sbt.features.hud.number.*
-import mrfast.sbt.features.hud.bar.*
-import mrfast.sbt.features.slayers.GlowingBosses
-import mrfast.sbt.features.slayers.SlayerManager
-import mrfast.sbt.features.slayers.SlayerTimer
-import mrfast.sbt.managers.*
-import mrfast.sbt.utils.DevUtils
-import mrfast.sbt.utils.LocationUtils
-import mrfast.sbt.utils.SocketUtils
 import mrfast.sbt.utils.Utils
 import net.minecraftforge.client.ClientCommandHandler
 import net.minecraftforge.client.event.GuiScreenEvent.KeyboardInputEvent
@@ -37,6 +20,7 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.input.Keyboard
+import org.reflections.Reflections
 
 @Mod(modid = SkyblockTweaks.MOD_ID, name = SkyblockTweaks.MOD_NAME)
 class SkyblockTweaks {
@@ -53,78 +37,18 @@ class SkyblockTweaks {
         config.loadConfig()
     }
 
+    @Retention(AnnotationRetention.RUNTIME)
+    @Target(AnnotationTarget.CLASS)
+    annotation class EventComponent
+
     @Mod.EventHandler
-    fun init(event: FMLInitializationEvent?) {
+    fun init(event: FMLInitializationEvent) {
         MinecraftForge.EVENT_BUS.register(this)
 
-        MinecraftForge.EVENT_BUS.register(PathTracer)
-
-        // Apis
-        MinecraftForge.EVENT_BUS.register(ItemApi)
-        MinecraftForge.EVENT_BUS.register(SkyblockMobDetector)
-
-        // Utils
-        MinecraftForge.EVENT_BUS.register(LocationUtils)
-        MinecraftForge.EVENT_BUS.register(SocketUtils)
-        MinecraftForge.EVENT_BUS.register(DevUtils)
-
-        // Managers
-        MinecraftForge.EVENT_BUS.register(VersionManager)
-        MinecraftForge.EVENT_BUS.register(DataManager)
-        MinecraftForge.EVENT_BUS.register(PartyManager)
-        MinecraftForge.EVENT_BUS.register(PurseManager)
-        MinecraftForge.EVENT_BUS.register(SlayerManager)
-        MinecraftForge.EVENT_BUS.register(InventoryItemManager)
-        MinecraftForge.EVENT_BUS.register(SackManager)
-        MinecraftForge.EVENT_BUS.register(OverlayManager)
-
-        // Stat Displays
-        MinecraftForge.EVENT_BUS.register(HealthNumber)
-        MinecraftForge.EVENT_BUS.register(HealthBar)
-        MinecraftForge.EVENT_BUS.register(DefenseNumber)
-        MinecraftForge.EVENT_BUS.register(EffectiveHealthNumber)
-        MinecraftForge.EVENT_BUS.register(ManaNumber)
-        MinecraftForge.EVENT_BUS.register(ManaBar)
-        MinecraftForge.EVENT_BUS.register(SpeedNumber)
-        MinecraftForge.EVENT_BUS.register(OverflowManaNumber)
-        MinecraftForge.EVENT_BUS.register(PartyDisplay)
-
-        MinecraftForge.EVENT_BUS.register(ScarfSpawnTimers)
-        MinecraftForge.EVENT_BUS.register(GlowingBosses)
-        MinecraftForge.EVENT_BUS.register(SlayerTimer)
-        MinecraftForge.EVENT_BUS.register(FireFreezeHelper)
-        MinecraftForge.EVENT_BUS.register(AuctionMenuOverlays)
-        MinecraftForge.EVENT_BUS.register(AuctionNotificationSimplifier)
-
-        MinecraftForge.EVENT_BUS.register(PartyFinderJoinInfo) // Party Finder
-        MinecraftForge.EVENT_BUS.register(NewYearsCakeHelper) // Cake bag sorting helper
-        MinecraftForge.EVENT_BUS.register(TrashHighlighter) // Trash Highlighter
-        MinecraftForge.EVENT_BUS.register(RiftTimeBar) // Rift Bar
-
-        // Overlays
-        MinecraftForge.EVENT_BUS.register(LowHealthTint)
-        MinecraftForge.EVENT_BUS.register(ItemPickupLog)
-        MinecraftForge.EVENT_BUS.register(QuiverOverlay) // Quiver Overlay
-
-        MinecraftForge.EVENT_BUS.register(AuctionFlipper)
-        MinecraftForge.EVENT_BUS.register(ProfitTracker)
-
-        // Stop above hotbar elements from rendering
-        MinecraftForge.EVENT_BUS.register(HideHotbarElements)
-
-        MinecraftForge.EVENT_BUS.register(HighlightStarredMobs)
-        MinecraftForge.EVENT_BUS.register(CrimsonIsleMap)
-        MinecraftForge.EVENT_BUS.register(HighlightCorrectLivid)
-
-        MinecraftForge.EVENT_BUS.register(EntityOutlineManager)
-
-        // Gui
-        MinecraftForge.EVENT_BUS.register(GuiManager)
-
-        // Api's
-        MinecraftForge.EVENT_BUS.register(PlayerStats)
-        MinecraftForge.EVENT_BUS.register(ItemAbilities)
-
+        // Use Kotlin reflection to register each file
+        val reflections = Reflections("mrfast.sbt")
+        val filesToRegister = reflections.getTypesAnnotatedWith(EventComponent::class.java)
+        filesToRegister.forEach { MinecraftForge.EVENT_BUS.register(it.kotlin.objectInstance) }
 
         // Commands
         ClientCommandHandler.instance.registerCommand(SBTCommand())
@@ -133,13 +57,7 @@ class SkyblockTweaks {
         ClientCommandHandler.instance.registerCommand(PathCommand())
 
         // Checks mod folder for version of Skyblock Features your using
-        val modList = Loader.instance().modList
-        for (mod in modList) {
-            if (mod.modId == MOD_ID) {
-                MOD_VERSION = mod.displayVersion
-                break
-            }
-        }
+        MOD_VERSION = Loader.instance().modList.find { it.modId == MOD_ID }!!.displayVersion
     }
 
     @Mod.EventHandler
@@ -159,6 +77,7 @@ class SkyblockTweaks {
 
     // Sends custom event for the world loading, only once, as WorldEvent.Load is called twice
     private var alreadySent = false
+
     @SubscribeEvent
     fun onWorldChange(event: WorldEvent.Load) {
         if (alreadySent) return
@@ -168,6 +87,6 @@ class SkyblockTweaks {
 
         Utils.setTimeout({
             alreadySent = false
-        },2000)
+        }, 2000)
     }
 }

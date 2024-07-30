@@ -1,5 +1,6 @@
 package mrfast.sbt.features.dungeons
 
+import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.config.categories.DungeonConfig.highlightCorrectLivid
 import mrfast.sbt.config.categories.DungeonConfig.highlightCorrectLividColor
 import mrfast.sbt.customevents.RenderEntityOutlineEvent
@@ -14,6 +15,7 @@ import net.minecraft.util.BlockPos
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 
+@SkyblockTweaks.EventComponent
 object HighlightCorrectLivid {
     private var lividEntity: Entity? = null;
 

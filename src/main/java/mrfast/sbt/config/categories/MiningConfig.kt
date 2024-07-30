@@ -5,7 +5,6 @@ import mrfast.sbt.config.ConfigProperty
 import mrfast.sbt.config.ConfigType
 import java.awt.Color
 
-
 object MiningConfig : Config() {
     @ConfigProperty(
             type = ConfigType.TOGGLE,

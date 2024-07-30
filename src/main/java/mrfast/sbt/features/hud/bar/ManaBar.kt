@@ -2,6 +2,7 @@ package mrfast.sbt.features.hud.bar
 
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.universal.UMatrixStack
+import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.apis.PlayerStats
 import mrfast.sbt.config.categories.GeneralConfig
 import mrfast.sbt.config.GuiManager
@@ -11,6 +12,7 @@ import mrfast.sbt.config.categories.GeneralConfig.manaBarOverflowColor
 import mrfast.sbt.config.categories.GeneralConfig.manaBarShowOverflow
 import mrfast.sbt.utils.LocationUtils
 
+@SkyblockTweaks.EventComponent
 object ManaBar {
     init {
         ManaBarGui()

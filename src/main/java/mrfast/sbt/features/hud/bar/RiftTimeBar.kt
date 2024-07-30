@@ -2,11 +2,13 @@ package mrfast.sbt.features.hud.bar
 
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.universal.UMatrixStack
+import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.apis.PlayerStats
 import mrfast.sbt.config.GuiManager
 import mrfast.sbt.config.categories.RiftConfig
 import mrfast.sbt.utils.LocationUtils
 
+@SkyblockTweaks.EventComponent
 object RiftTimeBar {
     init {
         RiftBarGui()

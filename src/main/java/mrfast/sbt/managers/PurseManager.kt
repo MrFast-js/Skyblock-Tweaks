@@ -1,5 +1,6 @@
 package mrfast.sbt.managers
 
+import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.customevents.PurseChangeEvent
 import mrfast.sbt.utils.ScoreboardUtils
 import mrfast.sbt.utils.Utils.clean
@@ -10,6 +11,7 @@ import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 
+@SkyblockTweaks.EventComponent
 object PurseManager {
     var coinsInPurse = 0
     private var stopNextChange = false

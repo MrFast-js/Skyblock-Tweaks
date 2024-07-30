@@ -86,6 +86,7 @@ dependencies {
     implementation("gg.essential:essential-1.8.9-forge:11092+gecb85a783")
     shadowImpl("io.socket:engine.io-client:2.1.0:")
     shadowImpl("moe.nea:libautoupdate:1.2.0")
+    shadowImpl("org.reflections:reflections:0.10.2")
 
     // If you don't want mixins, remove these lines
     shadowImpl("org.spongepowered:mixin:0.7.11-SNAPSHOT") {

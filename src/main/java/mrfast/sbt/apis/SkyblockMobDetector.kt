@@ -1,5 +1,6 @@
 package mrfast.sbt.apis
 
+import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.config.categories.CustomizationConfig
 import mrfast.sbt.config.categories.DeveloperConfig
 import mrfast.sbt.config.categories.DeveloperConfig.showMobIdsThroughWalls
@@ -21,6 +22,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
+@SkyblockTweaks.EventComponent
 object SkyblockMobDetector {
     private val skyblockMobHashMap = HashMap<Entity, SkyblockMob>()
 

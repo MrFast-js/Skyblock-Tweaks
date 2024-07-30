@@ -1,5 +1,6 @@
 package mrfast.sbt.features.crimsonIsle
 
+import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.config.GuiManager
 import mrfast.sbt.config.categories.CrimsonConfig
 import mrfast.sbt.utils.GuiUtils
@@ -11,6 +12,7 @@ import net.minecraft.util.BlockPos
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11
 
+@SkyblockTweaks.EventComponent
 object CrimsonIsleMap {
     val mapTexture = ResourceLocation("skyblocktweaks", "map/crimsonIslesMap.png")
     val playerIcon = ResourceLocation("skyblocktweaks", "map/playerIcon.png")

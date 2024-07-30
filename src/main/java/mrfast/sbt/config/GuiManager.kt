@@ -1,6 +1,7 @@
 package mrfast.sbt.config
 
 import com.google.gson.GsonBuilder
+import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.config.categories.CustomizationConfig
 import mrfast.sbt.utils.Utils
 import net.minecraft.client.renderer.GlStateManager
@@ -9,6 +10,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.io.FileReader
 import java.io.FileWriter
 
+@SkyblockTweaks.EventComponent
 object GuiManager {
     var guiElements = mutableListOf<Element>()
     private val guiConfigFilePath = ConfigManager.modDirectoryPath.resolve("guiConfig.json")

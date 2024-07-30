@@ -6,6 +6,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.apis.ItemApi
 import mrfast.sbt.config.categories.AuctionHouseConfig
 import mrfast.sbt.customevents.SocketMessageEvent
@@ -31,6 +32,8 @@ import org.lwjgl.input.Mouse
 This is an auction flipper that scans the Hypixel Auction API based off of current lowest bins, and 3 day price averages.
 There is no storing of pricing data on SBT's server end, thus making it vulnerable to multi-day market manipulations
  */
+
+@SkyblockTweaks.EventComponent
 object AuctionFlipper {
     var auctionsNotified = 0
 

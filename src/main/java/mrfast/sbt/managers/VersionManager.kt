@@ -1,6 +1,7 @@
 package mrfast.sbt.managers
 
 import moe.nea.libautoupdate.*
+import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.SkyblockTweaks.Companion.MOD_ID
 import mrfast.sbt.SkyblockTweaks.Companion.MOD_VERSION
 import mrfast.sbt.config.categories.CustomizationConfig
@@ -15,6 +16,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.io.IOException
 import java.util.concurrent.CompletableFuture
 
+@SkyblockTweaks.EventComponent
 object VersionManager {
     var neededUpdate = NeededUpdate()
     private var potentialUpdate: PotentialUpdate? = null

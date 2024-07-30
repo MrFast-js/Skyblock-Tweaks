@@ -1,5 +1,6 @@
 package mrfast.sbt.features.general
 
+import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.config.categories.MiscellaneousConfig
 import mrfast.sbt.customevents.SlotClickedEvent
 import mrfast.sbt.customevents.SlotDrawnEvent
@@ -15,6 +16,8 @@ import java.awt.Color
 /*
 TODO: Add saving profile data so dont require re opening cake bag every session
  */
+
+@SkyblockTweaks.EventComponent
 object NewYearsCakeHelper {
     private val sortedCakeBag = mutableListOf<String>()
 

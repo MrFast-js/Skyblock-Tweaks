@@ -5,7 +5,6 @@ import mrfast.sbt.config.ConfigProperty
 import mrfast.sbt.config.ConfigType
 import mrfast.sbt.features.general.TrashHighlighter
 
-
 object MiscellaneousConfig : Config() {
 
     @ConfigProperty(

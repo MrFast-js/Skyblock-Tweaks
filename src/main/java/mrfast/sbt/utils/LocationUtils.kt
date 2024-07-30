@@ -2,11 +2,13 @@ package mrfast.sbt.utils
 
 import com.google.gson.Gson
 import com.google.gson.JsonObject
+import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.utils.Utils.clean
 import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
+@SkyblockTweaks.EventComponent
 object LocationUtils {
     var inSkyblock = false
     var inDungeons = false

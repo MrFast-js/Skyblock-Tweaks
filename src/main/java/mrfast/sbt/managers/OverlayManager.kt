@@ -1,11 +1,13 @@
 package mrfast.sbt.managers
 
+import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.customevents.GuiContainerBackgroundDrawnEvent
 import mrfast.sbt.customevents.SignDrawnEvent
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraftforge.fml.common.eventhandler.Event
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
+@SkyblockTweaks.EventComponent
 object OverlayManager {
     var containerOverlays = mutableListOf<Overlay>()
     var signOverlays = mutableListOf<Overlay>()

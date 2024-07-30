@@ -1,6 +1,7 @@
 package mrfast.sbt.managers
 
 import com.google.gson.*
+import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.config.ConfigManager
 import mrfast.sbt.customevents.ProfileLoadEvent
 import mrfast.sbt.utils.ChatUtils
@@ -8,7 +9,6 @@ import mrfast.sbt.utils.Utils
 import mrfast.sbt.utils.Utils.clean
 import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.common.MinecraftForge
-import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.io.File
 import java.io.FileWriter
@@ -16,7 +16,7 @@ import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Paths
 
-
+@SkyblockTweaks.EventComponent
 object DataManager {
     private val saveDataFilePath = ConfigManager.modDirectoryPath.resolve("profilesData.json")
     private var dataFile: File = saveDataFilePath

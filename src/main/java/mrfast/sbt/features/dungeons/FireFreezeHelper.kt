@@ -1,8 +1,8 @@
 package mrfast.sbt.features.dungeons
 
+import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.config.GuiManager
 import mrfast.sbt.config.categories.DungeonConfig
-import mrfast.sbt.config.categories.GeneralConfig
 import mrfast.sbt.utils.GuiUtils
 import mrfast.sbt.utils.LocationUtils
 import mrfast.sbt.utils.Utils
@@ -16,6 +16,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 /*
 @TODO: Center text horizontally
  */
+
+@SkyblockTweaks.EventComponent
 object FireFreezeHelper {
     private val textScale = 2.0
     private val triggersAndTimings = mapOf(

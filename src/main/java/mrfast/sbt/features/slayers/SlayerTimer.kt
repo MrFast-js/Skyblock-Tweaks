@@ -1,6 +1,7 @@
 package mrfast.sbt.features.slayers
 
 import com.mojang.realmsclient.gui.ChatFormatting
+import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.config.categories.SlayerConfig
 import mrfast.sbt.customevents.SlayerEvent
 import mrfast.sbt.utils.ChatUtils
@@ -8,6 +9,7 @@ import mrfast.sbt.utils.Utils
 import mrfast.sbt.utils.Utils.toFormattedSeconds
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
+@SkyblockTweaks.EventComponent
 object SlayerTimer {
     @SubscribeEvent
     fun onSlayerDeath(event: SlayerEvent.Death) {

@@ -1,5 +1,6 @@
 package mrfast.sbt.apis
 
+import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.config.categories.GeneralConfig
 import mrfast.sbt.customevents.WorldLoadEvent
 import mrfast.sbt.utils.Utils.clean
@@ -9,6 +10,7 @@ import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import kotlin.math.max
 
+@SkyblockTweaks.EventComponent
 object PlayerStats {
     var health = 0
     var maxHealth = 0

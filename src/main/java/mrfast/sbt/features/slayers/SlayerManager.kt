@@ -1,16 +1,17 @@
 package mrfast.sbt.features.slayers
 
+import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.apis.SkyblockMobDetector
 import mrfast.sbt.config.categories.CustomizationConfig
 import mrfast.sbt.customevents.SkyblockMobEvent
 import mrfast.sbt.customevents.SlayerEvent
 import mrfast.sbt.utils.ChatUtils
 import mrfast.sbt.utils.ScoreboardUtils
-import mrfast.sbt.utils.Utils
 import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
+@SkyblockTweaks.EventComponent
 object SlayerManager {
     var slayerStartedAt = System.currentTimeMillis()
     var slayerSpawnedAt = System.currentTimeMillis()

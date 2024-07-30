@@ -4,7 +4,6 @@ import mrfast.sbt.config.Config
 import mrfast.sbt.config.ConfigProperty
 import mrfast.sbt.config.ConfigType
 
-
 object DeveloperConfig : Config() {
     @ConfigProperty(
             type = ConfigType.TEXT,

@@ -6,7 +6,6 @@ import mrfast.sbt.config.ConfigType
 import org.lwjgl.input.Keyboard
 import java.awt.Color
 
-
 object AuctionHouseConfig : Config() {
 
     @ConfigProperty(

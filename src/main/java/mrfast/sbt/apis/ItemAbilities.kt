@@ -1,5 +1,6 @@
 package mrfast.sbt.apis
 
+import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.config.categories.DeveloperConfig.showItemAbilities
 import mrfast.sbt.customevents.UseItemAbilityEvent
 import mrfast.sbt.customevents.WorldLoadEvent
@@ -20,6 +21,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 import kotlin.math.floor
 
 
+@SkyblockTweaks.EventComponent
 object ItemAbilities {
     // Stored values of each item and its default cooldown
     private var itemCooldowns = HashMap<String, CooldownItem?>()

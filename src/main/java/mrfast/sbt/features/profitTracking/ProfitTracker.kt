@@ -1,6 +1,7 @@
 package mrfast.sbt.features.profitTracking
 
 import com.google.gson.JsonArray
+import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.customevents.ProfileLoadEvent
 import mrfast.sbt.customevents.PurseChangeEvent
 import mrfast.sbt.customevents.SkyblockInventoryItemEvent
@@ -12,6 +13,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 
+@SkyblockTweaks.EventComponent
 object ProfitTracker {
     var itemsGainedDuringSession = mutableMapOf<String, Int>()
     var sessionStartedAt = System.currentTimeMillis()

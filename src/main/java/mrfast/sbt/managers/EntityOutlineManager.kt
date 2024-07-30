@@ -1,5 +1,6 @@
 package mrfast.sbt.managers
 
+import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.customevents.RenderEntityOutlineEvent
 import mrfast.sbt.mixins.transformers.CustomRenderGlobal
 import mrfast.sbt.utils.LocationUtils
@@ -33,6 +34,7 @@ import java.lang.reflect.Method
  * @link https://github.com/BiscuitDevelopment/SkyblockAddons/blob/master/LICENSE
  * @author BiscuitDevelopment
  */
+@SkyblockTweaks.EventComponent
 object EntityOutlineManager {
     @SubscribeEvent
     fun onWorldChange(event: WorldEvent.Load?) {

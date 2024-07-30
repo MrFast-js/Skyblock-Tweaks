@@ -1,6 +1,7 @@
 package mrfast.sbt.managers
 
 import com.google.gson.JsonObject
+import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.apis.ItemApi
 import mrfast.sbt.customevents.ProfileLoadEvent
 import mrfast.sbt.customevents.SkyblockInventoryItemEvent
@@ -11,6 +12,7 @@ import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import kotlin.math.max
 
+@SkyblockTweaks.EventComponent
 object SackManager {
     private var sacks = JsonObject()
 

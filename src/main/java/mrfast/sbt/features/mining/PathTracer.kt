@@ -2,6 +2,7 @@ package mrfast.sbt.features.mining
 
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.config.categories.RenderingConfig
 import mrfast.sbt.config.categories.RenderingConfig.pathRenderRange
 import mrfast.sbt.config.categories.RenderingConfig.pathThroughWalls
@@ -14,9 +15,8 @@ import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
-import java.awt.Color
 
-
+@SkyblockTweaks.EventComponent
 object PathTracer {
     var pathPoints = mutableListOf<Vec3>()
     var pathsAndPoints = JsonObject()

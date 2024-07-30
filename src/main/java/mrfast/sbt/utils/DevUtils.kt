@@ -1,6 +1,7 @@
 package mrfast.sbt.utils
 
 import com.google.gson.*
+import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.apis.ItemApi
 import mrfast.sbt.config.categories.CustomizationConfig
 import mrfast.sbt.utils.ItemUtils.getExtraAttributes
@@ -12,6 +13,7 @@ import net.minecraftforge.event.entity.player.ItemTooltipEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.input.Keyboard
 
+@SkyblockTweaks.EventComponent
 object DevUtils {
     fun prettyPrintNBTtoString(nbt: NBTTagCompound): String {
         val gson = GsonBuilder().setPrettyPrinting().create()

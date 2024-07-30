@@ -1,6 +1,7 @@
 package mrfast.sbt.features.general
 
 import com.google.gson.JsonObject
+import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.apis.ItemApi
 import mrfast.sbt.config.GuiManager
 import mrfast.sbt.config.categories.GeneralConfig.itemPickupLog
@@ -14,7 +15,7 @@ import mrfast.sbt.utils.Utils.formatNumber
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import kotlin.math.abs
 
-
+@SkyblockTweaks.EventComponent
 object ItemPickupLog {
     var displayLines = mutableMapOf<String, PickupEntry>()
 

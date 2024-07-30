@@ -1,5 +1,6 @@
 package mrfast.sbt.features.partyfinder
 
+import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.config.categories.DungeonConfig
 import mrfast.sbt.utils.ChatUtils
 import mrfast.sbt.utils.ItemUtils
@@ -18,6 +19,7 @@ import net.minecraft.util.ChatComponentText
 import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
+@SkyblockTweaks.EventComponent
 object PartyFinderJoinInfo {
     @SubscribeEvent
     fun onChatMessage(event: ClientChatReceivedEvent) {

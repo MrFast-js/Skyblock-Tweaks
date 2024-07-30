@@ -1,5 +1,6 @@
 package mrfast.sbt.managers
 
+import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.customevents.SkyblockInventoryItemEvent
 import mrfast.sbt.utils.ItemUtils.getSkyblockId
 import mrfast.sbt.utils.LocationUtils
@@ -14,6 +15,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 import kotlin.math.abs
 
 
+@SkyblockTweaks.EventComponent
 object InventoryItemManager {
     private var previousInventory = mutableMapOf<String, Int>()
     private var preOpenInventory = mutableMapOf<String, Int>()

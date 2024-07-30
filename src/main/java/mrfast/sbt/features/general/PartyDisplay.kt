@@ -1,11 +1,13 @@
 package mrfast.sbt.features.general
 
+import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.config.categories.GeneralConfig
 import mrfast.sbt.config.GuiManager
 import mrfast.sbt.managers.PartyManager
 import mrfast.sbt.utils.GuiUtils
 import mrfast.sbt.utils.Utils
 
+@SkyblockTweaks.EventComponent
 object PartyDisplay {
     init {
         PartyDisplayGui()

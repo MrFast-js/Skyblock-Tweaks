@@ -2,8 +2,8 @@ package mrfast.sbt.features.auctionHouse
 
 import com.google.gson.JsonObject
 import gg.essential.elementa.dsl.constraint
-import gg.essential.elementa.state.constraint
 import gg.essential.universal.UMatrixStack
+import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.apis.ItemApi
 import mrfast.sbt.config.categories.AuctionHouseConfig
 import mrfast.sbt.config.components.OutlinedRoundedRectangle
@@ -38,6 +38,7 @@ import net.minecraftforge.fml.common.eventhandler.Event
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.awt.Color
 
+@SkyblockTweaks.EventComponent
 object AuctionMenuOverlays {
     var biddedAuctions = listOf<Auction>()
     var ownedAuctions = listOf<Auction>()

@@ -1,13 +1,14 @@
 package mrfast.sbt.features.slayers
 
+import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.apis.SkyblockMobDetector
 import mrfast.sbt.config.categories.SlayerConfig
 import mrfast.sbt.customevents.RenderEntityOutlineEvent
 import mrfast.sbt.utils.Utils
 import net.minecraft.entity.Entity
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import java.awt.Color
 
+@SkyblockTweaks.EventComponent
 object GlowingBosses {
     @SubscribeEvent
     fun onRenderEntityOutlines(event: RenderEntityOutlineEvent.Normal) {

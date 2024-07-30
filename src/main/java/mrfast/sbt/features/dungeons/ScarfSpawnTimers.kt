@@ -1,5 +1,6 @@
 package mrfast.sbt.features.dungeons
 
+import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.config.categories.DungeonConfig
 import mrfast.sbt.utils.LocationUtils
 import mrfast.sbt.utils.RenderUtils
@@ -10,6 +11,7 @@ import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
+@SkyblockTweaks.EventComponent
 object ScarfSpawnTimers {
     private var startMinionCount = false
     private var startBossCount = false

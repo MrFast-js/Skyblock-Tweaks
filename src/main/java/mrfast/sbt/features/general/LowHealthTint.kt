@@ -1,5 +1,6 @@
 package mrfast.sbt.features.general
 
+import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.apis.PlayerStats
 import mrfast.sbt.config.categories.GeneralConfig
 import mrfast.sbt.utils.Utils
@@ -11,7 +12,7 @@ import net.minecraft.util.ResourceLocation
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
-
+@SkyblockTweaks.EventComponent
 object LowHealthTint {
     private val VIGNETTE_TEXTURE = ResourceLocation("textures/misc/vignette.png")
 

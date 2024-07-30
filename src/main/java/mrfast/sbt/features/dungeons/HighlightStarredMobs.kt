@@ -1,5 +1,6 @@
 package mrfast.sbt.features.dungeons
 
+import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.apis.SkyblockMobDetector
 import mrfast.sbt.config.categories.DungeonConfig.glowingStarredMobs
 import mrfast.sbt.config.categories.DungeonConfig.glowingStarredMobsColor
@@ -8,6 +9,8 @@ import mrfast.sbt.utils.LocationUtils
 import mrfast.sbt.utils.Utils.clean
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
+
+@SkyblockTweaks.EventComponent
 object HighlightStarredMobs {
     @SubscribeEvent
     fun onRenderEntityOutlines(event: RenderEntityOutlineEvent.Normal) {

@@ -1,5 +1,6 @@
 package mrfast.sbt.managers
 
+import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.config.categories.GeneralConfig
 import mrfast.sbt.customevents.SlotClickedEvent
 import mrfast.sbt.utils.ChatUtils
@@ -15,6 +16,7 @@ import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
+@SkyblockTweaks.EventComponent
 object PartyManager {
     var partyMembers = mutableMapOf<String, PartyMember>()
     private var playerInParty = false

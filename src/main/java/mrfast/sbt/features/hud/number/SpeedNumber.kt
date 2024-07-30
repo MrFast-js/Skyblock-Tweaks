@@ -1,5 +1,6 @@
 package mrfast.sbt.features.hud.number
 
+import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.config.categories.GeneralConfig
 import mrfast.sbt.config.GuiManager
 import mrfast.sbt.utils.GuiUtils
@@ -8,6 +9,7 @@ import mrfast.sbt.utils.Utils
 import mrfast.sbt.utils.Utils.formatNumber
 import net.minecraft.client.Minecraft
 
+@SkyblockTweaks.EventComponent
 object SpeedNumber {
     init {
         SpeedNumberGui()

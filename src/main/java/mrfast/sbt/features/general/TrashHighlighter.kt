@@ -1,5 +1,6 @@
 package mrfast.sbt.features.general
 
+import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.config.ConfigManager
 import mrfast.sbt.config.categories.MiscellaneousConfig
 import mrfast.sbt.config.categories.MiscellaneousConfig.trashHighlightType
@@ -15,6 +16,7 @@ import java.nio.file.*
 import java.nio.file.StandardWatchEventKinds.*
 import java.util.*
 
+@SkyblockTweaks.EventComponent
 object TrashHighlighter {
     private var trashFile: File? = null
     private val trashList: MutableList<String> = ArrayList()
