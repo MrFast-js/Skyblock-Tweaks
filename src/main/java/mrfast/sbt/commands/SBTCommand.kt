@@ -2,6 +2,7 @@ package mrfast.sbt.commands
 
 import com.google.common.collect.Lists
 import gg.essential.api.utils.GuiUtil
+import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.managers.VersionManager
 import mrfast.sbt.config.categories.CustomizationConfig
 import mrfast.sbt.config.ConfigGui
@@ -11,6 +12,7 @@ import net.minecraft.command.CommandBase
 import net.minecraft.command.ICommandSender
 import net.minecraftforge.fml.common.FMLCommonHandler
 
+@SkyblockTweaks.CommandComponent
 class SBTCommand : CommandBase() {
 
     override fun getCommandName(): String {

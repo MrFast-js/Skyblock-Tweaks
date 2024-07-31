@@ -9,7 +9,7 @@ object CustomizationConfig : Config() {
     @ConfigProperty(
         type = ConfigType.TOGGLE,
         name = "Outdated Version Notification",
-        description = "Receive a chat notification when using an outdated version of Skyblock Features",
+        description = "Receive a chat notification when using an outdated version of Skyblock Tweaks",
         category = "§2§rCustomization",
         subcategory = "Mod"
     )

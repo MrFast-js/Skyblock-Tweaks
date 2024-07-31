@@ -1,6 +1,7 @@
 package mrfast.sbt.commands
 
 import com.mojang.realmsclient.gui.ChatFormatting
+import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.utils.*
 import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.command.CommandBase
@@ -18,7 +19,7 @@ import java.nio.file.Files
 import java.util.*
 import java.util.stream.Collectors
 
-
+@SkyblockTweaks.CommandComponent
 class DebugCommand : CommandBase() {
     override fun getCommandName(): String {
         return "sbtdebug"

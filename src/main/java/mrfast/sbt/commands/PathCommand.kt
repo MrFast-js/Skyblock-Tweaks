@@ -1,6 +1,7 @@
 package mrfast.sbt.commands
 
 import com.mojang.realmsclient.gui.ChatFormatting
+import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.features.mining.PathTracer
 import mrfast.sbt.utils.*
 import net.minecraft.command.CommandBase
@@ -14,7 +15,7 @@ import net.minecraft.util.EnumChatFormatting
 import net.minecraft.util.Vec3
 import java.util.*
 
-
+@SkyblockTweaks.CommandComponent
 class PathCommand : CommandBase() {
     private var arguments = mutableListOf("start", "add", "record", "load", "unload", "list", "save", "delete")
 

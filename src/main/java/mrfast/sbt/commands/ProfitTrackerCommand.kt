@@ -5,7 +5,9 @@ import mrfast.sbt.features.profitTracking.ProfitTrackerGui
 import net.minecraft.command.CommandBase
 import net.minecraft.command.ICommandSender
 import com.google.common.collect.Lists
+import mrfast.sbt.SkyblockTweaks
 
+@SkyblockTweaks.CommandComponent
 class ProfitTrackerCommand : CommandBase() {
 
     override fun getCommandName(): String {
