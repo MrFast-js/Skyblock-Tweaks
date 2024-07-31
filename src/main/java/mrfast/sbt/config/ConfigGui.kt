@@ -5,10 +5,12 @@ import gg.essential.elementa.ElementaVersion
 import gg.essential.elementa.UIComponent
 import gg.essential.elementa.WindowScreen
 import gg.essential.elementa.components.*
-import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.elementa.components.input.UITextInput
 import gg.essential.elementa.components.inspector.Inspector
-import gg.essential.elementa.constraints.*
+import gg.essential.elementa.constraints.CenterConstraint
+import gg.essential.elementa.constraints.ChildBasedSizeConstraint
+import gg.essential.elementa.constraints.MinConstraint
+import gg.essential.elementa.constraints.PixelConstraint
 import gg.essential.elementa.constraints.animation.Animations
 import gg.essential.elementa.dsl.*
 import gg.essential.elementa.effects.OutlineEffect
@@ -19,10 +21,10 @@ import gg.essential.universal.UMatrixStack
 import gg.essential.vigilance.gui.settings.ColorComponent
 import gg.essential.vigilance.gui.settings.SelectorComponent
 import mrfast.sbt.SkyblockTweaks
-import mrfast.sbt.managers.VersionManager
 import mrfast.sbt.config.categories.CustomizationConfig
 import mrfast.sbt.config.categories.DeveloperConfig.showInspector
 import mrfast.sbt.config.components.*
+import mrfast.sbt.managers.VersionManager
 import mrfast.sbt.utils.ChatUtils
 import mrfast.sbt.utils.SocketUtils
 import mrfast.sbt.utils.Utils
@@ -89,7 +91,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
         dynamicColorUpdateTimer.cancel()
     }
 
-    val mainBorderRadius = 6f;
+    private val mainBorderRadius = 6f;
 
     init {
         // Create a background panel
@@ -159,13 +161,15 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
         val editGuiLocationsButton = OutlinedRoundedRectangle(guiLineColorsState.constraint, 1f, 3f).constrain {
             width = 16.pixels
             height = 16.pixels
-            x = if(CustomizationConfig.developerMode) SiblingConstraintFixed(8f, false) else 8.pixels
+            x = if (CustomizationConfig.developerMode) SiblingConstraintFixed(8f, false) else 8.pixels
             y = CenterConstraint()
             color = mainBackgroundColorState.constraint
         } childOf header
-        val editGuiLocationsSymbol = UIText("✎").constrain { x = CenterConstraint();y = CenterConstraint();color = Color(0xFFFF55).constraint } childOf editGuiLocationsButton
+        val editGuiLocationsSymbol = UIText("✎").constrain {
+            x = CenterConstraint();y = CenterConstraint();color = Color(0xFFFF55).constraint
+        } childOf editGuiLocationsButton
         editGuiLocationsSymbol.setTextScale(2.pixels)
-        editGuiLocationsButton.onMouseClick {GuiUtil.open(GuiEditor())}
+        editGuiLocationsButton.onMouseClick { GuiUtil.open(GuiEditor()) }
         editGuiLocationsButton.addTooltip(setOf("§eEdit Gui Locations"))
 
         // Add some text to the panel
@@ -285,7 +289,11 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
             }, 200)
         }
 
-        searchBarInput.onKeyType { _, _ ->
+        searchBarInput.onKeyType { _, keycode ->
+            if (keycode == Keyboard.KEY_ESCAPE) {
+                Utils.mc.displayGuiScreen(null)
+                return@onKeyType
+            }
             searchQuery = searchBarInput.getText()
             updateSelectedFeatures(featureList)
         }

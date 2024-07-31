@@ -18,7 +18,7 @@ object SlayerManager {
     private var hasSlayerSpawned = false
 
     private var spawnedSlayer: SkyblockMobDetector.SkyblockMob? = null
-    val minibosses = mutableListOf(
+    private val minibosses = mutableListOf(
         "Revenant Sycophant",
         "Revenant Champion",
         "Deformed Revenant",
