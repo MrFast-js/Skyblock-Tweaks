@@ -196,7 +196,9 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
             x = CenterConstraint() + 1.pixels
             y = CenterConstraint()
         } childOf searchBar
+
         searchBarInput.setColor(Color.GRAY)
+        searchBarInput.grabWindowFocus()
 
         header.onMouseClick {
             if (!searchBarInput.isActive()) {
