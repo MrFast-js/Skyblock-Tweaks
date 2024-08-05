@@ -40,7 +40,7 @@ object NetworkUtils {
             throw RuntimeException(e)
         }
 
-        client = HttpClients.custom().setSSLSocketFactory(sslcsf).setUserAgent("Mozilla/5.0").build()
+        client = HttpClients.custom().setSSLSocketFactory(sslcsf).setUserAgent("Skyblock-Tweaks").build()
     }
 
     data class CacheObject(val url: String, val response: JsonObject, val createdAt: Long = System.currentTimeMillis())
