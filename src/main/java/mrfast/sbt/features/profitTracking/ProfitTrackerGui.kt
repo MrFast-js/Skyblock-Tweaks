@@ -43,7 +43,7 @@ class ProfitTrackerGui : WindowScreen(ElementaVersion.V2) {
     private val fontRenderer = Utils.mc.fontRendererObj
     private var guiTop = 0F
     private var guiLeft = 0F
-    private val boxTexture = ResourceLocation("skyblocktweaks", "gui/box.png")
+    private val boxTexture = ResourceLocation("skyblocktweaks", "gui/profitTracker.png")
     private val startStopButton = Button(40F, 12F, 142, 66)
     private val pauseButton = Button(40F, 12F, 185, 66)
 
@@ -445,7 +445,7 @@ class ProfitTrackerGui : WindowScreen(ElementaVersion.V2) {
                     GlStateManager.pushMatrix()
                     var hoverText = item.displayName
                     if (item.displayName.clean() == "Enchanted Book") {
-                        hoverText = item.getLore()[0]
+                        hoverText = item.getLore()[1]
                     }
 
                     GlStateManager.pushMatrix()
