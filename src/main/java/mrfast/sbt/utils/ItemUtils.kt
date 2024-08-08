@@ -57,6 +57,16 @@ object ItemUtils {
         return -1
     }
 
+    fun rarityToColor(tier: Int): String {
+        if (tier == 6) return "§c"
+        if (tier == 5) return "§d"
+        if (tier == 4) return "§6"
+        if (tier == 3) return "§5"
+        if (tier == 2) return "§9"
+        if (tier == 1) return "§a"
+        return "§f"
+    }
+
     fun ItemStack.getExtraAttributes(): NBTTagCompound? {
         if (hasTagCompound()) {
             if (tagCompound != null && tagCompound.hasKey("ExtraAttributes")) {
@@ -78,7 +88,7 @@ object ItemUtils {
     }
 
     fun ItemStack.getLore(): MutableList<String> {
-        val lore = mutableListOf<String>()
+        val lore = mutableListOf(this.displayName)
 
         if (hasTagCompound()) {
             val tagCompound = tagCompound

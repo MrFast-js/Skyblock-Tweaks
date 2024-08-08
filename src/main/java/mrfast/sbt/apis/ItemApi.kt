@@ -1,6 +1,7 @@
 package mrfast.sbt.apis
 
 import com.google.gson.JsonObject
+import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.utils.ItemUtils.getSkyblockId
 import mrfast.sbt.utils.NetworkUtils
 import mrfast.sbt.utils.Utils
@@ -10,6 +11,7 @@ import net.minecraft.item.ItemStack
 import net.minecraft.nbt.JsonToNBT
 import java.util.*
 
+@SkyblockTweaks.EventComponent
 object ItemApi {
     private var skyblockItems = JsonObject()
     private var skyblockItemPrices = JsonObject()
@@ -170,6 +172,38 @@ object ItemApi {
             val itemStack = ItemStack(Item.getByNameOrId(mcItemId))
             itemStack.tagCompound = nbtCompound
             itemStack.setStackDisplayName("§6Skyblock Coins")
+
+            if (itemJson.has("damage")) {
+                itemStack.itemDamage = itemJson.get("damage").asInt
+            }
+
+            itemStackCache[itemId] = itemStack
+            return itemStack
+        }
+        if (itemId == "ACCESSORY_BAG") {
+            val itemJson = skyblockItems["LARGE_DUNGEON_SACK"]?.asJsonObject ?: return null
+            var nbtString = itemJson.get("nbttag")?.asString ?: return null
+            val mcItemId = itemJson.get("itemid")?.asString ?: return null
+            nbtString = nbtString.replace(
+                "ewogICJ0aW1lc3RhbXAiIDogMTU5NzgxMDkwMzc1NCwKICAicHJvZmlsZUlkIiA6ICJmNjE1NzFmMjY1NzY0YWI5YmUxODcyMjZjMTEyYWEwYSIsCiAgInByb2ZpbGVOYW1lIiA6ICJGZWxpeF9NYW5nZW5zZW4iLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmI5NmM1ODVjY2QzNWYwNzNkYTM4ZDE2NWNiOWJiMThmZjEzNmYxYTE4NGVlZTNmNDQ3MjUzNTQ2NDBlYmJkNCIKICAgIH0KICB9Cn0",
+                "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTYxYTkxOGMwYzQ5YmE4ZDA1M2U1MjJjYjkxYWJjNzQ2ODkzNjdiNGQ4YWEwNmJmYzFiYTkxNTQ3MzA5ODVmZiJ9fX0"
+            )
+            nbtString =
+                nbtString.replace("74dacf03-2bd5-3f50-a933-0a2ce640cdd9", "f7cab91e-3744-4982-815c-dfee179ee5f5")
+            nbtString = nbtString.replace("LARGE_DUNGEON_SACK", "")
+
+            // Parse NBT string
+            val nbtCompound = try {
+                JsonToNBT.getTagFromJson(nbtString)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                return null
+            }
+
+            // Create ItemStack with NBT and item ID
+            val itemStack = ItemStack(Item.getByNameOrId(mcItemId))
+            itemStack.tagCompound = nbtCompound
+            itemStack.setStackDisplayName("§aAccessory Bag")
 
             if (itemJson.has("damage")) {
                 itemStack.itemDamage = itemJson.get("damage").asInt

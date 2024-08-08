@@ -2,12 +2,14 @@ package mrfast.sbt.commands
 
 import com.google.common.collect.Lists
 import com.mojang.realmsclient.gui.ChatFormatting
+import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.utils.ChatUtils
 import mrfast.sbt.utils.Utils
 import net.minecraft.command.CommandBase
 import net.minecraft.command.ICommandSender
 import java.util.*
 
+@SkyblockTweaks.CommandComponent
 class JoinDungeonCommand : CommandBase() {
     private val numberWords = listOf("ONE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN")
 

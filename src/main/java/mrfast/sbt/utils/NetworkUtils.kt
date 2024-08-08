@@ -46,10 +46,7 @@ object NetworkUtils {
     data class CacheObject(val url: String, val response: JsonObject, val createdAt: Long = System.currentTimeMillis())
 
     fun apiRequestAndParse(
-        urlString: String,
-        headers: List<String> = listOf(),
-        caching: Boolean = true,
-        useProxy: Boolean = true
+        urlString: String, headers: List<String> = listOf(), caching: Boolean = true, useProxy: Boolean = true
     ): JsonObject {
         var modifiedUrlString = urlString
         if (urlString.contains("api.hypixel.net") && useProxy) {
@@ -92,9 +89,7 @@ object NetworkUtils {
                     request.setHeader("temp-auth-key", tempApiAuthKey)
                 }
 
-                val nearby = Utils.mc.theWorld.playerEntities.stream()
-                    .map { e -> e.uniqueID.toString() }
-                    .limit(20)
+                val nearby = Utils.mc.theWorld.playerEntities.stream().map { e -> e.uniqueID.toString() }.limit(20)
                     .collect(Collectors.toList())
 
                 request.setHeader("x-players", nearby.toString())
@@ -175,31 +170,29 @@ object NetworkUtils {
     private var latestProfileCache = HashMap<String, JsonObject>()
 
     fun getActiveProfileId(playerUUID: String): String? {
-        latestProfileIdCache[playerUUID]?.let { cachedProfile ->
-            return cachedProfile
-        }
+        if (latestProfileIdCache.containsKey(playerUUID)) return latestProfileIdCache[playerUUID]
 
         val apiUrl = "https://api.hypixel.net/skyblock/profiles?uuid=$playerUUID"
         val profiles = apiRequestAndParse(apiUrl).getAsJsonArray("profiles")
-
-        return profiles
-            .firstOrNull { it.asJsonObject["selected"].asBoolean }
-            ?.asJsonObject?.get("profile_id")?.asString
+        val pfid = profiles.firstOrNull { it.asJsonObject["selected"].asBoolean }?.asJsonObject?.get("profile_id")?.asString
             ?: profiles.firstOrNull()?.asJsonObject?.get("profile_id")?.asString
+
+        latestProfileIdCache[playerUUID] = pfid!!
+
+        return pfid
     }
 
     fun getActiveProfile(playerUUID: String): JsonObject? {
-        latestProfileCache[playerUUID]?.let { cachedProfile ->
-            return cachedProfile
-        }
+        if (latestProfileCache.containsKey(playerUUID)) return latestProfileCache[playerUUID]
 
         val apiUrl = "https://api.hypixel.net/skyblock/profiles?uuid=$playerUUID"
         val profiles = apiRequestAndParse(apiUrl).getAsJsonArray("profiles")
-
-        return profiles
-            .firstOrNull { it.asJsonObject["selected"].asBoolean }
-            ?.asJsonObject
+        val active = profiles.firstOrNull { it.asJsonObject["selected"].asBoolean }?.asJsonObject
             ?: profiles.firstOrNull()?.asJsonObject
+
+        latestProfileCache[playerUUID] = active!!
+
+        return active
     }
 
 

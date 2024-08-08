@@ -72,7 +72,7 @@ object PartyFinderJoinInfo {
                 output.appendText("\n§cNo armor found or their API is disabled.\n")
             } else {
                 for (itemStack in invArmor) {
-                    val lore = if (itemStack != null) itemStack.displayName + "\n" + itemStack.getLore().joinToString("\n") else "§cNone"
+                    val lore = itemStack?.getLore()?.joinToString("\n") ?: "§cNone"
                     val armorComponent = ChatComponentText(itemStack?.displayName + "\n")
 
                     armorComponent.chatStyle.chatHoverEvent =
@@ -95,7 +95,7 @@ object PartyFinderJoinInfo {
                     output.appendText("§cNo equipment found or their API is disabled.\n")
                 } else {
                     for (itemStack in equipment) {
-                        val lore = if (itemStack != null) itemStack.displayName + "\n" + itemStack.getLore().joinToString("\n") else "§cNone"
+                        val lore = itemStack?.getLore()?.joinToString("\n") ?: "§cNone"
 
                         val equipComponent = ChatComponentText(itemStack?.displayName + "\n")
 
@@ -128,8 +128,7 @@ object PartyFinderJoinInfo {
                 val hotbar = ChatComponentText("")
 
                 for ((index, itemStack) in inventory.withIndex().take(9)) {
-                    val lore = if (itemStack != null) itemStack.displayName + "\n" + itemStack.getLore()
-                        .joinToString("\n") else "§cNone"
+                    val lore = itemStack?.getLore()?.joinToString("\n") ?: "§cNone"
 
                     val hotbarPart = ChatComponentText("${if (itemStack == null) "§7" else "§6"}§l[${index + 1}]")
                     hotbarPart.chatStyle.chatHoverEvent =

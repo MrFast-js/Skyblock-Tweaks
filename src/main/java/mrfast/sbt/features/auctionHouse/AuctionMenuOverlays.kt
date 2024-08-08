@@ -395,7 +395,7 @@ object AuctionMenuOverlays {
         override fun draw(mouseX: Int, mouseY: Int, event: Event) {
             val pricingData = sellingAuction?.pricingData ?: return
             var itemLore = sellingAuction?.stack?.getLore() ?: return
-            itemLore = itemLore.subList(1, itemLore.size)
+            itemLore = itemLore.subList(2, itemLore.size)
 
             val itemName = itemLore[0]
 
