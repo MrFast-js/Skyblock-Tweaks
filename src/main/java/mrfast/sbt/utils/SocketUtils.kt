@@ -7,6 +7,7 @@ import mrfast.sbt.customevents.SocketMessageEvent
 import net.minecraftforge.common.MinecraftForge
 import java.net.URISyntaxException
 
+@SkyblockTweaks.EventComponent
 object SocketUtils {
     private var socket: Socket? = null
     private var internalClose = false
