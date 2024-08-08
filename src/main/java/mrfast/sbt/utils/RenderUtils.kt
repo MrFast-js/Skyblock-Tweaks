@@ -4,7 +4,10 @@ import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.util.Vec3
 import org.lwjgl.opengl.GL11
+import org.lwjgl.opengl.GL11.*
 import java.awt.Color
+import kotlin.math.cos
+import kotlin.math.sin
 
 object RenderUtils {
     val mc = Utils.mc
@@ -67,21 +70,85 @@ object RenderUtils {
         GlStateManager.pushMatrix()
         GlStateManager.disableTexture2D()
         GlStateManager.enableBlend()
-        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
         GlStateManager.disableLighting()
         GlStateManager.disableCull()
 
-        GL11.glLineWidth(thickness.toFloat())
-        GL11.glBegin(GL11.GL_LINES)
-        GL11.glColor4f(red, green, blue, alpha)
-        GL11.glVertex3d(fromX, fromY, fromZ)
-        GL11.glVertex3d(toX, toY, toZ)
-        GL11.glEnd()
+        glLineWidth(thickness.toFloat())
+        glBegin(GL11.GL_LINES)
+        glColor4f(red, green, blue, alpha)
+        glVertex3d(fromX, fromY, fromZ)
+        glVertex3d(toX, toY, toZ)
+        glEnd()
 
         GlStateManager.enableCull()
         GlStateManager.enableLighting()
         GlStateManager.disableBlend()
         GlStateManager.enableTexture2D()
         GlStateManager.popMatrix()
+    }
+
+    fun drawFilledCircleWithBorder(
+        center: Vec3,
+        radius: Float,
+        segments: Int,
+        borderColor: Color,
+        fillColor: Color,
+        partialTicks: Float
+    ) {
+        val player = Utils.mc.thePlayer
+        val interpolatedX = player.lastTickPosX + (player.posX - player.lastTickPosX) * partialTicks
+        val interpolatedY = player.lastTickPosY + (player.posY - player.lastTickPosY) * partialTicks
+        val interpolatedZ = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * partialTicks
+
+        val centerX = center.xCoord - interpolatedX
+        val centerY = center.yCoord - interpolatedY + 0.01 // add to stop ground clipping
+        val centerZ = center.zCoord - interpolatedZ
+
+        // Enable blending for transparency
+        GlStateManager.enableBlend()
+        GlStateManager.disableTexture2D()
+        GlStateManager.tryBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO)
+        GlStateManager.disableLighting()
+        GlStateManager.disableCull()
+
+        // Draw filled circle
+        GlStateManager.color(
+            fillColor.red / 255f,
+            fillColor.green / 255f,
+            fillColor.blue / 255f,
+            0.15f
+        )
+        glBegin(GL11.GL_TRIANGLE_FAN)
+        glVertex3d(centerX, centerY, centerZ) // Center of the circle
+        for (i in 0..segments) {
+            val angle = Math.PI * 2 * i / segments
+            val x = radius * cos(angle)
+            val z = radius * sin(angle)
+            glVertex3d(centerX + x, centerY, centerZ + z)
+        }
+        glEnd()
+
+        // Draw border (line loop)
+        GlStateManager.color(
+            borderColor.red / 255f,
+            borderColor.green / 255f,
+            borderColor.blue / 255f,
+            0.7f
+        )
+        glLineWidth(3f)
+        glBegin(GL11.GL_LINE_LOOP)
+        for (i in 0..segments) {
+            val angle = Math.PI * 2 * i / segments
+            val x = radius * cos(angle)
+            val z = radius * sin(angle)
+            glVertex3d(centerX + x, centerY, centerZ + z)
+        }
+        glEnd()
+
+        // Restore OpenGL settings
+        GlStateManager.enableCull()
+        GlStateManager.enableLighting()
+        GlStateManager.enableTexture2D()
+        GlStateManager.disableBlend()
     }
 }

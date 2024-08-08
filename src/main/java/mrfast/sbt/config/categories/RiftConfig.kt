@@ -9,6 +9,26 @@ object RiftConfig : Config() {
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
+        name = "Nearly Coherent Rod Radius Display",
+        description = "Shows the effective radius of the rabbit attraction area when holding a §aNearly Coherent doR gnihsiF",
+        category = "The Rift",
+        subcategory = "Farming",
+        isParent = true
+    )
+    var nearlyCoherentRodRadius = false
+
+    @ConfigProperty(
+        type = ConfigType.COLOR,
+        name = "Circle Color",
+        description = "",
+        category = "The Rift",
+        subcategory = "Farming",
+        parentName = "Nearly Coherent Rod Radius Display"
+    )
+    var nearlyCoherentRodRadiusColor = Color(0x00FFFF)
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
         name = "Rift Time Bar",
         description = "Moveable Rift Time Bar that adjusts depending on your time left in the rift / damage taken",
         category = "The Rift",
