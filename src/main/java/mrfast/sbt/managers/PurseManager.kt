@@ -9,6 +9,7 @@ import mrfast.sbt.utils.Utils.matches
 import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 
 @SkyblockTweaks.EventComponent
@@ -27,6 +28,7 @@ object PurseManager {
 
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
+        if(event.phase != TickEvent.Phase.START) return
         val lines = ScoreboardUtils.getSidebarLines(true)
         for (line in lines) {
             if (line.matches("Purse: (.*)")) {

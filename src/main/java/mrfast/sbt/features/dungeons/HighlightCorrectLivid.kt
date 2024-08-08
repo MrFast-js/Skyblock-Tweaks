@@ -13,6 +13,7 @@ import net.minecraft.init.Blocks
 import net.minecraft.item.EnumDyeColor
 import net.minecraft.util.BlockPos
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 
 @SkyblockTweaks.EventComponent
@@ -20,8 +21,8 @@ object HighlightCorrectLivid {
     private var lividEntity: Entity? = null;
 
     @SubscribeEvent
-    fun onTick(event: ClientTickEvent?) {
-        if (!LocationUtils.inDungeons || LocationUtils.dungeonFloor != 5 || !highlightCorrectLivid) return
+    fun onTick(event: ClientTickEvent) {
+        if (!LocationUtils.inDungeons || LocationUtils.dungeonFloor != 5 || !highlightCorrectLivid || event.phase != TickEvent.Phase.START) return
 
         val state: IBlockState = Utils.mc.theWorld.getBlockState(BlockPos(5, 108, 42))
         if(state.block != Blocks.stained_glass) {

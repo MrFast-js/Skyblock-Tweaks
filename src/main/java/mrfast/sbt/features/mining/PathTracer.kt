@@ -14,6 +14,7 @@ import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 
 @SkyblockTweaks.EventComponent
@@ -24,14 +25,12 @@ object PathTracer {
     var creatingPath = false
 
     @SubscribeEvent
-    fun onTick(event: ClientTickEvent?) {
-        if (Utils.mc.thePlayer != null && recordingMovement) {
-            val pos = Utils.mc.thePlayer.positionVector.add(Vec3(0.0, 0.2, 0.0))
-            if (pos != null) {
-                if (!pathPoints.contains(pos)) {
-                    pathPoints.add(pos)
-                }
-            }
+    fun onTick(event: ClientTickEvent) {
+        if(event.phase != TickEvent.Phase.START || Utils.mc.thePlayer == null || !recordingMovement) return
+
+        val pos = Utils.mc.thePlayer.positionVector.add(Vec3(0.0, 0.2, 0.0))
+        if (!pathPoints.contains(pos)) {
+            pathPoints.add(pos)
         }
     }
 

@@ -24,7 +24,7 @@ object InventoryItemManager {
     private var ignoreStacksRegex = listOf("^§8Quiver.*", "^§aSkyBlock Menu §7\\(Click\\)", "^§bMagical Map")
 
     @SubscribeEvent
-    fun onTickEvent(event: ClientTickEvent) {
+    fun onTick(event: ClientTickEvent) {
         if (event.phase != TickEvent.Phase.START || !LocationUtils.inSkyblock || Utils.mc.theWorld == null) return
 
         val currentInventory = getCurrentInventoryState()
