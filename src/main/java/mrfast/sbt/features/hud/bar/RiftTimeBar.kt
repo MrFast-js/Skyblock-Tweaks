@@ -22,11 +22,32 @@ object RiftTimeBar {
             this.addToList()
             this.height = 10
             this.width = 80
+            this.needsExample = true
         }
 
         override fun draw() {
             val max = PlayerStats.maxRiftTime
             val riftTime = PlayerStats.riftTimeSeconds
+            val timeFillPerc = riftTime.toDouble() / max
+
+            // Draw background/border
+            UIRoundedRectangle.drawRoundedRectangle(UMatrixStack(), 0f, 0f, 80f, 10f, 6f, RiftConfig.riftBarBarColor)
+
+            // Draw normal blue mana
+            UIRoundedRectangle.drawRoundedRectangle(
+                UMatrixStack(),
+                2f,
+                2f,
+                (78f * timeFillPerc).toFloat(),
+                8f,
+                4f,
+                RiftConfig.riftBarFillColor
+            )
+        }
+
+        override fun drawExample() {
+            val max = 10f
+            val riftTime = 7f
             val timeFillPerc = riftTime.toDouble() / max
 
             // Draw background/border
