@@ -385,6 +385,17 @@ object GeneralConfig : Config() {
     var itemPickupLog = false
 
     @ConfigProperty(
+        type = ConfigType.DROPDOWN,
+        name = "Text Style",
+        description = "",
+        category = "General",
+        subcategory = "Item Pickup Log",
+        parentName = "Show item pickup log",
+        dropdownOptions = ["Shadowed", "Default", "Outlined"]
+    )
+    var itemPickupLogTextStyle = "Shadowed"
+
+    @ConfigProperty(
         type = ConfigType.TOGGLE,
         name = "Show Material IDs",
         description = "",

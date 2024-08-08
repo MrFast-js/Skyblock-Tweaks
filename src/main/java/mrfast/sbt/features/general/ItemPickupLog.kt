@@ -7,9 +7,12 @@ import mrfast.sbt.config.GuiManager
 import mrfast.sbt.config.categories.GeneralConfig.itemPickupLog
 import mrfast.sbt.config.categories.GeneralConfig.itemPickupLogItemIds
 import mrfast.sbt.config.categories.GeneralConfig.itemPickupLogItemPrices
+import mrfast.sbt.config.categories.GeneralConfig.itemPickupLogTextStyle
 import mrfast.sbt.customevents.SkyblockInventoryItemEvent
+import mrfast.sbt.customevents.WorldLoadEvent
 import mrfast.sbt.utils.GuiUtils
 import mrfast.sbt.utils.ItemUtils.getLore
+import mrfast.sbt.utils.Utils
 import mrfast.sbt.utils.Utils.clean
 import mrfast.sbt.utils.Utils.formatNumber
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -25,8 +28,21 @@ object ItemPickupLog {
         var itemId: String = ""
     }
 
+    // Stop from rift showing every item gain/loss when going between dimensions
+    private var changedWorlds = false
+
+    @SubscribeEvent
+    fun onLoad(event: WorldLoadEvent) {
+        changedWorlds = true
+        Utils.setTimeout({
+            changedWorlds = false
+        }, 3000)
+    }
+
     @SubscribeEvent
     fun onItemGainLoss(event: SkyblockInventoryItemEvent.InventoryItemEvent) {
+        if (changedWorlds) return
+
         if (event is SkyblockInventoryItemEvent.SackItemEvent) {
             val old = displayLines[event.materialName] ?: PickupEntry()
             old.lastUpdated = System.currentTimeMillis()
@@ -59,6 +75,7 @@ object ItemPickupLog {
             this.addToList()
             this.height = 16
             this.width = 112
+            this.needsExample = true
         }
 
         override fun draw() {
@@ -78,7 +95,7 @@ object ItemPickupLog {
                 val colorSymbol = if (entry.value.count < 0) "§c-" else "§a+"
                 val count = abs(entry.value.count).formatNumber()
 
-                var display = "$colorSymbol $count §e$entryName"
+                var display = "$colorSymbol$count §e$entryName"
 
                 if (itemPickupLogItemIds) display += " §7$materialId"
                 if (itemPickupLogItemPrices) {
@@ -89,12 +106,27 @@ object ItemPickupLog {
                         (info.get("lowestBin")?.asDouble ?: 0.0) * entry.value.count
                     }
 
-                    display += " §6$${price.formatNumber()}"
+                    display += " §6$${abs(price).formatNumber()}"
+                }
+                val style = when (itemPickupLogTextStyle) {
+                    "Shadowed" -> GuiUtils.TextStyle.DROP_SHADOW
+                    "Outlined" -> GuiUtils.TextStyle.BLACK_OUTLINE
+                    else -> GuiUtils.TextStyle.DEFAULT
                 }
 
-                GuiUtils.drawText(display, 0f, (10 * drawnEntries).toFloat(), GuiUtils.TextStyle.BLACK_OUTLINE)
+                GuiUtils.drawText(display, 0f, (10 * drawnEntries).toFloat(), style)
                 drawnEntries++
             }
+        }
+
+        override fun drawExample() {
+            val style = when (itemPickupLogTextStyle) {
+                "Shadowed" -> GuiUtils.TextStyle.DROP_SHADOW
+                "Outlined" -> GuiUtils.TextStyle.BLACK_OUTLINE
+                else -> GuiUtils.TextStyle.DEFAULT
+            }
+            GuiUtils.drawText("§a+5 §fPotato §6$16", 0f, 0f, style)
+            GuiUtils.drawText("§c-4 §fHay Bale §6$54", 0f, 10f, style)
         }
 
         override fun isActive(): Boolean {
