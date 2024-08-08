@@ -3,11 +3,14 @@ package mrfast.sbt.apis
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.config.categories.GeneralConfig
 import mrfast.sbt.customevents.WorldLoadEvent
+import mrfast.sbt.utils.LocationUtils
+import mrfast.sbt.utils.Utils
 import mrfast.sbt.utils.Utils.clean
 import net.minecraft.util.ChatComponentText
 import net.minecraftforge.client.event.ClientChatReceivedEvent
-import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 import kotlin.math.max
 
 @SkyblockTweaks.EventComponent
@@ -30,6 +33,15 @@ object PlayerStats {
     @SubscribeEvent
     fun onWorldChange(event: WorldLoadEvent) {
         maxRiftTime = 0
+    }
+
+    @SubscribeEvent
+    fun onTick(event: ClientTickEvent) {
+        if(event.phase != TickEvent.Phase.START) return
+        if(LocationUtils.currentIsland == "The Rift") {
+            health = Utils.mc.thePlayer.health.toInt()
+            maxHealth = Utils.mc.thePlayer.maxHealth.toInt()
+        }
     }
 
     @SubscribeEvent
