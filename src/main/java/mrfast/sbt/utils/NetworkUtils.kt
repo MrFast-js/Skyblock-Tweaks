@@ -174,8 +174,9 @@ object NetworkUtils {
 
         val apiUrl = "https://api.hypixel.net/skyblock/profiles?uuid=$playerUUID"
         val profiles = apiRequestAndParse(apiUrl).getAsJsonArray("profiles")
-        val pfid = profiles.firstOrNull { it.asJsonObject["selected"].asBoolean }?.asJsonObject?.get("profile_id")?.asString
-            ?: profiles.firstOrNull()?.asJsonObject?.get("profile_id")?.asString
+        val pfid =
+            profiles.firstOrNull { it.asJsonObject["selected"].asBoolean }?.asJsonObject?.get("profile_id")?.asString
+                ?: profiles.firstOrNull()?.asJsonObject?.get("profile_id")?.asString
 
         latestProfileIdCache[playerUUID] = pfid!!
 

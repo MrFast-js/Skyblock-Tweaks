@@ -43,7 +43,7 @@ object VersionManager {
 
     // Silently checks if you are behind in version (once per launch)
     private fun silentUpdateCheck() {
-        if (didSilentCheck || Utils.mc.thePlayer==null) return
+        if (didSilentCheck || Utils.mc.thePlayer == null) return
         didSilentCheck = true
 
         checkPotentialUpdate {
@@ -76,7 +76,7 @@ object VersionManager {
 
                     Utils.setTimeout({
                         Utils.playSound("random.orb", 0.1)
-                        ChatUtils.sendClientMessage(notificationText,true)
+                        ChatUtils.sendClientMessage(notificationText, true)
                     }, 10000)
                 }
             }
@@ -125,7 +125,8 @@ object VersionManager {
     // /sbt update check
     fun checkIfNeedUpdate() {
         checkPotentialUpdate {
-            val updateVersion = potentialUpdate?.update?.versionName?.split("v")?.getOrNull(1)?.trim() ?: return@checkPotentialUpdate
+            val updateVersion =
+                potentialUpdate?.update?.versionName?.split("v")?.getOrNull(1)?.trim() ?: return@checkPotentialUpdate
 
             neededUpdate.versionName = updateVersion
 
@@ -134,8 +135,8 @@ object VersionManager {
             val updateVersionName = updateInfo.versionName.split("v")[1]
             val updateVersionValue = getVersionValue(updateVersionName)
 
-            ChatUtils.sendClientMessage("§aCurrent version: §b${MOD_VERSION}",true)
-            ChatUtils.sendClientMessage("§aLatest version: §b$updateVersionName",true)
+            ChatUtils.sendClientMessage("§aCurrent version: §b${MOD_VERSION}", true)
+            ChatUtils.sendClientMessage("§aLatest version: §b$updateVersionName", true)
             when {
                 currentVersionValue > updateVersionValue -> {
                     ChatUtils.sendClientMessage("§aYou are using a more recent version. No update needed.")
@@ -154,7 +155,7 @@ object VersionManager {
                                     ClickEvent(ClickEvent.Action.RUN_COMMAND, "/sbt update latest")
                                 )
                             )
-                    ChatUtils.sendClientMessage(comp,true)
+                    ChatUtils.sendClientMessage(comp, true)
                 }
             }
         }
@@ -163,7 +164,7 @@ object VersionManager {
     fun doUpdate() {
         CompletableFuture.supplyAsync<Any?> {
             try {
-                ChatUtils.sendClientMessage("§ePreparing update...",true)
+                ChatUtils.sendClientMessage("§ePreparing update...", true)
                 potentialUpdate!!.prepareUpdate()
             } catch (e: IOException) {
                 e.printStackTrace()
@@ -172,7 +173,7 @@ object VersionManager {
             null
         }.thenAcceptAsync {
             try {
-                ChatUtils.sendClientMessage("§aDownloading update: §b" + potentialUpdate!!.update.versionName,true)
+                ChatUtils.sendClientMessage("§aDownloading update: §b" + potentialUpdate!!.update.versionName, true)
                 potentialUpdate!!.executeUpdate()
 
                 val notificationText =
@@ -189,7 +190,7 @@ object VersionManager {
                             )
                     )
                 notificationText.appendSibling(closeGame)
-                ChatUtils.sendClientMessage(notificationText,true)
+                ChatUtils.sendClientMessage(notificationText, true)
             } catch (e: IOException) {
                 e.printStackTrace()
                 throw RuntimeException(e)

@@ -37,7 +37,7 @@ object Utils {
 
     fun String.getNameNoRank(): String {
         val clean = this.clean()
-        val noRankName =  if (clean.contains("]")) clean.split("] ")[1] else clean
+        val noRankName = if (clean.contains("]")) clean.split("] ")[1] else clean
         return noRankName.split(" ")[0]
     }
 

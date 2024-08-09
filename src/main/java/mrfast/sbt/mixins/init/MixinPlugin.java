@@ -20,10 +20,15 @@ import java.util.zip.ZipInputStream;
 
 /**
  * Taken from Skyhanni under GNU LGPL v2.1 license
- * @link https://github.com/hannibal002/SkyHanni/blob/beta/LICENSE
+ *
  * @author Linnea Gräf
+ * @link https://github.com/hannibal002/SkyHanni/blob/beta/LICENSE
  */
 public class MixinPlugin implements IMixinConfigPlugin {
+    String mixinBasePackage = "mrfast.sbt.mixins.transformers.";
+    String mixinBaseDir = mixinBasePackage.replace(".", "/");
+    List<String> mixins = null;
+
     @Override
     public void onLoad(String mixinPackage) {
 
@@ -63,11 +68,6 @@ public class MixinPlugin implements IMixinConfigPlugin {
         }
         return classUrl;
     }
-
-    String mixinBasePackage = "mrfast.sbt.mixins.transformers.";
-    String mixinBaseDir = mixinBasePackage.replace(".", "/");
-
-    List<String> mixins = null;
 
     public void tryAddMixinClass(String className) {
         String norm = (className.endsWith(".class") ? className.substring(0, className.length() - ".class".length()) : className)

@@ -13,9 +13,9 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object NearlyCoherentFishingRodRadius {
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        if(!LocationUtils.inSkyblock || LocationUtils.currentIsland != "The Rift" || !RiftConfig.nearlyCoherentRodRadius) return
+        if (!LocationUtils.inSkyblock || LocationUtils.currentIsland != "The Rift" || !RiftConfig.nearlyCoherentRodRadius) return
 
-        if(Utils.mc.thePlayer.heldItem?.getSkyblockId() != "NEARLY_COHERENT_ROD") return
+        if (Utils.mc.thePlayer.heldItem?.getSkyblockId() != "NEARLY_COHERENT_ROD") return
 
         RenderUtils.drawFilledCircleWithBorder(
             Utils.mc.thePlayer.positionVector,

@@ -28,12 +28,12 @@ object PurseManager {
 
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
-        if(event.phase != TickEvent.Phase.START) return
+        if (event.phase != TickEvent.Phase.START) return
         val lines = ScoreboardUtils.getSidebarLines(true)
         for (line in lines) {
             if (line.matches("Purse: (.*)")) {
                 val groups = line.getRegexGroups("Purse: ([0-9,.]+)") ?: break
-                val purseCoins = groups.group(1).replace("[^0-9]","").replace(",", "").toDouble().toInt()
+                val purseCoins = groups.group(1).replace("[^0-9]", "").replace(",", "").toDouble().toInt()
 
                 if (coinsInPurse != purseCoins) {
                     if (stopNextChange) {

@@ -25,7 +25,7 @@ object HighlightCorrectLivid {
         if (!LocationUtils.inDungeons || LocationUtils.dungeonFloor != 5 || !highlightCorrectLivid || event.phase != TickEvent.Phase.START) return
 
         val state: IBlockState = Utils.mc.theWorld.getBlockState(BlockPos(5, 108, 42))
-        if(state.block != Blocks.stained_glass) return
+        if (state.block != Blocks.stained_glass) return
 
 
         val color = state.getValue(BlockStainedGlass.COLOR)
@@ -54,7 +54,7 @@ object HighlightCorrectLivid {
     fun onRenderEntityOutlines(event: RenderEntityOutlineEvent.Normal) {
         if (!LocationUtils.inDungeons || LocationUtils.dungeonFloor != 5 || !highlightCorrectLivid) return
 
-        if (lividEntity!=null) {
+        if (lividEntity != null) {
             event.queueEntityToOutline(lividEntity, highlightCorrectLividColor)
         }
     }

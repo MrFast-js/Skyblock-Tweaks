@@ -126,7 +126,6 @@ object GuiUtils {
     }
 
 
-
     fun drawOutlinedSquare(x: Int, y: Int, width: Int, height: Int, backgroundColor: Color, borderColor: Color) {
         // Draw the filled square
         Gui.drawRect(x, y, x + width, y + height, backgroundColor.rgb)
@@ -226,7 +225,7 @@ object GuiUtils {
                     height + 3f,
                     3f,
                     Color(40, 40, 40),
-                    Color(85,255,85).constraint,
+                    Color(85, 255, 85).constraint,
                     1f
                 )
             }

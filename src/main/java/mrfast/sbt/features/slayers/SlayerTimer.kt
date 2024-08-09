@@ -13,7 +13,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object SlayerTimer {
     @SubscribeEvent
     fun onSlayerDeath(event: SlayerEvent.Death) {
-        if(!SlayerConfig.slayerTimer) return
+        if (!SlayerConfig.slayerTimer) return
 
         val timeToSpawn = System.currentTimeMillis() - SlayerManager.slayerStartedAt
         val timeToKill = System.currentTimeMillis() - SlayerManager.slayerSpawnedAt

@@ -8,6 +8,7 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 /**
  * Copied Verbatim from Skyhanni under GNU LGPL v2.1 license
+ *
  * @link https://github.com/hannibal002/SkyHanni/blob/beta/LICENSE
  */
 @Mixin(RenderGlobal.class)

@@ -17,7 +17,7 @@ object HighlightStarredMobs {
         if (!LocationUtils.inDungeons || !glowingStarredMobs) return
 
         for (mob in SkyblockMobDetector.getLoadedSkyblockMobs()) {
-            if(mob.mobNameEntity.customNameTag.clean().startsWith("✯")) {
+            if (mob.mobNameEntity.customNameTag.clean().startsWith("✯")) {
                 event.queueEntityToOutline(mob.skyblockMob, glowingStarredMobsColor)
             }
         }

@@ -67,7 +67,7 @@ object PartyManager {
                         val regex = "^(\\w+):\\s(\\w+)\\s\\((\\d+)\\)$"
                         val clean = line.clean().trim()
                         if (clean.matches(regex)) {
-                            val matcher = clean.getRegexGroups(regex)?:return@setTimeout
+                            val matcher = clean.getRegexGroups(regex) ?: return@setTimeout
                             val playerName = matcher.group(1)
                             val className = matcher.group(2)
                             val classLvl = matcher.group(3)
@@ -180,7 +180,7 @@ object PartyManager {
     private fun handleDungeonPartyFinder(clean: String) {
         val regex = "^Party Finder > ([^\\s]+) joined the dungeon group! \\(([^ ]+) Level (\\d+)\\)\$"
         if (clean.matches(regex)) {
-            val matcher = clean.getRegexGroups(regex)?:return
+            val matcher = clean.getRegexGroups(regex) ?: return
             val playerName = matcher.group(1)
             val className = matcher.group(2)
             val classLvl = matcher.group(3)

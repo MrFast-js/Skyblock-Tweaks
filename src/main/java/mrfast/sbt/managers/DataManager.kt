@@ -21,7 +21,7 @@ object DataManager {
     private val saveDataFilePath = ConfigManager.modDirectoryPath.resolve("profilesData.json")
     private var dataFile: File = saveDataFilePath
     private var dataJson = JsonObject()
-    private var profileIds = mutableMapOf<String,String>() // UUID, PFID
+    private var profileIds = mutableMapOf<String, String>() // UUID, PFID
 
     init {
         loadDataFromFile()

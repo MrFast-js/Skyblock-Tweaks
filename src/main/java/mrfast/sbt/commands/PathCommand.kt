@@ -3,9 +3,8 @@ package mrfast.sbt.commands
 import com.mojang.realmsclient.gui.ChatFormatting
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.features.mining.PathTracer
-import mrfast.sbt.utils.*
+import mrfast.sbt.utils.ChatUtils
 import net.minecraft.command.CommandBase
-import net.minecraft.command.CommandException
 import net.minecraft.command.ICommandSender
 import net.minecraft.event.ClickEvent
 import net.minecraft.event.HoverEvent
@@ -13,7 +12,6 @@ import net.minecraft.util.BlockPos
 import net.minecraft.util.ChatComponentText
 import net.minecraft.util.EnumChatFormatting
 import net.minecraft.util.Vec3
-import java.util.*
 
 @SkyblockTweaks.CommandComponent
 class PathCommand : CommandBase() {
@@ -32,21 +30,14 @@ class PathCommand : CommandBase() {
         ChatUtils.sendClientMessage(usage)
     }
 
-    override fun getCommandName(): String {
-        return "path"
-    }
+    override fun getCommandName(): String = "path"
 
-    override fun getCommandUsage(sender: ICommandSender): String {
-        return "/path [action]"
-    }
+    override fun getCommandUsage(sender: ICommandSender): String = "/path [action]"
 
-    override fun addTabCompletionOptions(sender: ICommandSender, args: Array<String>, pos: BlockPos): List<String> {
-        return arguments
-    }
+    override fun addTabCompletionOptions(sender: ICommandSender, args: Array<String>, pos: BlockPos): List<String> =
+        arguments
 
-    override fun getRequiredPermissionLevel(): Int {
-        return 0
-    }
+    override fun getRequiredPermissionLevel(): Int = 0
 
     override fun processCommand(sender: ICommandSender, args: Array<out String>) {
         if (args.isEmpty()) {

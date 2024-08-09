@@ -16,11 +16,13 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 /**
  * Adapted from Skyhanni under GNU LGPL v2.1 license
+ *
  * @link https://github.com/hannibal002/SkyHanni/blob/beta/LICENSE
  */
 @Mixin(RenderGlobal.class)
 public abstract class MixinRenderGlobal {
-    @Shadow protected abstract boolean isRenderEntityOutlines();
+    @Shadow
+    protected abstract boolean isRenderEntityOutlines();
 
     @Redirect(method = "renderEntities", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/RenderGlobal;isRenderEntityOutlines()Z", ordinal = 0))
     private boolean onRenderEntities(RenderGlobal renderGlobal) {
@@ -37,14 +39,15 @@ public abstract class MixinRenderGlobal {
         return EntityOutlineManager.INSTANCE.shouldRenderEntityOutlines();
     }
 
-    @Inject(method = "renderEntities", at = @At(value = "INVOKE_STRING", target = "Lnet/minecraft/profiler/Profiler;endStartSection(Ljava/lang/String;)V", shift = At.Shift.BEFORE, ordinal = 2, args = {"ldc=entities"}), locals = LocalCapture.CAPTURE_FAILSOFT) // Non-optifine version
+    @Inject(method = "renderEntities", at = @At(value = "INVOKE_STRING", target = "Lnet/minecraft/profiler/Profiler;endStartSection(Ljava/lang/String;)V", shift = At.Shift.BEFORE, ordinal = 2, args = {"ldc=entities"}), locals = LocalCapture.CAPTURE_FAILSOFT)
+    // Non-optifine version
     private void renderEntities(Entity renderViewEntity, ICamera camera, float partialTicks, CallbackInfo ci, int pass, double d0, double d1, double d2) {
         displayOutlines(d0, d1, d2, camera, partialTicks);
     }
 
     private void displayOutlines(double x, double y, double z, ICamera camera, float partialTicks) {
         if (isRenderEntityOutlines()) {
-            EntityOutlineManager.INSTANCE.renderEntityOutlines(camera,partialTicks,x,y,z);
+            EntityOutlineManager.INSTANCE.renderEntityOutlines(camera, partialTicks, x, y, z);
         }
     }
 }

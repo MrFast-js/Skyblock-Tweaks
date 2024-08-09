@@ -164,6 +164,7 @@ open class SiblingConstraintFixed @JvmOverloads constructor(
                     }
                 }
             }
+
             ConstraintType.Y -> {
                 if (alignOpposite) {
                     visitor.visitSelf(ConstraintType.HEIGHT)
@@ -191,6 +192,7 @@ open class SiblingConstraintFixed @JvmOverloads constructor(
                     }
                 }
             }
+
             else -> throw IllegalArgumentException(type.prettyName)
         }
     }
