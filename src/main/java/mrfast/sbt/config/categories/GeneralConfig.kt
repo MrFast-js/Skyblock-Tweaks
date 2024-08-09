@@ -300,9 +300,19 @@ object GeneralConfig : Config() {
         name = "Defense Number",
         description = "Movable defense display",
         category = "General",
-        subcategory = "Stat Displays"
+        subcategory = "Stat Displays",
+        isParent = true
     )
     var defenseNumber = false
+
+    @ConfigProperty(
+        type = ConfigType.COLOR,
+        name = "Defense Color",
+        description = "",
+        category = "General",
+        subcategory = "Stat Displays"
+    )
+    var defenseNumberColor = Color(85,255,85)
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
