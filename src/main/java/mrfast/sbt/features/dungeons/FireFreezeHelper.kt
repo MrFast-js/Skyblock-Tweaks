@@ -3,6 +3,7 @@ package mrfast.sbt.features.dungeons
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.config.GuiManager
 import mrfast.sbt.config.categories.DungeonConfig
+import mrfast.sbt.config.categories.GeneralConfig
 import mrfast.sbt.utils.GuiUtils
 import mrfast.sbt.utils.LocationUtils
 import mrfast.sbt.utils.Utils
@@ -13,10 +14,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 
 // Shows when to use fire freeze on F2,F3,M2,M3 in order to freeze boss perfectly
-/*
-@TODO: Center text horizontally
- */
-
 @SkyblockTweaks.EventComponent
 object FireFreezeHelper {
     private val textScale = 2.0
@@ -73,13 +70,23 @@ object FireFreezeHelper {
 
         override fun draw() {
             GlStateManager.scale(textScale, textScale, 1.0)
-            GuiUtils.drawText(currentDisplayText, 0f, 0f, GuiUtils.TextStyle.DROP_SHADOW)
+            val centerX = this.width / 4f
+
+            GuiUtils.drawText(
+                currentDisplayText, centerX, 0f, GuiUtils.TextStyle.DROP_SHADOW,
+                GeneralConfig.effectiveHealthNumberColor, centered = true
+            )
             GlStateManager.scale(1 / textScale, 1 / textScale, 1.0)
         }
 
         override fun drawExample() {
             GlStateManager.scale(textScale, textScale, 1.0)
-            GuiUtils.drawText("§cFire Freeze in 5 seconds!", 0f, 0f, GuiUtils.TextStyle.DROP_SHADOW)
+            val centerX = this.width / 2f
+
+            GuiUtils.drawText(
+                "§cFire Freeze in 5 seconds!", centerX, 0f, GuiUtils.TextStyle.DROP_SHADOW,
+                GeneralConfig.effectiveHealthNumberColor, centered = true
+            )
             GlStateManager.scale(1 / textScale, 1 / textScale, 1.0)
         }
 

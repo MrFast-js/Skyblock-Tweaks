@@ -23,12 +23,13 @@ object OverflowManaNumber {
             this.elementName = "Overflow Mana Number"
             this.addToList()
             this.height = Utils.mc.fontRendererObj.FONT_HEIGHT
+            this.width = Utils.mc.fontRendererObj.getStringWidth("400ʬ")
         }
 
         override fun draw() {
             val number = "§3${PlayerStats.overflowMana.formatNumber()}ʬ"
-            GuiUtils.drawText(number, 0f, 0f, GuiUtils.TextStyle.BLACK_OUTLINE, manaOverflowNumberColor)
-            this.width = Utils.mc.fontRendererObj.getStringWidth(number) + 1
+            val centerX = this.width / 2f
+            GuiUtils.drawText(number, centerX, 0f, GuiUtils.TextStyle.BLACK_OUTLINE, manaOverflowNumberColor, centered = true)
         }
 
         override fun isActive(): Boolean {

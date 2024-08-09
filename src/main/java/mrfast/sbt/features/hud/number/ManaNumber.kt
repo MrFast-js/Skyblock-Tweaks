@@ -23,12 +23,13 @@ object ManaNumber {
             this.elementName = "Mana Number"
             this.addToList()
             this.height = Utils.mc.fontRendererObj.FONT_HEIGHT
+            this.width = Utils.mc.fontRendererObj.getStringWidth("12345/12345")
         }
 
         override fun draw() {
             val number = "${PlayerStats.mana.formatNumber()}/${PlayerStats.maxMana.formatNumber()}"
-            GuiUtils.drawText(number, 0f, 0f, GuiUtils.TextStyle.BLACK_OUTLINE,manaNumberColor)
-            this.width = Utils.mc.fontRendererObj.getStringWidth(number) + 1
+            val centerX = this.width / 2f
+            GuiUtils.drawText(number, centerX, 0f, GuiUtils.TextStyle.BLACK_OUTLINE, manaNumberColor, centered = true)
         }
 
         override fun isActive(): Boolean {

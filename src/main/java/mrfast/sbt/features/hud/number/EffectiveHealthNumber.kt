@@ -23,13 +23,14 @@ object EffectiveHealthNumber {
             this.elementName = "Effective Health Number"
             this.addToList()
             this.height = Utils.mc.fontRendererObj.FONT_HEIGHT
+            this.width = Utils.mc.fontRendererObj.getStringWidth("380,000/420,000")
         }
 
         override fun draw() {
             val maxEffectiveHealth = if (GeneralConfig.showMaxEffectiveHealth) "/${PlayerStats.maxEffectiveHealth.formatNumber()}" else ""
             val number = "§2${PlayerStats.effectiveHealth.formatNumber()}$maxEffectiveHealth"
-            GuiUtils.drawText(number, 0f, 0f, GuiUtils.TextStyle.BLACK_OUTLINE, effectiveHealthNumberColor)
-            this.width = Utils.mc.fontRendererObj.getStringWidth(number) + 1
+            val centerX = this.width / 2f
+            GuiUtils.drawText(number, centerX, 0f, GuiUtils.TextStyle.BLACK_OUTLINE, effectiveHealthNumberColor, centered = true)
         }
 
         override fun isActive(): Boolean {
