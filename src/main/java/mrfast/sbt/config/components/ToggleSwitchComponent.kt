@@ -54,7 +54,11 @@ class ToggleSwitchComponent(initValue: Boolean) : UIRoundedRectangle(0f) {
                 setXAnimation(Animations.OUT_EXP, 0.5f, if (activated) 1.pixels(alignOpposite = true) else 1.pixels)
             }
             this.animate {
-                setColorAnimation(Animations.OUT_EXP, 0.5f, if (activated) activatedColor.constraint else deactivatedColor.constraint)
+                setColorAnimation(
+                    Animations.OUT_EXP,
+                    0.5f,
+                    if (activated) activatedColor.constraint else deactivatedColor.constraint
+                )
             }
             Utils.mc.thePlayer.playSound("gui.button.press", 0.25f, 1f)
         }

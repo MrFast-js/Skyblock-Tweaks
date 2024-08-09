@@ -40,27 +40,31 @@ object ItemApi {
 
                 if (logging) println("Loading Lowest Bin Prices from Moulberry NEU API")
                 try {
-                    val lowestBins = NetworkUtils.apiRequestAndParse("https://moulberry.codes/lowestbin.json", caching = false)
+                    val lowestBins =
+                        NetworkUtils.apiRequestAndParse("https://moulberry.codes/lowestbin.json", caching = false)
                     if (lowestBins.entrySet().size > 0) {
                         lowestBins.entrySet().forEach {
                             if (!skyblockItemPrices.has(it.key)) {
                                 skyblockItemPrices.add(it.key, JsonObject())
                             }
-                            skyblockItemPrices.get(it.key).asJsonObject.addProperty("lowestBin", it.value.asLong)
-                            skyblockItemPrices.get(it.key).asJsonObject.addProperty("basePrice", it.value.asLong)
+                            skyblockItemPrices[it.key].asJsonObject.addProperty("lowestBin", it.value.asLong)
+                            skyblockItemPrices[it.key].asJsonObject.addProperty("basePrice", it.value.asLong)
                         }
                         if (logging) println("Loaded Lowest Bin Prices from Moulberry NEU API!!")
 
                         if (logging) println("Loading Average Bin Prices from Moulberry NEU API")
                         val averageBins =
-                            NetworkUtils.apiRequestAndParse("https://moulberry.codes/auction_averages/3day.json", caching = false)
+                            NetworkUtils.apiRequestAndParse(
+                                "https://moulberry.codes/auction_averages/3day.json",
+                                caching = false
+                            )
                         if (averageBins.entrySet().size > 0) {
                             averageBins.entrySet().forEach {
                                 if (!skyblockItemPrices.has(it.key)) {
                                     skyblockItemPrices.add(it.key, JsonObject())
                                 }
 
-                                val item = skyblockItemPrices.get(it.key).asJsonObject
+                                val item = skyblockItemPrices[it.key].asJsonObject
                                 it.value.asJsonObject.entrySet().forEach { priceStat ->
                                     item.add(priceStat.key + "_avg", priceStat.value)
                                 }
@@ -68,19 +72,19 @@ object ItemApi {
                                 if (item.has("price_avg")) {
                                     item.addProperty(
                                         "basePrice",
-                                        item.get("price_avg").asLong
+                                        item["price_avg"].asLong
                                     )
                                 }
 
                                 // Change 'worth' depending on available prices and anti market manipulations math, requires lbin & abin
-                                if (skyblockItemPrices.get(it.key).asJsonObject.has("lowestBin") && skyblockItemPrices.get(
+                                if (skyblockItemPrices[it.key].asJsonObject.has("lowestBin") && skyblockItemPrices[
                                         it.key
-                                    ).asJsonObject.has("price_avg")
+                                    ].asJsonObject.has("price_avg")
                                 ) {
-                                    val lbin = item.get("lowestBin").asDouble
-                                    var abin = item.get("price_avg").asDouble
+                                    val lbin = item["lowestBin"].asDouble
+                                    var abin = item["price_avg"].asDouble
                                     if (item.has("clean_price_avg")) {
-                                        abin = item.get("clean_price_avg").asDouble
+                                        abin = item["clean_price_avg"].asDouble
                                     }
 
                                     var basePrice = (abin * 0.4 + lbin * 0.6)
@@ -116,11 +120,11 @@ object ItemApi {
                     useProxy = false
                 )
                 if (bzPrices.entrySet().size > 0) {
-                    val bzItems = bzPrices.get("products").asJsonObject
+                    val bzItems = bzPrices["products"].asJsonObject
                     for (product in bzItems.entrySet()) {
-                        val quickStats = product.value.asJsonObject.get("quick_status").asJsonObject
-                        val sellPrice = quickStats.get("sellPrice").asDouble
-                        val buyPrice = quickStats.get("buyPrice").asDouble
+                        val quickStats = product.value.asJsonObject["quick_status"].asJsonObject
+                        val sellPrice = quickStats["sellPrice"].asDouble
+                        val buyPrice = quickStats["buyPrice"].asDouble
 
                         val productJson = JsonObject()
                         productJson.addProperty("sellPrice", sellPrice)
@@ -136,7 +140,7 @@ object ItemApi {
 
     fun getItemIdFromName(displayName: String, ignoreFormatting: Boolean? = false): String? {
         return skyblockItems.entrySet().find { entry ->
-            val itemName = entry.value.asJsonObject.get("displayname").asString
+            val itemName = entry.value.asJsonObject["displayname"].asString
             val cleanedItemName = if (ignoreFormatting == true) itemName?.clean() else itemName
             val cleanedDisplayName = if (ignoreFormatting == true) displayName.clean() else displayName
             cleanedItemName == cleanedDisplayName
@@ -150,8 +154,8 @@ object ItemApi {
         // Use coin talisman as texture for skyblock_coin
         if (itemId == "SKYBLOCK_COIN") {
             val itemJson = skyblockItems["COIN_TALISMAN"]?.asJsonObject ?: return null
-            var nbtString = itemJson.get("nbttag")?.asString ?: return null
-            val mcItemId = itemJson.get("itemid")?.asString ?: return null
+            var nbtString = itemJson["nbttag"]?.asString ?: return null
+            val mcItemId = itemJson["itemid"]?.asString ?: return null
             nbtString = nbtString.replace(
                 "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDUyZGNhNjhjOGY4YWY1MzNmYjczN2ZhZWVhY2JlNzE3Yjk2ODc2N2ZjMTg4MjRkYzJkMzdhYzc4OWZjNzcifX19",
                 "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTM4MDcxNzIxY2M1YjRjZDQwNmNlNDMxYTEzZjg2MDgzYTg5NzNlMTA2NGQyZjg4OTc4Njk5MzBlZTZlNTIzNyJ9fX0="
@@ -174,16 +178,17 @@ object ItemApi {
             itemStack.setStackDisplayName("§6Skyblock Coins")
 
             if (itemJson.has("damage")) {
-                itemStack.itemDamage = itemJson.get("damage").asInt
+                itemStack.itemDamage = itemJson["damage"].asInt
             }
 
             itemStackCache[itemId] = itemStack
             return itemStack
         }
+
         if (itemId == "ACCESSORY_BAG") {
             val itemJson = skyblockItems["LARGE_DUNGEON_SACK"]?.asJsonObject ?: return null
-            var nbtString = itemJson.get("nbttag")?.asString ?: return null
-            val mcItemId = itemJson.get("itemid")?.asString ?: return null
+            var nbtString = itemJson["nbttag"]?.asString ?: return null
+            val mcItemId = itemJson["itemid"]?.asString ?: return null
             nbtString = nbtString.replace(
                 "ewogICJ0aW1lc3RhbXAiIDogMTU5NzgxMDkwMzc1NCwKICAicHJvZmlsZUlkIiA6ICJmNjE1NzFmMjY1NzY0YWI5YmUxODcyMjZjMTEyYWEwYSIsCiAgInByb2ZpbGVOYW1lIiA6ICJGZWxpeF9NYW5nZW5zZW4iLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmI5NmM1ODVjY2QzNWYwNzNkYTM4ZDE2NWNiOWJiMThmZjEzNmYxYTE4NGVlZTNmNDQ3MjUzNTQ2NDBlYmJkNCIKICAgIH0KICB9Cn0",
                 "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTYxYTkxOGMwYzQ5YmE4ZDA1M2U1MjJjYjkxYWJjNzQ2ODkzNjdiNGQ4YWEwNmJmYzFiYTkxNTQ3MzA5ODVmZiJ9fX0"
@@ -206,7 +211,7 @@ object ItemApi {
             itemStack.setStackDisplayName("§aAccessory Bag")
 
             if (itemJson.has("damage")) {
-                itemStack.itemDamage = itemJson.get("damage").asInt
+                itemStack.itemDamage = itemJson["damage"].asInt
             }
 
             itemStackCache[itemId] = itemStack
@@ -215,8 +220,8 @@ object ItemApi {
 
         // Assuming skyblockItems is a map containing NBT data as strings
         val itemJson = skyblockItems[itemId]?.asJsonObject ?: return null
-        val nbtString = itemJson.get("nbttag")?.asString ?: return null
-        val mcItemId = itemJson.get("itemid")?.asString ?: return null
+        val nbtString = itemJson["nbttag"]?.asString ?: return null
+        val mcItemId = itemJson["itemid"]?.asString ?: return null
 
         // Parse NBT string
         val nbtCompound = try {
@@ -231,7 +236,7 @@ object ItemApi {
         itemStack.tagCompound = nbtCompound
 
         if (itemJson.has("damage")) {
-            itemStack.itemDamage = itemJson.get("damage").asInt
+            itemStack.itemDamage = itemJson["damage"].asInt
         }
 
         itemStackCache[itemId] = itemStack
@@ -244,19 +249,12 @@ object ItemApi {
             return getItemPriceInfo("ENCHANTMENT_${itemId.replace(";", "_")}")
         }
 
-        return skyblockItemPrices.get(itemId)?.asJsonObject
+        return skyblockItemPrices[itemId]?.asJsonObject
     }
 
-    fun getItemInfo(itemId: String): JsonObject? {
-        return skyblockItems.get(itemId)?.asJsonObject
-    }
+    fun getItemInfo(itemId: String): JsonObject? = skyblockItems[itemId]?.asJsonObject
 
-    fun getSkyblockItems(): JsonObject {
-        return skyblockItems
-    }
+    fun getSkyblockItems(): JsonObject = skyblockItems
 
-    fun getItemInfo(stack: ItemStack): JsonObject? {
-        val id = stack.getSkyblockId() ?: return null
-        return skyblockItems.get(id).asJsonObject
-    }
+    fun getItemInfo(stack: ItemStack): JsonObject? = stack.getSkyblockId()?.let { skyblockItems[it].asJsonObject }
 }

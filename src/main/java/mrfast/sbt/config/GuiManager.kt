@@ -27,11 +27,19 @@ object GuiManager {
                     val screenWidth = Utils.mc.displayWidth / 2
                     val screenHeight = Utils.mc.displayHeight / 2
 
-                    GlStateManager.translate(guiElement.relativeX * screenWidth, guiElement.relativeY * screenHeight, 0.0)
+                    GlStateManager.translate(
+                        guiElement.relativeX * screenWidth,
+                        guiElement.relativeY * screenHeight,
+                        0.0
+                    )
                     GlStateManager.scale(guiElement.scale, guiElement.scale, 1.0)
                     guiElement.draw()
                     GlStateManager.scale(1 / guiElement.scale, 1 / guiElement.scale, 1.0)
-                    GlStateManager.translate(-guiElement.relativeX * screenWidth, -guiElement.relativeY * screenHeight, 0.0)
+                    GlStateManager.translate(
+                        -guiElement.relativeX * screenWidth,
+                        -guiElement.relativeY * screenHeight,
+                        0.0
+                    )
                 }
             }
         }
@@ -91,23 +99,15 @@ object GuiManager {
             guiElements.add(this)
         }
 
-        open fun draw() {
-
-        }
+        open fun draw() {}
 
         // Will be called during gui editing so the user can see what the feature is even if its not explicitly showing right then
-        open fun drawExample() {
-
-        }
+        open fun drawExample() {}
 
         // This will usually consist of locational requirements, example only showing inside crimson isles
-        open fun isVisible(): Boolean {
-            return true
-        }
+        open fun isVisible(): Boolean = true
 
         // This will tell whether the config option for this has been turned on or not
-        open fun isActive(): Boolean {
-            return false
-        }
+        open fun isActive(): Boolean = false
     }
 }

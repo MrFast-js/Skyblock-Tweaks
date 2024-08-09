@@ -40,10 +40,11 @@ class NumberInputComponent(initValue: Int) : UIBlock() {
             val cleanNumber: String = textInput.getText().replace("[^0-9]".toRegex(), "")
             try {
                 intValue = cleanNumber.toInt()
-            } catch (_: Exception) {}
+            } catch (_: Exception) {
+            }
 
             textInput.setText(cleanNumber)
-            this@NumberInputComponent.keyType(typedChar,keyCode)
+            this@NumberInputComponent.keyType(typedChar, keyCode)
         }
 
         textInput.onFocusLost {

@@ -1,6 +1,7 @@
 package mrfast.sbt.apis
 
 import mrfast.sbt.SkyblockTweaks
+import mrfast.sbt.apis.SkyblockMobDetector.getLoadedSkyblockMobs
 import mrfast.sbt.config.categories.CustomizationConfig
 import mrfast.sbt.config.categories.DeveloperConfig
 import mrfast.sbt.config.categories.DeveloperConfig.showMobIdsThroughWalls
@@ -86,7 +87,8 @@ object SkyblockMobDetector {
     fun onRenderMob(event: SkyblockMobEvent.Render) {
         val sbMob = event.sbMob
         val show = CustomizationConfig.developerMode && DeveloperConfig.showMobIds
-        val flag1 = showMobIdsThroughWalls || (Utils.mc.thePlayer.canEntityBeSeen(sbMob.skyblockMob) && !showMobIdsThroughWalls)
+        val flag1 =
+            showMobIdsThroughWalls || (Utils.mc.thePlayer.canEntityBeSeen(sbMob.skyblockMob) && !showMobIdsThroughWalls)
         if (sbMob.skyblockMobId != null && CustomizationConfig.developerMode && flag1 && show) {
             val pos = Vec3(sbMob.skyblockMob.posX, sbMob.skyblockMob.posY + 1, sbMob.skyblockMob.posZ)
 
@@ -140,30 +142,20 @@ object SkyblockMobDetector {
         }
     }
 
-    fun getLoadedSkyblockMobs(): List<SkyblockMob> {
-        return ArrayList(skyblockMobHashMap.values)
-    }
+    fun getLoadedSkyblockMobs(): List<SkyblockMob> = ArrayList(skyblockMobHashMap.values)
 
-    fun getEntityByName(id: String): Entity? {
-        return getLoadedSkyblockMobs()
+    fun getEntityByName(id: String): Entity? = getLoadedSkyblockMobs()
             .firstOrNull { mob -> mob.skyblockMobId == id }
             ?.skyblockMob
-    }
 
-    fun getEntitiesByName(id: String): List<Entity> {
-        return getLoadedSkyblockMobs()
+    fun getEntitiesByName(id: String): List<Entity> = getLoadedSkyblockMobs()
             .filter { mob -> mob.skyblockMobId == id }
             .map { mob -> mob.skyblockMob }
-    }
 
-    fun getSkyblockMob(entity: Entity): SkyblockMob? {
-        return getLoadedSkyblockMobs()
+    fun getSkyblockMob(entity: Entity): SkyblockMob? = getLoadedSkyblockMobs()
             .firstOrNull { mob -> mob.skyblockMob == entity || mob.mobNameEntity == entity }
-    }
 
-    fun getEntityId(entity: Entity): String? {
-        return getLoadedSkyblockMobs()
+    fun getEntityId(entity: Entity): String? = getLoadedSkyblockMobs()
             .firstOrNull { mob -> mob.skyblockMob == entity }
             ?.skyblockMobId
-    }
 }

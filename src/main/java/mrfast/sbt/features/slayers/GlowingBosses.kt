@@ -26,7 +26,8 @@ object GlowingBosses {
                     if (id.contains("Voidgloom")) {
                         val hitPhase = sbMob.mobNameEntity.customNameTag.contains("Hits")
                         val laserPhase = sbMob.skyblockMob.isRiding
-                        val color = if (laserPhase) SlayerConfig.voidgloomLaserPhase else if (hitPhase) SlayerConfig.voidgloomHitsPhase else SlayerConfig.slayerBossColor
+                        val color =
+                            if (laserPhase) SlayerConfig.voidgloomLaserPhase else if (hitPhase) SlayerConfig.voidgloomHitsPhase else SlayerConfig.slayerBossColor
                         event.queueEntityToOutline(sbMob.skyblockMob, color)
                     } else {
                         event.queueEntityToOutline(sbMob.skyblockMob, SlayerConfig.slayerBossColor)

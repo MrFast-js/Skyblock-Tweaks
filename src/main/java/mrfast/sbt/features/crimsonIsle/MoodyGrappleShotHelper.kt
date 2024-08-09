@@ -15,11 +15,11 @@ object MoodyGrappleShotHelper {
     fun onRenderEntityOutlines(event: RenderEntityOutlineEvent.Normal) {
         if (LocationUtils.currentIsland != "Crimson Isle" || !CrimsonConfig.moodyGrappleShotHighlight) return
 
-        if(Utils.mc.thePlayer.heldItem?.getSkyblockId() != "MOODY_GRAPPLESHOT") return
+        if (Utils.mc.thePlayer.heldItem?.getSkyblockId() != "MOODY_GRAPPLESHOT") return
 
         for (mob in SkyblockMobDetector.getLoadedSkyblockMobs()) {
-            if(mob.skyblockMobId == "Smoldering Blaze") {
-                if(Utils.mc.thePlayer.getDistanceToEntity(mob.skyblockMob) > 17) continue
+            if (mob.skyblockMobId == "Smoldering Blaze") {
+                if (Utils.mc.thePlayer.getDistanceToEntity(mob.skyblockMob) > 17) continue
 
                 event.queueEntityToOutline(mob.skyblockMob, CrimsonConfig.moodyGrappleShotHighlightColor)
             }

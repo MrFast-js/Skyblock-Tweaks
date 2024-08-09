@@ -37,8 +37,8 @@ object PlayerStats {
 
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
-        if(event.phase != TickEvent.Phase.START) return
-        if(LocationUtils.currentIsland == "The Rift") {
+        if (event.phase != TickEvent.Phase.START) return
+        if (LocationUtils.currentIsland == "The Rift") {
             health = Utils.mc.thePlayer.health.toInt()
             maxHealth = Utils.mc.thePlayer.maxHealth.toInt()
         }

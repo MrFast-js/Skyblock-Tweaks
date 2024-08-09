@@ -33,7 +33,9 @@ object NewYearsCakeHelper {
     fun onSlotDrawPost(event: SlotDrawnEvent.Post) {
         val isCake = event.slot.hasStack && event.slot.stack.getSkyblockId() == "NEW_YEAR_CAKE"
 
-        if (MiscellaneousConfig.highlightMissingNewYearCakes && event.gui.chestName().startsWith("Auctions") && isCake) {
+        if (MiscellaneousConfig.highlightMissingNewYearCakes && event.gui.chestName()
+                .startsWith("Auctions") && isCake
+        ) {
             val cleanedName = event.slot.stack.displayName.clean()
             if (!sortedCakeBag.contains(cleanedName)) {
                 Gui.drawRect(

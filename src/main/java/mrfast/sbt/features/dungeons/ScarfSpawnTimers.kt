@@ -75,11 +75,15 @@ object ScarfSpawnTimers {
             GlStateManager.scale(1 / 2f, 1 / 2f, 1 / 2f)
             GlStateManager.popMatrix()
         }
-        if(startBossCount) {
+        if (startBossCount) {
             GlStateManager.pushMatrix()
             GlStateManager.scale(2f, 2f, 2f)
             if (time > 0) {
-                RenderUtils.draw3DString("§6Scarf §e${(time + 0.4).format(1)}s", Vec3(-7.5, 72.0, -10.5), event.partialTicks)
+                RenderUtils.draw3DString(
+                    "§6Scarf §e${(time + 0.4).format(1)}s",
+                    Vec3(-7.5, 72.0, -10.5),
+                    event.partialTicks
+                )
             }
             GlStateManager.scale(1 / 2f, 1 / 2f, 1 / 2f)
             GlStateManager.popMatrix()

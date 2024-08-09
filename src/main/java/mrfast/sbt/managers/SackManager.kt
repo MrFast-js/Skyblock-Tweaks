@@ -49,7 +49,7 @@ object SackManager {
                         continue
                     }
                     val material = component.unformattedText
-                    val itemId = ItemApi.getItemIdFromName(material,true)?: return
+                    val itemId = ItemApi.getItemIdFromName(material, true) ?: return
 
                     val oldValue = sacks.get(material)?.asDouble ?: 0.0
 

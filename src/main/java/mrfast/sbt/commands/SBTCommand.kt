@@ -15,17 +15,11 @@ import net.minecraftforge.fml.common.FMLCommonHandler
 @SkyblockTweaks.CommandComponent
 class SBTCommand : CommandBase() {
 
-    override fun getCommandName(): String {
-        return "skyblocktweaks"
-    }
+    override fun getCommandName(): String = "skyblocktweaks"
 
-    override fun getCommandUsage(sender: ICommandSender?): String {
-        return "/skyblocktweaks"
-    }
+    override fun getCommandUsage(sender: ICommandSender?): String = "/skyblocktweaks"
 
-    override fun getCommandAliases(): List<String> {
-        return Lists.newArrayList("sbt")
-    }
+    override fun getCommandAliases(): List<String> = Lists.newArrayList("sbt")
 
     override fun processCommand(sender: ICommandSender, args: Array<out String>) {
         if (args.isNotEmpty()) {
@@ -67,6 +61,7 @@ class SBTCommand : CommandBase() {
                                 " §b• /sbtdebug §f➡ §7Debugging commands"
                     )
                 }
+
                 else -> {
                     ChatUtils.sendClientMessage("§cInvalid subcommand, §7/sbt help§c for help")
                 }
@@ -76,7 +71,5 @@ class SBTCommand : CommandBase() {
         }
     }
 
-    override fun canCommandSenderUseCommand(sender: ICommandSender?): Boolean {
-        return true
-    }
+    override fun canCommandSenderUseCommand(sender: ICommandSender?): Boolean = true
 }

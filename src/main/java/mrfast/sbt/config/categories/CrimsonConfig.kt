@@ -8,11 +8,11 @@ import java.awt.Color
 
 object CrimsonConfig : Config() {
     @ConfigProperty(
-            type = ConfigType.TOGGLE,
-            name = "Crimson Isles Map",
-            description = "Displays a live easy to follow map with named locations in the crimson isles",
-            category = "Crimson Isles",
-            subcategory = "Misc"
+        type = ConfigType.TOGGLE,
+        name = "Crimson Isles Map",
+        description = "Displays a live easy to follow map with named locations in the crimson isles",
+        category = "Crimson Isles",
+        subcategory = "Misc"
     )
     var crimsonIslesMap = false
 

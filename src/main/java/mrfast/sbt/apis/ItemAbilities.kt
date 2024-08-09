@@ -13,7 +13,6 @@ import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.client.event.MouseEvent
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.entity.player.PlayerInteractEvent
-import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.Event
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
@@ -75,7 +74,7 @@ object ItemAbilities {
         if (event.phase != TickEvent.Phase.START || !LocationUtils.inSkyblock || Utils.mc.theWorld == null) return
 
         for (cooldown in activeCooldowns) {
-            // Does the count down
+            // Does the countdown
             activeCooldowns[cooldown.key] = updateCooldown(cooldown.value)
         }
 
@@ -162,7 +161,7 @@ object ItemAbilities {
                     val mageLvl = sidebarLine.split(" ".toRegex()).dropLastWhile { it.isEmpty() }
                         .toTypedArray()[2].replace("[^0-9]".toRegex(), "").toInt()
                     return floor(mageLvl.toDouble() / 2).toInt()
-                } catch (ignored: Exception) {
+                } catch (_: Exception) {
                 }
             }
         }
@@ -172,8 +171,9 @@ object ItemAbilities {
     private val isMage = false
     private val isUniqueDungeonClass = false
 
-    /*
-   Handle left click events differently as they just don't work like normal and more commonly used right click abilities
+    /**
+     * Handle left click events differently
+     * as they just don't work like normal and more commonly used right click abilities
     */
     @SubscribeEvent
     fun onMouseClick(event: MouseEvent) {
@@ -237,7 +237,7 @@ object ItemAbilities {
                 if (System.currentTimeMillis() - ability.usedAt > 300) return
 
                 val currentCooldown = clean.replace("[^0-9]".toRegex(), "").toInt()
-                ability.currentCount = (ability.cooldownSeconds - currentCooldown).toDouble()
+                ability.currentCount = (ability.cooldownSeconds - currentCooldown)
                 activeCooldowns[ability.abilityName] = currentCooldown.toDouble()
             }
         }

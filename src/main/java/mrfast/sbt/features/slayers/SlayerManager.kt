@@ -95,8 +95,8 @@ object SlayerManager {
 
     private fun getActualSlayerName(sidebarName: String): String {
         return when {
-            sidebarName.contains("Revenant Horror V") ->  "Atoned Horror"
-            sidebarName.contains("Riftslalker Bloodfiend") ->  "Bloodfiend"
+            sidebarName.contains("Revenant Horror V") -> "Atoned Horror"
+            sidebarName.contains("Riftslalker Bloodfiend") -> "Bloodfiend"
             else -> sidebarName
         }
     }

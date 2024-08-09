@@ -72,7 +72,7 @@ object DevUtils {
         if (event.itemStack.getExtraAttributes() != null && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
             if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
                 event.toolTip.clear()
-                val id = event.itemStack.getSkyblockId()?:return
+                val id = event.itemStack.getSkyblockId() ?: return
                 val itemData = ItemApi.getItemInfo(id) ?: return
                 itemData.remove("nbttag")
                 itemData.remove("lore")
@@ -91,12 +91,12 @@ object DevUtils {
                 event.toolTip.addAll(nbt)
             }
         }
-        if (event.itemStack!=null && Keyboard.isKeyDown(Keyboard.KEY_RCONTROL)) {
+        if (event.itemStack != null && Keyboard.isKeyDown(Keyboard.KEY_RCONTROL)) {
             val nbt = prettyPrintNBTtoString(event.itemStack.serializeNBT()).replace("\"", "").split("\n")
             event.toolTip.clear()
             event.toolTip.addAll(nbt)
         }
-        if (Keyboard.isKeyDown(Keyboard.KEY_C) && !copyingTooltip ) {
+        if (Keyboard.isKeyDown(Keyboard.KEY_C) && !copyingTooltip) {
             copyingTooltip = true
             Utils.setTimeout({
                 copyingTooltip = false

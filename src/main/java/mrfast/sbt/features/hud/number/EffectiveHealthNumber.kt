@@ -27,10 +27,18 @@ object EffectiveHealthNumber {
         }
 
         override fun draw() {
-            val maxEffectiveHealth = if (GeneralConfig.showMaxEffectiveHealth) "/${PlayerStats.maxEffectiveHealth.formatNumber()}" else ""
+            val maxEffectiveHealth =
+                if (GeneralConfig.showMaxEffectiveHealth) "/${PlayerStats.maxEffectiveHealth.formatNumber()}" else ""
             val number = "§2${PlayerStats.effectiveHealth.formatNumber()}$maxEffectiveHealth"
             val centerX = this.width / 2f
-            GuiUtils.drawText(number, centerX, 0f, GuiUtils.TextStyle.BLACK_OUTLINE, effectiveHealthNumberColor, centered = true)
+            GuiUtils.drawText(
+                number,
+                centerX,
+                0f,
+                GuiUtils.TextStyle.BLACK_OUTLINE,
+                effectiveHealthNumberColor,
+                centered = true
+            )
         }
 
         override fun isActive(): Boolean {

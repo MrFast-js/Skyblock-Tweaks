@@ -30,7 +30,14 @@ object DefenseNumber {
         override fun draw() {
             val centerX = this.width / 2f
 
-            GuiUtils.drawText(PlayerStats.defense.formatNumber(), centerX, 0f, GuiUtils.TextStyle.BLACK_OUTLINE, defenseNumberColor, centered = true)
+            GuiUtils.drawText(
+                PlayerStats.defense.formatNumber(),
+                centerX,
+                0f,
+                GuiUtils.TextStyle.BLACK_OUTLINE,
+                defenseNumberColor,
+                centered = true
+            )
         }
 
         override fun isActive(): Boolean {

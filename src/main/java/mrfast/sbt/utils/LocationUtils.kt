@@ -42,13 +42,14 @@ object LocationUtils {
 
     private val gson = Gson()
     private var limboCount = 0
+
     @SubscribeEvent
-    fun onChat(event:ClientChatReceivedEvent) {
+    fun onChat(event: ClientChatReceivedEvent) {
         if (!listeningForLocraw) return
 
         if (event.message.formattedText.clean().startsWith("{\"server\":\"")) {
-            val clean = event.message.formattedText.substring(0,event.message.formattedText.indexOf("}")+1).clean()
-            val obj = gson.fromJson(clean,JsonObject::class.java)
+            val clean = event.message.formattedText.substring(0, event.message.formattedText.indexOf("}") + 1).clean()
+            val obj = gson.fromJson(clean, JsonObject::class.java)
 
             event.isCanceled = true
 
@@ -65,7 +66,7 @@ object LocationUtils {
                 inSkyblock = (obj.get("gametype").asString == "SKYBLOCK")
             }
             if (obj.get("server").asString == "limbo") {
-                if (limboCount>2) {
+                if (limboCount > 2) {
                     listeningForLocraw = false
                     println("Player is actually on afk limbo")
                     return
@@ -74,7 +75,7 @@ object LocationUtils {
                 limboCount++
                 Utils.setTimeout({
                     ChatUtils.sendPlayerMessage("/locraw")
-                },400)
+                }, 400)
             }
         }
     }
@@ -91,7 +92,7 @@ object LocationUtils {
                         inMasterMode = true
                     }
 
-                    dungeonFloor = currentArea.replace("[^0-9]".toRegex(),"").toInt()
+                    dungeonFloor = currentArea.replace("[^0-9]".toRegex(), "").toInt()
                 }
             }
         }

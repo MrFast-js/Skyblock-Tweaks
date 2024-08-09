@@ -12,7 +12,13 @@ open class SkyblockInventoryItemEvent : Event() {
     open class InventoryItemEvent(val eventType: EventType, val amount: Int = 1, val itemId: String) :
         SkyblockInventoryItemEvent()
 
-    class ItemStackEvent(eventType: EventType, amount: Int = 1, var itemName: String, itemId: String, var stack: ItemStack) :
+    class ItemStackEvent(
+        eventType: EventType,
+        amount: Int = 1,
+        var itemName: String,
+        itemId: String,
+        var stack: ItemStack
+    ) :
         InventoryItemEvent(eventType, amount, itemId)
 
     class SackItemEvent(eventType: EventType, amount: Int = 1, val materialName: String, itemId: String) :
