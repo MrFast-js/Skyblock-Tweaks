@@ -4,10 +4,12 @@ import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.apis.PlayerStats
 import mrfast.sbt.config.categories.GeneralConfig
 import mrfast.sbt.config.GuiManager
+import mrfast.sbt.config.categories.GeneralConfig.defenseNumberColor
 import mrfast.sbt.utils.GuiUtils
 import mrfast.sbt.utils.LocationUtils
 import mrfast.sbt.utils.Utils
 import mrfast.sbt.utils.Utils.formatNumber
+import java.awt.Color
 
 @SkyblockTweaks.EventComponent
 object DefenseNumber {
@@ -22,12 +24,13 @@ object DefenseNumber {
             this.elementName = "Defense Number"
             this.addToList()
             this.height = Utils.mc.fontRendererObj.FONT_HEIGHT
+            this.width = Utils.mc.fontRendererObj.getStringWidth("124,567")
         }
 
         override fun draw() {
-            val number = "§a${PlayerStats.defense.formatNumber()}"
-            GuiUtils.drawText(number, 0f, 0f, GuiUtils.TextStyle.BLACK_OUTLINE)
-            this.width = Utils.mc.fontRendererObj.getStringWidth(number) + 1
+            val centerX = this.width / 2f
+
+            GuiUtils.drawText(PlayerStats.defense.formatNumber(), centerX, 0f, GuiUtils.TextStyle.BLACK_OUTLINE, defenseNumberColor, centered = true)
         }
 
         override fun isActive(): Boolean {
