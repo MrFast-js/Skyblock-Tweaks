@@ -128,6 +128,8 @@ object RenderUtils {
         }
         glEnd()
 
+        GlStateManager.disableDepth()
+
         // Draw border (line loop)
         GlStateManager.color(
             borderColor.red / 255f,
@@ -145,7 +147,10 @@ object RenderUtils {
         }
         glEnd()
 
+        GlStateManager.enableDepth()
+
         // Restore OpenGL settings
+        GlStateManager.depthFunc(GL11.GL_LEQUAL)
         GlStateManager.enableCull()
         GlStateManager.enableLighting()
         GlStateManager.enableTexture2D()

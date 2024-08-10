@@ -27,7 +27,6 @@ object HighlightCorrectLivid {
         val state: IBlockState = Utils.mc.theWorld.getBlockState(BlockPos(5, 108, 42))
         if(state.block != Blocks.stained_glass) return
 
-
         val color = state.getValue(BlockStainedGlass.COLOR)
         val lividType = when (color) {
             EnumDyeColor.WHITE -> "Vendetta"
