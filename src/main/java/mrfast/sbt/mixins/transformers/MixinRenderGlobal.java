@@ -1,6 +1,5 @@
 package mrfast.sbt.mixins.transformers;
 
-import mrfast.sbt.managers.CompatabilityManager;
 import mrfast.sbt.managers.EntityOutlineManager;
 import mrfast.sbt.utils.LocationUtils;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -21,8 +20,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  */
 @Mixin(RenderGlobal.class)
 public abstract class MixinRenderGlobal {
-    @Shadow
-    protected abstract boolean isRenderEntityOutlines();
 
     @Redirect(method = "renderEntities", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/RenderGlobal;isRenderEntityOutlines()Z", ordinal = 0))
     private boolean onRenderEntities(RenderGlobal renderGlobal) {
@@ -39,14 +36,12 @@ public abstract class MixinRenderGlobal {
         return EntityOutlineManager.INSTANCE.shouldRenderEntityOutlines();
     }
 
-    @Inject(method = "renderEntities", at = @At(value = "INVOKE_STRING", target = "Lnet/minecraft/profiler/Profiler;endStartSection(Ljava/lang/String;)V", shift = At.Shift.BEFORE, ordinal = 2, args = {"ldc=entities"}), locals = LocalCapture.CAPTURE_FAILSOFT)
-    // Non-optifine version
-    private void renderEntities(Entity renderViewEntity, ICamera camera, float partialTicks, CallbackInfo ci, int pass, double d0, double d1, double d2) {
-        displayOutlines(d0, d1, d2, camera, partialTicks);
-    }
-
-    private void displayOutlines(double x, double y, double z, ICamera camera, float partialTicks) {
-        if (isRenderEntityOutlines()) {
+    @Inject(method = "renderEntities", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/RenderGlobal;isRenderEntityOutlines()Z", shift = At.Shift.BEFORE))
+    public void renderEntities(Entity renderViewEntity, ICamera camera, float partialTicks, CallbackInfo ci) {
+        if (EntityOutlineManager.INSTANCE.shouldRenderEntityOutlines()) {
+            double x = renderViewEntity.lastTickPosX + (renderViewEntity.posX - renderViewEntity.lastTickPosX) * partialTicks;
+            double y = renderViewEntity.lastTickPosY + (renderViewEntity.posY - renderViewEntity.lastTickPosY) * partialTicks;
+            double z = renderViewEntity.lastTickPosZ + (renderViewEntity.posZ - renderViewEntity.lastTickPosZ) * partialTicks;
             EntityOutlineManager.INSTANCE.renderEntityOutlines(camera, partialTicks, x, y, z);
         }
     }
