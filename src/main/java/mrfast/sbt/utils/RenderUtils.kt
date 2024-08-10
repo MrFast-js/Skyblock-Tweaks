@@ -135,7 +135,7 @@ object RenderUtils {
             borderColor.red / 255f,
             borderColor.green / 255f,
             borderColor.blue / 255f,
-            0.7f
+            0.5f
         )
         glLineWidth(3f)
         glBegin(GL11.GL_LINE_LOOP)

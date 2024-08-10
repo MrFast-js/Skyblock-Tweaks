@@ -18,6 +18,35 @@ object RenderingConfig : Config() {
     var disableDamageTint = false
 
     @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Show Item Effective Area",
+        description = "Draws an area on the ground of where mobs are in range of the weapon. §cWorks for §6Hyperion§c & §6 Spirit Scepter",
+        category = "Rendering",
+        subcategory = "Misc",
+        isParent = true
+    )
+    var showItemEffectiveArea = false
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Only Show When Mobs Nearby",
+        description = "Stops the area from rendering if there is no mobs present",
+        category = "Rendering",
+        subcategory = "Misc",
+        parentName = "Show Item Effective Area"
+    )
+    var showItemEffectiveAreaMobsNearby = true
+
+    @ConfigProperty(
+        type = ConfigType.COLOR,
+        name = "Area Color",
+        description = "",
+        category = "Rendering",
+        subcategory = "Misc"
+    )
+    var showItemEffectiveAreaColor = Color.RED
+
+    @ConfigProperty(
         type = ConfigType.COLOR,
         name = "Main Path Color",
         description = "Main color used when drawing the loaded path. \nThis will display if points are §a< 3§r blocks away.",
