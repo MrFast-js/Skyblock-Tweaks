@@ -310,7 +310,8 @@ object GeneralConfig : Config() {
         name = "Defense Color",
         description = "",
         category = "General",
-        subcategory = "Stat Displays"
+        subcategory = "Stat Displays",
+        parentName = "Defense Number"
     )
     var defenseNumberColor = Color(85, 255, 85)
 
