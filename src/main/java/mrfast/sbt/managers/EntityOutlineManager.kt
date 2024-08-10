@@ -1,6 +1,8 @@
 package mrfast.sbt.managers
 
 import mrfast.sbt.SkyblockTweaks
+import mrfast.sbt.config.categories.CrimsonConfig
+import mrfast.sbt.config.categories.DungeonConfig
 import mrfast.sbt.customevents.RenderEntityOutlineEvent
 import mrfast.sbt.mixins.transformers.CustomRenderGlobal
 import mrfast.sbt.utils.LocationUtils
@@ -15,6 +17,7 @@ import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.util.BlockPos
 import net.minecraftforge.client.MinecraftForgeClient
+import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -25,6 +28,7 @@ import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL13
 import org.lwjgl.opengl.GL30
 import java.awt.Color
+import java.lang.reflect.Field
 import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
 
@@ -40,6 +44,61 @@ object EntityOutlineManager {
     fun onWorldChange(event: WorldEvent.Load?) {
         val renderGlobal: CustomRenderGlobal = Utils.mc.renderGlobal as CustomRenderGlobal
         renderGlobal.sbtEntityOutlineFramebuffer().framebufferClear()
+    }
+
+    fun glowFeaturesEnabled(): Boolean {
+        if (DungeonConfig.glowingStarredMobs) return true
+        if (DungeonConfig.highlightCorrectLivid) return true
+        if (CrimsonConfig.moodyGrappleShotHighlight) return true
+        return false
+    }
+
+    /*
+        https://github.com/hannibal002/SkyHanni
+        Compatability Solution
+        Stops rendering from happening on SBT, instead adds to skyhannis outlines
+     */
+    @SubscribeEvent
+    fun onWorldRender(event:RenderWorldLastEvent) {
+        if(!CompatabilityManager.usingSkyhanni) return
+
+        val entityOutlineRendererClass = Class.forName("at.hannibal2.skyhanni.utils.EntityOutlineRenderer")
+        val instance = entityOutlineRendererClass.getDeclaredField("INSTANCE")
+        val cacheField: Field = entityOutlineRendererClass.getDeclaredField("entityRenderCache");cacheField.setAccessible(true)
+        val cacheInstance: Any = cacheField.get(instance)
+
+        // Access the xrayCache from skyhanni
+        val xrayField: Field = cacheInstance.javaClass.getDeclaredField("xrayCache");xrayField.setAccessible(true)
+        var xrayCache = xrayField.get(cacheInstance) as? HashMap<Entity, Int>
+        if (xrayCache == null) {
+            xrayCache = HashMap()
+            xrayField.set(cacheInstance, xrayCache)
+        } else {
+            entityRenderCache.xrayCache?.let { originalCache ->
+                originalCache.forEach { (entity, value) ->
+                    if (!xrayCache.containsKey(entity)) {
+                        xrayCache[entity] = value
+                    }
+                }
+                xrayField.set(cacheInstance, xrayCache)
+            }
+        }
+        // Access the noXrayField from skyhanni
+        val noXrayField: Field = cacheInstance.javaClass.getDeclaredField("noXrayCache");noXrayField.setAccessible(true)
+        var noXrayCache = noXrayField.get(cacheInstance) as? HashMap<Entity, Int>
+        if (noXrayCache == null) {
+            noXrayCache = HashMap()
+            noXrayField.set(cacheInstance, noXrayCache)
+        } else {
+            entityRenderCache.noXrayCache?.let { originalCache ->
+                originalCache.forEach { (entity, value) ->
+                    if (!noXrayCache.containsKey(entity)) {
+                        noXrayCache[entity] = value
+                    }
+                }
+                noXrayField.set(cacheInstance, noXrayCache)
+            }
+        }
     }
 
     /**
@@ -66,10 +125,12 @@ object EntityOutlineManager {
                 // Get all entities to render xray outlines
                 val xrayOutlineEvent = RenderEntityOutlineEvent.Xray(null)
                 MinecraftForge.EVENT_BUS.post(xrayOutlineEvent)
+
                 // Get all entities to render no xray outlines, using pre-filtered entities (no need to test xray outlined entities)
                 val noxrayOutlineEvent = RenderEntityOutlineEvent.Normal(
                     xrayOutlineEvent.entitiesToChooseFrom
                 )
+
                 MinecraftForge.EVENT_BUS.post(noxrayOutlineEvent)
                 // Cache the entities for future use
                 entityRenderCache.xrayCache = xrayOutlineEvent.entitiesToOutline
@@ -95,13 +156,13 @@ object EntityOutlineManager {
         }
     }
 
-    private class CachedInfo {
+    public class CachedInfo {
         var xrayCache: HashMap<Entity, Int>? = null
         var noXrayCache: HashMap<Entity, Int>? = null
         var noOutlineCache: HashSet<Entity>? = null
     }
 
-    private val entityRenderCache = CachedInfo()
+    public val entityRenderCache = CachedInfo()
     private var stopLookingForOptifine = false
     private var isFastRender: Method? = null
     private var isShaders: Method? = null
@@ -149,10 +210,11 @@ object EntityOutlineManager {
         val shouldRenderOutlines = shouldRenderEntityOutlines()
         if (shouldRenderOutlines && !isCacheEmpty && MinecraftForgeClient.getRenderPass() == 0) {
             val mc = Minecraft.getMinecraft()
-            val renderGlobal: CustomRenderGlobal = mc.renderGlobal as CustomRenderGlobal
+            val renderGlobal = mc.renderGlobal as CustomRenderGlobal
             val renderManager = mc.renderManager
             mc.theWorld.theProfiler.endStartSection("entityOutlines")
             updateFramebufferSize()
+
             // Clear and bind the outline framebuffer
             renderGlobal.sbtEntityOutlineFramebuffer().framebufferClear()
             renderGlobal.sbtEntityOutlineFramebuffer().bindFramebuffer(false)
@@ -174,9 +236,9 @@ object EntityOutlineManager {
 
             // Render x-ray outlines first, ignoring the depth buffer bit
             if (!isXrayCacheEmpty) {
-
                 // Xray is enabled by disabling depth testing
                 GlStateManager.depthFunc(GL11.GL_ALWAYS)
+
                 for ((key, value) in entityRenderCache.xrayCache!!) {
                     // Test if the entity should render, given the player's camera position
                     if (shouldRender(camera, key, x, y, z)) {
@@ -191,6 +253,7 @@ object EntityOutlineManager {
                         }
                     }
                 }
+
                 // Reset depth function
                 GlStateManager.depthFunc(GL11.GL_LEQUAL)
             }
@@ -218,11 +281,7 @@ object EntityOutlineManager {
                     copyBuffers(swapBuffer, renderGlobal.sbtEntityOutlineFramebuffer(), GL11.GL_DEPTH_BUFFER_BIT)
                     renderGlobal.sbtEntityOutlineFramebuffer().bindFramebuffer(false)
                 } else {
-                    copyBuffers(
-                        mc.framebuffer,
-                        renderGlobal.sbtEntityOutlineFramebuffer(),
-                        GL11.GL_DEPTH_BUFFER_BIT
-                    )
+                    copyBuffers(mc.framebuffer, renderGlobal.sbtEntityOutlineFramebuffer(), GL11.GL_DEPTH_BUFFER_BIT)
                 }
 
                 // Xray disabled by re-enabling traditional depth testing
@@ -291,6 +350,8 @@ object EntityOutlineManager {
      * @return `true` iff outlines should be rendered
      */
     fun shouldRenderEntityOutlines(): Boolean {
+        if (CompatabilityManager.usingSkyhanni) return false
+
         val mc = Minecraft.getMinecraft()
         val renderGlobal: CustomRenderGlobal = mc.renderGlobal as CustomRenderGlobal
 
