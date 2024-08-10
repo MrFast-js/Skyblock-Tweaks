@@ -95,7 +95,7 @@ object ProfitTracker {
         }
     }
 
-    private fun filterOutItem(id:String): Boolean {
+    private fun filterOutItem(id: String): Boolean {
         if (selectedFilterMode == "Whitelist") {
             if (!whitelistItems.contains(id)) return true
         } else {
@@ -110,7 +110,7 @@ object ProfitTracker {
         if (id == "ENCHANTED_BOOK") {
             val enchants = event.stack.getSkyblockEnchants()
             for (enchant in enchants) {
-                id = enchant.key.uppercase()+";"+enchant.value
+                id = enchant.key.uppercase() + ";" + enchant.value
                 break
             }
         }

@@ -1,6 +1,5 @@
 package mrfast.sbt.mixins.transformers;
 
-import mrfast.sbt.managers.CompatabilityManager;
 import mrfast.sbt.managers.EntityOutlineManager;
 import mrfast.sbt.utils.LocationUtils;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -21,6 +20,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  */
 @Mixin(RenderGlobal.class)
 public abstract class MixinRenderGlobal {
+
     @Redirect(method = "renderEntities", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/RenderGlobal;isRenderEntityOutlines()Z", ordinal = 0))
     private boolean onRenderEntities(RenderGlobal renderGlobal) {
         return false;
@@ -33,7 +33,7 @@ public abstract class MixinRenderGlobal {
 
     @Redirect(method = "isRenderEntityOutlines", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/settings/KeyBinding;isKeyDown()Z", ordinal = 0))
     private boolean isKeyDownDisableCheck(KeyBinding keyBinding) {
-        return LocationUtils.INSTANCE.getInSkyblock();
+        return EntityOutlineManager.INSTANCE.shouldRenderEntityOutlines();
     }
 
     @Inject(method = "renderEntities", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/RenderGlobal;isRenderEntityOutlines()Z", shift = At.Shift.BEFORE))

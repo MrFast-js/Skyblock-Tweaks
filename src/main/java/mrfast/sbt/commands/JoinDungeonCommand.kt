@@ -13,17 +13,11 @@ import java.util.*
 class JoinDungeonCommand : CommandBase() {
     private val numberWords = listOf("ONE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN")
 
-    override fun getCommandName(): String {
-        return "joindungeon"
-    }
+    override fun getCommandName(): String = "joindungeon"
 
-    override fun getCommandAliases(): List<String> {
-        return Lists.newArrayList("jd")
-    }
+    override fun getCommandAliases(): List<String> = Lists.newArrayList("jd")
 
-    override fun getCommandUsage(sender: ICommandSender?): String {
-        return "/jd [1-7]"
-    }
+    override fun getCommandUsage(sender: ICommandSender?): String = "/jd [1-7]"
 
     override fun processCommand(sender: ICommandSender, args: Array<out String>) {
         if (args.size != 1) {
@@ -44,7 +38,5 @@ class JoinDungeonCommand : CommandBase() {
         ChatUtils.sendPlayerMessage("/joindungeon $dungeonString")
     }
 
-    override fun canCommandSenderUseCommand(sender: ICommandSender?): Boolean {
-        return true
-    }
+    override fun canCommandSenderUseCommand(sender: ICommandSender?): Boolean = true
 }

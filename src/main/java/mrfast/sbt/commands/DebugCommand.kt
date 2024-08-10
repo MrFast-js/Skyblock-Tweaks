@@ -21,21 +21,14 @@ import java.util.stream.Collectors
 
 @SkyblockTweaks.CommandComponent
 class DebugCommand : CommandBase() {
-    override fun getCommandName(): String {
-        return "sbtdebug"
-    }
+    override fun getCommandName(): String = "sbtdebug"
 
-    override fun getCommandUsage(sender: ICommandSender): String {
-        return "/sbtdebug"
-    }
+    override fun getCommandUsage(sender: ICommandSender): String = "/sbtdebug"
 
-    override fun addTabCompletionOptions(sender: ICommandSender, args: Array<String>, pos: BlockPos): List<String> {
-        return arguments
-    }
+    override fun addTabCompletionOptions(sender: ICommandSender, args: Array<String>, pos: BlockPos): List<String> =
+        arguments
 
-    override fun getRequiredPermissionLevel(): Int {
-        return 0
-    }
+    override fun getRequiredPermissionLevel(): Int = 0
 
     @Throws(CommandException::class)
     override fun processCommand(arg0: ICommandSender, args: Array<String>) {
@@ -136,7 +129,7 @@ class DebugCommand : CommandBase() {
             Utils.copyToClipboard(stringBuilder.toString())
         }
 
-        fun copyMobEntities(player: EntityPlayerSP, distance: Int): String {
+        private fun copyMobEntities(player: EntityPlayerSP, distance: Int): String {
             val stringBuilder = StringBuilder()
             val loadedEntitiesCopy: MutableList<Entity> = LinkedList<Entity>(Utils.mc.theWorld.loadedEntityList)
             val loadedEntitiesCopyIterator: ListIterator<Entity>
@@ -169,7 +162,7 @@ class DebugCommand : CommandBase() {
             return stringBuilder.toString()
         }
 
-        fun copyTileEntities(player: EntityPlayerSP, distance: Int): String {
+        private fun copyTileEntities(player: EntityPlayerSP, distance: Int): String {
             val stringBuilder = StringBuilder()
             val loadedTileEntitiesCopy: MutableList<TileEntity> =
                 LinkedList<TileEntity>(Utils.mc.theWorld.loadedTileEntityList)

@@ -12,9 +12,11 @@ object SocketUtils {
     private var socket: Socket? = null
     private var internalClose = false
     var socketConnected = true
+
     init {
         setupSocket()
     }
+
     fun setupSocket() {
         println("Attempting connection to SBT websocket! ${DeveloperConfig.modSocketURL}")
         try {
@@ -24,7 +26,7 @@ object SocketUtils {
             }
             // Connect to the Socket.IO server
             socket = Socket(DeveloperConfig.modSocketURL)
-            val socket = socket?:return
+            val socket = socket ?: return
 
             socket.on(Socket.EVENT_OPEN) {
                 println("Opened connection to SBT websocket! ${DeveloperConfig.modSocketURL}")

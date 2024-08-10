@@ -6,7 +6,7 @@ import net.minecraftforge.fml.common.eventhandler.Cancelable
 import net.minecraftforge.fml.common.eventhandler.Event
 
 @Cancelable
-class SlotClickedEvent(s: Slot,g:GuiContainer) : Event() {
+class SlotClickedEvent(s: Slot, g: GuiContainer) : Event() {
     val slot = s
     val gui = g
 }

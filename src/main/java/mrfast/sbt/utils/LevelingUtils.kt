@@ -13,7 +13,8 @@ object LevelingUtils {
         for (levelIndex in dungeonsXpPerLevel.indices) {
             xpNeeded += dungeonsXpPerLevel[levelIndex]
             if (xp < xpNeeded) {
-                val level = (levelIndex - 1) + (xp - (xpNeeded - dungeonsXpPerLevel[levelIndex])) / dungeonsXpPerLevel[levelIndex]
+                val level =
+                    (levelIndex - 1) + (xp - (xpNeeded - dungeonsXpPerLevel[levelIndex])) / dungeonsXpPerLevel[levelIndex]
                 return level.roundToTwoDecimalPlaces()
             }
         }

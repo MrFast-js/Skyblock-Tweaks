@@ -194,7 +194,7 @@ object GeneralConfig : Config() {
         subcategory = "Stat Displays",
         parentName = "Health Number"
     )
-    var healthDisplayColor = Color(255,85,85)
+    var healthDisplayColor = Color(255, 85, 85)
 
     @ConfigProperty(
         type = ConfigType.COLOR,
@@ -204,7 +204,7 @@ object GeneralConfig : Config() {
         subcategory = "Stat Displays",
         parentName = "Health Number"
     )
-    var healthDisplayAbsorptionColor = Color(255,170,0)
+    var healthDisplayAbsorptionColor = Color(255, 170, 0)
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
@@ -224,7 +224,7 @@ object GeneralConfig : Config() {
         subcategory = "Stat Displays",
         parentName = "Speed Number"
     )
-    var speedNumberColor = Color(255,255,255)
+    var speedNumberColor = Color(255, 255, 255)
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
@@ -254,7 +254,7 @@ object GeneralConfig : Config() {
         subcategory = "Stat Displays",
         parentName = "Effective Health Number"
     )
-    var effectiveHealthNumberColor = Color(0,170,0)
+    var effectiveHealthNumberColor = Color(0, 170, 0)
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
@@ -274,7 +274,7 @@ object GeneralConfig : Config() {
         subcategory = "Stat Displays",
         parentName = "Mana Number"
     )
-    var manaNumberColor = Color(85,85,255)
+    var manaNumberColor = Color(85, 85, 255)
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
@@ -293,7 +293,7 @@ object GeneralConfig : Config() {
         subcategory = "Stat Displays",
         parentName = "Overflow Mana Number"
     )
-    var manaOverflowNumberColor = Color(85,85,255)
+    var manaOverflowNumberColor = Color(85, 85, 255)
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
@@ -312,7 +312,7 @@ object GeneralConfig : Config() {
         category = "General",
         subcategory = "Stat Displays"
     )
-    var defenseNumberColor = Color(85,255,85)
+    var defenseNumberColor = Color(85, 255, 85)
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,

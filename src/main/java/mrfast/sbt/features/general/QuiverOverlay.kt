@@ -31,17 +31,17 @@ object QuiverOverlay {
         if (event.phase != TickEvent.Phase.START || !LocationUtils.inSkyblock || Utils.mc.theWorld == null) return
 
         for (itemStack in Utils.mc.thePlayer.inventory.mainInventory) {
-            if (itemStack==null) continue
+            if (itemStack == null) continue
             if (itemStack.hasDisplayName()) {
                 if (itemStack.displayName.matches("^§8Quiver.*")) {
                     for (line in itemStack.getLore()) {
                         val activeArrowLoreRegex = "§7Active Arrow: (.+?) §7\\(§e(\\d+)§7\\)"
                         if (line.matches(activeArrowLoreRegex)) {
-                            val match = line.getRegexGroups(activeArrowLoreRegex)?:continue
+                            val match = line.getRegexGroups(activeArrowLoreRegex) ?: continue
                             currentArrowCount = match.group(2).toInt()
-                            if (currentArrow!=match.group(1)) {
+                            if (currentArrow != match.group(1)) {
                                 currentArrow = match.group(1)
-                                currentArrowId = ItemApi.getItemIdFromName(currentArrow)?:"UNKNOWN"
+                                currentArrowId = ItemApi.getItemIdFromName(currentArrow) ?: "UNKNOWN"
                             }
                         }
                     }

@@ -27,7 +27,7 @@ object SpeedNumber {
         override fun draw() {
             val speed = ((Minecraft.getMinecraft().thePlayer?.capabilities?.walkSpeed ?: 0f) * 1000)
             val number = "${speed.formatNumber()}%"
-            GuiUtils.drawText(number, 0f, 0f, GuiUtils.TextStyle.BLACK_OUTLINE,GeneralConfig.speedNumberColor)
+            GuiUtils.drawText(number, 0f, 0f, GuiUtils.TextStyle.BLACK_OUTLINE, GeneralConfig.speedNumberColor)
             this.width = Utils.mc.fontRendererObj.getStringWidth(number) + 1
         }
 
