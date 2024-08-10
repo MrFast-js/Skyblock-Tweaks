@@ -1,18 +1,18 @@
 package mrfast.sbt.mixins.transformers;
 
+import mrfast.sbt.managers.CompatabilityManager;
 import mrfast.sbt.managers.EntityOutlineManager;
+import mrfast.sbt.utils.LocationUtils;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.Entity;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 /**
  * Adapted from Skyhanni under GNU LGPL v2.1 license
@@ -31,7 +31,7 @@ public abstract class MixinRenderGlobal {
 
     @Redirect(method = "isRenderEntityOutlines", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/EntityPlayerSP;isSpectator()Z", ordinal = 0))
     private boolean isSpectatorDisableCheck(EntityPlayerSP entityPlayerSP) {
-        return true;
+        return LocationUtils.INSTANCE.getInSkyblock();
     }
 
     @Redirect(method = "isRenderEntityOutlines", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/settings/KeyBinding;isKeyDown()Z", ordinal = 0))
