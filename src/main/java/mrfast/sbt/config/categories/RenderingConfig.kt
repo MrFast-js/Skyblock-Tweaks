@@ -20,7 +20,7 @@ object RenderingConfig : Config() {
     @ConfigProperty(
         type = ConfigType.TOGGLE,
         name = "Show Item Effective Area",
-        description = "Draws an area on the ground of where mobs are in range of the weapon. §cWorks for §6Hyperion§c & §6 Spirit Scepter",
+        description = "Draws an area on the ground of where mobs are in range of the weapon. §cWorks for §6Hyperion§c & §6Spirit Scepter",
         category = "Rendering",
         subcategory = "Misc",
         isParent = true
@@ -42,7 +42,8 @@ object RenderingConfig : Config() {
         name = "Area Color",
         description = "",
         category = "Rendering",
-        subcategory = "Misc"
+        subcategory = "Misc",
+        parentName = "Show Item Effective Area"
     )
     var showItemEffectiveAreaColor = Color.RED
 

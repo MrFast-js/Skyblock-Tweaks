@@ -11,7 +11,7 @@ object AuctionHouseConfig : Config() {
     @ConfigProperty(
         type = ConfigType.TOGGLE,
         name = "Auction Flipper",
-        description = "Scans the Hypixel API to display auctions based on the lowest BINs and 3-day price averages.\n§c§lRequires you to be in the hub if you don't have a booster cookie! §4This mod can make mistakes.",
+        description = "Scans the Hypixel API to display auctions based on the lowest BINs and 3-day price averages.\n§c§lRequires you to be in the hub if you don't have a booster cookie! §4This feature can make mistakes.",
         category = "§1§rAuction House",
         subcategory = "Auction Flipper",
         isParent = true
