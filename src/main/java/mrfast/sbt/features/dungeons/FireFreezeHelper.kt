@@ -63,8 +63,8 @@ object FireFreezeHelper {
             this.relativeY = 0.522
             this.elementName = "Fire Freeze Timer"
             this.needsExample = true
-            this.height = Utils.mc.fontRendererObj.FONT_HEIGHT * 2
-            this.width = Utils.mc.fontRendererObj.getStringWidth("Fire Freeze in 5 seconds!") * 2
+            this.height = Utils.mc.fontRendererObj.FONT_HEIGHT * 2 + 2
+            this.width = Utils.mc.fontRendererObj.getStringWidth("Fire Freeze in 5 seconds!") * 2 + 2
             this.addToList()
         }
 
@@ -81,7 +81,7 @@ object FireFreezeHelper {
 
         override fun drawExample() {
             GlStateManager.scale(textScale, textScale, 1.0)
-            val centerX = this.width / 2f
+            val centerX = this.width / 4f
 
             GuiUtils.drawText(
                 "§cFire Freeze in 5 seconds!", centerX, 0f, GuiUtils.TextStyle.DROP_SHADOW,

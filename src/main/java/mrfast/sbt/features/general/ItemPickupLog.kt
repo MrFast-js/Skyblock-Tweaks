@@ -73,7 +73,7 @@ object ItemPickupLog {
             this.relativeY = 0.0
             this.elementName = "Item Pickup Log"
             this.addToList()
-            this.height = 16
+            this.height = Utils.mc.fontRendererObj.FONT_HEIGHT * 2 + 2
             this.width = 112
             this.needsExample = true
         }

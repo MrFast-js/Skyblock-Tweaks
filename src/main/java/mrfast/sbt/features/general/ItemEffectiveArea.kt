@@ -50,6 +50,9 @@ object ItemEffectiveArea {
 //        PLAYER_CIRCLE
 //    }
 //    enum class MainItems() {
+//        FIRE_VEIL_WAND("FIRE_VEIL_WAND", 3f),
+//        FIRE_FREEZE_STAFF("FIRE_FREEZE_STAFF", 5f),
+
 //        HYPERION("HYPERION", 7f),
 //        BONZO_STAFF("BONZO_STAFF", 4f)
 //        SPIRIT_SCEPTER("BAT_WAND", 7f),

@@ -31,10 +31,12 @@ object ItemApi {
 
     private fun loadSkyblockItems(logging: Boolean) {
         Thread {
-            val items = NetworkUtils.apiRequestAndParse("https://hysky.de/api/items")
-            items.remove("timestamp")
-            skyblockItems = items
-            if (items.entrySet().size > 0) {
+            if(!skyblockItemsLoaded) {
+                val items = NetworkUtils.apiRequestAndParse("https://hysky.de/api/items")
+                items.remove("timestamp")
+                skyblockItems = items
+            }
+            if (skyblockItems.entrySet().size > 0) {
                 skyblockItemsLoaded = true
                 if (logging) println("Loaded Skyblock Items from HySky API!!")
 
