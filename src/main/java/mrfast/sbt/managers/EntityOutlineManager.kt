@@ -5,7 +5,6 @@ import mrfast.sbt.config.categories.CrimsonConfig
 import mrfast.sbt.config.categories.DungeonConfig
 import mrfast.sbt.customevents.RenderEntityOutlineEvent
 import mrfast.sbt.mixins.transformers.CustomRenderGlobal
-import mrfast.sbt.utils.LocationUtils
 import mrfast.sbt.utils.Utils
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
@@ -359,7 +358,7 @@ object EntityOutlineManager {
         if (renderGlobal.sbtEntityOutlineFramebuffer() == null || renderGlobal.sbtEntityOutlineShader() == null || mc.thePlayer == null) return false
 
         // Skyblock Conditions
-        if (!LocationUtils.inSkyblock) {
+        if (!LocationManager.inSkyblock) {
             return false
         }
 

@@ -3,7 +3,6 @@ package mrfast.sbt.managers
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.customevents.SkyblockInventoryItemEvent
 import mrfast.sbt.utils.ItemUtils.getSkyblockId
-import mrfast.sbt.utils.LocationUtils
 import mrfast.sbt.utils.Utils
 import mrfast.sbt.utils.Utils.getRegexGroups
 import mrfast.sbt.utils.Utils.matches
@@ -25,7 +24,7 @@ object InventoryItemManager {
 
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
-        if (event.phase != TickEvent.Phase.START || !LocationUtils.inSkyblock || Utils.mc.theWorld == null) return
+        if (event.phase != TickEvent.Phase.START || !LocationManager.inSkyblock || Utils.mc.theWorld == null) return
 
         val currentInventory = getCurrentInventoryState()
 

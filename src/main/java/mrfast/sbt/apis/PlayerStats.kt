@@ -3,7 +3,7 @@ package mrfast.sbt.apis
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.config.categories.GeneralConfig
 import mrfast.sbt.customevents.WorldLoadEvent
-import mrfast.sbt.utils.LocationUtils
+import mrfast.sbt.managers.LocationManager
 import mrfast.sbt.utils.Utils
 import mrfast.sbt.utils.Utils.clean
 import net.minecraft.util.ChatComponentText
@@ -38,7 +38,7 @@ object PlayerStats {
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
         if (event.phase != TickEvent.Phase.START) return
-        if (LocationUtils.currentIsland == "The Rift") {
+        if (LocationManager.currentIsland == "The Rift") {
             health = Utils.mc.thePlayer.health.toInt()
             maxHealth = Utils.mc.thePlayer.maxHealth.toInt()
         }

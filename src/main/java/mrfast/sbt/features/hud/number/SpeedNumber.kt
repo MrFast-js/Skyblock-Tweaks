@@ -4,7 +4,7 @@ import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.config.categories.GeneralConfig
 import mrfast.sbt.config.GuiManager
 import mrfast.sbt.utils.GuiUtils
-import mrfast.sbt.utils.LocationUtils
+import mrfast.sbt.managers.LocationManager
 import mrfast.sbt.utils.Utils
 import mrfast.sbt.utils.Utils.formatNumber
 import net.minecraft.client.Minecraft
@@ -32,7 +32,7 @@ object SpeedNumber {
         }
 
         override fun isActive(): Boolean {
-            return GeneralConfig.speedNumber && LocationUtils.inSkyblock
+            return GeneralConfig.speedNumber && LocationManager.inSkyblock
         }
 
         override fun isVisible(): Boolean {

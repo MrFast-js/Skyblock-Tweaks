@@ -5,7 +5,7 @@ import mrfast.sbt.apis.PlayerStats
 import mrfast.sbt.config.categories.GeneralConfig
 import mrfast.sbt.config.GuiManager
 import mrfast.sbt.utils.GuiUtils
-import mrfast.sbt.utils.LocationUtils
+import mrfast.sbt.managers.LocationManager
 import mrfast.sbt.utils.Utils
 import mrfast.sbt.utils.Utils.formatNumber
 
@@ -40,7 +40,7 @@ object HealthNumber {
         }
 
         override fun isActive(): Boolean {
-            return GeneralConfig.healthNumber && LocationUtils.inSkyblock
+            return GeneralConfig.healthNumber && LocationManager.inSkyblock
         }
 
         override fun isVisible(): Boolean {

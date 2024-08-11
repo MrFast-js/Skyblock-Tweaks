@@ -6,7 +6,7 @@ import mrfast.sbt.config.categories.GeneralConfig
 import mrfast.sbt.config.GuiManager
 import mrfast.sbt.config.categories.GeneralConfig.manaOverflowNumberColor
 import mrfast.sbt.utils.GuiUtils
-import mrfast.sbt.utils.LocationUtils
+import mrfast.sbt.managers.LocationManager
 import mrfast.sbt.utils.Utils
 import mrfast.sbt.utils.Utils.formatNumber
 
@@ -40,7 +40,7 @@ object OverflowManaNumber {
         }
 
         override fun isActive(): Boolean {
-            return GeneralConfig.overflowManaNumber && LocationUtils.inSkyblock
+            return GeneralConfig.overflowManaNumber && LocationManager.inSkyblock
         }
 
         override fun isVisible(): Boolean {

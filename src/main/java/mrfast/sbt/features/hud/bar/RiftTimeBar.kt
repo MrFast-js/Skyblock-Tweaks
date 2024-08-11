@@ -6,7 +6,7 @@ import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.apis.PlayerStats
 import mrfast.sbt.config.GuiManager
 import mrfast.sbt.config.categories.RiftConfig
-import mrfast.sbt.utils.LocationUtils
+import mrfast.sbt.managers.LocationManager
 
 @SkyblockTweaks.EventComponent
 object RiftTimeBar {
@@ -66,11 +66,11 @@ object RiftTimeBar {
         }
 
         override fun isActive(): Boolean {
-            return RiftConfig.riftTimeBar && LocationUtils.inSkyblock
+            return RiftConfig.riftTimeBar && LocationManager.inSkyblock
         }
 
         override fun isVisible(): Boolean {
-            return LocationUtils.currentIsland == "The Rift"
+            return LocationManager.currentIsland == "The Rift"
         }
     }
 }

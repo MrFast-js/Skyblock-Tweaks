@@ -6,7 +6,7 @@ import mrfast.sbt.config.categories.MiscellaneousConfig
 import mrfast.sbt.config.categories.MiscellaneousConfig.trashHighlightType
 import mrfast.sbt.customevents.SlotDrawnEvent
 import mrfast.sbt.utils.ItemUtils.getSkyblockId
-import mrfast.sbt.utils.LocationUtils
+import mrfast.sbt.managers.LocationManager
 import net.minecraft.client.gui.Gui
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.awt.Color
@@ -108,7 +108,7 @@ object TrashHighlighter {
 
     @SubscribeEvent
     fun onDrawSlots(event: SlotDrawnEvent.Post) {
-        if (!LocationUtils.inSkyblock || !event.slot.hasStack) return
+        if (!LocationManager.inSkyblock || !event.slot.hasStack) return
         val stack = event.slot.stack
         val x = event.slot.xDisplayPosition
         val y = event.slot.yDisplayPosition

@@ -1,6 +1,5 @@
 package mrfast.sbt.features.slayers
 
-import com.mojang.realmsclient.gui.ChatFormatting
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.config.categories.SlayerConfig
 import mrfast.sbt.customevents.SlayerEvent

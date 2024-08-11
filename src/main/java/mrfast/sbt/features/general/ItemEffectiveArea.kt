@@ -6,14 +6,13 @@ import mrfast.sbt.config.categories.RenderingConfig
 import mrfast.sbt.config.categories.RenderingConfig.showItemEffectiveAreaColor
 import mrfast.sbt.config.categories.RenderingConfig.showItemEffectiveAreaMobsNearby
 import mrfast.sbt.utils.ItemUtils.getSkyblockId
-import mrfast.sbt.utils.LocationUtils
+import mrfast.sbt.managers.LocationManager
 import mrfast.sbt.utils.RenderUtils
 import mrfast.sbt.utils.Utils
 import net.minecraft.util.MovingObjectPosition
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import java.awt.Color
 
 /*
 @PotentialFeature: Swap to enums and make into extensive feature with many items
@@ -22,7 +21,7 @@ import java.awt.Color
 object ItemEffectiveArea {
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        if (!LocationUtils.inSkyblock || !RenderingConfig.showItemEffectiveArea) return
+        if (!LocationManager.inSkyblock || !RenderingConfig.showItemEffectiveArea) return
 
         val heldItemId = Utils.mc.thePlayer.heldItem?.getSkyblockId() ?: return
 

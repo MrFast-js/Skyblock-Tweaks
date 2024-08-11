@@ -1,13 +1,12 @@
 package mrfast.sbt.apis
 
 import mrfast.sbt.SkyblockTweaks
-import mrfast.sbt.apis.SkyblockMobDetector.getLoadedSkyblockMobs
 import mrfast.sbt.config.categories.CustomizationConfig
 import mrfast.sbt.config.categories.DeveloperConfig
 import mrfast.sbt.config.categories.DeveloperConfig.showMobIdsThroughWalls
 import mrfast.sbt.customevents.SkyblockMobEvent
 import mrfast.sbt.customevents.WorldLoadEvent
-import mrfast.sbt.utils.LocationUtils
+import mrfast.sbt.managers.LocationManager
 import mrfast.sbt.utils.RenderUtils
 import mrfast.sbt.utils.Utils
 import mrfast.sbt.utils.Utils.clean
@@ -38,7 +37,7 @@ object SkyblockMobDetector {
 
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {
-        if (Utils.mc.theWorld == null || !LocationUtils.inSkyblock) return
+        if (Utils.mc.theWorld == null || !LocationManager.inSkyblock) return
 
         for (entity in Utils.mc.theWorld.loadedEntityList) {
             if (entity is EntityArmorStand && !skyblockMobHashMap.containsKey(entity) && entity.hasCustomName()) {

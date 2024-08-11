@@ -5,7 +5,7 @@ import mrfast.sbt.apis.SkyblockMobDetector
 import mrfast.sbt.config.categories.CrimsonConfig
 import mrfast.sbt.customevents.RenderEntityOutlineEvent
 import mrfast.sbt.utils.ItemUtils.getSkyblockId
-import mrfast.sbt.utils.LocationUtils
+import mrfast.sbt.managers.LocationManager
 import mrfast.sbt.utils.Utils
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -13,7 +13,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object MoodyGrappleShotHelper {
     @SubscribeEvent
     fun onRenderEntityOutlines(event: RenderEntityOutlineEvent.Normal) {
-        if (LocationUtils.currentIsland != "Crimson Isle" || !CrimsonConfig.moodyGrappleShotHighlight) return
+        if (LocationManager.currentIsland != "Crimson Isle" || !CrimsonConfig.moodyGrappleShotHighlight) return
 
         if (Utils.mc.thePlayer.heldItem?.getSkyblockId() != "MOODY_GRAPPLESHOT") return
 

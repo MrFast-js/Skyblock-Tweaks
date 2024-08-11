@@ -1,7 +1,7 @@
 package mrfast.sbt.mixins.transformers;
 
 import mrfast.sbt.managers.EntityOutlineManager;
-import mrfast.sbt.utils.LocationUtils;
+import mrfast.sbt.managers.LocationManager;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.culling.ICamera;
@@ -28,7 +28,7 @@ public abstract class MixinRenderGlobal {
 
     @Redirect(method = "isRenderEntityOutlines", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/EntityPlayerSP;isSpectator()Z", ordinal = 0))
     private boolean isSpectatorDisableCheck(EntityPlayerSP entityPlayerSP) {
-        return LocationUtils.INSTANCE.getInSkyblock();
+        return LocationManager.INSTANCE.getInSkyblock();
     }
 
     @Redirect(method = "isRenderEntityOutlines", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/settings/KeyBinding;isKeyDown()Z", ordinal = 0))

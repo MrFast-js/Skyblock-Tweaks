@@ -5,7 +5,7 @@ import mrfast.sbt.config.GuiManager
 import mrfast.sbt.config.categories.DungeonConfig
 import mrfast.sbt.config.categories.GeneralConfig
 import mrfast.sbt.utils.GuiUtils
-import mrfast.sbt.utils.LocationUtils
+import mrfast.sbt.managers.LocationManager
 import mrfast.sbt.utils.Utils
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraftforge.client.event.ClientChatReceivedEvent
@@ -26,7 +26,7 @@ object FireFreezeHelper {
 
     @SubscribeEvent(receiveCanceled = true)
     fun onChatMessage(event: ClientChatReceivedEvent) {
-        if (!LocationUtils.inDungeons || event.type.toInt() == 2 || !DungeonConfig.fireFreezeTimer) return
+        if (!LocationManager.inDungeons || event.type.toInt() == 2 || !DungeonConfig.fireFreezeTimer) return
 
         val text = event.message.unformattedText
 

@@ -4,7 +4,7 @@ import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.config.GuiManager
 import mrfast.sbt.config.categories.CrimsonConfig
 import mrfast.sbt.utils.GuiUtils
-import mrfast.sbt.utils.LocationUtils
+import mrfast.sbt.managers.LocationManager
 import mrfast.sbt.utils.Utils
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
@@ -121,7 +121,7 @@ object CrimsonIsleMap {
         }
 
         override fun isVisible(): Boolean {
-            return LocationUtils.inSkyblock && LocationUtils.currentIsland == "Crimson Isle"
+            return LocationManager.inSkyblock && LocationManager.currentIsland == "Crimson Isle"
         }
     }
 }

@@ -3,7 +3,7 @@ package mrfast.sbt.features.rift
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.config.categories.RiftConfig
 import mrfast.sbt.utils.ItemUtils.getSkyblockId
-import mrfast.sbt.utils.LocationUtils
+import mrfast.sbt.managers.LocationManager
 import mrfast.sbt.utils.RenderUtils
 import mrfast.sbt.utils.Utils
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -13,7 +13,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object NearlyCoherentFishingRodRadius {
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        if (!LocationUtils.inSkyblock || LocationUtils.currentIsland != "The Rift" || !RiftConfig.nearlyCoherentRodRadius) return
+        if (!LocationManager.inSkyblock || LocationManager.currentIsland != "The Rift" || !RiftConfig.nearlyCoherentRodRadius) return
 
         if (Utils.mc.thePlayer.heldItem?.getSkyblockId() != "NEARLY_COHERENT_ROD") return
 

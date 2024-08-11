@@ -8,7 +8,7 @@ import mrfast.sbt.config.categories.MiscellaneousConfig.quiverOverlay
 import mrfast.sbt.config.categories.MiscellaneousConfig.quiverOverlayType
 import mrfast.sbt.utils.GuiUtils
 import mrfast.sbt.utils.ItemUtils.getLore
-import mrfast.sbt.utils.LocationUtils
+import mrfast.sbt.managers.LocationManager
 import mrfast.sbt.utils.Utils
 import mrfast.sbt.utils.Utils.clean
 import mrfast.sbt.utils.Utils.formatNumber
@@ -28,7 +28,7 @@ object QuiverOverlay {
 
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
-        if (event.phase != TickEvent.Phase.START || !LocationUtils.inSkyblock || Utils.mc.theWorld == null) return
+        if (event.phase != TickEvent.Phase.START || !LocationManager.inSkyblock || Utils.mc.theWorld == null) return
 
         for (itemStack in Utils.mc.thePlayer.inventory.mainInventory) {
             if (itemStack == null) continue
@@ -73,7 +73,7 @@ object QuiverOverlay {
         }
 
         override fun isActive(): Boolean {
-            return quiverOverlay && LocationUtils.inSkyblock
+            return quiverOverlay && LocationManager.inSkyblock
         }
 
         override fun isVisible(): Boolean {

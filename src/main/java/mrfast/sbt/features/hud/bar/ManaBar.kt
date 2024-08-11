@@ -10,7 +10,7 @@ import mrfast.sbt.config.categories.GeneralConfig.manaBarBarColor
 import mrfast.sbt.config.categories.GeneralConfig.manaBarManaColor
 import mrfast.sbt.config.categories.GeneralConfig.manaBarOverflowColor
 import mrfast.sbt.config.categories.GeneralConfig.manaBarShowOverflow
-import mrfast.sbt.utils.LocationUtils
+import mrfast.sbt.managers.LocationManager
 
 @SkyblockTweaks.EventComponent
 object ManaBar {
@@ -71,7 +71,7 @@ object ManaBar {
         }
 
         override fun isActive(): Boolean {
-            return GeneralConfig.manaBar && LocationUtils.inSkyblock
+            return GeneralConfig.manaBar && LocationManager.inSkyblock
         }
 
         override fun isVisible(): Boolean {

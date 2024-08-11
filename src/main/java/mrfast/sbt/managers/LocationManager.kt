@@ -1,15 +1,18 @@
-package mrfast.sbt.utils
+package mrfast.sbt.managers
 
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import mrfast.sbt.SkyblockTweaks
+import mrfast.sbt.utils.ChatUtils
+import mrfast.sbt.utils.ScoreboardUtils
+import mrfast.sbt.utils.Utils
 import mrfast.sbt.utils.Utils.clean
 import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 @SkyblockTweaks.EventComponent
-object LocationUtils {
+object LocationManager {
     var inSkyblock = false
     var inDungeons = false
     var currentIsland = ""

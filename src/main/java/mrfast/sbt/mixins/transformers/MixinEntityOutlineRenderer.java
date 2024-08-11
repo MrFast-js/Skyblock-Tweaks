@@ -1,7 +1,7 @@
 package mrfast.sbt.mixins.transformers;
 
 import mrfast.sbt.managers.EntityOutlineManager;
-import mrfast.sbt.utils.LocationUtils;
+import mrfast.sbt.managers.LocationManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.injection.At;
@@ -16,7 +16,7 @@ public class MixinEntityOutlineRenderer {
     @Inject(method = "isEnabled", at = @At("RETURN"), cancellable = true)
     public void beforeReturnFalse(CallbackInfoReturnable<Boolean> callback) {
         if (!callback.getReturnValue()) {
-            if (EntityOutlineManager.INSTANCE.glowFeaturesEnabled() && LocationUtils.INSTANCE.getInSkyblock()) {
+            if (EntityOutlineManager.INSTANCE.glowFeaturesEnabled() && LocationManager.INSTANCE.getInSkyblock()) {
                 callback.setReturnValue(true);
             }
         }

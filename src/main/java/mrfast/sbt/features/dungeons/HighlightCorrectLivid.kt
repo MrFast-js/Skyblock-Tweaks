@@ -4,7 +4,7 @@ import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.config.categories.DungeonConfig.highlightCorrectLivid
 import mrfast.sbt.config.categories.DungeonConfig.highlightCorrectLividColor
 import mrfast.sbt.customevents.RenderEntityOutlineEvent
-import mrfast.sbt.utils.LocationUtils
+import mrfast.sbt.managers.LocationManager
 import mrfast.sbt.utils.Utils
 import net.minecraft.block.BlockStainedGlass
 import net.minecraft.block.state.IBlockState
@@ -22,7 +22,7 @@ object HighlightCorrectLivid {
 
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
-        if (!LocationUtils.inDungeons || LocationUtils.dungeonFloor != 5 || !highlightCorrectLivid || event.phase != TickEvent.Phase.START) return
+        if (!LocationManager.inDungeons || LocationManager.dungeonFloor != 5 || !highlightCorrectLivid || event.phase != TickEvent.Phase.START) return
 
         val state: IBlockState = Utils.mc.theWorld.getBlockState(BlockPos(5, 108, 42))
         if (state.block != Blocks.stained_glass) return
@@ -51,7 +51,7 @@ object HighlightCorrectLivid {
 
     @SubscribeEvent
     fun onRenderEntityOutlines(event: RenderEntityOutlineEvent.Normal) {
-        if (!LocationUtils.inDungeons || LocationUtils.dungeonFloor != 5 || !highlightCorrectLivid) return
+        if (!LocationManager.inDungeons || LocationManager.dungeonFloor != 5 || !highlightCorrectLivid) return
 
         if (lividEntity != null) {
             event.queueEntityToOutline(lividEntity, highlightCorrectLividColor)

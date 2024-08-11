@@ -4,6 +4,7 @@ import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.config.categories.DeveloperConfig.showItemAbilities
 import mrfast.sbt.customevents.UseItemAbilityEvent
 import mrfast.sbt.customevents.WorldLoadEvent
+import mrfast.sbt.managers.LocationManager
 import mrfast.sbt.utils.*
 import mrfast.sbt.utils.ItemUtils.getLore
 import mrfast.sbt.utils.ItemUtils.getSkyblockId
@@ -71,7 +72,7 @@ object ItemAbilities {
 
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
-        if (event.phase != TickEvent.Phase.START || !LocationUtils.inSkyblock || Utils.mc.theWorld == null) return
+        if (event.phase != TickEvent.Phase.START || !LocationManager.inSkyblock || Utils.mc.theWorld == null) return
 
         for (cooldown in activeCooldowns) {
             // Does the countdown
@@ -104,7 +105,7 @@ object ItemAbilities {
 
     private var cooldownReduction = -1
     private fun setStackCooldown(item: ItemStack?) {
-        if (!LocationUtils.inSkyblock || Utils.mc.theWorld == null) return
+        if (!LocationManager.inSkyblock || Utils.mc.theWorld == null) return
 
         val skyblockId: String? = item?.getSkyblockId()
 
@@ -177,7 +178,7 @@ object ItemAbilities {
     */
     @SubscribeEvent
     fun onMouseClick(event: MouseEvent) {
-        if (!LocationUtils.inSkyblock || Utils.mc.theWorld == null) return
+        if (!LocationManager.inSkyblock || Utils.mc.theWorld == null) return
 
         val heldItem: ItemStack = ItemUtils.getHeldItem() ?: return
         val skyblockId: String? = heldItem.getSkyblockId()
@@ -198,7 +199,7 @@ object ItemAbilities {
 
     @SubscribeEvent
     fun onPlayerInteract(event: PlayerInteractEvent) {
-        if (!LocationUtils.inSkyblock || Utils.mc.theWorld == null) return
+        if (!LocationManager.inSkyblock || Utils.mc.theWorld == null) return
         val heldItem: ItemStack = ItemUtils.getHeldItem() ?: return
         val skyblockId: String? = heldItem.getSkyblockId()
 
@@ -223,7 +224,7 @@ object ItemAbilities {
         if (event.type.toInt() == 2) return
         val clean = event.message.unformattedText.clean()
 
-        if (clean.startsWith("Used") && LocationUtils.inDungeons) {
+        if (clean.startsWith("Used") && LocationManager.inDungeons) {
             justUsedAbility = ItemAbility("Dungeon_Ability")
         }
 
@@ -245,7 +246,7 @@ object ItemAbilities {
 
     private fun updateCooldown(cooldownCount: Double): Double {
         var secondsToAdd = 0.05
-        if (LocationUtils.inDungeons && cooldownReduction == -1 && isMage) {
+        if (LocationManager.inDungeons && cooldownReduction == -1 && isMage) {
             cooldownReduction = getCooldownReduction()
             if (isUniqueDungeonClass) {
                 cooldownReduction += 25

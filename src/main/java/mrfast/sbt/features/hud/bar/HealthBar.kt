@@ -9,7 +9,7 @@ import mrfast.sbt.config.categories.GeneralConfig
 import mrfast.sbt.config.categories.GeneralConfig.healthBarAbsorbColor
 import mrfast.sbt.config.categories.GeneralConfig.healthBarBarColor
 import mrfast.sbt.config.categories.GeneralConfig.healthBarHealthColor
-import mrfast.sbt.utils.LocationUtils
+import mrfast.sbt.managers.LocationManager
 
 @SkyblockTweaks.EventComponent
 object HealthBar {
@@ -53,7 +53,7 @@ object HealthBar {
         }
 
         override fun isActive(): Boolean {
-            return GeneralConfig.healthBar && LocationUtils.inSkyblock
+            return GeneralConfig.healthBar && LocationManager.inSkyblock
         }
 
         override fun isVisible(): Boolean {
