@@ -39,7 +39,7 @@
         <strong>General Profit Tracker</strong>
     </summary>
     <i>Tracks all items picked up in inventory or sacks using current market prices on bazaar and auction house.</i>
-    <img src="https://i.imgur.com/NH22H6n.png" alt="Profit Tracker">
+    <img src="https://i.imgur.com/E2MMReL.png" alt="Profit Tracker">
   </details>
 
 - <details>
