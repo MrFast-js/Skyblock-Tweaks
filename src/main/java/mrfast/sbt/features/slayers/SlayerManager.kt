@@ -51,7 +51,9 @@ object SlayerManager {
             slayerStartedAt = System.currentTimeMillis()
         }
         if (msg.trim().startsWith("NICE! SLAYER BOSS SLAIN!") || msg.trim().startsWith("SLAYER QUEST COMPLETE!")) {
-            MinecraftForge.EVENT_BUS.post(SlayerEvent.Death())
+            if(hasSlayerSpawned) {
+                MinecraftForge.EVENT_BUS.post(SlayerEvent.Death())
+            }
 
             hasSlayerSpawned = false
             slayerSpawnedAt = 0

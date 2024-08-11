@@ -5,19 +5,23 @@ import net.minecraft.util.ChatComponentText
 import net.minecraft.util.IChatComponent
 
 object ChatUtils {
-    private const val modChatPrefix = "§eSkyblock§9Tweaks§6 >>§r "
+    private const val modPrefix = "§eSkyblock§9Tweaks§6 >>§r "
+    private const val shortModPrefix = "§eSB§9T§6 >>§r "
 
     fun sendPlayerMessage(message: String) {
         Minecraft.getMinecraft().thePlayer?.sendChatMessage(message)
     }
 
-    fun sendClientMessage(message: String, prefix: Boolean? = false) {
-        Minecraft.getMinecraft().ingameGUI.chatGUI.printChatMessage(ChatComponentText((if (prefix == true) (modChatPrefix) else "") + message))
+    fun sendClientMessage(message: String, prefix: Boolean? = false, shortPrefix: Boolean? = false) {
+        val selectedPrefix = if (prefix == true) modPrefix else if (shortPrefix == true) shortModPrefix else ""
+        Minecraft.getMinecraft().ingameGUI.chatGUI.printChatMessage(ChatComponentText(selectedPrefix + message))
     }
 
-    fun sendClientMessage(message: IChatComponent, prefix: Boolean? = false) {
+    fun sendClientMessage(message: IChatComponent, prefix: Boolean? = false, shortPrefix: Boolean? = false) {
+        val selectedPrefix = if (prefix == true) modPrefix else if (shortPrefix == true) shortModPrefix else ""
+
         Minecraft.getMinecraft().ingameGUI.chatGUI.printChatMessage(
-            ChatComponentText(if (prefix == true) modChatPrefix else "").appendSibling(
+            ChatComponentText(selectedPrefix).appendSibling(
                 message
             )
         )
