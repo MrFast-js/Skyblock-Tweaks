@@ -734,7 +734,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
                 }
                 button.onMouseLeaveRunnable {
                     button.animate {
-                        setColorAnimation(Animations.OUT_EXP, 0.5f, headerBackgroundColorState.constraint)
+                        setColorAnimation(Animations.OUT_EXP, 0.5f, Color.DARK_GRAY.constraint)
                     }
                 }
 

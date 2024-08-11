@@ -20,12 +20,15 @@ object SlayerTimer {
         val totalTime = (timeToSpawn + timeToKill).toFormattedSeconds()
         // Delay until after the slayer rewards message
         Utils.setTimeout({
+            ChatUtils.sendClientMessage("")
             ChatUtils.sendClientMessage(
-                ChatFormatting.GOLD.toString() + ChatFormatting.BOLD.toString() + "Slayer Timer\n" +
-                        ChatFormatting.AQUA + "        • Total Time: " + totalTime + "\n" +
-                        ChatFormatting.YELLOW + "        • Spawn: " + timeToSpawn.toFormattedSeconds() + "\n" +
-                        ChatFormatting.YELLOW + "        • Kill: " + timeToKill.toFormattedSeconds()
+                "§6§lSlayer Timer\n" +
+                        "§9    • Kill: §2" + timeToKill.toFormattedSeconds() + "\n" +
+                        "§3    • Spawn: §2" + timeToSpawn.toFormattedSeconds() + "\n" +
+                        "§b    • Total Time: §a" + totalTime
+                , shortPrefix = true
             )
+            ChatUtils.sendClientMessage("")
         }, 100)
     }
 }
