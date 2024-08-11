@@ -19,9 +19,19 @@
 
 - <details>
     <summary>
-        <strong>Auction & BIN Flipper</strong>
+        <strong>Auction Flipper</strong>
     </summary>
-    <img src="https://i.imgur.com/oDzb95G.png" alt="Profit Tracker">
+    <img src="https://i.imgur.com/oDzb95G.png" alt="Auction Flipper Chat">
+    <img src="https://i.imgur.com/mIHMYYe.png" alt="Auction Flipper Config">
+  </details>
+
+- <details>
+    <summary>
+        <strong>Auction Profit & Selling Overlays</strong>
+    </summary>
+    <img src="https://i.imgur.com/k5CoTV3.png" alt="Auction Overlay 1">
+    <img src="https://i.imgur.com/Vj98I8s.png" alt="Auction Overlay 2">
+    <img src="https://i.imgur.com/SfJtRdd.png" alt="Auction Overlay 3">
   </details>
 
 - <details style="width: 600px">
@@ -44,18 +54,47 @@
     <summary>
         <strong>Dungeon Party Join Info</strong>
     </summary>
-    <i>Shows a customizable join message upon a player joining your dungeon party</i>
+    <i>Shows a customizable join message upon a player joining your dungeon party</i><br>
     <img src="https://i.imgur.com/PCZ8Jjq.png" alt="Dungeon Party Join">
   </details>
 
 - <details>
     <summary>
-        <strong>Bazaar Overpay Protection</strong>
+        <strong>Quiver Display</strong>
     </summary>
-    <i>Stops from quickly buying potentially manipulated bazaar materials due to low supply.</i>
-    <img src="https://i.imgur.com/htfwwxp.png" alt="Bazaar Overpay Protection">
+    <i>Customizable Display of your arrows remaining</i><br>
+    <img src="https://i.imgur.com/YzrT1hs.png" alt="Quiver Display">
   </details>
 
-- **Trash Highlighter** - _Customizable highlight on items to throw away_
+- <details>
+    <summary>
+        <strong>Misc Stat Displays</strong>
+    </summary>
+    <i>Allows for customizable and moveable displays of your skyblock stats.</i><br>
+    <i>Health, Mana, Overflow Mana, Defense, Effective Health, Speed, etc.</i><br>
+    <img src="https://i.imgur.com/iNMvizf.png" alt="Misc Stat Displays">
+  </details>
+
+- <details>
+    <summary>
+        <strong>Effective Item Area Display</strong>
+    </summary>
+    <i>Customizable colors. Works for hyperion, Spirit Scepter, + more in future</i><br>
+    <img src="https://i.imgur.com/54XTCKV.png" alt="Effective Item Area Display">
+  </details>
+
+- <details>
+    <summary>
+        <strong>Slayer Timer</strong>
+    </summary>
+    <img src="https://i.imgur.com/RjSaF3D.png" alt="Slayer Timer">
+  </details>
+
+- <details>
+    <summary>
+        <strong>Trash Highlighter</strong>
+    </summary>
+    <img src="https://i.imgur.com/NYiusGh.png" alt="Trash Highlighter">
+  </details>
 
 _More coming to README soon.._
