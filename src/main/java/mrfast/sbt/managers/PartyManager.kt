@@ -23,6 +23,7 @@ object PartyManager {
 
     class PartyMember(var name: String) {
         var leader = false
+        var online = false
         var className = ""
         var classLvl = ""
     }
@@ -165,6 +166,20 @@ object PartyManager {
             partyMembers[pm.name] = pm
             addSelfToParty()
             playerInParty = true
+        }
+
+        // You run /p list
+        val pListRegex = "Party (Leader|Moderators|Members): (\\[[^\\]]+\\] )?(.*?)(?: ● (\\[[^\\]]+\\] )?(.*?)){0,4} ●"
+        if (clean.matches(pListRegex)) {
+            val groups = clean.getRegexGroups(pListRegex) ?: return
+            for (i in 3 until groups.groupCount() step 2) {
+                val username = parsePlayerName(groups.group(i))
+                if (username.isNotEmpty()) {
+                    val pm = PartyMember(username)
+                    partyMembers[pm.name] = pm
+                    playerInParty = true
+                }
+            }
         }
 
         // Joining existing parties

@@ -3,6 +3,7 @@ package mrfast.sbt.managers
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import mrfast.sbt.SkyblockTweaks
+import mrfast.sbt.config.categories.CustomizationConfig
 import mrfast.sbt.utils.ChatUtils
 import mrfast.sbt.utils.ScoreboardUtils
 import mrfast.sbt.utils.Utils
@@ -71,7 +72,7 @@ object LocationManager {
             if (obj.get("server").asString == "limbo") {
                 if (limboCount > 2) {
                     listeningForLocraw = false
-                    println("Player is actually on afk limbo")
+                    if(CustomizationConfig.developerMode) println("Player is actually on afk limbo")
                     return
                 }
 
