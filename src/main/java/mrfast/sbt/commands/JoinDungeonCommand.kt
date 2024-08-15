@@ -11,9 +11,9 @@ import java.util.*
 
 @SkyblockTweaks.CommandComponent
 class JoinDungeonCommand : CommandBase() {
-    private val numberWords = listOf("ONE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN")
+    private val numberWords = listOf("ENTRANCE", "ONE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN")
 
-    override fun getCommandName(): String = "joindungeon"
+    override fun getCommandName(): String = "jd"
 
     override fun getCommandAliases(): List<String> = Lists.newArrayList("jd")
 
