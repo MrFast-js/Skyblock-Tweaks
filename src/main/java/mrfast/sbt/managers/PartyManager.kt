@@ -215,6 +215,8 @@ object PartyManager {
             pm.className = className
             pm.classLvl = classLvl
             partyMembers[pm.name] = pm
+            addSelfToParty()
+            playerInParty = true
         }
 
         if (clean.startsWith("Party Finder > This group has been de-listed") ||
