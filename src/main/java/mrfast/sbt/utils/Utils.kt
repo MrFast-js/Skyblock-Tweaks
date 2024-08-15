@@ -82,6 +82,7 @@ object Utils {
     }
 
     fun Long.toFormattedTime(): String {
+        if(this<0) return "Unknown"
         val seconds = this / 1000
         val hours = seconds / 3600
         val minutes = (seconds % 3600) / 60

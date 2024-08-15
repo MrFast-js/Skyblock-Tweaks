@@ -109,8 +109,8 @@ object ItemUtils {
         return lore
     }
 
-    fun decodeBase64Inventory(data: String?): List<ItemStack?> {
-        val itemStack = mutableListOf<ItemStack?>()
+    fun decodeBase64Inventory(data: String?): MutableList<ItemStack?> {
+        val itemStacks = mutableListOf<ItemStack?>()
 
         if (data != null) {
             val decode = Base64.getDecoder().decode(data)
@@ -122,14 +122,14 @@ object ItemUtils {
                     val tag = list.getCompoundTagAt(i)
                     val item = ItemStack.loadItemStackFromNBT(tag) ?: null
 
-                    itemStack.add(item)
+                    itemStacks.add(item)
                 }
             } catch (e: IOException) {
                 e.printStackTrace()
             }
         }
 
-        return itemStack
+        return itemStacks
     }
 
     fun decodeBase64Item(data: String?): ItemStack? {

@@ -89,7 +89,11 @@ object PartyManager {
 
     private fun addSelfToParty() {
         // Add self to party
-        partyMembers[Utils.mc.thePlayer.name] = PartyMember(Utils.mc.thePlayer.name)
+        playerInParty = true
+        if (partyMembers.containsKey(Utils.mc.thePlayer.name)) return
+        val pm = PartyMember(Utils.mc.thePlayer.name)
+        pm.leader = true
+        partyMembers[pm.name] = pm
         if (GeneralConfig.autoPartyChat && !playerInParty) {
             ChatUtils.sendPlayerMessage("/chat p")
         }
@@ -101,7 +105,6 @@ object PartyManager {
             val pm = PartyMember(parsePlayerName(clean))
             partyMembers[pm.name] = pm
             addSelfToParty()
-            playerInParty = true
         }
 
         // Other players leave party
@@ -164,7 +167,6 @@ object PartyManager {
             pm.leader = true
             partyMembers[pm.name] = pm
             addSelfToParty()
-            playerInParty = true
         }
 
         // You run /p list
@@ -180,7 +182,7 @@ object PartyManager {
                         pm.leader = true
                         partyMembers[pm.name] = pm
                     }
-                    if(!partyMembers.containsKey(pm.name) || partyMembers[pm.name]?.leader == true) {
+                    if (!partyMembers.containsKey(pm.name) || partyMembers[pm.name]?.leader == true) {
                         partyMembers[pm.name] = pm
                     }
                 }
@@ -216,7 +218,9 @@ object PartyManager {
             pm.classLvl = classLvl
             partyMembers[pm.name] = pm
             addSelfToParty()
-            playerInParty = true
+            if (clean.contains(Utils.mc.thePlayer.name)) {
+                partyMembers[Utils.mc.thePlayer.name]?.leader = false
+            }
         }
 
         if (clean.startsWith("Party Finder > This group has been de-listed") ||

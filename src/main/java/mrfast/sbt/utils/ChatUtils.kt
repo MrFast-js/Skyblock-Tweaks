@@ -3,6 +3,7 @@ package mrfast.sbt.utils
 import net.minecraft.client.Minecraft
 import net.minecraft.util.ChatComponentText
 import net.minecraft.util.IChatComponent
+import net.minecraftforge.client.ClientCommandHandler
 
 object ChatUtils {
     private const val modPrefix = "§eSkyblock§9Tweaks§6 >>§r "
@@ -10,6 +11,10 @@ object ChatUtils {
 
     fun sendPlayerMessage(message: String) {
         Minecraft.getMinecraft().thePlayer?.sendChatMessage(message)
+    }
+
+    fun sendClientCommand(message:String) {
+        ClientCommandHandler.instance.executeCommand(Utils.mc.thePlayer, message)
     }
 
     fun sendClientMessage(message: String, prefix: Boolean? = false, shortPrefix: Boolean? = false) {
