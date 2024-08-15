@@ -26,7 +26,7 @@ object NetworkUtils {
     private val myApiUrl = DeveloperConfig.modAPIURL
     private var client: CloseableHttpClient = HttpClients.createDefault()
     private val jsonCache: MutableMap<String, CacheObject> = HashMap()
-    private var tempApiAuthKey = ""
+    var tempApiAuthKey = ""
 
     init {
         val builder = try {

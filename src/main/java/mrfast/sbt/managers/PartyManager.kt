@@ -36,7 +36,6 @@ object PartyManager {
     fun onChat(event: ClientChatReceivedEvent) {
         if (event.type.toInt() == 2) return
         val clean = event.message.unformattedText.clean()
-
         handleVanillaParty(clean)
         handleDungeonPartyFinder(clean)
     }
@@ -176,10 +175,16 @@ object PartyManager {
                 val username = parsePlayerName(groups.group(i))
                 if (username.isNotEmpty()) {
                     val pm = PartyMember(username)
+                    if (clean.contains("Leader")) pm.leader = true
                     partyMembers[pm.name] = pm
                     playerInParty = true
                 }
             }
+        }
+
+        val disconnectRegex = "(?:The party leader, )?(?:\\[[^\\]]+\\] )?(.*?) has disconnected"
+        if (clean.matches(disconnectRegex)) {
+            partyMembers[clean.getRegexGroups(disconnectRegex)?.group(1)]?.online = false
         }
 
         // Joining existing parties
