@@ -170,14 +170,19 @@ object PartyManager {
         // You run /p list
         val pListRegex = "Party (Leader|Moderators|Members): (\\[[^\\]]+\\] )?(.*?)(?: ● (\\[[^\\]]+\\] )?(.*?)){0,4} ●"
         if (clean.matches(pListRegex)) {
+            playerInParty = true
             val groups = clean.getRegexGroups(pListRegex) ?: return
             for (i in 3 until groups.groupCount() step 2) {
                 val username = parsePlayerName(groups.group(i))
                 if (username.isNotEmpty()) {
                     val pm = PartyMember(username)
-                    if (clean.contains("Leader")) pm.leader = true
-                    partyMembers[pm.name] = pm
-                    playerInParty = true
+                    if (clean.contains("Leader")) {
+                        pm.leader = true
+                        partyMembers[pm.name] = pm
+                    }
+                    if(!partyMembers.containsKey(pm.name) || partyMembers[pm.name]?.leader == true) {
+                        partyMembers[pm.name] = pm
+                    }
                 }
             }
         }
