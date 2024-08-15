@@ -29,11 +29,12 @@ object PartyDisplay {
 
             var display = "§9§lParty Members §r§7(${PartyManager.partyMembers.size})"
             for (partyMember in PartyManager.partyMembers.values) {
-                var name = if (partyMember.leader) "§n" + partyMember.name else partyMember.name
-                if (partyMember.name.equals(Utils.mc.thePlayer.name)) {
+                val leaderText = if (partyMember.leader) " §6♚" else ""
+                var name = partyMember.name
+                if (partyMember.name == Utils.mc.thePlayer.name) {
                     name = "§a${partyMember.name}"
                 }
-                display += "\n §e• §3${name}"
+                display += "\n §e• §3${name}$leaderText"
                 if (partyMember.className != "") {
                     display += " §e(${partyMember.className} ${partyMember.classLvl})"
                 }
