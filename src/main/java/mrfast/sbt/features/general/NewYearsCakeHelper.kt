@@ -32,7 +32,7 @@ object NewYearsCakeHelper {
     @SubscribeEvent
     fun onSlotDrawPost(event: SlotDrawnEvent.Post) {
         if(!MiscellaneousConfig.cakeBagSortingHelper && !MiscellaneousConfig.highlightMissingNewYearCakes) return;
-        val isCake = event.slot.hasStack && event.slot.stack?.getSkyblockId()?.equals("NEW_YEAR_CAKE");
+        val isCake = event.slot.hasStack && event.slot.stack.getSkyblockId() == "NEW_YEAR_CAKE";
 
         if (MiscellaneousConfig.highlightMissingNewYearCakes && event.gui.chestName()
                 .startsWith("Auctions") && isCake
