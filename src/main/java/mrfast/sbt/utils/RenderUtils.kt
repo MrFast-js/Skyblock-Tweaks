@@ -1,12 +1,20 @@
 package mrfast.sbt.utils
 
+import gg.essential.elementa.utils.withAlpha
+import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.client.renderer.RenderGlobal
+import net.minecraft.client.renderer.Tessellator
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats
+import net.minecraft.util.AxisAlignedBB
+import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
 import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL11.*
 import java.awt.Color
 import kotlin.math.cos
+import kotlin.math.max
 import kotlin.math.sin
 
 object RenderUtils {
@@ -74,7 +82,7 @@ object RenderUtils {
         GlStateManager.disableCull()
 
         glLineWidth(thickness.toFloat())
-        glBegin(GL11.GL_LINES)
+        glBegin(GL_LINES)
         glColor4f(red, green, blue, alpha)
         glVertex3d(fromX, fromY, fromZ)
         glVertex3d(toX, toY, toZ)
@@ -84,6 +92,127 @@ object RenderUtils {
         GlStateManager.enableLighting()
         GlStateManager.disableBlend()
         GlStateManager.enableTexture2D()
+        GlStateManager.popMatrix()
+    }
+
+    fun drawSpecialBB(pos: BlockPos, fillColor: Color, partialTicks: Float) {
+        val bb = AxisAlignedBB(pos, pos.add(1, 1, 1)).offset(-0.001, -0.001, -0.001).expand(0.002, 0.002, 0.002)
+        GlStateManager.pushMatrix()
+        GlStateManager.enableBlend()
+        GlStateManager.disableTexture2D()
+        GlStateManager.depthMask(false)
+
+        val width = max(1 - (Utils.mc.thePlayer.getDistance(bb.minX, bb.minY, bb.minZ) / 10 - 2), 2.0)
+        drawFilledBB(bb, fillColor.withAlpha(0.6f), partialTicks)
+        drawOutlinedBB(bb, fillColor.withAlpha(0.9f), width.toFloat(), partialTicks)
+        GlStateManager.depthMask(true)
+        GlStateManager.enableTexture2D()
+        GlStateManager.disableBlend()
+        GlStateManager.popMatrix()
+    }
+
+    fun drawOutlinedBB(aabbbb: AxisAlignedBB?, color: Color, width: Float, partialTicks: Float) {
+        val render = Minecraft.getMinecraft().renderViewEntity
+        val realX = render.lastTickPosX + (render.posX - render.lastTickPosX) * partialTicks
+        val realY = render.lastTickPosY + (render.posY - render.lastTickPosY) * partialTicks
+        val realZ = render.lastTickPosZ + (render.posZ - render.lastTickPosZ) * partialTicks
+        GlStateManager.pushMatrix()
+        GlStateManager.translate(-realX, -realY, -realZ)
+        GlStateManager.enableBlend()
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
+        GlStateManager.disableTexture2D()
+        glLineWidth(width)
+        RenderGlobal.drawOutlinedBoundingBox(aabbbb, color.red, color.green, color.blue, color.alpha)
+        GlStateManager.translate(realX, realY, realZ)
+        GlStateManager.popMatrix()
+    }
+
+    fun drawFilledBB(bb: AxisAlignedBB, c: Color, partialTicks: Float) {
+        val aabb = bb.offset(-0.002, -0.001, -0.002).expand(0.004, 0.005, 0.004)
+        val render = Minecraft.getMinecraft().renderViewEntity
+        val realX = render.lastTickPosX + (render.posX - render.lastTickPosX) * partialTicks
+        val realY = render.lastTickPosY + (render.posY - render.lastTickPosY) * partialTicks
+        val realZ = render.lastTickPosZ + (render.posZ - render.lastTickPosZ) * partialTicks
+        GlStateManager.pushMatrix()
+        GlStateManager.translate(-realX, -realY, -realZ)
+        GlStateManager.disableTexture2D()
+        GlStateManager.enableBlend()
+        GlStateManager.disableLighting()
+        GlStateManager.disableAlpha()
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
+        val tessellator = Tessellator.getInstance()
+        val worldRenderer = tessellator.worldRenderer
+        val color = c.rgb
+        var a = (color shr 24 and 255).toFloat() / 255.0f
+        a = (a.toDouble() * 0.15).toFloat()
+        val r = (color shr 16 and 255).toFloat() / 255.0f
+        val g = (color shr 8 and 255).toFloat() / 255.0f
+        val b = (color and 255).toFloat() / 255.0f
+        worldRenderer.begin(7, DefaultVertexFormats.POSITION_COLOR)
+        worldRenderer.pos(aabb.minX, aabb.maxY, aabb.minZ).color(r, g, b, a).endVertex()
+        worldRenderer.pos(aabb.minX, aabb.minY, aabb.minZ).color(r, g, b, a).endVertex()
+        worldRenderer.pos(aabb.maxX, aabb.maxY, aabb.minZ).color(r, g, b, a).endVertex()
+        worldRenderer.pos(aabb.maxX, aabb.minY, aabb.minZ).color(r, g, b, a).endVertex()
+        worldRenderer.pos(aabb.maxX, aabb.maxY, aabb.maxZ).color(r, g, b, a).endVertex()
+        worldRenderer.pos(aabb.maxX, aabb.minY, aabb.maxZ).color(r, g, b, a).endVertex()
+        worldRenderer.pos(aabb.minX, aabb.maxY, aabb.maxZ).color(r, g, b, a).endVertex()
+        worldRenderer.pos(aabb.minX, aabb.minY, aabb.maxZ).color(r, g, b, a).endVertex()
+        tessellator.draw()
+        worldRenderer.begin(7, DefaultVertexFormats.POSITION_COLOR)
+        worldRenderer.pos(aabb.maxX, aabb.minY, aabb.minZ).color(r, g, b, a).endVertex()
+        worldRenderer.pos(aabb.maxX, aabb.maxY, aabb.minZ).color(r, g, b, a).endVertex()
+        worldRenderer.pos(aabb.minX, aabb.minY, aabb.minZ).color(r, g, b, a).endVertex()
+        worldRenderer.pos(aabb.minX, aabb.maxY, aabb.minZ).color(r, g, b, a).endVertex()
+        worldRenderer.pos(aabb.minX, aabb.minY, aabb.maxZ).color(r, g, b, a).endVertex()
+        worldRenderer.pos(aabb.minX, aabb.maxY, aabb.maxZ).color(r, g, b, a).endVertex()
+        worldRenderer.pos(aabb.maxX, aabb.minY, aabb.maxZ).color(r, g, b, a).endVertex()
+        worldRenderer.pos(aabb.maxX, aabb.maxY, aabb.maxZ).color(r, g, b, a).endVertex()
+        tessellator.draw()
+        worldRenderer.begin(7, DefaultVertexFormats.POSITION_COLOR)
+        worldRenderer.pos(aabb.minX, aabb.minY, aabb.minZ).color(r, g, b, a).endVertex()
+        worldRenderer.pos(aabb.maxX, aabb.minY, aabb.minZ).color(r, g, b, a).endVertex()
+        worldRenderer.pos(aabb.maxX, aabb.minY, aabb.maxZ).color(r, g, b, a).endVertex()
+        worldRenderer.pos(aabb.minX, aabb.minY, aabb.maxZ).color(r, g, b, a).endVertex()
+        worldRenderer.pos(aabb.minX, aabb.minY, aabb.minZ).color(r, g, b, a).endVertex()
+        worldRenderer.pos(aabb.minX, aabb.minY, aabb.maxZ).color(r, g, b, a).endVertex()
+        worldRenderer.pos(aabb.maxX, aabb.minY, aabb.maxZ).color(r, g, b, a).endVertex()
+        worldRenderer.pos(aabb.maxX, aabb.minY, aabb.minZ).color(r, g, b, a).endVertex()
+        tessellator.draw()
+        worldRenderer.begin(7, DefaultVertexFormats.POSITION_COLOR)
+        worldRenderer.pos(aabb.minX, aabb.maxY, aabb.minZ).color(r, g, b, a).endVertex()
+        worldRenderer.pos(aabb.maxX, aabb.maxY, aabb.minZ).color(r, g, b, a).endVertex()
+        worldRenderer.pos(aabb.maxX, aabb.maxY, aabb.maxZ).color(r, g, b, a).endVertex()
+        worldRenderer.pos(aabb.minX, aabb.maxY, aabb.maxZ).color(r, g, b, a).endVertex()
+        worldRenderer.pos(aabb.minX, aabb.maxY, aabb.minZ).color(r, g, b, a).endVertex()
+        worldRenderer.pos(aabb.minX, aabb.maxY, aabb.maxZ).color(r, g, b, a).endVertex()
+        worldRenderer.pos(aabb.maxX, aabb.maxY, aabb.maxZ).color(r, g, b, a).endVertex()
+        worldRenderer.pos(aabb.maxX, aabb.maxY, aabb.minZ).color(r, g, b, a).endVertex()
+        tessellator.draw()
+        worldRenderer.begin(7, DefaultVertexFormats.POSITION_COLOR)
+        worldRenderer.pos(aabb.minX, aabb.maxY, aabb.minZ).color(r, g, b, a).endVertex()
+        worldRenderer.pos(aabb.minX, aabb.minY, aabb.minZ).color(r, g, b, a).endVertex()
+        worldRenderer.pos(aabb.minX, aabb.maxY, aabb.maxZ).color(r, g, b, a).endVertex()
+        worldRenderer.pos(aabb.minX, aabb.minY, aabb.maxZ).color(r, g, b, a).endVertex()
+        worldRenderer.pos(aabb.maxX, aabb.maxY, aabb.maxZ).color(r, g, b, a).endVertex()
+        worldRenderer.pos(aabb.maxX, aabb.minY, aabb.maxZ).color(r, g, b, a).endVertex()
+        worldRenderer.pos(aabb.maxX, aabb.maxY, aabb.minZ).color(r, g, b, a).endVertex()
+        worldRenderer.pos(aabb.maxX, aabb.minY, aabb.minZ).color(r, g, b, a).endVertex()
+        tessellator.draw()
+        worldRenderer.begin(7, DefaultVertexFormats.POSITION_COLOR)
+        worldRenderer.pos(aabb.minX, aabb.minY, aabb.maxZ).color(r, g, b, a).endVertex()
+        worldRenderer.pos(aabb.minX, aabb.maxY, aabb.maxZ).color(r, g, b, a).endVertex()
+        worldRenderer.pos(aabb.minX, aabb.minY, aabb.minZ).color(r, g, b, a).endVertex()
+        worldRenderer.pos(aabb.minX, aabb.maxY, aabb.minZ).color(r, g, b, a).endVertex()
+        worldRenderer.pos(aabb.maxX, aabb.minY, aabb.minZ).color(r, g, b, a).endVertex()
+        worldRenderer.pos(aabb.maxX, aabb.maxY, aabb.minZ).color(r, g, b, a).endVertex()
+        worldRenderer.pos(aabb.maxX, aabb.minY, aabb.maxZ).color(r, g, b, a).endVertex()
+        worldRenderer.pos(aabb.maxX, aabb.maxY, aabb.maxZ).color(r, g, b, a).endVertex()
+        tessellator.draw()
+        GlStateManager.translate(realX, realY, realZ)
+        GlStateManager.disableBlend()
+        GlStateManager.enableAlpha()
+        GlStateManager.enableTexture2D()
+        GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f)
         GlStateManager.popMatrix()
     }
 
@@ -118,7 +247,7 @@ object RenderUtils {
             fillColor.blue / 255f,
             0.15f
         )
-        glBegin(GL11.GL_TRIANGLE_FAN)
+        glBegin(GL_TRIANGLE_FAN)
         glVertex3d(centerX, centerY, centerZ) // Center of the circle
         for (i in 0..segments) {
             val angle = Math.PI * 2 * i / segments
@@ -138,7 +267,7 @@ object RenderUtils {
             0.5f
         )
         glLineWidth(3f)
-        glBegin(GL11.GL_LINE_LOOP)
+        glBegin(GL_LINE_LOOP)
         for (i in 0..segments) {
             val angle = Math.PI * 2 * i / segments
             val x = radius * cos(angle)

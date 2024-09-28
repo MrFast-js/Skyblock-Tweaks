@@ -7,6 +7,8 @@ import net.minecraft.inventory.ContainerChest
 import net.minecraft.inventory.IInventory
 import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
+import java.time.*
+import java.time.format.DateTimeFormatter
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
@@ -81,19 +83,31 @@ object Utils {
         }
     }
 
-    fun Long.toFormattedTime(): String {
-        if(this<0) return "Unknown"
+    fun Long.toFormattedDuration(short: Boolean? = false): String {
         val seconds = this / 1000
         val hours = seconds / 3600
         val minutes = (seconds % 3600) / 60
         val remainingSeconds = seconds % 60
 
+        if(short == true) {
+            return when {
+                hours > 0 -> "${hours}h"
+                minutes > 0 -> "${minutes}m"
+                else -> "${remainingSeconds}s"
+            }
+        }
+
         return "${if (hours > 0) "${hours}h " else ""}${if (minutes > 0) "${minutes}m " else ""}${remainingSeconds}s"
+    }
+
+    fun Long.toDateTimestamp(): String {
+        val dateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(this), ZoneId.systemDefault())
+        val formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy hh:mm a")
+        return dateTime.format(formatter)
     }
 
     fun Long.toFormattedSeconds(): String {
         val seconds = this / 1000.0
-
         return "${seconds.roundToTwoDecimalPlaces()}s"
     }
 
