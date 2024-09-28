@@ -18,7 +18,7 @@ import mrfast.sbt.utils.ItemUtils.getSkyblockId
 import mrfast.sbt.utils.Utils.abbreviateNumber
 import mrfast.sbt.utils.Utils.clean
 import mrfast.sbt.utils.Utils.formatNumber
-import mrfast.sbt.utils.Utils.toFormattedTime
+import mrfast.sbt.utils.Utils.toFormattedDuration
 import net.minecraft.event.ClickEvent
 import net.minecraft.event.HoverEvent
 import net.minecraft.item.ItemStack
@@ -116,7 +116,7 @@ object AuctionFlipper {
             val auctionType = if (bin == true) "§7BIN" else "§7AUC"
             var timeRemaining = ""
             if (endTime != null && bin == false) {
-                timeRemaining = (endTime!! - System.currentTimeMillis()).toFormattedTime()
+                timeRemaining = (endTime!! - System.currentTimeMillis()).toFormattedDuration()
             }
             // Example: buying item for 20m, selling for 35m
             val profitPercent = (((sellFor!!.toFloat() / price.toFloat()) - 1) * 100).toInt()
@@ -294,13 +294,13 @@ object AuctionFlipper {
             return
         }
         // Block BIN auctions if enabled
-        if (/*!AuctionHouseConfig.AF_binFlips &&*/ auctionFlip.bin == true) {
+        if (!AuctionHouseConfig.AF_binFlips && auctionFlip.bin == true) {
             return
         }
         // Block auctions if enabled
-//        if (!AuctionHouseConfig.AF_AucFlips && auctionFlip.bin == false) {
-//            return
-//        }
+        if (!AuctionHouseConfig.AF_AucFlips && auctionFlip.bin == false) {
+            return
+        }
 
         /*
         Coin filters: Purse limit, price, profit, percentage

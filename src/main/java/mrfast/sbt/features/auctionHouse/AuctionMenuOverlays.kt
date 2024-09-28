@@ -247,7 +247,6 @@ object AuctionMenuOverlays {
                 ),
             )
 
-            // Change z-depth in order to be above NEU inventory buttons
             val width =
                 (lines.sortedBy { it.text.getStringWidth() }[lines.size - 1].text.getStringWidth() + 15).coerceIn(
                     100, 150
@@ -351,7 +350,6 @@ object AuctionMenuOverlays {
                 )
             }
 
-            // Change z-depth in order to be above NEU inventory buttons
             val width =
                 (lines.sortedBy { it.text.getStringWidth() }[lines.size - 1].text.getStringWidth() + 15).coerceIn(
                     100, 150
@@ -430,7 +428,6 @@ object AuctionMenuOverlays {
                 )
             )
 
-            // Change z-depth in order to be above NEU inventory buttons
             val width =
                 (lines.sortedBy { it.text.getStringWidth() }[lines.size - 1].text.getStringWidth() + 15).coerceIn(
                     100, 150

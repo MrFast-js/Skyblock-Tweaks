@@ -29,25 +29,25 @@ object AuctionHouseConfig : Config() {
 //    var aucFlipperKeybind = -1
 
     // REMINDER TO UNCOMMENT CODE INSIDE AUCTION FLIPPER TO MAKE THIS WORK
-//    @ConfigProperty(
-//        type = ConfigType.TOGGLE,
-//        name = "Include BIN Flips",
-//        description = "Allows for BIN auctions to be shown. §cThis is risky you need to know what your doing.",
-//        category = "§1§rAuction House",
-//        subcategory = "Auction Flipper",
-//        parentName = "Auction Flipper"
-//    )
-//    var AF_binFlips = false
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Include BIN Flips",
+        description = "Allows for BIN auctions to be shown. §cThis is risky you need to know what your doing.",
+        category = "§1§rAuction House",
+        subcategory = "Auction Flipper",
+        parentName = "Auction Flipper"
+    )
+    var AF_binFlips = false
 
-//    @ConfigProperty(
-//        type = ConfigType.TOGGLE,
-//        name = "Include Auction Flips",
-//        description = "Allows for normal auctions to be shown.",
-//        category = "§1§rAuction House",
-//        subcategory = "Auction Flipper",
-//        parentName = "Auction Flipper"
-//    )
-//    var AF_AucFlips = true
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Include Auction Flips",
+        description = "Allows for normal auctions to be shown.",
+        category = "§1§rAuction House",
+        subcategory = "Auction Flipper",
+        parentName = "Auction Flipper"
+    )
+    var AF_AucFlips = true
 
 //    @ConfigProperty(
 //        type = ConfigType.DROPDOWN,
