@@ -63,12 +63,12 @@ object DeveloperConfig : Config() {
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
-        name = "Show location updates",
-        description = "Shows in chat when the location packet is received",
+        name = "Show Minion Positions",
+        description = "Shows minions that are being tracked and marks closest minion",
         category = "§eDeveloper",
         subcategory = "Settings"
     )
-    var showLocationUpdates = false
+    var showMinionDebug = false
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,

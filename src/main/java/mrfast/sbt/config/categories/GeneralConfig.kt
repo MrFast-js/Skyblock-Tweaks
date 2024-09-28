@@ -6,7 +6,6 @@ import mrfast.sbt.config.ConfigType
 import java.awt.Color
 
 object GeneralConfig : Config() {
-
     @ConfigProperty(
         type = ConfigType.TOGGLE,
         name = "Low Health Tint",

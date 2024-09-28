@@ -27,6 +27,26 @@ object MiscellaneousConfig : Config() {
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
+        name = "Minion Overlay",
+        description = "Gives extra information inside the minion gui such as coins per hour!",
+        category = "Miscellaneous",
+        subcategory = "Minions",
+        isParent = true
+    )
+    var minionOverlay = false
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Show Last Collected Above Minion",
+        description = "Gives extra information inside the minion gui such as coins per hour!",
+        category = "Miscellaneous",
+        subcategory = "Minions",
+        parentName = "Minion Overlay"
+    )
+    var lastCollectedAboveMinion = true
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
         name = "Highlight Trash",
         description = "Draws a red box around items that just fill up your inventory.",
         category = "Miscellaneous",
