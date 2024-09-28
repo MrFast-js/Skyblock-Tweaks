@@ -39,7 +39,7 @@ object DataManager {
         ChatUtils.sendPlayerMessage("/profileid")
     }
 
-    var sentInitialLoad = false
+    var profileLoaded = false
 
     @SubscribeEvent
     fun onChat(event: ClientChatReceivedEvent) {
@@ -61,8 +61,8 @@ object DataManager {
                 val newProfileId = groups[1]
                 val currentProfile = profileIds[Utils.mc.thePlayer.uniqueID.toString()]
 
-                if (currentProfile == null || currentProfile != newProfileId || !sentInitialLoad) {
-                    sentInitialLoad = true
+                if (currentProfile == null || currentProfile != newProfileId || !profileLoaded) {
+                    profileLoaded = true
                     MinecraftForge.EVENT_BUS.post(ProfileLoadEvent())
                 }
                 profileIds[Utils.mc.thePlayer.uniqueID.toString()] = newProfileId

@@ -1,6 +1,7 @@
 package mrfast.sbt.utils
 
 import mrfast.sbt.apis.ItemApi
+import mrfast.sbt.utils.Utils.clean
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.CompressedStreamTools
 import net.minecraft.nbt.NBTTagCompound
@@ -88,7 +89,7 @@ object ItemUtils {
         return enchantsOut
     }
 
-    fun ItemStack.getLore(): MutableList<String> {
+    fun ItemStack.getLore(clean: Boolean? = false): MutableList<String> {
         val lore = mutableListOf(this.displayName)
 
         if (hasTagCompound()) {
@@ -101,7 +102,9 @@ object ItemUtils {
                     val loreTagList = displayTag.getTagList("Lore", 8)
 
                     for (i in 0 until loreTagList.tagCount()) {
-                        lore.add(loreTagList.getStringTagAt(i))
+                        var line = loreTagList.getStringTagAt(i)
+                        if(clean == true) line = line.clean()
+                        lore.add(line)
                     }
                 }
             }

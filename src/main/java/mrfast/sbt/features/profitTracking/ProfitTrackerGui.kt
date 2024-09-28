@@ -22,7 +22,7 @@ import mrfast.sbt.utils.Utils
 import mrfast.sbt.utils.Utils.abbreviateNumber
 import mrfast.sbt.utils.Utils.clean
 import mrfast.sbt.utils.Utils.formatNumber
-import mrfast.sbt.utils.Utils.toFormattedTime
+import mrfast.sbt.utils.Utils.toFormattedDuration
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.gui.GuiTextField
@@ -259,7 +259,7 @@ class ProfitTrackerGui : WindowScreen(ElementaVersion.V2) {
 
         // Draw timer
         fontRenderer.drawString(
-            "§bSession: ${sessionTime.toFormattedTime()}",
+            "§bSession: ${sessionTime.toFormattedDuration()}",
             guiLeft + 145,
             guiTop + 51,
             0xFFFFFF,

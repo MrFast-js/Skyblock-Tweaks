@@ -12,7 +12,7 @@ import mrfast.sbt.utils.ItemUtils.getLore
 import mrfast.sbt.utils.Utils.abbreviateNumber
 import mrfast.sbt.utils.Utils.clean
 import mrfast.sbt.utils.Utils.formatNumber
-import mrfast.sbt.utils.Utils.toFormattedTime
+import mrfast.sbt.utils.Utils.toFormattedDuration
 import mrfast.sbt.utils.Utils.toTitleCase
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.ScaledResolution
@@ -623,15 +623,15 @@ class DungeonPartyGui : WindowScreen(ElementaVersion.V2) {
         fontRendererObj.drawString("§9Completions: $floorCompletions", 0f, 9f, 0xFFFFFF, true)
         fontRendererObj.drawString("§bBest Score: $floorBestScore", 0f, 18f, 0xFFFFFF, true)
         fontRendererObj.drawString(
-            "§3Fastest Run: ${floorBestTime.toFormattedTime()}",
+            "§3Fastest Run: ${floorBestTime.toFormattedDuration()}",
             0f,
             27f,
             0xFFFFFF,
             true
         )
-        fontRendererObj.drawString("§aFastest S: ${floorBestSTime.toFormattedTime()}", 0f, 36f, 0xFFFFFF, true)
+        fontRendererObj.drawString("§aFastest S: ${floorBestSTime.toFormattedDuration()}", 0f, 36f, 0xFFFFFF, true)
         fontRendererObj.drawString(
-            "§6Fastest S+: ${floorBestSPTime.toFormattedTime()}",
+            "§6Fastest S+: ${floorBestSPTime.toFormattedDuration()}",
             0f,
             45f,
             0xFFFFFF,
