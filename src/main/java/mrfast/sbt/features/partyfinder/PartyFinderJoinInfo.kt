@@ -21,16 +21,17 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 @SkyblockTweaks.EventComponent
 object PartyFinderJoinInfo {
+    val PARTY_FINDER_JOIN_REGEX = """^Party Finder > ([^\\s]+) joined the dungeon group! \\(([^ ]+) Level (\\d+)\\)\$""".toRegex()
+
     @SubscribeEvent
     fun onChatMessage(event: ClientChatReceivedEvent) {
         if (!DungeonConfig.partyfinderJoinInfo) return
         if (event.type.toInt() == 2) return
 
         val msg = event.message.unformattedText.clean()
-        val regex = "^Party Finder > ([^\\s]+) joined the dungeon group! \\(([^ ]+) Level (\\d+)\\)\$"
-        if (msg.matches(regex)) {
-            val matcher = msg.getRegexGroups(regex) ?: return
-            val playerName = matcher.group(1)
+        if (msg.matches(PARTY_FINDER_JOIN_REGEX)) {
+            val matcher = msg.getRegexGroups(PARTY_FINDER_JOIN_REGEX) ?: return
+            val playerName = matcher[1].toString()
             sendPlayerInfo(playerName)
         }
     }

@@ -43,12 +43,12 @@ object DataManager {
 
     @SubscribeEvent
     fun onChat(event: ClientChatReceivedEvent) {
+        if (event.type.toInt() == 2) return
+
         val clean = event.message.unformattedText.clean()
         val profileIdPattern = Regex("Profile ID: (\\S+)")
         val suggestPattern = Regex("CLICK THIS TO SUGGEST IT IN CHAT .*")
         val firstJoinPattern = Regex("Latest update: SkyBlock .*") // First startup, get profile id
-
-        if (event.type.toInt() == 2) return
 
         if (clean.matches(firstJoinPattern)) {
             sendProfileIdCommand()

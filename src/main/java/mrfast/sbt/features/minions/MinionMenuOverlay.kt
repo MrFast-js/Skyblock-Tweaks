@@ -50,8 +50,8 @@ object MinionMenuOverlay {
         30, 31, 32, 33, 34,
         39, 40, 41, 42, 43
     )
-    private const val MINION_REGEX = ".* Minion [IXV]{1,4}$"
-    private const val TIME_REMAINING_REGEX = "Time Remaining: (.*)"
+    private val MINION_REGEX = """.* Minion [IXV]{1,4}$""".toRegex()
+    private val TIME_REMAINING_REGEX = """Time Remaining: (.*)""".toRegex()
 
     @SubscribeEvent
     fun onProfileSwap(event: ProfileLoadEvent?) {
@@ -67,6 +67,8 @@ object MinionMenuOverlay {
 
     @SubscribeEvent
     fun onChat(event: ClientChatReceivedEvent) {
+        if (event.type.toInt() == 2) return
+
         if (event.message.unformattedText.startsWith("You picked up a minion! You currently have")) {
             if (minions.has(closestMinion?.position.toString())) {
                 minions.remove(closestMinion?.position.toString())
@@ -97,7 +99,7 @@ object MinionMenuOverlay {
             fuelDurationDate = -1L
             for (line in fuelStack.getLore(true)) {
                 if (line.matches(TIME_REMAINING_REGEX)) {
-                    fuelRunsOut = line.getRegexGroups(TIME_REMAINING_REGEX)!!.group(1)
+                    fuelRunsOut = line.getRegexGroups(TIME_REMAINING_REGEX)!![1].toString()
 
                     val parsedNumber = line.split(" ")[2].toLong()
                     val unitNumber = when {

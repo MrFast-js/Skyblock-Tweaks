@@ -25,26 +25,24 @@ object QuiverOverlay {
     private var currentArrow = ""
     private var currentArrowCount = 0
     private var currentArrowId = ""
+    val QUIVER_REGEX = """^§8Quiver.*""".toRegex()
+    val ACTIVE_ARROW_REGEX = """§7Active Arrow: (.+?) §7\\(§e(\\d+)§7\\)""".toRegex()
 
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
         if (event.phase != TickEvent.Phase.START || !LocationManager.inSkyblock || Utils.mc.theWorld == null) return
 
         for (itemStack in Utils.mc.thePlayer.inventory.mainInventory) {
-            if (itemStack == null) continue
-            if (itemStack.hasDisplayName()) {
-                if (itemStack.displayName.matches("^§8Quiver.*")) {
-                    for (line in itemStack.getLore()) {
-                        val activeArrowLoreRegex = "§7Active Arrow: (.+?) §7\\(§e(\\d+)§7\\)"
-                        if (line.matches(activeArrowLoreRegex)) {
-                            val match = line.getRegexGroups(activeArrowLoreRegex) ?: continue
-                            currentArrowCount = match.group(2).toInt()
-                            if (currentArrow != match.group(1)) {
-                                currentArrow = match.group(1)
-                                currentArrowId = ItemApi.getItemIdFromName(currentArrow) ?: "UNKNOWN"
-                            }
-                        }
-                    }
+            if (itemStack == null || !itemStack.hasDisplayName() || !itemStack.displayName.matches(QUIVER_REGEX)) continue
+
+            for (line in itemStack.getLore()) {
+                if (!line.matches(ACTIVE_ARROW_REGEX)) continue
+
+                val match = line.getRegexGroups(ACTIVE_ARROW_REGEX) ?: continue
+                currentArrowCount = match[2].toString().toInt()
+                if (currentArrow != match[1].toString()) {
+                    currentArrow = match[1].toString()
+                    currentArrowId = ItemApi.getItemIdFromName(currentArrow) ?: "UNKNOWN"
                 }
             }
         }

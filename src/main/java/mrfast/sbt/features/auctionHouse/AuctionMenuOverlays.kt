@@ -24,7 +24,6 @@ import mrfast.sbt.utils.Utils.clean
 import mrfast.sbt.utils.Utils.formatNumber
 import mrfast.sbt.utils.Utils.getInventory
 import mrfast.sbt.utils.Utils.getStringWidth
-import mrfast.sbt.utils.Utils.matches
 import mrfast.sbt.utils.Utils.getNameNoRank
 import mrfast.sbt.utils.Utils.getRegexGroups
 import net.minecraft.client.gui.ScaledResolution
@@ -110,9 +109,10 @@ object AuctionMenuOverlays {
             if (inventory.getStackInSlot(33) != null) {
                 val bidHistory = inventory.getStackInSlot(33)
                 val pastBids = mutableListOf<String>()
+                val BIDDER_REGEX = """By: (.*)""".toRegex()
                 for (line in bidHistory.getLore()) {
-                    if (line.clean().matches("By: (.*)")) {
-                        pastBids.add(line.clean().getRegexGroups("By: (.*)")!!.group(1).getNameNoRank())
+                    if (line.clean().matches(BIDDER_REGEX)) {
+                        pastBids.add(line.clean().getRegexGroups(BIDDER_REGEX)!![1].toString().getNameNoRank())
                     }
                 }
                 if (pastBids.size > 0) {
@@ -126,8 +126,10 @@ object AuctionMenuOverlays {
             if (auction.winning == false) {
                 val submitBidStack = inventory.getStackInSlot(29) ?: return
                 var newBidPrice = 0L
+                val NEW_BID_REGEX = """New bid: (.*) coins""".toRegex()
+
                 for (line in submitBidStack.getLore()) {
-                    if (line.matches("New bid: (.*) coins")) {
+                    if (line.matches(NEW_BID_REGEX)) {
                         newBidPrice = line.clean().replace("\\D+".toRegex(), "").toLong()
                         break
                     }
@@ -184,13 +186,13 @@ object AuctionMenuOverlays {
 
     private fun setAuctionInfoFromLore(auction: Auction) {
         for (line in auction.stack!!.getLore()) {
-            if (line.clean().matches("Bidder: (.*)")) {
+            if (line.clean().matches("""Bidder: (.*)""".toRegex())) {
                 auction.winning = line.clean().contains(Utils.mc.thePlayer.name)
             }
-            if (line.clean().matches("Status: Ended!")) {
+            if (line.clean().matches("""Status: Ended!""".toRegex())) {
                 auction.ended = true
             }
-            if (line.clean().matches("(?:Starting bid|Top bid|Buy it now): (.*) coins")) {
+            if (line.clean().matches("""(?:Starting bid|Top bid|Buy it now): (.*) coins""".toRegex())) {
                 auction.price = line.clean().replace("\\D+".toRegex(), "").toLong()
             }
         }

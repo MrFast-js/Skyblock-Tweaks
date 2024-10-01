@@ -16,6 +16,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 object PurseManager {
     var coinsInPurse = 0
     private var stopNextChange = false
+    var PURSE_REGEX = """Purse: ([0-9,.]+)""".toRegex()
 
     @SubscribeEvent
     fun onChat(event: ClientChatReceivedEvent) {
@@ -31,9 +32,9 @@ object PurseManager {
         if (event.phase != TickEvent.Phase.START) return
         val lines = ScoreboardUtils.getSidebarLines(true)
         for (line in lines) {
-            if (line.matches("Purse: (.*)")) {
-                val groups = line.getRegexGroups("Purse: ([0-9,.]+)") ?: break
-                val purseCoins = groups.group(1).replace("[^0-9]", "").replace(",", "").toDouble().toInt()
+            if (line.matches(PURSE_REGEX)) {
+                val groups = line.getRegexGroups(PURSE_REGEX) ?: break
+                val purseCoins = groups[1].toString().replace("[^0-9]", "").replace(",", "").toDouble().toInt()
 
                 if (coinsInPurse != purseCoins) {
                     if (stopNextChange) {

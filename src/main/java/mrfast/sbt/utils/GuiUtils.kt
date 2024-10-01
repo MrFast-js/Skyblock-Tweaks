@@ -51,26 +51,39 @@ object GuiUtils {
         drawText(text, x, y, style, Color(0xFFFFFF))
     }
 
-    fun drawText(text: String, x: Float, y: Float, style: TextStyle, coreColor: Color, centered: Boolean = false) {
+    fun drawText(
+        text: String,
+        x: Float,
+        y: Float,
+        style: TextStyle,
+        coreColor: Color,
+        centered: Boolean = false,
+        scale: Float = 1.0f // New parameter for scaling
+    ) {
         val shadowText: String = text.cleanColor()
-
         val fontRenderer = Minecraft.getMinecraft().fontRendererObj
 
         // Calculate the centered x position if needed
         val startX = if (centered) {
-            val textWidth = fontRenderer.getStringWidth(shadowText)
+            val textWidth = fontRenderer.getStringWidth(shadowText) * scale // Scale the width for centering
             x - textWidth / 2
         } else {
             x
         }
 
+        GlStateManager.pushMatrix() // Push matrix for transformations
         GlStateManager.translate(0f, 0f, 200f)
+
+        // Apply scaling transformation
+        GlStateManager.scale(scale, scale, 1f)
+
         if (style == TextStyle.BLACK_OUTLINE) {
             fontRenderer.drawString(shadowText, startX + 2, y + 1, 0x000000, false)
             fontRenderer.drawString(shadowText, startX, y + 1, 0x000000, false)
             fontRenderer.drawString(shadowText, startX + 1, y + 2, 0x000000, false)
             fontRenderer.drawString(shadowText, startX + 1, y, 0x000000, false)
         }
+
         // Main Text
         fontRenderer.drawString(
             text,
@@ -79,7 +92,8 @@ object GuiUtils {
             coreColor.rgb,
             style == TextStyle.DROP_SHADOW
         )
-        GlStateManager.translate(0f, 0f, -200f)
+
+        GlStateManager.popMatrix() // Restore the previous matrix state
     }
 
     fun renderItemStackOnScreen(stack: ItemStack?, x: Float, y: Float, width: Float, height: Float) {
