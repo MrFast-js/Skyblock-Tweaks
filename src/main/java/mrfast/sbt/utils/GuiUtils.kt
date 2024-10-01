@@ -66,7 +66,7 @@ object GuiUtils {
         // Calculate the centered x position if needed
         val startX = if (centered) {
             val textWidth = fontRenderer.getStringWidth(shadowText) * scale // Scale the width for centering
-            x - textWidth / 2
+            x - textWidth / 2 // Adjust the x position based on the scaled width
         } else {
             x
         }
@@ -78,17 +78,17 @@ object GuiUtils {
         GlStateManager.scale(scale, scale, 1f)
 
         if (style == TextStyle.BLACK_OUTLINE) {
-            fontRenderer.drawString(shadowText, startX + 2, y + 1, 0x000000, false)
-            fontRenderer.drawString(shadowText, startX, y + 1, 0x000000, false)
-            fontRenderer.drawString(shadowText, startX + 1, y + 2, 0x000000, false)
-            fontRenderer.drawString(shadowText, startX + 1, y, 0x000000, false)
+            fontRenderer.drawString(shadowText, startX / scale + 2, y / scale + 1, 0x000000, false)
+            fontRenderer.drawString(shadowText, startX / scale, y / scale + 1, 0x000000, false)
+            fontRenderer.drawString(shadowText, startX / scale + 1, y / scale + 2, 0x000000, false)
+            fontRenderer.drawString(shadowText, startX / scale + 1, y / scale, 0x000000, false)
         }
 
         // Main Text
         fontRenderer.drawString(
             text,
-            startX + 1,
-            y + 1,
+            startX / scale + 1,
+            y / scale + 1,
             coreColor.rgb,
             style == TextStyle.DROP_SHADOW
         )

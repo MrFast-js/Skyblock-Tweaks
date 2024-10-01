@@ -586,9 +586,7 @@ class DungeonPartyGui : WindowScreen(ElementaVersion.V2) {
             ?.get("experience")
             ?.asDouble ?: 0.0
         val cataLvl = LevelingUtils.calculateDungeonsLevel(cataXp)
-
-        val catacombsWatcherKills = data["stats"].getAsJsonObject()["kills_watcher_summon_undead"]?.asInt ?: 0
-        val masterWatcherKills = data["stats"].getAsJsonObject()["kills_master_watcher_summon_undead"]?.asInt ?: 0
+        val catacombsWatcherKills = data["player_stats"].getAsJsonObject()["kills"].asJsonObject["watcher_summon_undead"]?.asInt ?: 0
 
         GlStateManager.translate(guiLeft + 115f, guiTop + 18f, 0f)
         fontRendererObj.drawString("§e§lPlayer Stats", 0f, 0f, 0xFFFFFF, true)
@@ -602,7 +600,7 @@ class DungeonPartyGui : WindowScreen(ElementaVersion.V2) {
         )
         fontRendererObj.drawString("§7Secrets: ${secrets.formatNumber()}", 0f, 30f, 0xFFFFFF, true)
         fontRendererObj.drawString(
-            "§cWatcher Kills: ${(masterWatcherKills + catacombsWatcherKills).formatNumber()}",
+            "§cWatcher Kills: ${(catacombsWatcherKills).formatNumber()}",
             0f,
             40f,
             0xFFFFFF,
