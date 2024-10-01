@@ -15,7 +15,7 @@ import kotlin.math.max
 @SkyblockTweaks.EventComponent
 object SackManager {
     private var sacks = JsonObject()
-    val SACK_CHAT_REGEX = """\\[Sacks\\] (?:\\+\\d{1,3}(?:,\\d{3})* items|-\\d{1,3}(?:,\\d{3})* items|\\+\\d{1,3}(?:,\\d{3})* items, -\\d{1,3}(?:,\\d{3})* items)\\. \\(Last \\d+s\\.\\)""".toRegex()
+    val SACK_CHAT_REGEX = """\[Sacks\] (?:\+\d{1,3}(?:,\d{3})* items|-\d{1,3}(?:,\d{3})* items|\+\d{1,3}(?:,\d{3})* items, -\d{1,3}(?:,\d{3})* items)\. \(Last \d+s\.\)""".toRegex()
 
     @SubscribeEvent
     fun onProfileSwap(event: ProfileLoadEvent) {

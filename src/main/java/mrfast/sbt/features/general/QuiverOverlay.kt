@@ -26,7 +26,7 @@ object QuiverOverlay {
     private var currentArrowCount = 0
     private var currentArrowId = ""
     val QUIVER_REGEX = """^§8Quiver.*""".toRegex()
-    val ACTIVE_ARROW_REGEX = """§7Active Arrow: (.+?) §7\\(§e(\\d+)§7\\)""".toRegex()
+    val ACTIVE_ARROW_REGEX = """§7Active Arrow: (.+?) §7\(§e(\d+)§7\)""".toRegex()
 
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
@@ -39,9 +39,9 @@ object QuiverOverlay {
                 if (!line.matches(ACTIVE_ARROW_REGEX)) continue
 
                 val match = line.getRegexGroups(ACTIVE_ARROW_REGEX) ?: continue
-                currentArrowCount = match[2].toString().toInt()
-                if (currentArrow != match[1].toString()) {
-                    currentArrow = match[1].toString()
+                currentArrowCount = match[2]!!.value.toInt()
+                if (currentArrow != match[1]!!.value) {
+                    currentArrow = match[1]!!.value
                     currentArrowId = ItemApi.getItemIdFromName(currentArrow) ?: "UNKNOWN"
                 }
             }

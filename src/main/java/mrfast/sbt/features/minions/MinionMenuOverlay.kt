@@ -99,7 +99,7 @@ object MinionMenuOverlay {
             fuelDurationDate = -1L
             for (line in fuelStack.getLore(true)) {
                 if (line.matches(TIME_REMAINING_REGEX)) {
-                    fuelRunsOut = line.getRegexGroups(TIME_REMAINING_REGEX)!![1].toString()
+                    fuelRunsOut = line.getRegexGroups(TIME_REMAINING_REGEX)!![1]!!.value
 
                     val parsedNumber = line.split(" ")[2].toLong()
                     val unitNumber = when {

@@ -112,7 +112,7 @@ object AuctionMenuOverlays {
                 val BIDDER_REGEX = """By: (.*)""".toRegex()
                 for (line in bidHistory.getLore()) {
                     if (line.clean().matches(BIDDER_REGEX)) {
-                        pastBids.add(line.clean().getRegexGroups(BIDDER_REGEX)!![1].toString().getNameNoRank())
+                        pastBids.add(line.clean().getRegexGroups(BIDDER_REGEX)!![1]!!.value.getNameNoRank())
                     }
                 }
                 if (pastBids.size > 0) {

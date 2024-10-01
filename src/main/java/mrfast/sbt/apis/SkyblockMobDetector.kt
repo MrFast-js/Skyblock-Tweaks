@@ -102,8 +102,7 @@ object SkyblockMobDetector {
 
         val normalMobRegex = "\\[Lv(?:\\d+k?)] (.+?) [\\d.,]+[MkB]?/[\\d.,]+[MkB]?❤"
         val slayerMobRegex = "(?<=☠\\s)\\w+\\s\\w+\\s\\w+"
-        val dungeonMobRegex =
-            "✯?\\s*(?:Flaming|Super|Healing|Boomer|Golden|Speedy|Fortified|Stormy|Healthy)?\\s*([\\w\\s]+?)\\s*([\\d.,]+[mkM?]*|[?]+)❤"
+        val dungeonMobRegex = "✯?\\s*(?:Flaming|Super|Healing|Boomer|Golden|Speedy|Fortified|Stormy|Healthy)?\\s*([\\w\\s]+?)\\s*([\\d.,]+[mkM?]*|[?]+)❤"
 
         var pattern: Pattern
         var matcher: Matcher? = null

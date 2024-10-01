@@ -55,7 +55,7 @@ object NewYearsCakeHelper {
             if (!sortedCakeBag.contains(cleanedName)) {
                 sortedCakeBag.add(cleanedName)
                 sortedCakeBag.sortBy {
-                    it.getRegexGroups("""New Year Cake \\(Year (.*)\\)""".toRegex())!![1].toString().toInt()
+                    it.getRegexGroups("""New Year Cake \(Year (.*)\)""".toRegex())!![1]!!.value.toInt()
                 }
             }
             val idealSlotIndex = sortedCakeBag.indexOf(cleanedName)

@@ -20,7 +20,7 @@ object InventoryItemManager {
     private var preOpenInventory = mutableMapOf<String, Int>()
     private var items = mutableMapOf<String, Pair<String, ItemStack>>()
     private var isOpen = false
-    private var ignoreStacksRegex = listOf("""^§8Quiver.*""".toRegex(), """^§aSkyBlock Menu §7\\(Click\\)""".toRegex(), """^§bMagical Map""".toRegex())
+    private var ignoreStacksRegex = listOf("""^§8Quiver.*""".toRegex(), """^§aSkyBlock Menu §7\(Click\)""".toRegex(), """^§bMagical Map""".toRegex())
 
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
@@ -58,9 +58,9 @@ object InventoryItemManager {
             }
 
             // npc shop fix
-            val npcSellingStackRegex = """(.*) §8x\\d+""".toRegex()
+            val npcSellingStackRegex = """(.*) §8x\d+""".toRegex()
             if (displayName.matches(npcSellingStackRegex)) {
-                displayName = displayName.getRegexGroups(npcSellingStackRegex)!![1].toString() ?: continue
+                displayName = displayName.getRegexGroups(npcSellingStackRegex)!![1]!!.value
             }
             items[displayName] = Pair(element.getSkyblockId() ?: "", element)
 

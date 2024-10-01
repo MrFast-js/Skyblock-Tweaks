@@ -64,13 +64,13 @@ object PartyManager {
                     }
 
                     for (line in event.slot.stack.getLore()) {
-                        val regex = """^(\\w+):\\s(\\w+)\\s\\((\\d+)\\)$""".toRegex()
+                        val regex = """^(\w+):\s(\w+)\s\((\d+)\)$""".toRegex()
                         val clean = line.clean().trim()
                         if (clean.matches(regex)) {
                             val matcher = clean.getRegexGroups(regex) ?: return@setTimeout
-                            val playerName = matcher[1].toString()
-                            val className = matcher[2].toString()
-                            val classLvl = matcher[3].toString()
+                            val playerName = matcher[1]!!.value
+                            val className = matcher[2]!!.value
+                            val classLvl = matcher[3]!!.value
 
                             val pm = PartyMember(playerName)
                             pm.className = className
@@ -170,12 +170,12 @@ object PartyManager {
         }
 
         // You run /p list
-        val pListRegex = """Party (Leader|Moderators|Members): (\\[[^\\]]+\\] )?(.*?)(?: ● (\\[[^\\]]+\\] )?(.*?)){0,4} ●""".toRegex()
+        val pListRegex = """Party (Leader|Moderators|Members): (\[[^\]]+\] )?(.*?)(?: ● (\[[^\]]+\] )?(.*?)){0,4} ●""".toRegex()
         if (clean.matches(pListRegex)) {
             playerInParty = true
             val groups = clean.getRegexGroups(pListRegex) ?: return
             for (i in 3 until groups.size step 2) {
-                val username = parsePlayerName(groups[i].toString())
+                val username = parsePlayerName(groups[i]!!.value)
                 if (username.isNotEmpty()) {
                     val pm = PartyMember(username)
                     if (clean.contains("Leader")) {
@@ -189,9 +189,9 @@ object PartyManager {
             }
         }
 
-        val disconnectRegex = """(?:The party leader, )?(?:\\[[^\\]]+\\] )?(.*?) has disconnected""".toRegex()
+        val disconnectRegex = """(?:The party leader, )?(?:\[[^\]]+\] )?(.*?) has disconnected""".toRegex()
         if (clean.matches(disconnectRegex)) {
-            partyMembers[clean.getRegexGroups(disconnectRegex)!![1].toString()]?.online = false
+            partyMembers[clean.getRegexGroups(disconnectRegex)!![1]!!.value]?.online = false
         }
 
         // Joining existing parties
@@ -205,12 +205,12 @@ object PartyManager {
     }
 
     private fun handleDungeonPartyFinder(clean: String) {
-        val regex = """^Party Finder > ([^\\s]+) joined the dungeon group! \\(([^ ]+) Level (\\d+)\\)\$""".toRegex()
+        val regex = """^Party Finder > ([^\s]+) joined the dungeon group! \(([^ ]+) Level (\d+)\)\$""".toRegex()
         if (clean.matches(regex)) {
             val groups = clean.getRegexGroups(regex) ?: return
-            val playerName = groups[1].toString()
-            val className = groups[2].toString()
-            val classLvl = groups[3].toString()
+            val playerName = groups[1]!!.value
+            val className = groups[2]!!.value
+            val classLvl = groups[3]!!.value
 
             val pm = PartyMember(playerName)
 
