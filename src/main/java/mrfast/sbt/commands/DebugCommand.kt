@@ -87,7 +87,7 @@ class DebugCommand : CommandBase() {
             "entities" -> getMobData(tileEntities = true, mobs = true, dist)
             "item" -> getItemData()
             "sidebar" -> getSidebarData()
-            "set", "read" -> {
+            "write", "read" -> {
                 reflect(args)
             }
 
