@@ -85,7 +85,7 @@ dependencies {
     shadowImpl("gg.essential:loader-launchwrapper:1.1.3")
     implementation("gg.essential:essential-1.8.9-forge:11092+gecb85a783")
     shadowImpl("io.socket:engine.io-client:2.1.0:")
-    shadowImpl("moe.nea:libautoupdate:1.2.0")
+    shadowImpl("moe.nea:libautoupdate:1.3.1")
     shadowImpl("org.reflections:reflections:0.10.2")
 
     // If you don't want mixins, remove these lines
@@ -93,8 +93,6 @@ dependencies {
         isTransitive = false
     }
     annotationProcessor("org.spongepowered:mixin:0.8.5-SNAPSHOT")
-
-//    shadowImpl("net.hypixel:mod-api:0.4.0")
 
     // If you don't want to log in with your real minecraft account, remove this line
     runtimeOnly("me.djtheredstoner:DevAuth-forge-legacy:1.1.2")

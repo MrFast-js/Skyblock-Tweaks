@@ -2,6 +2,7 @@ package mrfast.sbt.utils
 
 import com.google.gson.Gson
 import com.google.gson.JsonObject
+import moe.nea.libautoupdate.UpdateUtils
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.config.categories.CustomizationConfig
 import mrfast.sbt.config.categories.DeveloperConfig
@@ -10,7 +11,6 @@ import org.apache.http.HttpEntity
 import org.apache.http.HttpVersion
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory
-import org.apache.http.conn.ssl.SSLContextBuilder
 import org.apache.http.impl.client.CloseableHttpClient
 import org.apache.http.impl.client.HttpClients
 import java.io.BufferedReader
@@ -18,29 +18,54 @@ import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
 import java.nio.charset.StandardCharsets
-import java.security.cert.X509Certificate
+import java.security.KeyStore
 import java.util.stream.Collectors
-import javax.net.ssl.SSLHandshakeException
+import javax.net.ssl.*
+
 
 object NetworkUtils {
     private val myApiUrl = DeveloperConfig.modAPIURL
     private var client: CloseableHttpClient = HttpClients.createDefault()
     private val jsonCache: MutableMap<String, CacheObject> = HashMap()
     var tempApiAuthKey = ""
+    var ctx: SSLContext? = null
 
+    // Follow these directions
+    // https://moddev.nea.moe/https/#false-hope
     init {
-        val builder = try {
-            SSLContextBuilder().loadTrustMaterial(null) { _: Array<X509Certificate?>?, _: String? -> true }
-        } catch (ex: Exception) {
-            throw RuntimeException(ex)
-        }
-        val sslcsf = try {
-            SSLConnectionSocketFactory(builder.build())
-        } catch (e: Exception) {
-            throw RuntimeException(e)
-        }
+        try {
+            val myKeyStore = KeyStore.getInstance("JKS")
 
-        client = HttpClients.custom().setSSLSocketFactory(sslcsf).setUserAgent("Skyblock-Tweaks").build()
+            // Load the keystore from the resources folder
+            myKeyStore.load(NetworkUtils.javaClass.getResourceAsStream("/mykeystore.jks"), "changeit".toCharArray())
+
+            // Initialize KeyManagerFactory and TrustManagerFactory with the keystore
+            val kmf: KeyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm())
+            val tmf: TrustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
+            kmf.init(myKeyStore, null)
+            tmf.init(myKeyStore)
+
+            // Use SSLConnectionSocketFactory which implements LayeredConnectionSocketFactory
+            ctx = SSLContext.getInstance("TLS");
+            ctx!!.init(kmf.keyManagers, tmf.trustManagers, null);
+
+            // Build the HttpClient with the custom SSL socket factory
+
+            // Build the HttpClient with the custom SSL socket factory
+            val sslSocketFactory = SSLConnectionSocketFactory(ctx)
+            client = HttpClients.custom()
+                .setSSLSocketFactory(sslSocketFactory)
+                .setUserAgent("Skyblock-Tweaks")
+                .build()
+
+            UpdateUtils.patchConnection {
+                if(it is HttpsURLConnection) it.sslSocketFactory = ctx!!.socketFactory
+            }
+        } catch (e: Exception) {
+            println("Failed to load keystore. A lot of API requests won't work");
+            e.printStackTrace();
+            ctx = null;
+        }
     }
 
     data class CacheObject(val url: String, val response: JsonObject, val createdAt: Long = System.currentTimeMillis())
@@ -96,6 +121,7 @@ object NetworkUtils {
                 request.setHeader("x-request-author", Utils.mc.thePlayer.toString())
                 request.setHeader("x-version", SkyblockTweaks.MOD_VERSION)
             }
+
 
             client.execute(request).use { response ->
                 val entity: HttpEntity = response.entity
