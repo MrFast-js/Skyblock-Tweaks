@@ -126,11 +126,11 @@ object AuctionMenuOverlays {
             if (auction.winning == false) {
                 val submitBidStack = inventory.getStackInSlot(29) ?: return
                 var newBidPrice = 0L
-                val NEW_BID_REGEX = """New bid: (.*) coins""".toRegex()
+                val NEW_BID_REGEX = """New bid: ([\d,]+) coins""".toRegex()
 
-                for (line in submitBidStack.getLore()) {
+                for (line in submitBidStack.getLore(clean = true)) {
                     if (line.matches(NEW_BID_REGEX)) {
-                        newBidPrice = line.clean().replace("\\D+".toRegex(), "").toLong()
+                        newBidPrice = line.getRegexGroups(NEW_BID_REGEX)!![1]!!.value.replace(",","").toLong()
                         break
                     }
                 }
