@@ -42,10 +42,8 @@ object Utils {
     }
 
 
-    fun String.getNameNoRank(): String {
-        val clean = this.clean()
-        val noRankName = if (clean.contains("]")) clean.split("] ")[1] else clean
-        return noRankName.split(" ")[0]
+    fun String.cleanRanks(): String {
+        return this.replace("""\[[^\]]+\]\s*""".toRegex(),"")
     }
 
     fun String.getStringWidth(): Int {
