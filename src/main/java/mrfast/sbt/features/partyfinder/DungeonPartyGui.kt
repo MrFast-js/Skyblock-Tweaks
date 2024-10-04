@@ -170,7 +170,7 @@ class DungeonPartyGui : WindowScreen(ElementaVersion.V2) {
     private fun drawInventory() {
         val data = partyMemberApiData[selectedPlayer] ?: return
         if (loadedInventoryData.isEmpty()) {
-            val inventoryBase64 = data["inv_contents"]?.asJsonObject?.get("data")?.asString
+            val inventoryBase64 = data["inventory"]?.asJsonObject?.get("inv_contents")?.asJsonObject?.get("data")?.asString
             loadedInventoryData = ItemUtils.decodeBase64Inventory(inventoryBase64)
         }
         var apiDisabled = true
@@ -260,10 +260,10 @@ class DungeonPartyGui : WindowScreen(ElementaVersion.V2) {
     private fun drawArmorEquipment() {
         val data = partyMemberApiData[selectedPlayer] ?: return
         if (loadedArmorData.isEmpty()) {
-            val invArmorBase64 = data["inv_armor"]?.asJsonObject?.get("data")?.asString
+            val invArmorBase64 = data["inventory"]?.asJsonObject?.get("inv_armor")?.asJsonObject?.get("data")?.asString
             loadedArmorData = ItemUtils.decodeBase64Inventory(invArmorBase64)
 
-            val equipBase64 = data["equippment_contents"]?.asJsonObject?.get("data")?.asString
+            val equipBase64 = data["inventory"]?.asJsonObject?.get("equipment_contents")?.asJsonObject?.get("data")?.asString
             loadedEquipmentData = ItemUtils.decodeBase64Inventory(equipBase64)
         }
         var apiDisabled = true
@@ -407,7 +407,7 @@ class DungeonPartyGui : WindowScreen(ElementaVersion.V2) {
         // Quiver
         val data = partyMemberApiData[selectedPlayer] ?: return
         if (loadedQuiverData.isEmpty()) {
-            val inventoryBase64 = data["quiver"]?.asJsonObject?.get("data")?.asString
+            val inventoryBase64 = data["inventory"]?.asJsonObject?.get("bag_contents")?.asJsonObject?.get("quiver")?.asJsonObject?.get("data")?.asString
             ItemUtils.decodeBase64Inventory(inventoryBase64).forEach {
                 val arrow = it?.displayName ?: return
                 if (!loadedQuiverData.containsKey(arrow)) {
@@ -580,11 +580,7 @@ class DungeonPartyGui : WindowScreen(ElementaVersion.V2) {
         val secrets = data.getAsJsonObject("dungeons")
             ?.get("secrets")
             ?.asInt ?: -1
-        val cataXp = data.getAsJsonObject("dungeons")
-            ?.getAsJsonObject("dungeon_types")
-            ?.getAsJsonObject("catacombs")
-            ?.get("experience")
-            ?.asDouble ?: 0.0
+        val cataXp = dungeonsData["dungeon_types"].asJsonObject["catacombs"].asJsonObject["experience"]?.asDouble ?: 0.0
         val cataLvl = LevelingUtils.calculateDungeonsLevel(cataXp)
         val catacombsWatcherKills = data["player_stats"].getAsJsonObject()["kills"].asJsonObject["watcher_summon_undead"]?.asInt ?: 0
 

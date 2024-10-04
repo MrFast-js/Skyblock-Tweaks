@@ -22,7 +22,7 @@ object LocationManager {
     var currentArea = ""
     var dungeonFloor = 0
     var inMasterMode = false
-    var selectedDungeonFloor = ""
+    var selectedDungeonFloor = "7" // Defaults to floor 7, but updates if you click a party finder floor
 
     private var newWorld = false
     private var listeningForLocraw = false
