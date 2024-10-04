@@ -28,7 +28,6 @@ object NetworkUtils {
     private var client: CloseableHttpClient = HttpClients.createDefault()
     private val jsonCache: MutableMap<String, CacheObject> = HashMap()
     var tempApiAuthKey = ""
-    var ctx: SSLContext? = null
 
     // Follow these directions
     // https://moddev.nea.moe/https/#false-hope
@@ -46,10 +45,8 @@ object NetworkUtils {
             tmf.init(myKeyStore)
 
             // Use SSLConnectionSocketFactory which implements LayeredConnectionSocketFactory
-            ctx = SSLContext.getInstance("TLS");
+            val ctx = SSLContext.getInstance("TLS");
             ctx!!.init(kmf.keyManagers, tmf.trustManagers, null);
-
-            // Build the HttpClient with the custom SSL socket factory
 
             // Build the HttpClient with the custom SSL socket factory
             val sslSocketFactory = SSLConnectionSocketFactory(ctx)
@@ -59,12 +56,11 @@ object NetworkUtils {
                 .build()
 
             UpdateUtils.patchConnection {
-                if(it is HttpsURLConnection) it.sslSocketFactory = ctx!!.socketFactory
+                if(it is HttpsURLConnection) it.sslSocketFactory = ctx.socketFactory
             }
         } catch (e: Exception) {
             println("Failed to load keystore. A lot of API requests won't work");
             e.printStackTrace();
-            ctx = null;
         }
     }
 

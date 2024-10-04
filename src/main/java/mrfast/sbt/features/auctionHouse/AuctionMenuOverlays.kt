@@ -21,10 +21,10 @@ import mrfast.sbt.utils.ItemUtils.getSkyblockId
 import mrfast.sbt.utils.Utils
 import mrfast.sbt.utils.Utils.abbreviateNumber
 import mrfast.sbt.utils.Utils.clean
+import mrfast.sbt.utils.Utils.cleanRanks
 import mrfast.sbt.utils.Utils.formatNumber
 import mrfast.sbt.utils.Utils.getInventory
 import mrfast.sbt.utils.Utils.getStringWidth
-import mrfast.sbt.utils.Utils.getNameNoRank
 import mrfast.sbt.utils.Utils.getRegexGroups
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.gui.inventory.GuiChest
@@ -112,7 +112,7 @@ object AuctionMenuOverlays {
                 val BIDDER_REGEX = """By: (.*)""".toRegex()
                 for (line in bidHistory.getLore()) {
                     if (line.clean().matches(BIDDER_REGEX)) {
-                        pastBids.add(line.clean().getRegexGroups(BIDDER_REGEX)!![1]!!.value.getNameNoRank())
+                        pastBids.add(line.clean().getRegexGroups(BIDDER_REGEX)!![1]!!.value.cleanRanks())
                     }
                 }
                 if (pastBids.size > 0) {
