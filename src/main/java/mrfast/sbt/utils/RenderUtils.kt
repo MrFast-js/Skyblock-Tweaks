@@ -19,7 +19,13 @@ import kotlin.math.sin
 
 object RenderUtils {
     val mc = Utils.mc
-    fun draw3DString(text: String, worldPos: Vec3, partialTicks: Float) {
+    fun draw3DString(
+        text: String,
+        worldPos: Vec3,
+        partialTicks: Float,
+        depth: Boolean? = false,
+        shadow: Boolean? = true
+    ) {
         val renderManager = mc.renderManager
         val fontRenderer: FontRenderer = mc.fontRendererObj
 
@@ -39,16 +45,20 @@ object RenderUtils {
         GlStateManager.scale(-0.03f, -0.03f, 0.03f)
 
         GlStateManager.disableLighting()
-        GlStateManager.depthMask(false)
-        GlStateManager.disableDepth()
+        if (depth == false) {
+            GlStateManager.depthMask(false)
+            GlStateManager.disableDepth()
+        }
         GlStateManager.enableBlend()
         GlStateManager.blendFunc(770, 771)
 
         val width = fontRenderer.getStringWidth(text) / 2.0f
-        fontRenderer.drawString(text, (-width).toInt(), 0, 0xFFFFFF)
+        fontRenderer.drawString(text, (-width), 0f, 0xFFFFFF, shadow == true)
 
-        GlStateManager.enableDepth()
-        GlStateManager.depthMask(true)
+        if (depth == false) {
+            GlStateManager.enableDepth()
+            GlStateManager.depthMask(true)
+        }
         GlStateManager.enableTexture2D()
         GlStateManager.disableBlend()
         GlStateManager.enableLighting()
@@ -97,6 +107,10 @@ object RenderUtils {
 
     fun drawSpecialBB(pos: BlockPos, fillColor: Color, partialTicks: Float) {
         val bb = AxisAlignedBB(pos, pos.add(1, 1, 1)).offset(-0.001, -0.001, -0.001).expand(0.002, 0.002, 0.002)
+        drawSpecialBB(bb, fillColor, partialTicks)
+    }
+
+    fun drawSpecialBB(bb: AxisAlignedBB, fillColor: Color, partialTicks: Float) {
         GlStateManager.pushMatrix()
         GlStateManager.enableBlend()
         GlStateManager.disableTexture2D()
