@@ -13,6 +13,7 @@ import mrfast.sbt.utils.Utils.clean
 import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 
 @SkyblockTweaks.EventComponent
 object LocationManager {
@@ -43,9 +44,13 @@ object LocationManager {
             if (!listeningForLocraw) return@setTimeout
 
             newWorld = false
-            updatePlayerLocation()
             ChatUtils.sendPlayerMessage("/locraw")
         }, 1000)
+    }
+
+    @SubscribeEvent
+    fun onTick(event: ClientTickEvent) {
+        updatePlayerLocation()
     }
 
     @SubscribeEvent
