@@ -19,7 +19,6 @@ object ItemApi {
 
     init {
         println("Loading Skyblock Items from HySky API")
-        loadSkyblockItems(true)
 
         // Update Item Prices every ~15 Minutes
         Timer().scheduleAtFixedRate(object : TimerTask() {
