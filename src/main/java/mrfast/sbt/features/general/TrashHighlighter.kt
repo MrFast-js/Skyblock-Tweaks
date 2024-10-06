@@ -2,11 +2,12 @@ package mrfast.sbt.features.general
 
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.config.ConfigManager
-import mrfast.sbt.config.categories.MiscellaneousConfig
-import mrfast.sbt.config.categories.MiscellaneousConfig.trashHighlightType
+import mrfast.sbt.config.categories.DungeonConfig
+import mrfast.sbt.config.categories.DungeonConfig.trashHighlightType
 import mrfast.sbt.customevents.SlotDrawnEvent
 import mrfast.sbt.utils.ItemUtils.getSkyblockId
 import mrfast.sbt.managers.LocationManager
+import mrfast.sbt.utils.NetworkUtils
 import net.minecraft.client.gui.Gui
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.awt.Color
@@ -40,17 +41,23 @@ object TrashHighlighter {
         if (!trashFile!!.exists()) {
             try {
                 trashFile!!.createNewFile()
-                // Default values
-                writeTextToFile(
-                    "CRYPT_DREADLORD_SWORD\nMACHINE_GUN_BOW\nHealing VIII\nDUNGEON_LORE_PAPER\nENCHANTED_BONE\nCRYPT_BOW\nZOMBIE_SOLDIER\nSKELETON_SOLDIER\nSKELETON_MASTER\nSUPER_HEAVY\nINFLATABLE_JERRY\nDUNGEON_TRAP\nSKELETOR\nPREMIUM_FLESH\nTRAINING\nCONJURING_SWORD\nFEL_PEARL\nZOMBIE_KNIGHT\nENCHANTED_ROTTEN_FLESH\n"
-                )
+
+                Thread {
+                    val defaultData = NetworkUtils.apiRequestAndParse("https://raw.githubusercontent.com/MrFast-js/skyblocktweaks-data/refs/heads/main/default-trash.json")
+                    val items = defaultData["items"].asJsonArray
+                    writeTextToFile(
+                        items.joinToString(separator = "\n") { it.asString }
+                    )
+                    refreshTrashList()
+                    watchFileForChanges()
+                }.start()
             } catch (e: IOException) {
                 e.printStackTrace()
             }
-        } else {
-            refreshTrashList()
-            watchFileForChanges()
         }
+
+        refreshTrashList()
+        watchFileForChanges()
     }
 
     private fun refreshTrashList() {
@@ -114,7 +121,7 @@ object TrashHighlighter {
         val y = event.slot.yDisplayPosition
         val n = stack.getSkyblockId()
 
-        if (MiscellaneousConfig.highlightTrash && n != null) {
+        if (DungeonConfig.highlightTrash && n != null) {
             var trash = false
             try {
                 trash = trashList.any { s -> n.contains(s) }

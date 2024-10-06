@@ -47,40 +47,6 @@ object MiscellaneousConfig : Config() {
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
-        name = "Highlight Trash",
-        description = "Draws a red box around items that just fill up your inventory.",
-        category = "Miscellaneous",
-        subcategory = "Items",
-        isParent = true
-    )
-    var highlightTrash = true
-
-    @ConfigProperty(
-        type = ConfigType.BUTTON,
-        name = "§eEdit Trash",
-        description = "The trash list will be updated once you save the file. \nTrash is an item whose Skyblock ID contains any of the entries.",
-        category = "Miscellaneous",
-        subcategory = "Items",
-        placeholder = "§cEdit Trash",
-        parentName = "Highlight Trash"
-    )
-    var editTrash = Runnable {
-        TrashHighlighter.openTrashFile()
-    }
-
-    @ConfigProperty(
-        type = ConfigType.DROPDOWN,
-        name = "Highlight Type",
-        description = "Choose between full slot highlight and border highlight",
-        category = "Miscellaneous",
-        subcategory = "Items",
-        parentName = "Highlight Trash",
-        dropdownOptions = ["Slot", "Border"]
-    )
-    var trashHighlightType = "Border"
-
-    @ConfigProperty(
-        type = ConfigType.TOGGLE,
         name = "Quiver Overlay",
         description = "Shows the arrows in currently your quiver.",
         category = "Miscellaneous",
