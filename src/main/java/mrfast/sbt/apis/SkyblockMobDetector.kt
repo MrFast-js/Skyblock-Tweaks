@@ -17,6 +17,7 @@ import net.minecraft.entity.projectile.EntityArrow
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.common.MinecraftForge
+import net.minecraftforge.event.entity.EntityJoinWorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import java.util.regex.Matcher
@@ -50,16 +51,22 @@ object SkyblockMobDetector {
                 skyblockMobHashMap[entity] = sbMob
             }
         }
+
         for (sbMob in skyblockMobHashMap.values) {
             if (Utils.mc.thePlayer.getDistanceToEntity(sbMob.skyblockMob) > 30) continue
 
             if (sbMob.skyblockMobId == null) {
                 updateMobData(sbMob)
-                if (sbMob.skyblockMobId != null) {
-                    MinecraftForge.EVENT_BUS.post(SkyblockMobEvent.Spawn(sbMob))
-                }
             }
         }
+    }
+
+    @SubscribeEvent
+    fun onEntityJoinWorld(event: EntityJoinWorldEvent) {
+        Utils.setTimeout({
+            val mob = getSkyblockMob(event.entity) ?: return@setTimeout
+            MinecraftForge.EVENT_BUS.post(SkyblockMobEvent.Spawn(mob))
+        }, 1000)
     }
 
     @SubscribeEvent
