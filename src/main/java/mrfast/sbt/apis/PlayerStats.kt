@@ -54,7 +54,7 @@ object PlayerStats {
                 val trimmed: String = piece.trim()
                 val colorsStripped: String = trimmed.clean().replace(",", "")
 
-                if (trimmed.isEmpty()) continue
+                if (trimmed.isEmpty() || colorsStripped.isEmpty()) continue
                 val shortString: String = colorsStripped.substring(0, colorsStripped.length - 1).replace(",", "")
 
                 when {

@@ -29,6 +29,56 @@ object RenderingConfig : Config() {
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
+        name = "Zealot / Bruiser Spawn Locations",
+        description = "Shows where and when zealots or bruisers will spawn in The End.",
+        category = "Rendering",
+        subcategory = "Misc",
+        isParent = true
+    )
+    var zealotBruiserLocations = true
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Draw Timer",
+        description = "Shows when the next group of zealots will spawn",
+        category = "Rendering",
+        subcategory = "Misc",
+        parentName = "Zealot / Bruiser Spawn Locations"
+    )
+    var zealotBruiserLocTimer = true
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Draw Bounding Box",
+        description = "Shows the area where a zealot can spawn",
+        category = "Rendering",
+        subcategory = "Misc",
+        parentName = "Zealot / Bruiser Spawn Locations"
+    )
+    var zealotBruiserLocDrawBox = true
+
+    @ConfigProperty(
+        type = ConfigType.COLOR,
+        name = "Unready Color",
+        description = "Used when zealots or bruisers is on a cooldown.",
+        category = "Rendering",
+        subcategory = "Misc",
+        parentName = "Zealot / Bruiser Spawn Locations"
+    )
+    var zealotBruiserLocUnready = Color(0xFF5555)
+
+    @ConfigProperty(
+        type = ConfigType.COLOR,
+        name = "Ready Color",
+        description = "Used when zealots or bruisers are out of cooldown.",
+        category = "Rendering",
+        subcategory = "Misc",
+        parentName = "Zealot / Bruiser Spawn Locations"
+    )
+    var zealotBruiserLocReady = Color(0x55FF55)
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
         name = "Only Show When Mobs Nearby",
         description = "Stops the area from rendering if there is no mobs present",
         category = "Rendering",

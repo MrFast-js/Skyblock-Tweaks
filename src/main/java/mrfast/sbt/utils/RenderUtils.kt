@@ -141,7 +141,7 @@ object RenderUtils {
         GlStateManager.popMatrix()
     }
 
-    fun drawFilledBB(bb: AxisAlignedBB, c: Color, partialTicks: Float) {
+    fun drawFilledBB(bb: AxisAlignedBB, c: Color, partialTicks: Float, customAlpha: Float = 0.15f) {
         val aabb = bb.offset(-0.002, -0.001, -0.002).expand(0.004, 0.005, 0.004)
         val render = Minecraft.getMinecraft().renderViewEntity
         val realX = render.lastTickPosX + (render.posX - render.lastTickPosX) * partialTicks
@@ -158,7 +158,7 @@ object RenderUtils {
         val worldRenderer = tessellator.worldRenderer
         val color = c.rgb
         var a = (color shr 24 and 255).toFloat() / 255.0f
-        a = (a.toDouble() * 0.15).toFloat()
+        a = (a.toDouble() * customAlpha).toFloat()
         val r = (color shr 16 and 255).toFloat() / 255.0f
         val g = (color shr 8 and 255).toFloat() / 255.0f
         val b = (color and 255).toFloat() / 255.0f
