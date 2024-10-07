@@ -7,7 +7,7 @@ open class Config : ConfigManager() {
     // Use this to setup order for sidebar
     val list = listOf(
         GeneralConfig,
-        //MiningConfig,
+        MiningConfig,
         //FishingConfig,
         //EventsConfig,
         DungeonConfig,
