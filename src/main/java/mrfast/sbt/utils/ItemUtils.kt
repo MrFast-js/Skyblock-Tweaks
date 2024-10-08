@@ -38,7 +38,7 @@ object ItemUtils {
                 "${petInfo.get("type").asString};$tierInt"
             }
 
-            nbt.hasKey("runes") -> {
+            id == "RUNE" && nbt.hasKey("runes") -> {
                 val runeType = nbt.getCompoundTag("runes")?.keySet?.firstOrNull()
                 runeType?.let {
                     "${runeType}_RUNE;${nbt.getCompoundTag("runes").getInteger(runeType)}"
@@ -103,7 +103,7 @@ object ItemUtils {
 
                     for (i in 0 until loreTagList.tagCount()) {
                         var line = loreTagList.getStringTagAt(i)
-                        if(clean == true) line = line.clean()
+                        if (clean == true) line = line.clean()
                         lore.add(line)
                     }
                 }
