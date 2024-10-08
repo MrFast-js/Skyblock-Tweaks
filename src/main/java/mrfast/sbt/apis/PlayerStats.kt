@@ -38,6 +38,8 @@ object PlayerStats {
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
         if (event.phase != TickEvent.Phase.START) return
+        if(!LocationManager.inSkyblock) return
+
         if (LocationManager.currentIsland == "The Rift") {
             health = Utils.mc.thePlayer.health.toInt()
             maxHealth = Utils.mc.thePlayer.maxHealth.toInt()
@@ -46,6 +48,7 @@ object PlayerStats {
 
     @SubscribeEvent
     fun onEvent(event: ClientChatReceivedEvent) {
+        if(!LocationManager.inSkyblock) return
         if (event.type.toInt() == 2) {
             var actionBar: String = event.message.formattedText
             val actionBarSplit: List<String> = actionBar.split(" ")
