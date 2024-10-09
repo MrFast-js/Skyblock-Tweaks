@@ -99,10 +99,6 @@ dependencies {
 }
 
 // Tasks:
-
-tasks.withType<ShadowJar> {
-    relocate("moe.nea.libautoupdate", "mrfast.sbt.libs")
-}
 tasks.withType(JavaCompile::class) {
     options.encoding = "UTF-8"
 }
@@ -163,6 +159,9 @@ tasks.shadowJar {
 
     // If you want to include other dependencies and shadow them, you can relocate them in here
     fun relocate(name: String) = relocate(name, "$baseGroup.deps.$name")
+
+    // Relocate specific library
+    relocate("moe.nea.libautoupdate")
 }
 
 tasks.assemble.get().dependsOn(tasks.remapJar)
