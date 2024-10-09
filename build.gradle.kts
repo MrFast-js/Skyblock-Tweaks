@@ -1,3 +1,4 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.apache.commons.lang3.SystemUtils
 import org.jetbrains.kotlin.gradle.plugin.mpp.pm20.util.archivesName
 
@@ -68,7 +69,6 @@ repositories {
     maven("https://repo.spongepowered.org/maven/")
     maven("https://repo.essential.gg/repository/maven-public")
     maven("https://repo.nea.moe/releases")
-//    maven("https://repo.hypixel.net/repository/Hypixel/")
     // If you don't want to log in with your real minecraft account, remove this line
     maven("https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1")
 }
@@ -100,6 +100,9 @@ dependencies {
 
 // Tasks:
 
+tasks.withType<ShadowJar> {
+    relocate("moe.nea.libautoupdate", "mrfast.sbt.libs")
+}
 tasks.withType(JavaCompile::class) {
     options.encoding = "UTF-8"
 }
