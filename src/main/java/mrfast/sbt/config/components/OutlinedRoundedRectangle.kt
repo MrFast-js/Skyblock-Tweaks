@@ -1,6 +1,7 @@
 package mrfast.sbt.config.components
 
 import gg.essential.elementa.components.UIRoundedRectangle
+import gg.essential.elementa.components.Window
 import gg.essential.elementa.constraints.ConstantColorConstraint
 import gg.essential.universal.UMatrixStack
 import java.awt.Color
@@ -10,17 +11,55 @@ class OutlinedRoundedRectangle(
     val borderWidth: Float,
     val borderRadius: Float
 ) : UIRoundedRectangle(borderRadius) {
-    override fun beforeDraw() {
-        super.beforeDraw()
 
-        val left = getLeft() - borderWidth
-        val top = getTop() - borderWidth
-        val right = getRight() + borderWidth
-        val bottom = getBottom() + borderWidth
+    override fun draw(matrixStack: UMatrixStack) {
+        val radius = getRadius()
         val adjustedRadius = borderRadius + 1
 
-        drawRoundedRectangle(UMatrixStack(), left, top, right, bottom, adjustedRadius, borderColor.color)
+        drawRoundedRectangle(
+            matrixStack,
+            getLeft(),
+            getTop(),
+            getRight(),
+            getBottom(),
+            adjustedRadius,
+            borderColor.color
+        )
+
+        drawRoundedRectangle(
+            matrixStack,
+            getLeft() + borderWidth,
+            getTop() + borderWidth,
+            getRight() - borderWidth,
+            getBottom() - borderWidth,
+            radius,
+            getColor()
+        )
+
+        if (!isInitialized) {
+            isInitialized = true
+            afterInitialization()
+        }
+
+        beforeChildrenDrawCompat(matrixStack)
+
+        val parentWindow = Window.of(this)
+        this.children.forEach { child ->
+            // If the child is outside the current viewport, don't waste time drawing
+            if (!this.alwaysDrawChildren() && !parentWindow.isAreaVisible(
+                    child.getLeft().toDouble(),
+                    child.getTop().toDouble(),
+                    child.getRight().toDouble(),
+                    child.getBottom().toDouble()
+                )
+            ) return@forEach
+
+            child.drawCompat(matrixStack)
+        }
+
+        afterDrawCompat(matrixStack)
     }
+
 
     companion object {
         fun drawOutlinedRoundedRectangle(
