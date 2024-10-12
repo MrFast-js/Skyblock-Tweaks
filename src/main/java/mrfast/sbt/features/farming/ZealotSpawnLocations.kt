@@ -26,9 +26,9 @@ object ZealotSpawnLocations {
         BlockPos(-630, 7, -229),
         BlockPos(-647, 5, -221),
         BlockPos(-684, 5, -261),
-        BlockPos(-699, 6, -263),
+        BlockPos(-699, 5, -263),
         BlockPos(-683, 5, -292),
-        BlockPos(-698, 4, -319),
+        BlockPos(-698, 5, -319),
         BlockPos(-714, 5, -289),
         BlockPos(-732, 5, -295),
         BlockPos(-731, 6, -275)

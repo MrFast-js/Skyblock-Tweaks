@@ -29,6 +29,27 @@ object RenderingConfig : Config() {
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
+        name = "Only Show When Mobs Nearby",
+        description = "Stops the area from rendering if there is no mobs present",
+        category = "Rendering",
+        subcategory = "Misc",
+        parentName = "Show Item Effective Area"
+    )
+    var showItemEffectiveAreaMobsNearby = true
+
+    @ConfigProperty(
+        type = ConfigType.COLOR,
+        name = "Area Color",
+        description = "",
+        category = "Rendering",
+        subcategory = "Misc",
+        parentName = "Show Item Effective Area"
+    )
+    var showItemEffectiveAreaColor = Color.RED
+
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
         name = "Zealot / Bruiser Spawn Locations",
         description = "Shows where and when zealots or bruisers will spawn in The End.",
         category = "Rendering",
@@ -65,7 +86,7 @@ object RenderingConfig : Config() {
         subcategory = "Misc",
         parentName = "Zealot / Bruiser Spawn Locations"
     )
-    var zealotBruiserLocUnready = Color(0xFF5555)
+    var zealotBruiserLocUnready = Color(0x484848)
 
     @ConfigProperty(
         type = ConfigType.COLOR,
@@ -75,27 +96,7 @@ object RenderingConfig : Config() {
         subcategory = "Misc",
         parentName = "Zealot / Bruiser Spawn Locations"
     )
-    var zealotBruiserLocReady = Color(0x55FF55)
-
-    @ConfigProperty(
-        type = ConfigType.TOGGLE,
-        name = "Only Show When Mobs Nearby",
-        description = "Stops the area from rendering if there is no mobs present",
-        category = "Rendering",
-        subcategory = "Misc",
-        parentName = "Show Item Effective Area"
-    )
-    var showItemEffectiveAreaMobsNearby = true
-
-    @ConfigProperty(
-        type = ConfigType.COLOR,
-        name = "Area Color",
-        description = "",
-        category = "Rendering",
-        subcategory = "Misc",
-        parentName = "Show Item Effective Area"
-    )
-    var showItemEffectiveAreaColor = Color.RED
+    var zealotBruiserLocReady = Color(0x6A5ACD)
 
     @ConfigProperty(
         type = ConfigType.COLOR,
