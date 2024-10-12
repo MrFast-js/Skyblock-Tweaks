@@ -58,12 +58,13 @@ object EntityOutlineManager {
         Stops rendering from happening on SBT, instead adds to skyhannis outlines
      */
     @SubscribeEvent
-    fun onWorldRender(event:RenderWorldLastEvent) {
-        if(!CompatabilityManager.usingSkyhanni) return
+    fun onWorldRender(event: RenderWorldLastEvent) {
+        if (!CompatabilityManager.usingSkyhanni) return
 
         val entityOutlineRendererClass = Class.forName("at.hannibal2.skyhanni.utils.EntityOutlineRenderer")
         val instance = entityOutlineRendererClass.getDeclaredField("INSTANCE")
-        val cacheField: Field = entityOutlineRendererClass.getDeclaredField("entityRenderCache");cacheField.setAccessible(true)
+        val cacheField: Field =
+            entityOutlineRendererClass.getDeclaredField("entityRenderCache");cacheField.setAccessible(true)
         val cacheInstance: Any = cacheField.get(instance)
 
         // Access the xrayCache from skyhanni
@@ -119,7 +120,7 @@ object EntityOutlineManager {
         if (event.phase == TickEvent.Phase.START) {
             val mc = Minecraft.getMinecraft()
             val renderGlobal: CustomRenderGlobal = mc.renderGlobal as CustomRenderGlobal
-            if (mc.theWorld != null && shouldRenderEntityOutlines()) {
+            if (mc.theWorld != null && (CompatabilityManager.usingSkyhanni || shouldRenderEntityOutlines())) {
                 // These events need to be called in this specific order for the xray to have priority over the no xray
                 // Get all entities to render xray outlines
                 val xrayOutlineEvent = RenderEntityOutlineEvent.Xray(null)
@@ -155,13 +156,13 @@ object EntityOutlineManager {
         }
     }
 
-    public class CachedInfo {
+    class CachedInfo {
         var xrayCache: HashMap<Entity, Int>? = null
         var noXrayCache: HashMap<Entity, Int>? = null
         var noOutlineCache: HashSet<Entity>? = null
     }
 
-    public val entityRenderCache = CachedInfo()
+    val entityRenderCache = CachedInfo()
     private var stopLookingForOptifine = false
     private var isFastRender: Method? = null
     private var isShaders: Method? = null
@@ -350,7 +351,6 @@ object EntityOutlineManager {
      */
     fun shouldRenderEntityOutlines(): Boolean {
         if (CompatabilityManager.usingSkyhanni) return false
-
         val mc = Minecraft.getMinecraft()
         val renderGlobal: CustomRenderGlobal = mc.renderGlobal as CustomRenderGlobal
 
