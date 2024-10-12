@@ -143,7 +143,8 @@ object CrimsonIsleMap {
                 val labelY = normalizedZ - 9 // Adjust the vertical position as needed
 
                 // Draw a transparent background rectangle behind the text
-                val backgroundWidth = Minecraft.getMinecraft().fontRendererObj.getStringWidth("§b$waypointName") * (DeveloperConfig.valueTest / 10.0f)
+                val backgroundWidth =
+                    Minecraft.getMinecraft().fontRendererObj.getStringWidth("§b$waypointName") * (9.5f)
                 val backgroundHeight = 8 // Height of the background rectangle
                 val backgroundColor = 0x80000000 // Semi-transparent black (0x80 for 50% alpha)
 
@@ -163,7 +164,7 @@ object CrimsonIsleMap {
                     GuiUtils.TextStyle.BLACK_OUTLINE,
                     Color.WHITE,
                     true,
-                    DeveloperConfig.valueTest/10.0f
+                    8f
                 )
 
                 GlStateManager.popMatrix()
