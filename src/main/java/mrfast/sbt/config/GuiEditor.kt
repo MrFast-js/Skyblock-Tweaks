@@ -137,6 +137,9 @@ class GuiEditor : GuiScreen() {
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
         super.mouseClicked(mouseX, mouseY, mouseButton)
         for (element in guiManager.guiElements) {
+            if (!element.isActive()) continue
+            if (!showAllEnabledElements && !element.isVisible()) continue
+
             val x = (element.relativeX * screenWidth).toInt()
             val y = (element.relativeY * screenHeight).toInt()
             val elementWidth = (element.width * element.scale).toInt()
@@ -174,6 +177,9 @@ class GuiEditor : GuiScreen() {
     private fun updateMousePos(mouseX: Int, mouseY: Int) {
         hoveredElement = null
         for (element in guiManager.guiElements) {
+            if (!element.isActive()) continue
+            if (!showAllEnabledElements && !element.isVisible()) continue
+
             val x = (element.relativeX * screenWidth).toInt()
             val y = (element.relativeY * screenHeight).toInt()
             val elementWidth = (element.width * element.scale).toInt()
