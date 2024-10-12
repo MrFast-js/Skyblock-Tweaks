@@ -188,7 +188,6 @@ object GeneralConfig : Config() {
     @ConfigProperty(
         type = ConfigType.COLOR,
         name = "Normal Color",
-        description = "Change color from the default §cRed",
         category = "General",
         subcategory = "Stat Displays",
         parentName = "Health Number"
@@ -198,7 +197,6 @@ object GeneralConfig : Config() {
     @ConfigProperty(
         type = ConfigType.COLOR,
         name = "Absorption Color",
-        description = "Change color from the default §6Gold",
         category = "General",
         subcategory = "Stat Displays",
         parentName = "Health Number"
@@ -218,7 +216,6 @@ object GeneralConfig : Config() {
     @ConfigProperty(
         type = ConfigType.COLOR,
         name = "Color",
-        description = "Change color from the default §6Gold",
         category = "General",
         subcategory = "Stat Displays",
         parentName = "Speed Number"
@@ -248,7 +245,6 @@ object GeneralConfig : Config() {
     @ConfigProperty(
         type = ConfigType.COLOR,
         name = "Color",
-        description = "Change color from the default §2Green",
         category = "General",
         subcategory = "Stat Displays",
         parentName = "Effective Health Number"
