@@ -7,10 +7,7 @@ import gg.essential.elementa.WindowScreen
 import gg.essential.elementa.components.*
 import gg.essential.elementa.components.input.UITextInput
 import gg.essential.elementa.components.inspector.Inspector
-import gg.essential.elementa.constraints.CenterConstraint
-import gg.essential.elementa.constraints.ChildBasedSizeConstraint
-import gg.essential.elementa.constraints.MinConstraint
-import gg.essential.elementa.constraints.PixelConstraint
+import gg.essential.elementa.constraints.*
 import gg.essential.elementa.constraints.animation.Animations
 import gg.essential.elementa.dsl.*
 import gg.essential.elementa.effects.OutlineEffect
@@ -18,7 +15,6 @@ import gg.essential.elementa.effects.ScissorEffect
 import gg.essential.elementa.state.BasicState
 import gg.essential.elementa.state.constraint
 import gg.essential.universal.UMatrixStack
-import gg.essential.vigilance.gui.settings.ColorComponent
 import gg.essential.vigilance.gui.settings.SelectorComponent
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.config.categories.CustomizationConfig
@@ -62,9 +58,13 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
     private var selectedCategory = "General"
     private var selectedCategoryComponent: UIComponent? = null
     private var tooltipElements: MutableMap<UIComponent, Set<String>> = mutableMapOf()
+    private var animationFinished = false
 
     override fun onDrawScreen(matrixStack: UMatrixStack, mouseX: Int, mouseY: Int, partialTicks: Float) {
         super.onDrawScreen(matrixStack, mouseX, mouseY, partialTicks)
+        // Dont draw tooltips on opening animation
+        if (!animationFinished) return
+
         for (element in tooltipElements.keys) {
             if (element.isHovered()) {
                 GuiUtils.drawHoveringText(
@@ -81,6 +81,14 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
         }
     }
 
+    override fun afterInitialization() {
+        super.afterInitialization()
+        animationFinished = false
+        Utils.setTimeout({
+            animationFinished = true
+        }, 500)
+    }
+
     private var dynamicColorUpdateTimer = Timer()
 
     override fun onScreenClose() {
@@ -95,9 +103,9 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
 
     init {
         // Create a background panel
-        val background = OutlinedRoundedRectangle(mainBorderColorState.constraint, 3f, mainBorderRadius).constrain {
+        val background = OutlinedRoundedRectangle(mainBorderColorState.constraint, 2f, mainBorderRadius).constrain {
             color = mainBackgroundColorState.constraint
-            width = 1.pixels
+            width = 4.pixels
             height = 4.pixels
             x = CenterConstraint()
             y = CenterConstraint()
@@ -118,11 +126,11 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
 
         val header = UIRoundedRectangle(mainBorderRadius - 1).constrain {
             width = 100.percent - 4.pixels
-            height = 30.pixels
+            height = min(30.pixels, 10.percent)
             x = 2.pixels()
             y = 2.pixels()
             color = headerBackgroundColorState.constraint
-        } childOf background
+        } childOf background effect ScissorEffect()
 
         if (CustomizationConfig.developerMode) {
             val statusColor = if (SocketUtils.socketConnected) Color(85, 255, 85) else Color(255, 85, 85)
@@ -141,6 +149,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
                 color = statusColor.constraint
                 textScale = 1.6.pixels
             } childOf socketStatusButton
+
 
             val lore = mutableSetOf(
                 if (SocketUtils.socketConnected) "§a∞ Connected to SBT Socket!" else "§c✕ Disconnected from SBT Socket!"
@@ -173,7 +182,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
         editGuiLocationsButton.addTooltip(setOf("§eEdit Gui Locations"))
 
         // Add some text to the panel
-        val modTitle = UIText("§eSkyblock §9Tweaks").constrain {
+        val modTitle = UIText("§eSkyblock §9Tweaks", false).constrain {
             x = CenterConstraint()
             y = CenterConstraint()
         } childOf header
@@ -459,7 +468,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
                         }
                         if (parent != null) {
                             val featureOption =
-                                createFeatureElement(feature, subcategory, parent.featureContainer, list)
+                                createFeatureOptionElement(feature, subcategory, parent.featureContainer)
                             if (featureOption != null) {
                                 parent.optionElements[feature.name] = featureOption
                                 featureOption.hide(true)
@@ -474,7 +483,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
     private fun createFeatureElement(
         feature: ConfigManager.Feature,
         subcategory: ConfigManager.Subcategory,
-        subcategoryComponent: UIContainer,
+        subcategoryComponent: UIComponent,
         featureList: ScrollComponent
     ): UIContainer? {
         // Check if name, description or subcategory contain the search
@@ -500,7 +509,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
             y = SiblingConstraintFixed(6f)
             width = 99.percent
             height = ChildBasedSizeConstraint(2f)
-        } childOf subcategoryComponent
+        } childOf subcategoryComponent effect ScissorEffect()
 
         val featureBackground = OutlinedRoundedRectangle(featureBorderColorState.constraint, 1f, 6f).constrain {
             x = CenterConstraint()
@@ -510,20 +519,83 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
             color = featureBackgroundColorState.constraint
         } childOf featureContainer
 
-        val featureTitle = UIText(feature.name).constrain {
-            x = 2.pixels
-            y = 2.pixels
-            textScale = 1.5.pixels
+        val secondContainer = UIContainer().constrain {
+            x = PixelConstraint(0f)
+            y = SiblingConstraintFixed(6f)
+            width = 100.percent
+            height = ChildBasedSizeConstraint(2f)
         } childOf featureBackground
 
+        val featureTitle = UIText(feature.name).constrain {
+            x = 3.pixels
+            y = 3.pixels
+            textScale = 1.5.pixels
+        } childOf secondContainer
+
         val featureDescription = UIWrappedText(feature.description).constrain {
-            x = 2.pixels
+            x = 3.pixels
             y = SiblingConstraintFixed(2f)
             width = 80.percent - 2.pixels
             color = Color.GRAY.constraint
-        } childOf featureBackground
+        } childOf secondContainer
 
-        populateFeature(feature, featureBackground)
+        populateFeature(feature, secondContainer)
+
+        return featureContainer
+    }
+
+    private fun createFeatureOptionElement(
+        feature: ConfigManager.Feature,
+        subcategory: ConfigManager.Subcategory,
+        parentComponent: UIComponent
+    ): UIContainer? {
+        // Check if name, description or subcategory contain the search
+
+        if (!(containsIgnoreCase(feature.name, searchQuery) ||
+                    containsIgnoreCase(feature.description, searchQuery) ||
+                    containsIgnoreCase(subcategory.name, searchQuery) ||
+                    containsIgnoreCase(feature.parentName, searchQuery))
+        ) {
+            var hasChildFittingSearch = false
+            for (optionElement in feature.optionElements) {
+                if (containsIgnoreCase(optionElement.key, searchQuery)) {
+                    hasChildFittingSearch = true
+                }
+            }
+            if (!hasChildFittingSearch) {
+                return null
+            }
+        }
+
+        val child1 = parentComponent.children.getOrNull(0)
+        val parentFeatureBackground = child1 ?: return null
+        val featureContainer = UIContainer().constrain {
+            x = CenterConstraint()
+            y = SiblingConstraintFixed(6f)
+            width = 100.percent
+            height = ChildBasedSizeConstraint(2f)
+            color = Color.RED.constraint
+        } childOf parentFeatureBackground
+
+        val optionName = UIText(feature.name).constrain {
+            x = 2.pixels
+            y = 2.pixels
+            textScale = 1.5.pixels
+        } childOf featureContainer
+
+        if (feature.description.isNotEmpty()) {
+            val optionDescription = UIWrappedText(feature.description).constrain {
+                x = 2.pixels
+                y = SiblingConstraintFixed(2f)
+                width = 80.percent - 2.pixels
+                color = Color.GRAY.constraint
+                textScale = 1.pixels
+            } childOf featureContainer
+        } else {
+            optionName.setY(CenterConstraint())
+        }
+
+        populateFeature(feature, featureContainer)
 
         return featureContainer
     }
@@ -532,6 +604,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
         return source.lowercase(Locale.getDefault()).contains(target.lowercase(Locale.getDefault()))
     }
 
+    var floatingColorPicker: ColorPickerComponent? = null
     private fun populateFeature(
         feature: ConfigManager.Feature,
         featureComponent: UIComponent
@@ -578,16 +651,34 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
             }
             if (feature.type == ConfigType.COLOR) {
                 val colorValue = feature.value as Color
-                val colorPicker = ColorComponent(colorValue, false).constrain {
-                    x = 10.pixels(alignOpposite = true)
+                val colorPicker = ColorPickerComponent(colorValue).constrain {
+                    x = 8.pixels(true)
                 } childOf featureComponent
 
                 val colorDisplay = UIBlock(colorValue.constraint).constrain {
                     width = 16.pixels
                     height = 16.pixels
                     y = CenterConstraint()
-                    x = SiblingConstraintFixed(3f, true)
+                    x = 8.pixels(true)
                 } childOf featureComponent
+
+                colorPicker.hide(true)
+
+                var hidden = true;
+                colorDisplay.onMouseClick {
+                    hidden = !hidden
+                    if (hidden) {
+                        floatingColorPicker = null
+                        colorPicker.setFloating(false)
+                        colorPicker.hide(true)
+                    } else {
+                        clearPopup()
+                        colorPicker.setY(SiblingConstraint(5f))
+                        floatingColorPicker = colorPicker
+                        colorPicker.setFloating(true)
+                        colorPicker.unhide(false)
+                    }
+                }
 
                 val unhovered = Color(200, 200, 200)
                 val hovered = Color(255, 255, 255)
@@ -616,6 +707,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
 
                     feature.field.set(SkyblockTweaks.config, defaultValue)
                     colorDisplay.setColor(defaultValue as Color)
+                    colorPicker.setPickerColor(defaultValue)
                 }
 
                 colorPicker.onValueChange { value: Any? ->
@@ -623,7 +715,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
                     feature.field.set(SkyblockTweaks.config, value)
                 }
 
-                ignoredHeights.addAll(mutableListOf(colorDisplay, resetImg, featureComponent.children[1]))
+                ignoredHeights.addAll(mutableListOf(colorDisplay, resetImg, colorPicker))
             }
             if (feature.type == ConfigType.DROPDOWN) {
                 var selected = feature.dropdownOptions.indexOf(feature.value)
@@ -771,16 +863,33 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
                         setColorAnimation(Animations.OUT_EXP, 0.5f, unhovered.constraint)
                     }
                 }
+                var orignalHeight = 0.pixels
+
+                Utils.setTimeout({
+                    orignalHeight = feature.featureContainer.getHeight().pixels
+                }, 500)
+
+                clearPopup()
+
                 settingsGear.onMouseClick {
                     feature.optionsHidden = !feature.optionsHidden
 
+                    clearPopup()
+
+                    val parentFeatureBackground = feature.featureContainer.children.getOrNull(0)
                     if (!feature.optionsHidden) {
+                        parentFeatureBackground?.setHeight(orignalHeight)
+                        parentFeatureBackground?.animate {
+                            setHeightAnimation(Animations.IN_OUT_EXP, 0.35f, ChildBasedSizeConstraint(2f), 0f)
+                        }
+
                         feature.optionElements.values.forEach {
                             it.unhide(true)
                         }
                     } else {
-                        feature.optionElements.values.forEach {
-                            it.hide(false)
+                        parentFeatureBackground?.setHeight(feature.featureContainer.getHeight().pixels)
+                        parentFeatureBackground?.animate {
+                            setHeightAnimation(Animations.IN_OUT_EXP, 0.35f, orignalHeight, 0f)
                         }
                     }
                 }
@@ -793,6 +902,11 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
 
         // Stop the setting options from effecting total height
         featureComponent.setHeight(LPosChildSizeConstraint(ignoredHeights) + 5.pixels)
+    }
+
+    private fun clearPopup() {
+        floatingColorPicker?.setFloating(false)
+        floatingColorPicker?.hide(true)
     }
 
     private fun UIComponent.addTooltip(set: Set<String>) {
