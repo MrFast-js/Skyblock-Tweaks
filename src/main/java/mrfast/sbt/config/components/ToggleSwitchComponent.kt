@@ -1,5 +1,6 @@
 package mrfast.sbt.config.components
 
+import gg.essential.elementa.components.UICircle
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.elementa.constraints.CenterConstraint
 import gg.essential.elementa.constraints.animation.Animations
@@ -17,19 +18,17 @@ class ToggleSwitchComponent(initValue: Boolean) : UIRoundedRectangle(0f) {
         this.constrain {
             x = 0.pixels
             y = CenterConstraint()
-            radius = 9.pixels
-            width = 32.pixels
+            radius = (9.5f).pixels
+            width = 28.pixels
             height = 16.pixels
             color = if (activated) activatedColor.constraint else deactivatedColor.constraint
         }
 
-        val block = UIRoundedRectangle(8f)
+        val block = UICircle(7.5f)
 
         block.constrain {
-            x = 1.pixels
-            y = 1.pixels
-            width = 14.pixels
-            height = 14.pixels
+            x = 8.pixels
+            y = CenterConstraint()
             color = Color(44, 44, 44).constraint
         } childOf this
 
@@ -45,17 +44,17 @@ class ToggleSwitchComponent(initValue: Boolean) : UIRoundedRectangle(0f) {
         }
 
         if (activated) {
-            block.setX(1.pixels(alignOpposite = true))
+            block.setX((20).pixels)
         }
 
         this.onMouseClick {
             activated = !activated
             block.animate {
-                setXAnimation(Animations.OUT_EXP, 0.5f, if (activated) 1.pixels(alignOpposite = true) else 1.pixels)
+                setXAnimation(Animations.IN_OUT_ELASTIC, 0.5f, if (activated) (20).pixels else 8.pixels)
             }
             this.animate {
                 setColorAnimation(
-                    Animations.OUT_EXP,
+                    Animations.IN_OUT_CIRCULAR,
                     0.5f,
                     if (activated) activatedColor.constraint else deactivatedColor.constraint
                 )
