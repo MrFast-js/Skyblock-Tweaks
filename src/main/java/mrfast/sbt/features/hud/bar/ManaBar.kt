@@ -38,7 +38,7 @@ object ManaBar {
             val borderWidth = 2f
 
             // Draw background/border
-            UIRoundedRectangle.drawRoundedRectangle(UMatrixStack(), 0f, 0f, 80f, 10f, 6f, manaBarBarColor)
+            UIRoundedRectangle.drawRoundedRectangle(UMatrixStack(), 0f, 0f, 80f, 10f, 5f, manaBarBarColor)
 
             // Draw normal blue mana
             UIRoundedRectangle.drawRoundedRectangle(
@@ -47,7 +47,7 @@ object ManaBar {
                 borderWidth,
                 ((80f - borderWidth) * manaFillPerc).toFloat(),
                 10f - borderWidth,
-                4f,
+                3f,
                 manaBarManaColor
             )
 
@@ -64,7 +64,7 @@ object ManaBar {
                     2f,
                     (80 - borderWidth),
                     (10 - borderWidth),
-                    4f,
+                    3f,
                     manaBarOverflowColor
                 )
             }
