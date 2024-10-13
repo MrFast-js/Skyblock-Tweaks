@@ -54,6 +54,15 @@ object DeveloperConfig : Config() {
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
+        name = "Log Action Bar",
+        description = "Log any action bar messages",
+        category = "§eDeveloper",
+        subcategory = "Settings"
+    )
+    var logActionBar = false
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
         name = "Show item abilities",
         description = "Shows when a skyblock item uses its ability, used to create features with listening for item abilities",
         category = "§eDeveloper",
