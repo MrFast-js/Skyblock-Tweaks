@@ -21,11 +21,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(RenderGlobal.class)
 public abstract class MixinRenderGlobal {
 
-    @Redirect(method = "renderEntities", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/RenderGlobal;isRenderEntityOutlines()Z", ordinal = 0))
-    private boolean onRenderEntities(RenderGlobal renderGlobal) {
-        return false;
-    }
-
     @Redirect(method = "isRenderEntityOutlines", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/EntityPlayerSP;isSpectator()Z", ordinal = 0))
     private boolean isSpectatorDisableCheck(EntityPlayerSP entityPlayerSP) {
         return LocationManager.INSTANCE.getInSkyblock();
