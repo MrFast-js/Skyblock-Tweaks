@@ -18,7 +18,7 @@ object GeneralConfig : Config() {
     @ConfigProperty(
         type = ConfigType.TOGGLE,
         name = "Clean Action Bar",
-        description = "Hides Health, Mana, and other attributes from the action bar",
+        description = "Hides Health, Mana, and other attributes from the action bar. §aRecommended to use with Stat Displays",
         category = "General",
         subcategory = "Stat Displays",
         isParent = true
@@ -28,7 +28,6 @@ object GeneralConfig : Config() {
     @ConfigProperty(
         type = ConfigType.TOGGLE,
         name = "Hide Health",
-        description = "Hides health from action bar",
         category = "General",
         subcategory = "Stat Displays",
         parentName = "Clean Action Bar"
@@ -37,8 +36,16 @@ object GeneralConfig : Config() {
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
+        name = "Hide Drill Fuel Status",
+        category = "General",
+        subcategory = "Stat Displays",
+        parentName = "Clean Action Bar"
+    )
+    var hideDrillFuel = false
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
         name = "Hide Mana",
-        description = "Hides mana from action bar",
         category = "General",
         subcategory = "Stat Displays",
         parentName = "Clean Action Bar"
@@ -48,7 +55,6 @@ object GeneralConfig : Config() {
     @ConfigProperty(
         type = ConfigType.TOGGLE,
         name = "Hide Overflow Mana",
-        description = "Hides overflow mana from action bar",
         category = "General",
         subcategory = "Stat Displays",
         parentName = "Clean Action Bar"
@@ -58,7 +64,6 @@ object GeneralConfig : Config() {
     @ConfigProperty(
         type = ConfigType.TOGGLE,
         name = "Hide Rift Time",
-        description = "Hides rift time from action bar",
         category = "General",
         subcategory = "Stat Displays",
         parentName = "Clean Action Bar"
@@ -68,7 +73,6 @@ object GeneralConfig : Config() {
     @ConfigProperty(
         type = ConfigType.TOGGLE,
         name = "Hide Defense",
-        description = "Hides defense from action bar",
         category = "General",
         subcategory = "Stat Displays",
         parentName = "Clean Action Bar"
@@ -167,6 +171,36 @@ object GeneralConfig : Config() {
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
+        name = "Drill Fuel Bar",
+        description = "Moveable Fuel Bar that shows your drills fuel status",
+        category = "General",
+        subcategory = "Stat Displays",
+        isParent = true
+    )
+    var drillFuelBar = false
+
+    @ConfigProperty(
+        type = ConfigType.COLOR,
+        name = "Drill Fuel Bar Color",
+        description = "",
+        category = "General",
+        subcategory = "Stat Displays",
+        parentName = "Drill Fuel Bar"
+    )
+    var drillFuelBarColor = Color(0x0F540F)
+
+    @ConfigProperty(
+        type = ConfigType.COLOR,
+        name = "Drill Fuel Bar Background",
+        description = "",
+        category = "General",
+        subcategory = "Stat Displays",
+        parentName = "Drill Fuel Bar"
+    )
+    var drillFuelBarBarColor = Color.BLACK
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
         name = "Health Number",
         description = "Movable health display",
         category = "General",
@@ -253,8 +287,26 @@ object GeneralConfig : Config() {
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
+        name = "Drill Fuel Number",
+        description = "",
+        category = "General",
+        subcategory = "Stat Displays",
+        isParent = true
+    )
+    var drillFuelDisplay = false
+
+    @ConfigProperty(
+        type = ConfigType.COLOR,
+        name = "Color",
+        category = "General",
+        subcategory = "Stat Displays",
+        parentName = "Drill Fuel Number"
+    )
+    var drillFuelDisplayColor = Color(0x167716)
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
         name = "Mana Number",
-        description = "Movable mana",
         category = "General",
         subcategory = "Stat Displays",
         isParent = true
