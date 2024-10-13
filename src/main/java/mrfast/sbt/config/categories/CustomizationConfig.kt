@@ -59,7 +59,7 @@ object CustomizationConfig : Config() {
         description = "Woah shapes and colors.",
         category = "§2§rCustomization",
         subcategory = "Theme",
-        dropdownOptions = ["Gray", "Dark + Cyan", "Dark + Orange"]
+        dropdownOptions = ["Gray", "Dark + Cyan", "Dark + Orange","Dark + Pink"]
     )
     var selectedTheme = "Dark + Cyan"
 

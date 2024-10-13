@@ -652,14 +652,14 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
             if (feature.type == ConfigType.COLOR) {
                 val colorValue = feature.value as Color
                 val colorPicker = ColorPickerComponent(colorValue).constrain {
-                    x = 8.pixels(true)
+                    x = 10.pixels(true)
                 } childOf featureComponent
 
                 val colorDisplay = UIBlock(colorValue.constraint).constrain {
-                    width = 16.pixels
+                    width = 28.pixels
                     height = 16.pixels
                     y = CenterConstraint()
-                    x = 8.pixels(true)
+                    x = 10.pixels(true)
                 } childOf featureComponent
 
                 colorPicker.hide(true)
@@ -949,6 +949,17 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
             CustomizationConfig.guiLineColors = Color(0x2ba7b8)
             CustomizationConfig.featureBorderColor = Color(0x2ba7b8)
             CustomizationConfig.onSwitchColor = Color(0x00ff96)
+            CustomizationConfig.defaultCategoryColor = Color(0x5f5f5f)
+        }
+        if (theme == "Dark + Pink") {
+            CustomizationConfig.selectedCategoryColor = Color(0xf700ff)
+            CustomizationConfig.windowBorderColor = Color(0xff00fb)
+            CustomizationConfig.hoveredCategoryColor = Color(0x9539cb)
+
+            CustomizationConfig.guiLineColors = Color(0x5d0065)
+            CustomizationConfig.featureBorderColor = Color(0x5d0065)
+            CustomizationConfig.onSwitchColor = Color(0xdb35b8)
+            CustomizationConfig.defaultCategoryColor = Color(0x5f5f5f)
         }
         if (theme == "Dark + Orange") {
             CustomizationConfig.selectedCategoryColor = Color(0xffb300)
