@@ -113,7 +113,8 @@ object RenderingConfig : Config() {
         type = ConfigType.COLOR,
         name = "Hitbox Color",
         category = "Rendering",
-        subcategory = "Misc"
+        subcategory = "Misc",
+        parentName = "Show Advanced Dragon Hitbox"
     )
     var advancedDragonHitboxColor = Color(0x55FF91)
 
