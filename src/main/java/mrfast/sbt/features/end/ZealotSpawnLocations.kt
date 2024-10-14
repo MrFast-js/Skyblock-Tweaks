@@ -1,4 +1,4 @@
-package mrfast.sbt.features.farming
+package mrfast.sbt.features.end
 
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.config.categories.RenderingConfig
@@ -31,7 +31,7 @@ object ZealotSpawnLocations {
         BlockPos(-698, 5, -319),
         BlockPos(-714, 5, -289),
         BlockPos(-732, 5, -295),
-        BlockPos(-731, 6, -275)
+        BlockPos(-731, 5, -275)
     )
 
     private var bruiserSpawns: List<BlockPos> = listOf(

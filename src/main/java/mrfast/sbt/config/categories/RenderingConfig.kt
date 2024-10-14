@@ -98,6 +98,26 @@ object RenderingConfig : Config() {
     )
     var zealotBruiserLocReady = Color(0x6A5ACD)
 
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Show Advanced Dragon Hitbox",
+        description = "Draws a better hitbox for dragons. Useful for §cMaster Mode 7§r and §bDragons",
+        category = "Rendering",
+        subcategory = "Misc",
+        isParent = true
+    )
+    var advancedDragonHitbox = true
+
+    @ConfigProperty(
+        type = ConfigType.COLOR,
+        name = "Hitbox Color",
+        category = "Rendering",
+        subcategory = "Misc"
+    )
+    var advancedDragonHitboxColor = Color(0x55FF91)
+
+
     @ConfigProperty(
         type = ConfigType.COLOR,
         name = "Main Path Color",
