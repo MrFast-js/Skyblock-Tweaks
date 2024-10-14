@@ -36,6 +36,15 @@ object MiningConfig : Config() {
     )
     var CritParticleHighlightFocused = Color.RED
 
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Dwarven Mines Map",
+        description = "Show a map of the dwarven mines, highlighting key points of interest and helping you navigate.",
+        category = "Mining",
+        subcategory = "Misc."
+    )
+    var dwarvenMinesMap = true
+
 
 //    @ConfigProperty(
 //        type = ConfigType.TOGGLE,
