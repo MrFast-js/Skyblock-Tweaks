@@ -196,8 +196,27 @@ class GuiEditor : GuiScreen() {
 
             // Left mouse button pressed, handle dragging
             selectedElement.let {
-                it.relativeX = (mouseX - offsetX) / screenWidth.toDouble()
-                it.relativeY = (mouseY - offsetY) / screenHeight.toDouble()
+                // Calculate new positions
+                var newX = (mouseX - offsetX) / screenWidth.toDouble()
+                var newY = (mouseY - offsetY) / screenHeight.toDouble()
+
+                // Calculate the scaled width and height
+                val scaledWidth = it.width * it.scale
+                val scaledHeight = it.height * it.scale
+
+                // Calculate maximum valid X and Y values, ensuring they are not negative
+                val maxX = maxOf(0.0, 1.0 - scaledWidth / screenWidth.toDouble())
+                val maxY = maxOf(0.0, 1.0 - scaledHeight / screenHeight.toDouble())
+
+                // Ensure the element stays within the screen's horizontal bounds
+                newX = newX.coerceIn(0.0, maxX)
+
+                // Ensure the element stays within the screen's vertical bounds
+                newY = newY.coerceIn(0.0, maxY)
+
+                // Apply the adjusted values
+                it.relativeX = newX
+                it.relativeY = newY
             }
             // Potentially add edge snapping against other elements here
         } else {
