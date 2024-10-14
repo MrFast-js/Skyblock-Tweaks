@@ -316,7 +316,6 @@ object GeneralConfig : Config() {
     @ConfigProperty(
         type = ConfigType.COLOR,
         name = "Color",
-        description = "Change color from the default §9Blue",
         category = "General",
         subcategory = "Stat Displays",
         parentName = "Mana Number"
@@ -335,7 +334,6 @@ object GeneralConfig : Config() {
     @ConfigProperty(
         type = ConfigType.COLOR,
         name = "Color",
-        description = "Change color from the default §3Aqua",
         category = "General",
         subcategory = "Stat Displays",
         parentName = "Overflow Mana Number"
