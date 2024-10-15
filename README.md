@@ -15,7 +15,9 @@
     </a>
 </div>
 
-## Top Features
+<div align="center"><img src='https://i.imgur.com/0KOjr5l.png'/></div>
+
+### Top Features
 
 - <details>
     <summary>
@@ -60,6 +62,14 @@
 
 - <details>
     <summary>
+        <strong>Dungeon Party Gui</strong>
+    </summary>
+    <i>Displays a visual of your dungeon party allowing for easy management.</i><br>
+    <img src="https://github.com/user-attachments/assets/35e426f2-6010-42cc-8243-e09a3943ce8a" alt="Dungeon Party Join">
+  </details>
+
+- <details>
+    <summary>
         <strong>Quiver Display</strong>
     </summary>
     <i>Customizable Display of your arrows remaining</i><br>
@@ -85,16 +95,34 @@
 
 - <details>
     <summary>
-        <strong>Slayer Timer</strong>
+        <strong>Accurate Dwarven Mines Map</strong>
     </summary>
-    <img src="https://i.imgur.com/RjSaF3D.png" alt="Slayer Timer">
+    <i>Customizable colors. Works for hyperion, Spirit Scepter, + more in future</i><br>
+    <img src="https://github.com/user-attachments/assets/0f411b48-945c-42aa-89fc-37ac55cde1a0" alt="Effective Item Area Display">
   </details>
 
-- <details>
-    <summary>
-        <strong>Trash Highlighter</strong>
-    </summary>
-    <img src="https://i.imgur.com/NYiusGh.png" alt="Trash Highlighter">
-  </details>
+<div align="center"><img src='https://i.imgur.com/0KOjr5l.png'/></div>
 
-_More coming to README soon.._
+### Commands
+- **/pft** (*Opens SBT Profit Tracker for all items*)
+- **/path** (*Create custom recorded paths to save and replay*)
+- **/jd** \<2\> || **/joindungeon** \<M4\> (*Join a dungeon floor from anywhere*)
+- **/dp** || **/dungeonparty** (*Open SBT's Dungeon Party Gui for managing members*)
+
+<div align="center"><img src='https://i.imgur.com/0KOjr5l.png'/></div>
+
+### Links
+
+- [GitHub](https://github.com/MrFast-js/Skyblock-Tweaks)
+  - [Releases](https://github.com/MrFast-js/Skyblock-Tweaks/releases)
+  - [Pull Requests](https://github.com/MrFast-js/Skyblock-Tweaks/pulls)
+  - [Issues](https://github.com/MrFast-js/Skyblock-Tweaks/issues)
+- [Modrinth](https://modrinth.com/mod/skyblock-tweaks)
+- [Discord](https://discordapp.com/invite/MDw2Q9eBdw)
+
+<div align="center"><img src='https://i.imgur.com/0KOjr5l.png'/></div>
+
+### License
+This project is licensed under GNU General Public License v3.0 License, see [LICENSE](LICENSE) for more details.
+
+Skyblock Tweaks would not be possible without these open source [Mods](ThirdPartyProjects) 
