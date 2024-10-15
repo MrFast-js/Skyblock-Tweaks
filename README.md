@@ -12,9 +12,6 @@
     </a>&nbsp;
     <a href="https://github.com/MrFast-js/Skyblock-Tweaks/releases" target="_blank">
         <img src="https://app.mrfast-developer.com/downloads" alt="downloads">
-    </a>&nbsp;
-    <a href="https://modrinth.com/mod/skyblock-tweaks" target="_blank">
-        <img src="https://app.mrfast-developer.com/modrinth" alt="modrinth">
     </a>
 </div>
 
