@@ -1,4 +1,4 @@
-![Title Logo](https://i.imgur.com/mYZQgpX.png)
+![Title Logo](https://i.imgur.com/Kz7jCmH.png)
 
 <div align="center">
     <a href="https://github.com/MrFast-js/Skyblock-Tweaks/releases/latest" target="_blank">
