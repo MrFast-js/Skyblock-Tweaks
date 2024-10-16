@@ -125,4 +125,4 @@
 ### License
 This project is licensed under GNU General Public License v3.0 License, see [LICENSE](LICENSE) for more details.
 
-Skyblock Tweaks would not be possible without these open source [Mods](ThirdPartyProjects) 
+Skyblock Tweaks would not be possible without these open source [Mods](ThirdPartyProjects.md) 
