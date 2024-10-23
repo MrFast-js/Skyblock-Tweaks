@@ -84,19 +84,21 @@ object Utils {
 
     fun Long.toFormattedDuration(short: Boolean? = false): String {
         val seconds = this / 1000
-        val hours = seconds / 3600
         val minutes = (seconds % 3600) / 60
         val remainingSeconds = seconds % 60
+        val hours = (seconds % 86400) / 3600
+        val days = seconds / 86400
 
         if (short == true) {
             return when {
+                days > 0 -> "${days}d"
                 hours > 0 -> "${hours}h"
                 minutes > 0 -> "${minutes}m"
                 else -> "${remainingSeconds}s"
             }
         }
 
-        return "${if (hours > 0) "${hours}h " else ""}${if (minutes > 0) "${minutes}m " else ""}${remainingSeconds}s"
+        return "${if (days > 0) "${days}d " else ""}${if (hours > 0) "${hours}h " else ""}${if (minutes > 0) "${minutes}m " else ""}${remainingSeconds}s"
     }
 
     val COORD_REGEX = """(?:x:\s*(-?\d+)[,\s]*y:\s*(-?\d+)[,\s]*z:\s*(-?\d+))|(-?\d+)\s+(-?\d+)\s+(-?\d+)""".toRegex()
