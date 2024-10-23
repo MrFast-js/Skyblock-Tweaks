@@ -54,6 +54,15 @@ object CustomizationConfig : Config() {
     var chromaConfigBorder = true
 
     @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Background Blur",
+        description = "",
+        category = "§2§rCustomization",
+        subcategory = "Theme"
+    )
+    var backgroundBlur = true
+
+    @ConfigProperty(
         type = ConfigType.DROPDOWN,
         name = "Config Gui Theme",
         description = "Woah shapes and colors.",

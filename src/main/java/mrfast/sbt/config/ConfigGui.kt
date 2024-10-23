@@ -18,16 +18,22 @@ import gg.essential.universal.UMatrixStack
 import gg.essential.vigilance.gui.settings.SelectorComponent
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.config.categories.CustomizationConfig
+import mrfast.sbt.config.categories.DeveloperConfig
 import mrfast.sbt.config.categories.DeveloperConfig.showInspector
 import mrfast.sbt.config.components.*
+import mrfast.sbt.config.components.shader.GaussianBlur
+import mrfast.sbt.config.components.shader.ShaderManager
 import mrfast.sbt.managers.VersionManager
 import mrfast.sbt.utils.ChatUtils
 import mrfast.sbt.utils.SocketUtils
 import mrfast.sbt.utils.Utils
 import net.minecraft.client.Minecraft
+import net.minecraft.client.renderer.GlStateManager
 import net.minecraftforge.fml.client.config.GuiUtils
 import org.lwjgl.input.Keyboard
+import org.lwjgl.opengl.GL11
 import java.awt.Color
+import java.lang.Math.pow
 import java.util.*
 
 
@@ -60,7 +66,45 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
     private var tooltipElements: MutableMap<UIComponent, Set<String>> = mutableMapOf()
     private var animationFinished = false
 
+    private val blurShader = GaussianBlur(radius = DeveloperConfig.valueTest.toFloat())
+    private var blurScale = 0.5f
+    private var time = 0f // Used to track the interpolation time
+    private val duration = 150f // Total duration for the easing effect
+
+    private fun easeInOutCubic(t: Float): Float {
+        return if (t < 0.5f) {
+            4f * t * t * t
+        } else {
+            (1f - (pow(-2.0 * t + 2.0, 3.0) / 2f)).toFloat()
+        }
+    }
+
+    private fun drawBackgroundBlur() {
+        if (time < duration) {
+            time += 1f // Increment time (can adjust speed)
+            val t = time / duration // Normalize time to a range of 0 to 1
+            val easedValue = easeInOutCubic(t)
+            blurScale = 1f + easedValue * (10f - 0.5f) // Ease between 0.5f and 10f
+            blurShader.radius = blurScale
+        }
+
+        blurShader.drawShader {
+            GL11.glPushMatrix()
+            GlStateManager.disableTexture2D()
+            GlStateManager.color(0f, 0f, 0f, 1f)
+            ShaderManager.drawQuads(0f, 0f, Utils.mc.displayWidth / 2f, Utils.mc.displayHeight / 2f)
+            GlStateManager.enableTexture2D()
+            GL11.glPopMatrix()
+        }
+    }
+
     override fun onDrawScreen(matrixStack: UMatrixStack, mouseX: Int, mouseY: Int, partialTicks: Float) {
+        if (CustomizationConfig.backgroundBlur) drawBackgroundBlur()
+        else {
+            blurScale = 0.5f
+            time = 0f
+        }
+
         super.onDrawScreen(matrixStack, mouseX, mouseY, partialTicks)
         // Dont draw tooltips on opening animation
         if (!animationFinished) return
