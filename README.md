@@ -11,7 +11,7 @@
         <img src="https://img.shields.io/discord/1199540355859746897?label=Discord&logo=Discord&logoColor=FFFFFF&labelColor=262626&color=0074D4&style=for-the-badge" alt="discord">
     </a>&nbsp;
     <a href="https://github.com/MrFast-js/Skyblock-Tweaks/releases" target="_blank">
-        <img src="https://camo.githubusercontent.com/dc12a87fe66a7d9d667a37efb5ed4a79c0a055b19119c8dc22e0616608e918e0/68747470733a2f2f6170702e6d72666173742d646576656c6f7065722e636f6d2f646f776e6c6f616473?cache-buster=192" alt="downloads">
+        <img src="https://app.mrfast-developer.com/downloads" alt="downloads">
     </a>
 </div>
 
