@@ -1,6 +1,7 @@
 package mrfast.sbt.utils
 
 import com.google.gson.*
+import com.google.gson.stream.MalformedJsonException
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.apis.ItemApi
 import mrfast.sbt.config.categories.CustomizationConfig
@@ -21,8 +22,12 @@ object DevUtils {
     }
 
     fun prettyPrintJsonToString(json: JsonObject): String {
-        val gson = GsonBuilder().setPrettyPrinting().create()
-        return gson.toJson(json)
+        try {
+            val gson = GsonBuilder().setPrettyPrinting().create()
+            return gson.toJson(json)
+        } catch (event: MalformedJsonException) {
+            return "{}"
+        }
     }
 
     fun convertStringToJson(string: String): JsonElement? {
