@@ -7,6 +7,7 @@ import mrfast.sbt.apis.ItemApi
 import mrfast.sbt.config.categories.CustomizationConfig
 import mrfast.sbt.utils.ItemUtils.getExtraAttributes
 import mrfast.sbt.utils.ItemUtils.getSkyblockId
+import net.minecraft.nbt.NBTTagByteArray
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.nbt.NBTTagList
 import net.minecraft.nbt.NBTTagString
@@ -36,14 +37,22 @@ object DevUtils {
 
     private fun convertNBTtoJSON(nbt: NBTTagCompound): JsonObject {
         val jsonObject = JsonObject()
-        for (key in nbt.keySet) {
-            val tag = nbt.getTag(key)
-            val jsonElement = when (tag) {
-                is NBTTagCompound -> convertNBTtoJSON(tag)
-                is NBTTagList -> convertNBTListToJSON(tag)
-                else -> JsonParser().parse(tag.toString())
+        try {
+            for (key in nbt.keySet) {
+                val tag = nbt.getTag(key)
+                println("TAG: ${tag} ${tag::class.simpleName}")
+                println(tag.toString())
+                val jsonElement = when (tag) {
+                    is NBTTagCompound -> convertNBTtoJSON(tag)
+                    is NBTTagList -> convertNBTListToJSON(tag)
+                    is NBTTagByteArray -> JsonObject()
+                    else -> JsonParser().parse(tag.toString())
+                }
+                jsonObject.add(key, jsonElement)
             }
-            jsonObject.add(key, jsonElement)
+        } catch (event: MalformedJsonException) {
+            event.printStackTrace()
+            return jsonObject
         }
         return jsonObject
     }
