@@ -40,8 +40,6 @@ object DevUtils {
         try {
             for (key in nbt.keySet) {
                 val tag = nbt.getTag(key)
-                println("TAG: ${tag} ${tag::class.simpleName}")
-                println(tag.toString())
                 val jsonElement = when (tag) {
                     is NBTTagCompound -> convertNBTtoJSON(tag)
                     is NBTTagList -> convertNBTListToJSON(tag)
