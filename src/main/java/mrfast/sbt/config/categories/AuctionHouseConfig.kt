@@ -1,8 +1,12 @@
 package mrfast.sbt.config.categories
 
+import gg.essential.api.utils.GuiUtil
 import mrfast.sbt.config.Config
+import mrfast.sbt.config.ConfigGui
 import mrfast.sbt.config.ConfigProperty
 import mrfast.sbt.config.ConfigType
+import mrfast.sbt.config.components.GuiItemFilterPopup
+import mrfast.sbt.features.auctionHouse.AuctionFlipper
 import org.lwjgl.input.Keyboard
 import java.awt.Color
 
@@ -18,17 +22,6 @@ object AuctionHouseConfig : Config() {
     )
     var auctionFlipper = false
 
-//    @ConfigProperty(
-//        type = ConfigType.KEYBIND,
-//        name = "Keybind to toggle",
-//        description = "Keybind used to toggle the flipper on/off",
-//        category = "§1§rAuction House",
-//        subcategory = "Auction Flipper",
-//        parentName = "Auction Flipper Active"
-//    )
-//    var aucFlipperKeybind = -1
-
-    // REMINDER TO UNCOMMENT CODE INSIDE AUCTION FLIPPER TO MAKE THIS WORK
     @ConfigProperty(
         type = ConfigType.TOGGLE,
         name = "Include BIN Flips",
@@ -130,15 +123,6 @@ object AuctionHouseConfig : Config() {
     )
     var AF_usePurseLimit = false
 
-//    @ConfigProperty(
-//        type = ConfigType.TOGGLE,
-//        name = "Auto Open",
-//        description = "Opens up the bid menu for the item with the highest profit. \n§cThis is slower than holding down key",
-//        category = "§1§rAuction House",
-//        subcategory = "Auction Flipper"
-//    )
-//    var autoAuctionFlipOpen = false
-
     @ConfigProperty(
         type = ConfigType.KEYBIND,
         name = "Open Best Flip Keybind",
@@ -181,7 +165,7 @@ object AuctionHouseConfig : Config() {
     @ConfigProperty(
         type = ConfigType.TOGGLE,
         name = "Filter Out Skins",
-        description = "Filters out minion skins, armor skins, and pet skins from Auction Flipper",
+        description = "Filters out minion skins, armor skins, and pet skins",
         category = "§1§rAuction House",
         subcategory = "Auction Flipper",
         parentName = "Auction Flipper Filters"
@@ -190,23 +174,23 @@ object AuctionHouseConfig : Config() {
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
-        name = "Filter Out Furniture",
+        name = "Filter Out Farming Tools",
+        description = "Filters out farming tools such as §fEuclid's Wheat Hoe §rand §5Cocoa Chopper",
+        category = "§1§rAuction House",
+        subcategory = "Auction Flipper",
+        parentName = "Auction Flipper Filters"
+    )
+    var AF_farmingToolFilter = false
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Filter Out Furniture & Decorations",
         description = "Filters out furniture from Auction Flipper",
         category = "§1§rAuction House",
         subcategory = "Auction Flipper",
         parentName = "Auction Flipper Filters"
     )
     var AF_furnitureFilter = true
-
-    @ConfigProperty(
-        type = ConfigType.TOGGLE,
-        name = "Filter Out Decorations",
-        description = "Filters out decorations from Auction Flipper",
-        category = "§1§rAuction House",
-        subcategory = "Auction Flipper",
-        parentName = "Auction Flipper Filters"
-    )
-    var AF_decorationFilter = true
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
@@ -220,6 +204,16 @@ object AuctionHouseConfig : Config() {
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
+        name = "Filter Out Common Dungeon Drops",
+        description = "Filters out pieces such as §9Sniper Helmet§r, §9Dreadlord Sword§r, §5Skeletor Chestplate§r, etc..",
+        category = "§1§rAuction House",
+        subcategory = "Auction Flipper",
+        parentName = "Auction Flipper Filters"
+    )
+    var AF_commonDungeonDropFilter = false
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
         name = "Filter Out Runes",
         description = "Filters out runes from Auction Flipper",
         category = "§1§rAuction House",
@@ -227,6 +221,26 @@ object AuctionHouseConfig : Config() {
         parentName = "Auction Flipper Filters"
     )
     var AF_runeFilter = true
+
+    @ConfigProperty(
+        type = ConfigType.BUTTON,
+        name = "Item ID Blacklist",
+        description = "Filters out any item that match a specified ID",
+        category = "§1§rAuction House",
+        subcategory = "Auction Flipper",
+        parentName = "Auction Flipper Filters",
+        placeholder = "§eEdit Blacklist"
+    )
+    var AF_blackList = Runnable {
+        val popup = GuiItemFilterPopup("AH Flipper Item Blacklist")
+
+        popup.setContent(AuctionFlipper.itemIdBlacklist.joinToString("\n"))
+        popup.runOnClose {
+            AuctionFlipper.itemIdBlacklist = popup.getContent().split("\n")
+            GuiUtil.open(ConfigGui())
+        }
+        GuiUtil.open(popup)
+    }
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,

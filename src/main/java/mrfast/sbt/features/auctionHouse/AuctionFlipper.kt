@@ -36,11 +36,11 @@ There is no storing of pricing data on SBT's server end, thus making it vulnerab
 
 @SkyblockTweaks.EventComponent
 object AuctionFlipper {
-    var auctionsNotified = 0
-
+    private var auctionsNotified = 0
     private var sentStartingText = false
     private var sentBestAuction = false
     private var lastBestAuctionKeybindState = false
+    var itemIdBlacklist = listOf<String>()
 
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {
@@ -86,7 +86,7 @@ object AuctionFlipper {
         }
     }
 
-    class AuctionFlip(
+    private class AuctionFlip(
         var bin: Boolean? = null,
         var endTime: Long? = null,
         var auctioneer: String? = null,
@@ -143,7 +143,7 @@ object AuctionFlipper {
         }
     }
 
-    var cooldown = false
+    private var cooldown = false
 
     // Wait for notification from webserver socket that auction house api updated
     @SubscribeEvent
@@ -155,7 +155,7 @@ object AuctionFlipper {
         }
     }
 
-    var maxPagesToScan = 30
+    private var maxPagesToScan = 40
 
     // Scans each page of auction house for potential flips
     // Each Page = 1000 Auctions
@@ -197,7 +197,7 @@ object AuctionFlipper {
         }
     }
 
-    var checkedAuctions = 0
+    private var checkedAuctions = 0
     private fun handleAuction(auction: JsonObject) {
         checkedAuctions++
 
@@ -233,7 +233,7 @@ object AuctionFlipper {
         }
     }
 
-    // Calculate how much profit an auction will yeild
+    // Calculate how much profit an auction will yield
     // Will find a 'base price' for the item, found by using average bin ideally, with the lowest bin as a backup
     private fun calcAuctionProfit(auctionFlip: AuctionFlip, pricingData: JsonObject) {
         val suggestedListingPrice = ItemUtils.getSuggestListingPrice(auctionFlip.itemStack!!)!!
@@ -252,7 +252,7 @@ object AuctionFlipper {
         }
     }
 
-    val sentAuctionFlips = mutableListOf<AuctionFlip>()
+    private val sentAuctionFlips = mutableListOf<AuctionFlip>()
 
     // Filters for various things
     // Example options: No Runes, No Pets, No Furniture, no pet skins, no armor skins
@@ -264,6 +264,14 @@ object AuctionFlipper {
         // Filter out runes
         if (AuctionHouseConfig.AF_runeFilter && auctionFlip.itemID?.contains("_RUNE") == true) {
             return
+        }
+        // Filter out farming tools
+        if (AuctionHouseConfig.AF_farmingToolFilter) {
+            if (auctionFlip.itemStack?.getSkyblockId()?.contains("_HOE") == true ||
+                auctionFlip.itemStack?.getSkyblockId()?.equals("COCO_CHOPPER") == true||
+                auctionFlip.itemStack?.getSkyblockId()?.contains("_DICER") == true) {
+                return
+            }
         }
         // Filter out furniture items
         if (AuctionHouseConfig.AF_furnitureFilter && auctionFlip.itemStack?.getLore().toString()
