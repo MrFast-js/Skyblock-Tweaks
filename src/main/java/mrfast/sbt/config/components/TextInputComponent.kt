@@ -21,7 +21,7 @@ class TextInputComponent(initValue: String, placeholder: String = "") : UIBlock(
 
         val textInput = UITextInput(placeholder).constrain {
             color = Color(0xBBBBBB).constraint
-            width = 150.pixels
+            width = 100.percent - 4.pixels
             height = 16.pixels
             x = 3.pixels
             y = 4.pixels
