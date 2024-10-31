@@ -92,7 +92,6 @@ object GeneralConfig : Config() {
     @ConfigProperty(
         type = ConfigType.COLOR,
         name = "Health Color",
-        description = "",
         category = "General",
         subcategory = "Stat Displays",
         parentName = "Health Bar"
@@ -102,7 +101,6 @@ object GeneralConfig : Config() {
     @ConfigProperty(
         type = ConfigType.COLOR,
         name = "Absorption Color",
-        description = "",
         category = "General",
         subcategory = "Stat Displays",
         parentName = "Health Bar"
@@ -112,7 +110,6 @@ object GeneralConfig : Config() {
     @ConfigProperty(
         type = ConfigType.COLOR,
         name = "Health Bar Background",
-        description = "",
         category = "General",
         subcategory = "Stat Displays",
         parentName = "Health Bar"
@@ -132,7 +129,6 @@ object GeneralConfig : Config() {
     @ConfigProperty(
         type = ConfigType.COLOR,
         name = "Mana Color",
-        description = "",
         category = "General",
         subcategory = "Stat Displays",
         parentName = "Mana Bar"
@@ -142,7 +138,6 @@ object GeneralConfig : Config() {
     @ConfigProperty(
         type = ConfigType.COLOR,
         name = "Overflow Color",
-        description = "",
         category = "General",
         subcategory = "Stat Displays",
         parentName = "Mana Bar"
@@ -152,7 +147,6 @@ object GeneralConfig : Config() {
     @ConfigProperty(
         type = ConfigType.COLOR,
         name = "Mana Bar Background",
-        description = "",
         category = "General",
         subcategory = "Stat Displays",
         parentName = "Mana Bar"
@@ -162,7 +156,6 @@ object GeneralConfig : Config() {
     @ConfigProperty(
         type = ConfigType.TOGGLE,
         name = "Show Overflow Mana",
-        description = "",
         category = "General",
         subcategory = "Stat Displays",
         parentName = "Mana Bar"
@@ -182,7 +175,6 @@ object GeneralConfig : Config() {
     @ConfigProperty(
         type = ConfigType.COLOR,
         name = "Drill Fuel Bar Color",
-        description = "",
         category = "General",
         subcategory = "Stat Displays",
         parentName = "Drill Fuel Bar"
@@ -192,7 +184,6 @@ object GeneralConfig : Config() {
     @ConfigProperty(
         type = ConfigType.COLOR,
         name = "Drill Fuel Bar Background",
-        description = "",
         category = "General",
         subcategory = "Stat Displays",
         parentName = "Drill Fuel Bar"
@@ -202,7 +193,6 @@ object GeneralConfig : Config() {
     @ConfigProperty(
         type = ConfigType.TOGGLE,
         name = "Health Number",
-        description = "Movable health display",
         category = "General",
         subcategory = "Stat Displays",
         isParent = true
@@ -240,7 +230,6 @@ object GeneralConfig : Config() {
     @ConfigProperty(
         type = ConfigType.TOGGLE,
         name = "Speed Number",
-        description = "Movable Speed display",
         category = "General",
         subcategory = "Stat Displays",
         isParent = true
@@ -259,7 +248,6 @@ object GeneralConfig : Config() {
     @ConfigProperty(
         type = ConfigType.TOGGLE,
         name = "Effective Health Number",
-        description = "Movable Effective Health display",
         category = "General",
         subcategory = "Stat Displays",
         isParent = true
@@ -269,7 +257,6 @@ object GeneralConfig : Config() {
     @ConfigProperty(
         type = ConfigType.TOGGLE,
         name = "Show Max Effective Health",
-        description = "",
         category = "General",
         subcategory = "Stat Displays",
         parentName = "Effective Health Number"
@@ -288,7 +275,6 @@ object GeneralConfig : Config() {
     @ConfigProperty(
         type = ConfigType.TOGGLE,
         name = "Drill Fuel Number",
-        description = "",
         category = "General",
         subcategory = "Stat Displays",
         isParent = true
@@ -325,7 +311,6 @@ object GeneralConfig : Config() {
     @ConfigProperty(
         type = ConfigType.TOGGLE,
         name = "Overflow Mana Number",
-        description = "Movable overflow mana display",
         category = "General",
         subcategory = "Stat Displays"
     )
@@ -343,7 +328,6 @@ object GeneralConfig : Config() {
     @ConfigProperty(
         type = ConfigType.TOGGLE,
         name = "Defense Number",
-        description = "Movable defense display",
         category = "General",
         subcategory = "Stat Displays",
         isParent = true
@@ -353,7 +337,6 @@ object GeneralConfig : Config() {
     @ConfigProperty(
         type = ConfigType.COLOR,
         name = "Defense Color",
-        description = "",
         category = "General",
         subcategory = "Stat Displays",
         parentName = "Defense Number"
@@ -373,7 +356,6 @@ object GeneralConfig : Config() {
     @ConfigProperty(
         type = ConfigType.TOGGLE,
         name = "Hide Armor Bar",
-        description = "Hide the armor icons above health bar",
         category = "General",
         subcategory = "Stat Displays",
         parentName = "Cleaner Hotbar Hud"
@@ -383,7 +365,6 @@ object GeneralConfig : Config() {
     @ConfigProperty(
         type = ConfigType.TOGGLE,
         name = "Hide Hunger Bar",
-        description = "Hide the hunger bar",
         category = "General",
         subcategory = "Stat Displays",
         parentName = "Cleaner Hotbar Hud"
@@ -393,7 +374,6 @@ object GeneralConfig : Config() {
     @ConfigProperty(
         type = ConfigType.TOGGLE,
         name = "Hide Health Hearts",
-        description = "Hide the Vanilla health bar",
         category = "General",
         subcategory = "Stat Displays",
         parentName = "Cleaner Hotbar Hud"
@@ -403,7 +383,6 @@ object GeneralConfig : Config() {
     @ConfigProperty(
         type = ConfigType.TOGGLE,
         name = "Hide Air Bubbles",
-        description = "Hide the air bubble icons above hotbar when underwater",
         category = "General",
         subcategory = "Stat Displays",
         parentName = "Cleaner Hotbar Hud"
@@ -443,7 +422,6 @@ object GeneralConfig : Config() {
     @ConfigProperty(
         type = ConfigType.DROPDOWN,
         name = "Text Style",
-        description = "",
         category = "General",
         subcategory = "Item Pickup Log",
         parentName = "Show item pickup log",
@@ -454,7 +432,6 @@ object GeneralConfig : Config() {
     @ConfigProperty(
         type = ConfigType.TOGGLE,
         name = "Show Material IDs",
-        description = "",
         category = "General",
         subcategory = "Item Pickup Log",
         parentName = "Show item pickup log"
@@ -464,7 +441,6 @@ object GeneralConfig : Config() {
     @ConfigProperty(
         type = ConfigType.TOGGLE,
         name = "Show Material Prices",
-        description = "",
         category = "General",
         subcategory = "Item Pickup Log",
         parentName = "Show item pickup log"
