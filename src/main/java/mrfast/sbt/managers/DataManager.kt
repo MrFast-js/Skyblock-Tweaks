@@ -18,13 +18,13 @@ import java.nio.file.Paths
 
 @SkyblockTweaks.EventComponent
 object DataManager {
-    private val saveDataFilePath = ConfigManager.modDirectoryPath.resolve("profilesData.json")
-    private var dataFile: File = saveDataFilePath
     private var dataJson = JsonObject()
     private var profileIds = mutableMapOf<String, String>() // UUID, PFID
+    private var profileDataPath = ConfigManager.modDirectoryPath.resolve("profilesData.json")
 
     init {
-        loadDataFromFile()
+        val profileData = loadDataFromFile(profileDataPath)
+        dataJson = profileData
         if (dataJson.has("profileIds")) {
             // Load past profile ids from files
             for (entry in dataJson["profileIds"].asJsonObject.entrySet()) {
@@ -67,7 +67,7 @@ object DataManager {
                 }
                 profileIds[Utils.mc.thePlayer.uniqueID.toString()] = newProfileId
                 dataJson.add("profileIds", convertToJsonObject(profileIds))
-                saveDataToFile()
+                saveDataToFile(profileDataPath, dataJson)
             }
             if (listenForProfileId) event.isCanceled = true
         }
@@ -80,18 +80,21 @@ object DataManager {
         }
     }
 
-    private fun loadDataFromFile() {
+    fun loadDataFromFile(saveDataFilePath: File): JsonObject {
+        val dataFile: File = saveDataFilePath
+
         try {
             val jsonContent = String(Files.readAllBytes(Paths.get(dataFile.path)), Charsets.UTF_8)
-            dataJson = JsonParser().parse(jsonContent).getAsJsonObject()
+            return JsonParser().parse(jsonContent).getAsJsonObject()
         } catch (e: Exception) {
             e.printStackTrace()
         }
+        return JsonObject()
     }
 
     fun saveData(dataName: String?, dataValue: Any) {
         dataJson.add(dataName, convertToJsonObject(dataValue))
-        saveDataToFile()
+        saveDataToFile(profileDataPath, dataJson)
     }
 
     fun getData(dataName: String?): Any? {
@@ -119,14 +122,14 @@ object DataManager {
             profileJson = profileJson.getAsJsonObject(parts[i])
         }
         profileJson.add(parts[parts.size - 1], convertToJsonObject(dataValue))
-        saveDataToFile()
+        saveDataToFile(profileDataPath, dataJson)
     }
 
-    private fun saveDataToFile() {
+    fun saveDataToFile(savePath: File, newData: JsonObject) {
         try {
-            FileWriter(dataFile.path, false).use { writer ->
+            FileWriter(savePath.path, false).use { writer ->
                 val gson = GsonBuilder().setPrettyPrinting().create()
-                val jsonString = gson.toJson(dataJson)
+                val jsonString = gson.toJson(newData)
                 val escapedJsonString = jsonString.replace("§", "\\u00A7") // Escape special characters
                 writer.write(escapedJsonString)
             }
