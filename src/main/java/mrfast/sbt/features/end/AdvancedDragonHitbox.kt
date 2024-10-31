@@ -2,6 +2,7 @@ package mrfast.sbt.features.end
 
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.config.categories.RenderingConfig
+import mrfast.sbt.managers.LocationManager
 import mrfast.sbt.utils.RenderUtils
 import mrfast.sbt.utils.Utils
 import net.minecraft.entity.boss.EntityDragon
@@ -13,7 +14,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object AdvancedDragonHitbox {
     @SubscribeEvent
     fun onRender3d(event: RenderWorldLastEvent) {
-        if (Utils.mc.theWorld == null || !RenderingConfig.advancedDragonHitbox) return
+        if (!LocationManager.inSkyblock || Utils.mc.theWorld == null || !RenderingConfig.advancedDragonHitbox) return
 
         for (entity in Utils.mc.theWorld.loadedEntityList) {
             if(entity !is EntityDragon) continue
