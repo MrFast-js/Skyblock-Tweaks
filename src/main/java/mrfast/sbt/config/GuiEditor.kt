@@ -28,13 +28,7 @@ class GuiEditor : GuiScreen() {
         buttonList.add(GuiButton(6969, width / 2 - 60, 0, 120, 20, getButtonLabel()))
     }
 
-    private fun getButtonLabel(): String {
-        return if (showAllEnabledElements) {
-            "§e§lShow Active Only"
-        } else {
-            "§e§lShow All Enabled"
-        }
-    }
+    private fun getButtonLabel() = "§e§lShow ${if (showAllEnabledElements) "Active Only" else "All Enabled"}"
 
     override fun onGuiClosed() {
         super.onGuiClosed()
