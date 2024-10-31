@@ -18,22 +18,18 @@ import gg.essential.universal.UMatrixStack
 import gg.essential.vigilance.gui.settings.SelectorComponent
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.config.categories.CustomizationConfig
-import mrfast.sbt.config.categories.DeveloperConfig
 import mrfast.sbt.config.categories.DeveloperConfig.showInspector
 import mrfast.sbt.config.components.*
-import mrfast.sbt.config.components.shader.GaussianBlur
-import mrfast.sbt.config.components.shader.ShaderManager
 import mrfast.sbt.managers.VersionManager
 import mrfast.sbt.utils.ChatUtils
+import mrfast.sbt.utils.GuiUtils.drawBackgroundBlur
+import mrfast.sbt.utils.GuiUtils.resetBlurAnimation
 import mrfast.sbt.utils.SocketUtils
 import mrfast.sbt.utils.Utils
 import net.minecraft.client.Minecraft
-import net.minecraft.client.renderer.GlStateManager
 import net.minecraftforge.fml.client.config.GuiUtils
 import org.lwjgl.input.Keyboard
-import org.lwjgl.opengl.GL11
 import java.awt.Color
-import java.lang.Math.pow
 import java.util.*
 
 
@@ -66,43 +62,13 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
     private var tooltipElements: MutableMap<UIComponent, Set<String>> = mutableMapOf()
     private var animationFinished = false
 
-    private val blurShader = GaussianBlur(radius = DeveloperConfig.valueTest.toFloat())
-    private var blurScale = 0.5f
-    private var time = 0f // Used to track the interpolation time
-    private val duration = 150f // Total duration for the easing effect
 
-    private fun easeInOutCubic(t: Float): Float {
-        return if (t < 0.5f) {
-            4f * t * t * t
-        } else {
-            (1f - (pow(-2.0 * t + 2.0, 3.0) / 2f)).toFloat()
-        }
-    }
 
-    private fun drawBackgroundBlur() {
-        if (time < duration) {
-            time += 1f // Increment time (can adjust speed)
-            val t = time / duration // Normalize time to a range of 0 to 1
-            val easedValue = easeInOutCubic(t)
-            blurScale = 1f + easedValue * (10f - 0.5f) // Ease between 0.5f and 10f
-            blurShader.radius = blurScale
-        }
-
-        blurShader.drawShader {
-            GL11.glPushMatrix()
-            GlStateManager.disableTexture2D()
-            GlStateManager.color(0f, 0f, 0f, 1f)
-            ShaderManager.drawQuads(0f, 0f, Utils.mc.displayWidth / 2f, Utils.mc.displayHeight / 2f)
-            GlStateManager.enableTexture2D()
-            GL11.glPopMatrix()
-        }
-    }
 
     override fun onDrawScreen(matrixStack: UMatrixStack, mouseX: Int, mouseY: Int, partialTicks: Float) {
         if (CustomizationConfig.backgroundBlur) drawBackgroundBlur()
         else {
-            blurScale = 0.5f
-            time = 0f
+            resetBlurAnimation()
         }
 
         super.onDrawScreen(matrixStack, mouseX, mouseY, partialTicks)
@@ -127,6 +93,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
 
     override fun afterInitialization() {
         super.afterInitialization()
+        resetBlurAnimation()
         animationFinished = false
         Utils.setTimeout({
             animationFinished = true
@@ -137,7 +104,6 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
 
     override fun onScreenClose() {
         super.onScreenClose()
-
         SkyblockTweaks.config.saveConfig()
         updateBlinkyTimer.cancel()
         dynamicColorUpdateTimer.cancel()
@@ -146,6 +112,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
     private val mainBorderRadius = 6f;
 
     init {
+
         // Create a background panel
         val background = OutlinedRoundedRectangle(mainBorderColorState.constraint, 2f, mainBorderRadius).constrain {
             color = mainBackgroundColorState.constraint
@@ -576,12 +543,14 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
             textScale = 1.5.pixels
         } childOf secondContainer
 
-        val featureDescription = UIWrappedText(feature.description).constrain {
-            x = 3.pixels
-            y = SiblingConstraintFixed(2f)
-            width = 80.percent - 2.pixels
-            color = Color.GRAY.constraint
-        } childOf secondContainer
+        if (feature.description != "") {
+            val featureDescription = UIWrappedText(feature.description).constrain {
+                x = 3.pixels
+                y = SiblingConstraintFixed(2f)
+                width = 80.percent - 2.pixels
+                color = Color.GRAY.constraint
+            } childOf secondContainer
+        }
 
         populateFeature(feature, secondContainer)
 

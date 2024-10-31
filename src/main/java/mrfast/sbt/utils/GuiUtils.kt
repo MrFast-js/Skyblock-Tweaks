@@ -3,7 +3,10 @@ package mrfast.sbt.utils
 import gg.essential.elementa.dsl.constraint
 import gg.essential.elementa.state.BasicState
 import gg.essential.universal.UMatrixStack
+import mrfast.sbt.config.categories.DeveloperConfig
 import mrfast.sbt.config.components.OutlinedRoundedRectangle
+import mrfast.sbt.config.components.shader.GaussianBlur
+import mrfast.sbt.config.components.shader.ShaderManager
 import mrfast.sbt.utils.Utils.cleanColor
 import mrfast.sbt.utils.Utils.getStringWidth
 import net.minecraft.client.Minecraft
@@ -266,6 +269,43 @@ object GuiUtils {
                     onClick!!.run()
                 }
             }
+        }
+    }
+
+    private val blurShader = GaussianBlur(radius = DeveloperConfig.valueTest.toFloat())
+    private var blurScale = 0.5f
+    private var time = 0f // Used to track the interpolation time
+    private val duration = 150f // Total duration for the easing effect
+
+    fun resetBlurAnimation() {
+        blurScale = 0.5f
+        time = 0f
+    }
+
+    private fun easeInOutCubic(t: Float): Float {
+        return if (t < 0.5f) {
+            4f * t * t * t
+        } else {
+            (1f - (Math.pow(-2.0 * t + 2.0, 3.0) / 2f)).toFloat()
+        }
+    }
+
+    fun drawBackgroundBlur() {
+        if (time < duration) {
+            time += 1f // Increment time (can adjust speed)
+            val t = time / duration // Normalize time to a range of 0 to 1
+            val easedValue = easeInOutCubic(t)
+            blurScale = 1f + easedValue * (10f - 0.5f) // Ease between 0.5f and 10f
+            blurShader.radius = blurScale
+        }
+
+        blurShader.drawShader {
+            GL11.glPushMatrix()
+            GlStateManager.disableTexture2D()
+            GlStateManager.color(0f, 0f, 0f, 1f)
+            ShaderManager.drawQuads(0f, 0f, Utils.mc.displayWidth / 2f, Utils.mc.displayHeight / 2f)
+            GlStateManager.enableTexture2D()
+            GL11.glPopMatrix()
         }
     }
 }
