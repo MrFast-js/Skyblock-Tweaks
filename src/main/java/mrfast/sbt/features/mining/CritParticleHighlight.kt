@@ -50,7 +50,7 @@ object CritParticleHighlight {
 
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
-        if (currentlyMinedBlock == null || particlePosition == null || !MiningConfig.CritParticleHighlight) return
+        if (currentlyMinedBlock == null || particlePosition == null || !MiningConfig.CritParticleHighlight || Utils.mc.theWorld == null) return
 
         val selectedBlock = Utils.mc.theWorld.getBlockState(currentlyMinedBlock).block
         if (selectedBlock == Blocks.bedrock || selectedBlock == Blocks.air) {
