@@ -6,31 +6,32 @@ import com.google.gson.JsonObject
 import gg.essential.elementa.ElementaVersion
 import gg.essential.elementa.UIComponent
 import gg.essential.elementa.WindowScreen
-import gg.essential.elementa.components.ScrollComponent
-import gg.essential.elementa.components.UIBlock
-import gg.essential.elementa.components.UIRoundedRectangle
-import gg.essential.elementa.components.UIText
+import gg.essential.elementa.components.*
 import gg.essential.elementa.components.inspector.Inspector
 import gg.essential.elementa.constraints.*
 import gg.essential.elementa.constraints.animation.Animations
 import gg.essential.elementa.dsl.*
 import gg.essential.elementa.effects.OutlineEffect
-import gg.essential.elementa.utils.withIndex
 import gg.essential.universal.UMatrixStack
 import gg.essential.vigilance.gui.settings.SelectorComponent
 import mrfast.sbt.apis.ItemApi
 import mrfast.sbt.config.ConfigManager
 import mrfast.sbt.config.categories.CustomizationConfig
+import mrfast.sbt.features.auctionHouse.AuctionFlipper
+import mrfast.sbt.features.auctionHouse.AuctionFlipper.filters
 import mrfast.sbt.managers.DataManager
 import mrfast.sbt.utils.GuiUtils
 import mrfast.sbt.utils.ItemUtils.getSkyblockId
+import mrfast.sbt.utils.Utils
+import net.minecraft.client.Minecraft
 import net.minecraft.init.Items
 import net.minecraft.item.ItemStack
 import java.awt.Color
-import java.io.File
+import java.awt.Toolkit
+import java.awt.datatransfer.DataFlavor
+import java.awt.datatransfer.StringSelection
 
 class GuiItemFilterPopup(title: String) : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
-    var filters = mutableListOf<FilteredItem>()
 
     class FilteredItem(
         var textInput: String,
@@ -56,7 +57,6 @@ class GuiItemFilterPopup(title: String) : WindowScreen(ElementaVersion.V2, newGu
                 FilterType.REGEX -> input.matches(textInput.toRegex())
             }
         }
-
     }
 
     enum class FilterType {
@@ -77,6 +77,7 @@ class GuiItemFilterPopup(title: String) : WindowScreen(ElementaVersion.V2, newGu
 
     private var bodyContent = ""
     private var runOnClose: Runnable? = null
+    private var tooltipElements: MutableMap<UIComponent, Set<String>> = mutableMapOf()
 
     override fun onScreenClose() {
         super.onScreenClose()
@@ -95,15 +96,35 @@ class GuiItemFilterPopup(title: String) : WindowScreen(ElementaVersion.V2, newGu
         runOnClose = runnable
     }
 
+    private fun UIComponent.addTooltip(set: Set<String>) {
+        tooltipElements[this] = set
+    }
+
     override fun onDrawScreen(matrixStack: UMatrixStack, mouseX: Int, mouseY: Int, partialTicks: Float) {
         if (CustomizationConfig.backgroundBlur) GuiUtils.drawBackgroundBlur()
         super.onDrawScreen(matrixStack, mouseX, mouseY, partialTicks)
+        for (element in tooltipElements.keys) {
+            if (element.isHovered()) {
+                net.minecraftforge.fml.client.config.GuiUtils.drawHoveringText(
+                    tooltipElements[element]?.toMutableList()
+                        ?: mutableListOf(),
+                    mouseX,
+                    mouseY,
+                    window.getWidth().toInt(),
+                    window.getHeight().toInt(),
+                    -1,
+                    Minecraft.getMinecraft().fontRendererObj
+                )
+            }
+        }
     }
 
     private val mainBorderRadius = 6f
 
     init {
         filters = loadFiltersFromDataFile() as MutableList<FilteredItem>
+        saveFiltersFile()
+
         // Create a background panel
         val background =
             OutlinedRoundedRectangle(CustomizationConfig.windowBorderColor.constraint, 2f, mainBorderRadius).constrain {
@@ -122,6 +143,84 @@ class GuiItemFilterPopup(title: String) : WindowScreen(ElementaVersion.V2, newGu
             textScale = 2.pixels
         } childOf background
 
+        val backButton = UIBlock(Color(0x2A2A2A)).constrain {
+            x = 10.pixels
+            y = 6.pixels
+            width = 18.pixels
+            height = 18.pixels
+        } childOf background effect OutlineEffect(CustomizationConfig.defaultCategoryColor, 1f)
+
+        backButton.onMouseClick {
+            Utils.mc.displayGuiScreen(null)
+        }
+
+        UIText("⬅", true).constrain {
+            x = CenterConstraint()
+            y = 2.pixels
+            textScale = 1.6.pixels
+        } childOf backButton
+
+        val shareButton = UIBlock(Color(0x2A2A2A)).constrain {
+            x = 10.pixels(true)
+            y = 6.pixels
+            width = 18.pixels
+            height = 18.pixels
+        } childOf background effect OutlineEffect(CustomizationConfig.defaultCategoryColor, 1f)
+
+        UIText("➥", true).constrain {
+            x = CenterConstraint()
+            y = CenterConstraint()
+            color = Color(0x4DBDD2).constraint
+            width = 80.percent
+            height = 80.percent
+        } childOf shareButton
+
+        shareButton.onMouseClick {
+            shareButton.addTooltip(setOf("§aCopied! Click to copy again."))
+            shareFilters()
+        }
+
+        val importButton = UIBlock(Color(0x2A2A2A)).constrain {
+            x = SiblingConstraint(4f, true)
+            y = 6.pixels
+            width = 18.pixels
+            height = 18.pixels
+        } childOf background effect OutlineEffect(CustomizationConfig.defaultCategoryColor, 1f)
+
+        UIText("§a✚", true).constrain {
+            x = CenterConstraint()
+            y = CenterConstraint()
+        } childOf importButton
+
+        importButton.onMouseClick {
+            importFilters(importButton)
+        }
+
+        val unhovered = Color(200, 200, 200)
+        val hovered = Color(255, 255, 255)
+        val resetImg = UIImage.ofResource("/assets/skyblocktweaks/gui/reset.png").constrain {
+            width = (10*1.5).pixels
+            height = (11*1.5).pixels
+            y = 8.pixels
+            x = SiblingConstraintFixed(18f, true)
+            color = unhovered.constraint
+        } childOf background
+
+        resetImg.onMouseEnterRunnable {
+            resetImg.animate {
+                setColorAnimation(Animations.OUT_EXP, 0.5f, hovered.constraint)
+            }
+        }
+        resetImg.onMouseLeaveRunnable {
+            resetImg.animate {
+                setColorAnimation(Animations.OUT_EXP, 0.5f, unhovered.constraint)
+            }
+        }
+        resetImg.onMouseClick {
+            resetToDefaultFilters()
+        }
+        resetImg.addTooltip(setOf("§c§lReset to Default Filters", "§6Warning: You will lose all current filters."))
+
         val block = UIRoundedRectangle(4f).constrain {
             color = CustomizationConfig.headerBackgroundColor.constraint
             x = CenterConstraint()
@@ -137,11 +236,22 @@ class GuiItemFilterPopup(title: String) : WindowScreen(ElementaVersion.V2, newGu
             height = 100.percent
         } childOf block
 
-        filters.forEach {
-            createItemFilterComponent(body, it)
-        }
-
         createAddFilterButton(body)
+        updateFilterComponentList(body)
+    }
+
+    private var body: UIComponent? = null
+    private var filterButton: UIComponent? = null
+
+    private fun updateFilterComponentList(parent: UIComponent?) {
+        if (parent != null) {
+            body = parent
+        }
+        body!!.clearChildren()
+        filters.forEach {
+            createItemFilterComponent(body!!, it)
+        }
+        body!!.addChildren(filterButton!!)
     }
 
     private fun createAddFilterButton(parent: UIComponent) {
@@ -152,12 +262,12 @@ class GuiItemFilterPopup(title: String) : WindowScreen(ElementaVersion.V2, newGu
             height = 18.pixels
         } childOf parent
 
+        filterButton = addFilterButton
+
         addFilterButton.onMouseClick {
             filters.add(FilteredItem("", FilterType.CONTAINS, InputType.ITEM_ID))
-            parent.removeChild(addFilterButton)
-            createItemFilterComponent(parent, filters.last())
-            parent.addChildren(addFilterButton)
-            saveFilters()
+            updateFilterComponentList(null)
+            saveFiltersFile()
         }
 
         addFilterButton.onMouseEnterRunnable {
@@ -202,7 +312,7 @@ class GuiItemFilterPopup(title: String) : WindowScreen(ElementaVersion.V2, newGu
             if (textInput.text.contains("§")) textInput.text = textInput.text.replace("§", "&")
             filterItem.textInput = textInput.text
             updateItemIcons(textInput.text, itemIcon)
-            saveFilters()
+            saveFiltersFile()
         }
         updateItemIcons(textInput.text, itemIcon)
 
@@ -223,7 +333,7 @@ class GuiItemFilterPopup(title: String) : WindowScreen(ElementaVersion.V2, newGu
             } else {
                 filterItem.itemFilter.selectedInput = InputType.ITEM_ID
             }
-            saveFilters()
+            saveFiltersFile()
         }
 
         val deleteFilterButton = UIBlock(Color(0x2A2A2A)).constrain {
@@ -251,7 +361,7 @@ class GuiItemFilterPopup(title: String) : WindowScreen(ElementaVersion.V2, newGu
         deleteFilterButton.onMouseClick {
             filters.remove(filterItem)
             parent.removeChild(backgroundBlock)
-            saveFilters()
+            saveFiltersFile()
         }
 
         val buttonContainer = UIBlock(Color(0, 0, 0, 0)).constrain {
@@ -267,8 +377,7 @@ class GuiItemFilterPopup(title: String) : WindowScreen(ElementaVersion.V2, newGu
             selected = (filterItem.itemFilter.selectedFilter == FilterType.REGEX)
         ) {
             filterItem.itemFilter.selectedFilter = FilterType.REGEX
-            saveFilters()
-            println("REGEX")
+            saveFiltersFile()
         }
         createButton(
             "CONTAINS",
@@ -276,8 +385,7 @@ class GuiItemFilterPopup(title: String) : WindowScreen(ElementaVersion.V2, newGu
             selected = (filterItem.itemFilter.selectedFilter == FilterType.CONTAINS)
         ) {
             filterItem.itemFilter.selectedFilter = FilterType.CONTAINS
-            saveFilters()
-            println("CONTAINS")
+            saveFiltersFile()
         }
         createButton(
             "EQUALS",
@@ -285,8 +393,7 @@ class GuiItemFilterPopup(title: String) : WindowScreen(ElementaVersion.V2, newGu
             selected = (filterItem.itemFilter.selectedFilter == FilterType.EQUALS)
         ) {
             filterItem.itemFilter.selectedFilter = FilterType.EQUALS
-            saveFilters()
-            println("equals")
+            saveFiltersFile()
         }
     }
 
@@ -353,12 +460,53 @@ class GuiItemFilterPopup(title: String) : WindowScreen(ElementaVersion.V2, newGu
         return Gson().fromJson(jsonFilters, Array<FilteredItem>::class.java).toMutableList()
     }
 
-    private fun saveFilters() {
+    private fun saveFiltersFile() {
         val blacklistFilePath = ConfigManager.modDirectoryPath.resolve("itemBlacklist.json")
+        if(!blacklistFilePath.exists()) {
+            resetToDefaultFilters()
+            return
+        }
         val gson = GsonBuilder().setPrettyPrinting().create()
         val newData = JsonObject()
         val jsonFilters = gson.toJsonTree(filters).asJsonArray // Convert filters to JsonArray
         newData.add("filters", jsonFilters) // Add filters JsonArray to the JsonObject
         DataManager.saveDataToFile(blacklistFilePath, newData)
+    }
+
+    private fun shareFilters() {
+        val filters = loadFiltersFromDataFile()
+        val filtersString = Gson().toJson(filters)
+        val clipboard = Toolkit.getDefaultToolkit().systemClipboard
+        val selection = StringSelection(filtersString)
+        clipboard.setContents(selection, selection)
+        println("Filters copied to clipboard.")
+    }
+
+    private fun importFilters(importText: UIComponent) {
+        val clipboard = Toolkit.getDefaultToolkit().systemClipboard
+        val data = clipboard.getData(DataFlavor.stringFlavor) as? String ?: return
+        try {
+            val filters = Gson().fromJson(data, Array<FilteredItem>::class.java).toMutableList()
+            AuctionFlipper.filters = filters
+            saveFiltersFile()
+            updateFilterComponentList(null)
+            importText.addTooltip(setOf("§aImported! ${filters.size} filters added."))
+        } catch (e: Exception) {
+            e.printStackTrace()
+            importText.addTooltip(setOf("§cFailed to import filters", "Recheck the format and try again."))
+        }
+    }
+
+    private fun resetToDefaultFilters() {
+        filters = mutableListOf(
+            FilteredItem("BOUNCY_", FilterType.CONTAINS, InputType.ITEM_ID),
+            FilteredItem("HEAVY_", FilterType.CONTAINS, InputType.ITEM_ID),
+            FilteredItem("Aurora", FilterType.CONTAINS, InputType.DISPLAY_NAME),
+            FilteredItem("_HOE", FilterType.CONTAINS, InputType.ITEM_ID),
+            FilteredItem("_RUNE", FilterType.CONTAINS, InputType.ITEM_ID),
+            FilteredItem("Skin", FilterType.CONTAINS, InputType.DISPLAY_NAME)
+        )
+        saveFiltersFile()
+        updateFilterComponentList(null)
     }
 }

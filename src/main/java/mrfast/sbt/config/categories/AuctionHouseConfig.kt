@@ -164,16 +164,6 @@ object AuctionHouseConfig : Config() {
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
-        name = "Filter Out Skins",
-        description = "Filters out minion skins, armor skins, and pet skins",
-        category = "§1§rAuction House",
-        subcategory = "Auction Flipper",
-        parentName = "Auction Flipper Filters"
-    )
-    var AF_skinFilter = false
-
-    @ConfigProperty(
-        type = ConfigType.TOGGLE,
         name = "Filter Out Farming Tools",
         description = "Filters out farming tools such as §fEuclid's Wheat Hoe §rand §5Cocoa Chopper",
         category = "§1§rAuction House",
@@ -201,26 +191,6 @@ object AuctionHouseConfig : Config() {
         parentName = "Auction Flipper Filters"
     )
     var AF_dyeFilter = false
-
-    @ConfigProperty(
-        type = ConfigType.TOGGLE,
-        name = "Filter Out Common Dungeon Drops",
-        description = "Filters out pieces such as §9Sniper Helmet§r, §9Dreadlord Sword§r, §5Skeletor Chestplate§r, etc..",
-        category = "§1§rAuction House",
-        subcategory = "Auction Flipper",
-        parentName = "Auction Flipper Filters"
-    )
-    var AF_commonDungeonDropFilter = false
-
-    @ConfigProperty(
-        type = ConfigType.TOGGLE,
-        name = "Filter Out Runes",
-        description = "Filters out runes from Auction Flipper",
-        category = "§1§rAuction House",
-        subcategory = "Auction Flipper",
-        parentName = "Auction Flipper Filters"
-    )
-    var AF_runeFilter = true
 
     @ConfigProperty(
         type = ConfigType.BUTTON,

@@ -9,6 +9,7 @@ import kotlinx.coroutines.runBlocking
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.apis.ItemApi
 import mrfast.sbt.config.categories.AuctionHouseConfig
+import mrfast.sbt.config.components.GuiItemFilterPopup
 import mrfast.sbt.customevents.SocketMessageEvent
 import mrfast.sbt.managers.LocationManager
 import mrfast.sbt.managers.PurseManager
@@ -182,7 +183,7 @@ object AuctionFlipper {
                 }
             }
 
-            delay(5000)
+            delay(9000)
             ChatUtils.sendClientMessage("", false)
             ChatUtils.sendClientMessage("§eSB§9T§6 >> §7Scanned §9${checkedAuctions.formatNumber()}§7 auctions! §3${auctionsNotified.formatNumber()}§7 matched your filter.")
             ChatUtils.sendClientMessage("", false)
@@ -256,14 +257,18 @@ object AuctionFlipper {
 
     // Filters for various things
     // Example options: No Runes, No Pets, No Furniture, no pet skins, no armor skins
+    var filters = mutableListOf<GuiItemFilterPopup.FilteredItem>()
     private fun filterOutAuction(auctionFlip: AuctionFlip) {
         // Filter out auctions that your already the top bid on
         if (auctionFlip.bidderUUID?.equals(Utils.mc.thePlayer.uniqueID.toString().replace("-", "")) == true) {
             return
         }
-        // Filter out runes
-        if (AuctionHouseConfig.AF_runeFilter && auctionFlip.itemID?.contains("_RUNE") == true) {
-            return
+        if(filters.isNotEmpty()) {
+            for (filter in filters) {
+                if (filter.matches(auctionFlip.itemStack!!)) {
+                    return
+                }
+            }
         }
         // Filter out farming tools
         if (AuctionHouseConfig.AF_farmingToolFilter) {
@@ -293,12 +298,6 @@ object AuctionFlipper {
         }
         // Filter out Dyes
         if (AuctionHouseConfig.AF_dyeFilter && auctionFlip.itemStack?.displayName?.clean()?.contains("Dye") == true) {
-            return
-        }
-        // Filter out Pet Skins & Armor Skins
-        if (AuctionHouseConfig.AF_skinFilter && (auctionFlip.itemID?.contains("SKIN") == true || auctionFlip.itemStack!!.displayName.clean()
-                .contains("Skin"))
-        ) {
             return
         }
         // Block BIN auctions if enabled
