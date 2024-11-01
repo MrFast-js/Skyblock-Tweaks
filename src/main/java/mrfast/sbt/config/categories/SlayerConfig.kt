@@ -18,7 +18,7 @@ object SlayerConfig : Config() {
     @ConfigProperty(
         type = ConfigType.TOGGLE,
         name = "Highlight Slayer Bosses",
-        description = "Shows a glow effect on summoned slayers and mini-bosses.",
+        description = "Shows a outline effect on summoned slayers and mini-bosses.",
         category = "Slayers",
         subcategory = "Misc",
         isParent = true

@@ -59,12 +59,12 @@ object DungeonConfig : Config() {
     @ConfigProperty(
         type = ConfigType.TOGGLE,
         name = "Highlight Starred Mobs",
-        description = "Makes all starred mobs in dungeons glow!",
+        description = "Makes all starred mobs in dungeons outlined!",
         category = "§1§rDungeons",
         subcategory = "Highlights",
         isParent = true
     )
-    var glowingStarredMobs = false
+    var outlineStarredMobs = false
 
     @ConfigProperty(
         type = ConfigType.COLOR,
@@ -74,12 +74,12 @@ object DungeonConfig : Config() {
         subcategory = "Highlights",
         parentName = "Highlight Starred Mobs"
     )
-    var glowingStarredMobsColor = Color(0xFFAA00)
+    var outlineStarredMobsColor = Color(0xFFAA00)
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
         name = "Highlight Correct Livid",
-        description = "Make the correct livid glowing inside the Floor 5 Boss Fight!",
+        description = "Make the correct livid outlined inside the Floor 5 Boss Fight!",
         category = "§1§rDungeons",
         subcategory = "Highlights",
         isParent = true

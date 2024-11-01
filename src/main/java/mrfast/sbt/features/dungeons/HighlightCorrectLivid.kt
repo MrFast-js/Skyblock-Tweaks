@@ -3,8 +3,9 @@ package mrfast.sbt.features.dungeons
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.config.categories.DungeonConfig.highlightCorrectLivid
 import mrfast.sbt.config.categories.DungeonConfig.highlightCorrectLividColor
-import mrfast.sbt.customevents.RenderEntityOutlineEvent
+import mrfast.sbt.customevents.RenderEntityModelEvent
 import mrfast.sbt.managers.LocationManager
+import mrfast.sbt.utils.OutlineUtils
 import mrfast.sbt.utils.Utils
 import net.minecraft.block.BlockStainedGlass
 import net.minecraft.block.state.IBlockState
@@ -50,11 +51,11 @@ object HighlightCorrectLivid {
     }
 
     @SubscribeEvent
-    fun onRenderEntityOutlines(event: RenderEntityOutlineEvent.Normal) {
+    fun onRenderEntityModel(event: RenderEntityModelEvent) {
         if (!LocationManager.inDungeons || LocationManager.dungeonFloor != 5 || !highlightCorrectLivid) return
 
-        if (lividEntity != null) {
-            event.queueEntityToOutline(lividEntity, highlightCorrectLividColor)
+        if (lividEntity != null && lividEntity == event.entity) {
+            OutlineUtils.outlineEntity(event, highlightCorrectLividColor)
         }
     }
 }

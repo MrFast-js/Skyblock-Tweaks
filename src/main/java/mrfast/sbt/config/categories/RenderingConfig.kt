@@ -155,52 +155,6 @@ object RenderingConfig : Config() {
     )
     var pathThroughWalls = true
 
-//    @ConfigProperty(
-//            type = ConfigType.TOGGLE,
-//            name = "Glowing Dungeon Teammates",
-//            description = "Make your teammates glow in dungeons.",
-//            category = "Render",
-//            subcategory = "1.9 Glow Effect"
-//    )
-//    var glowingDungeonPlayers = false
-//
-//    @ConfigProperty(
-//            type = ConfigType.TOGGLE,
-//            name = "Glowing Items!",
-//            description = "Make items glow depending on rarity. (Requires Fast render to be off)",
-//            category = "Render",
-//            subcategory = "1.9 Glow Effect"
-//    )
-//    var glowingItems = false
-//
-//    @ConfigProperty(
-//            type = ConfigType.TOGGLE,
-//            name = "Show Advanced Dragon Hitbox",
-//            description = "Draws a better hitbox for dragons. Useful for Master Mode 7 and Dragons",
-//            category = "Render",
-//            subcategory = "Highlights",
-//            isParent = true
-//    )
-//    var advancedDragonHitbox = true
-//
-//    @ConfigProperty(
-//            type = ConfigType.COLOR,
-//            name = "Dragon Hitbox Color",
-//            description = "",
-//            category = "Render",
-//            subcategory = "Highlights",
-//            parentName = "Show Advanced Dragon Hitbox"
-//    )
-//    var advancedDragonHitboxColor = Color.green
-//
-//    @ConfigProperty(
-//            type = ConfigType.TOGGLE,
-//            name = "Show Zealot Spawn Areas & Spawn Timer",
-//            description = "Draws where zealots spawn and when zealots will spawn. (this includes bruisers)",
-//            category = "Render",
-//            subcategory = "Zealots"
-//    )
-//    var showZealotSpawnAreas = true
 //
 //    @ConfigProperty(
 //            type = ConfigType.TOGGLE,
@@ -242,16 +196,6 @@ object RenderingConfig : Config() {
 //    var highlightBestiaryColor = Color.ORANGE
 //
 //    @ConfigProperty(
-//            type = ConfigType.TEXT,
-//            name = "Tracked Mobs",
-//            description = "This is the list of currently tracked mobs",
-//            category = "Render",
-//            subcategory = "Bestiary",
-//            parentName = "Highlight Selected Bestiary Mobs"
-//    )
-//    var trackedBestiaryMobs = ""
-//
-//    @ConfigProperty(
 //            type = ConfigType.BUTTON,
 //            name = "§eOpen Bestiary Menu",
 //            description = "Opens the bestiary menu where you can select which mobs to track.",
@@ -261,6 +205,5 @@ object RenderingConfig : Config() {
 //    )
 //    val openBestiary = Runnable {
 //        ChatUtils.sendPlayerMessage("/bestiary")
-//        ChatUtils.sendClientMessage("test 123§d test 123")
 //    }
 }
