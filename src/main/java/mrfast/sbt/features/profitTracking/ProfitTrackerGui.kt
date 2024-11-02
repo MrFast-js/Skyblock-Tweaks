@@ -7,6 +7,7 @@ import gg.essential.universal.UKeyboard
 import gg.essential.universal.UMatrixStack
 import mrfast.sbt.apis.ItemApi
 import mrfast.sbt.features.profitTracking.ProfitTracker.blacklistItems
+import mrfast.sbt.features.profitTracking.ProfitTracker.filterOutItem
 import mrfast.sbt.features.profitTracking.ProfitTracker.paused
 import mrfast.sbt.features.profitTracking.ProfitTracker.pausedDuration
 import mrfast.sbt.features.profitTracking.ProfitTracker.purseGainLoss
@@ -35,6 +36,7 @@ import net.minecraft.util.ResourceLocation
 import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Mouse
 import org.lwjgl.opengl.GL11
+import java.util.*
 import kotlin.math.floor
 import kotlin.math.min
 
@@ -284,21 +286,26 @@ class ProfitTrackerGui : WindowScreen(ElementaVersion.V2) {
             totalItemWorth[itemId] = Pair(multiValue, itemCount)
         }
         totalItemWorth["SKYBLOCK_COIN"] = Pair(purseGainLoss.toLong(), 1)
-        val sortedItems = totalItemWorth.entries.sortedByDescending { it.value.first }
+        var sortedItems = totalItemWorth.entries.sortedByDescending { it.value.first }
+        sortedItems = sortedItems.filter {
+            val itemId = it.key
+            !filterOutItem(itemId)
+        }
 
-//        sort then loop from high -> low
+        // sort then loop from high -> low
         var tempWorth = 0L
         val maxWidth = 100 - 12
 
         for ((i, entry) in sortedItems.withIndex()) {
             if (i >= 8) continue
             val itemId = entry.key
+
             val itemWorth = entry.value.first
             val itemCount = entry.value.second
             val itemStack = ItemApi.createItemStack(itemId) ?: continue
             tempWorth += itemWorth
 
-            val countText = if (itemCount > 1) "§8x${itemCount.abbreviateNumber()} " else ""
+            val countText = if (itemCount > 1) "§8${itemCount.abbreviateNumber()}x " else ""
             var displayName = itemStack.displayName
 
             if (itemStack.displayName.clean() == "Enchanted Book") {
@@ -320,15 +327,42 @@ class ProfitTrackerGui : WindowScreen(ElementaVersion.V2) {
             GlStateManager.pushMatrix()
             GlStateManager.scale(scaleFactor, scaleFactor, 1.0)
 
+            val posX = ((guiLeft + 144 + 14).toDouble() / scaleFactor).toFloat()
+            val posY = ((guiTop + 107 + (11 * i) + 4).toDouble() / scaleFactor).toFloat()
+
             fontRenderer.drawString(
                 renderText,
-                ((guiLeft + 144 + 14).toDouble() / scaleFactor).toFloat(), // Adjusted X position
-                ((guiTop + 107 + (11 * i) + 4).toDouble() / scaleFactor).toFloat(), // Adjusted Y position
+                posX, // Adjusted X position
+                posY, // Adjusted Y position
                 0xFFFFFF,
                 true
             )
 
             GlStateManager.popMatrix()
+
+            if (mouseX > guiLeft + 144 && mouseX < guiLeft + 144 + 104 && mouseY > guiTop + 110 + (11 * i) && mouseY < guiTop + 107 + (11 * i) + 10) {
+                val sessionTime = System.currentTimeMillis() - sessionStartedAt - pausedDuration
+                val hours = sessionTime / 3600000.0
+                val itemsPerHour = itemCount / hours
+                val coinsPerHour = itemWorth / hours
+
+                val textToShow = mutableListOf(
+                    "§e${itemStack.displayName}",
+                    "§7${itemCount.abbreviateNumber()}x Collected",
+                    "§b${itemsPerHour.abbreviateNumber()}x / hr",
+                    "§6$${itemWorth.abbreviateNumber()} Value",
+                    "§b$${coinsPerHour.abbreviateNumber()} / hr"
+                )
+                net.minecraftforge.fml.client.config.GuiUtils.drawHoveringText(
+                    textToShow,
+                    mouseX.toInt(),
+                    mouseY.toInt(),
+                    Utils.mc.displayWidth,
+                    Utils.mc.displayHeight,
+                    -1,
+                    Utils.mc.fontRendererObj
+                )
+            }
         }
         totalWorth = tempWorth
     }
@@ -520,10 +554,11 @@ class ProfitTrackerGui : WindowScreen(ElementaVersion.V2) {
                 val stack = ItemApi.createItemStack(itemId) ?: continue
                 if (stack.displayName.endsWith(")")) continue
 
-                val search = searchField?.text?.toLowerCase() as CharSequence
+                val search = searchField?.text?.lowercase(Locale.getDefault()) as CharSequence
                 val matchesSearch =
-                    stack.displayName.clean().toLowerCase().contains(search) || itemId.toLowerCase()
-                        .contains(search) || itemId.toLowerCase().replace("_", " ").contains(search)
+                    stack.displayName.clean().lowercase(Locale.getDefault())
+                        .contains(search) || itemId.lowercase(Locale.getDefault())
+                        .contains(search) || itemId.lowercase(Locale.getDefault()).replace("_", " ").contains(search)
                 if (!matchesSearch) continue
 
                 rawIndex++

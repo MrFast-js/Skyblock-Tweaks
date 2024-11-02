@@ -95,7 +95,7 @@ object ProfitTracker {
         }
     }
 
-    private fun filterOutItem(id: String): Boolean {
+    fun filterOutItem(id: String): Boolean {
         if (selectedFilterMode == "Whitelist") {
             if (!whitelistItems.contains(id)) return true
         } else {
