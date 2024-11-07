@@ -41,14 +41,18 @@ object SkyblockMobDetector {
         if (Utils.mc.theWorld == null || !LocationManager.inSkyblock) return
 
         for (entity in Utils.mc.theWorld.loadedEntityList) {
-            if (entity is EntityArmorStand && !skyblockMobHashMap.containsKey(entity) && entity.hasCustomName()) {
-                if (Utils.mc.thePlayer.getDistanceToEntity(entity) > 30) continue
-                val potentialMob = Utils.mc.theWorld.getEntityByID(entity.entityId - 1)
-                    ?: Utils.mc.theWorld.getEntityByID(entity.entityId - 3)
-                if (potentialMob == null || !potentialMob.isEntityAlive || potentialMob is EntityArrow) continue
+            if (Utils.mc.thePlayer.getDistanceToEntity(entity) > 30) continue
 
-                val sbMob = SkyblockMob(entity, potentialMob)
-                skyblockMobHashMap[entity] = sbMob
+            val potentialMob = when {
+                entity.customNameTag.contains("Withermancer") -> Utils.mc.theWorld.getEntityByID(entity.entityId - 3)
+                else -> Utils.mc.theWorld.getEntityByID(entity.entityId - 1)
+            } ?: continue
+
+            if (entity is EntityArmorStand && entity.hasCustomName() && !skyblockMobHashMap.containsKey(entity)) {
+                if (potentialMob.isEntityAlive && potentialMob !is EntityArrow) {
+                    val sbMob = SkyblockMob(entity, potentialMob)
+                    skyblockMobHashMap[entity] = sbMob
+                }
             }
         }
 
@@ -109,7 +113,8 @@ object SkyblockMobDetector {
 
         val normalMobRegex = "\\[Lv(?:\\d+k?)] (.+?) [\\d.,]+[MkB]?/[\\d.,]+[MkB]?❤"
         val slayerMobRegex = "(?<=☠\\s)\\w+\\s\\w+\\s\\w+"
-        val dungeonMobRegex = "✯?\\s*(?:Flaming|Super|Healing|Boomer|Golden|Speedy|Fortified|Stormy|Healthy)?\\s*([\\w\\s]+?)\\s*([\\d.,]+[mkM?]*|[?]+)❤"
+        val dungeonMobRegex =
+            "✯?\\s*(?:Flaming|Super|Healing|Boomer|Golden|Speedy|Fortified|Stormy|Healthy)?\\s*([\\w\\s]+?)\\s*([\\d.,]+[mkM?]*|[?]+)❤"
 
         var pattern: Pattern
         var matcher: Matcher? = null
@@ -150,17 +155,17 @@ object SkyblockMobDetector {
     fun getLoadedSkyblockMobs(): List<SkyblockMob> = ArrayList(skyblockMobHashMap.values)
 
     fun getEntityByName(id: String): Entity? = getLoadedSkyblockMobs()
-            .firstOrNull { mob -> mob.skyblockMobId == id }
-            ?.skyblockMob
+        .firstOrNull { mob -> mob.skyblockMobId == id }
+        ?.skyblockMob
 
     fun getEntitiesByName(id: String): List<Entity> = getLoadedSkyblockMobs()
-            .filter { mob -> mob.skyblockMobId == id }
-            .map { mob -> mob.skyblockMob }
+        .filter { mob -> mob.skyblockMobId == id }
+        .map { mob -> mob.skyblockMob }
 
     fun getSkyblockMob(entity: Entity): SkyblockMob? = getLoadedSkyblockMobs()
-            .firstOrNull { mob -> mob.skyblockMob == entity || mob.mobNameEntity == entity }
+        .firstOrNull { mob -> mob.skyblockMob == entity || mob.mobNameEntity == entity }
 
     fun getEntityId(entity: Entity): String? = getLoadedSkyblockMobs()
-            .firstOrNull { mob -> mob.skyblockMob == entity }
-            ?.skyblockMobId
+        .firstOrNull { mob -> mob.skyblockMob == entity }
+        ?.skyblockMobId
 }
