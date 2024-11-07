@@ -30,6 +30,7 @@ import java.awt.Color
 import java.awt.Toolkit
 import java.awt.datatransfer.DataFlavor
 import java.awt.datatransfer.StringSelection
+import java.awt.datatransfer.UnsupportedFlavorException
 
 class GuiItemFilterPopup(title: String) : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
 
@@ -484,7 +485,22 @@ class GuiItemFilterPopup(title: String) : WindowScreen(ElementaVersion.V2, newGu
 
     private fun importFilters(importText: UIComponent) {
         val clipboard = Toolkit.getDefaultToolkit().systemClipboard
-        val data = clipboard.getData(DataFlavor.stringFlavor) as? String ?: return
+        val data = try {
+            clipboard.getData(DataFlavor.stringFlavor) as? String
+        } catch (e: UnsupportedFlavorException) {
+            importText.addTooltip(setOf("§cFailed to import filters", "Unsupported clipboard data format."))
+            return
+        } catch (e: Exception) {
+            e.printStackTrace()
+            importText.addTooltip(setOf("§cFailed to import filters", "An unexpected error occurred."))
+            return
+        }
+
+        if (data == null) {
+            importText.addTooltip(setOf("§cFailed to import filters", "Clipboard is empty or data is not a string."))
+            return
+        }
+
         try {
             val filters = Gson().fromJson(data, Array<FilteredItem>::class.java).toMutableList()
             AuctionFlipper.filters = filters
