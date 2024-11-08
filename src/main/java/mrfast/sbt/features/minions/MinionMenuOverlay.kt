@@ -78,7 +78,7 @@ object MinionMenuOverlay {
 
     @SubscribeEvent
     fun onContainerDrawn(event: GuiContainerBackgroundDrawnEvent) {
-        if(!MiscellaneousConfig.minionOverlay || event.gui !is GuiChest) return
+        if (!MiscellaneousConfig.minionOverlay || event.gui !is GuiChest) return
         if (!(event.gui as GuiContainer).chestName().matches(MINION_REGEX)) return
 
         openedMinionTitle = (event.gui as GuiContainer).chestName().cleanColor()
@@ -125,7 +125,7 @@ object MinionMenuOverlay {
 
     @SubscribeEvent
     fun onSlotClick(event: SlotClickedEvent) {
-        if(!MiscellaneousConfig.minionOverlay) return
+        if (!MiscellaneousConfig.minionOverlay) return
 
         val chestName = event.gui.chestName()
         if (chestName.matches(MINION_REGEX) && event.slot.hasStack && closestMinion != null) {
@@ -133,7 +133,8 @@ object MinionMenuOverlay {
             if (nameOfItem.startsWith("Collect All") || minionSlots.contains(event.slot.slotNumber)) {
                 Utils.setTimeout({
                     if (minions.has(closestMinion!!.position.toString())) {
-                        minions.get(closestMinion!!.position.toString()).getAsJsonObject().addProperty("lastCollectedAt", System.currentTimeMillis())
+                        minions.get(closestMinion!!.position.toString()).getAsJsonObject()
+                            .addProperty("lastCollectedAt", System.currentTimeMillis())
 
                         DataManager.saveProfileData("minions", minions)
                     }
@@ -144,7 +145,7 @@ object MinionMenuOverlay {
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        if(!MiscellaneousConfig.minionOverlay) return
+        if (!MiscellaneousConfig.minionOverlay) return
 
         if (LocationManager.inSkyblock && LocationManager.currentArea == "Your Island") {
             for (e in Utils.mc.theWorld.loadedEntityList) {
@@ -161,7 +162,10 @@ object MinionMenuOverlay {
                     RenderUtils.drawSpecialBB(e.position, Color.GREEN, event.partialTicks)
                 }
 
-                if (MiscellaneousConfig.lastCollectedAboveMinion && minions.has(e.position.toString()) && Utils.mc.thePlayer.getDistanceToEntity(e) < 8) {
+                if (MiscellaneousConfig.lastCollectedAboveMinion && minions.has(e.position.toString()) && Utils.mc.thePlayer.getDistanceToEntity(
+                        e
+                    ) < 8
+                ) {
                     val minion = minions[e.position.toString()].asJsonObject
                     val timeElapsed = (System.currentTimeMillis() - minion["lastCollectedAt"].asLong)
                     val duration = timeElapsed.toFormattedDuration()
@@ -174,7 +178,8 @@ object MinionMenuOverlay {
                 }
 
                 if (CustomizationConfig.developerMode && DeveloperConfig.showMinionDebug && e == closestMinion) {
-                    RenderUtils.draw3DString("§cCLOSEST MINION | ${closestMinion!!.position}",
+                    RenderUtils.draw3DString(
+                        "§cCLOSEST MINION | ${closestMinion!!.position}",
                         closestMinion!!.positionVector.add(Vec3(0.0, 2.0, 0.0)),
                         event.partialTicks
                     )
@@ -215,8 +220,8 @@ object MinionMenuOverlay {
         }
 
         override fun draw(mouseX: Int, mouseY: Int, event: Event) {
-            val minionObj = minions[closestMinion?.position.toString()].getAsJsonObject()
-            val lastCollectedAt = minionObj["lastCollectedAt"].asLong
+            val minionObj = minions[closestMinion?.position.toString()].getAsJsonObject() ?: return
+            val lastCollectedAt = minionObj["lastCollectedAt"]?.asLong ?: return
             val lastCollectedDuration = System.currentTimeMillis() - lastCollectedAt
 
             val lines = mutableListOf(
@@ -225,7 +230,7 @@ object MinionMenuOverlay {
                     5f,
                     15f,
                     "§a • Fuel Duration: $fuelDuration",
-                    listOf(if(fuelDurationDate>0) "§9Runs out on ${fuelDurationDate.toDateTimestamp()}" else "§9Fuel will never run out."),
+                    listOf(if (fuelDurationDate > 0) "§9Runs out on ${fuelDurationDate.toDateTimestamp()}" else "§9Fuel will never run out."),
                     null
                 ),
                 GuiUtils.Element(
