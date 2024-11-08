@@ -3,9 +3,8 @@ package mrfast.sbt.features.crimsonIsle
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.config.GuiManager
 import mrfast.sbt.config.categories.CrimsonConfig
-import mrfast.sbt.config.categories.DeveloperConfig
-import mrfast.sbt.utils.GuiUtils
 import mrfast.sbt.managers.LocationManager
+import mrfast.sbt.utils.GuiUtils
 import mrfast.sbt.utils.Utils
 import mrfast.sbt.utils.Utils.clean
 import mrfast.sbt.utils.Utils.containsCoordinates
@@ -144,8 +143,8 @@ object CrimsonIsleMap {
 
                 // Draw a transparent background rectangle behind the text
                 val backgroundWidth =
-                    Minecraft.getMinecraft().fontRendererObj.getStringWidth("§b$waypointName") * (9.5f)
-                val backgroundHeight = 8 // Height of the background rectangle
+                    Minecraft.getMinecraft().fontRendererObj.getStringWidth("§b$waypointName") * (0.5f)
+                val backgroundHeight = 4 // Height of the background rectangle
                 val backgroundColor = 0x80000000 // Semi-transparent black (0x80 for 50% alpha)
 
                 // Draw the rectangle for the background
@@ -164,7 +163,7 @@ object CrimsonIsleMap {
                     GuiUtils.TextStyle.BLACK_OUTLINE,
                     Color.WHITE,
                     true,
-                    8f
+                    0.5f
                 )
 
                 GlStateManager.popMatrix()

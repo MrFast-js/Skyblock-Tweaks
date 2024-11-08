@@ -61,7 +61,7 @@ object GuiUtils {
         style: TextStyle,
         coreColor: Color,
         centered: Boolean = false,
-        scale: Float = 1.0f // New parameter for scaling
+        scale: Float = 1.0f
     ) {
         val shadowText: String = text.cleanColor()
         val fontRenderer = Minecraft.getMinecraft().fontRendererObj
