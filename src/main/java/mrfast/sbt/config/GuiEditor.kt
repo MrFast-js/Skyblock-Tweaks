@@ -6,6 +6,7 @@ import mrfast.sbt.utils.ChatUtils
 import mrfast.sbt.utils.Utils
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiScreen
+import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraftforge.fml.client.config.GuiUtils
 import org.lwjgl.input.Keyboard
@@ -47,8 +48,9 @@ class GuiEditor : GuiScreen() {
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         super.drawScreen(mouseX, mouseY, partialTicks)
 
-        screenWidth = Utils.mc.displayWidth / 2
-        screenHeight = Utils.mc.displayHeight / 2
+        val scaledResolution = ScaledResolution(Utils.mc)
+        screenWidth = scaledResolution.scaledWidth
+        screenHeight = scaledResolution.scaledHeight
 
         drawDefaultBackground()
         updateMousePos(mouseX, mouseY)
@@ -215,6 +217,16 @@ class GuiEditor : GuiScreen() {
             // Potentially add edge snapping against other elements here
         } else {
             selectedElement = null
+        }
+
+        // Reset position if the element is completely off the screen
+        for (element in guiManager.guiElements) {
+            val elementRight = element.relativeX + (element.width * element.scale) / screenWidth.toDouble()
+            val elementBottom = element.relativeY + (element.height * element.scale) / screenHeight.toDouble()
+            if (element.relativeX >= 1.0 || element.relativeY >= 1.0 || elementRight <= 0.0 || elementBottom <= 0.0) {
+                element.relativeX = 0.0
+                element.relativeY = 0.0
+            }
         }
 
         // Debug tool to copy elements position to clipboard

@@ -4,6 +4,7 @@ import com.google.gson.GsonBuilder
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.config.categories.CustomizationConfig
 import mrfast.sbt.utils.Utils
+import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -21,25 +22,21 @@ object GuiManager {
     fun onRender(event: RenderGameOverlayEvent.Post) {
         if (event.type == RenderGameOverlayEvent.ElementType.HOTBAR) {
             if (Utils.mc.currentScreen is GuiEditor) return
+            val scaledResolution = ScaledResolution(Utils.mc)
+            val screenWidth = scaledResolution.scaledWidth
+            val screenHeight = scaledResolution.scaledHeight
             for (guiElement in guiElements) {
                 if (guiElement.isActive()) {
                     if (!showall && !guiElement.isVisible()) continue
-                    val screenWidth = Utils.mc.displayWidth / 2
-                    val screenHeight = Utils.mc.displayHeight / 2
 
-                    GlStateManager.translate(
-                        guiElement.relativeX * screenWidth,
-                        guiElement.relativeY * screenHeight,
-                        0.0
-                    )
+                    val x = guiElement.relativeX * screenWidth
+                    val y = guiElement.relativeY * screenHeight
+
+                    GlStateManager.pushMatrix()
+                    GlStateManager.translate(x, y, 0.0)
                     GlStateManager.scale(guiElement.scale, guiElement.scale, 1.0)
                     guiElement.draw()
-                    GlStateManager.scale(1 / guiElement.scale, 1 / guiElement.scale, 1.0)
-                    GlStateManager.translate(
-                        -guiElement.relativeX * screenWidth,
-                        -guiElement.relativeY * screenHeight,
-                        0.0
-                    )
+                    GlStateManager.popMatrix()
                 }
             }
         }
