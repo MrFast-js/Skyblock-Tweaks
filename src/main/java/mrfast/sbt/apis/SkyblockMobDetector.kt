@@ -44,7 +44,7 @@ object SkyblockMobDetector {
             if (Utils.mc.thePlayer.getDistanceToEntity(entity) > 30) continue
 
             val potentialMob = when {
-                entity.customNameTag.contains("Withermancer") -> Utils.mc.theWorld.getEntityByID(entity.entityId - 3)
+                entity.customNameTag!!.contains("Withermancer") -> Utils.mc.theWorld.getEntityByID(entity.entityId - 3)
                 else -> Utils.mc.theWorld.getEntityByID(entity.entityId - 1)
             } ?: continue
 
