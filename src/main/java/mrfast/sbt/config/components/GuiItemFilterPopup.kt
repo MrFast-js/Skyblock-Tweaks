@@ -219,6 +219,7 @@ class GuiItemFilterPopup(title: String) : WindowScreen(ElementaVersion.V2, newGu
         }
         resetImg.onMouseClick {
             resetToDefaultFilters()
+            saveFiltersFile()
         }
         resetImg.addTooltip(setOf("§c§lReset to Default Filters", "§6Warning: You will lose all current filters."))
 
@@ -522,7 +523,6 @@ class GuiItemFilterPopup(title: String) : WindowScreen(ElementaVersion.V2, newGu
             FilteredItem("_RUNE", FilterType.CONTAINS, InputType.ITEM_ID),
             FilteredItem("Skin", FilterType.CONTAINS, InputType.DISPLAY_NAME)
         )
-        saveFiltersFile()
         updateFilterComponentList(null)
     }
 }
