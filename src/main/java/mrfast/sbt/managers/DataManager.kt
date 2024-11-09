@@ -81,11 +81,15 @@ object DataManager {
     }
 
     fun loadDataFromFile(saveDataFilePath: File): JsonObject {
-        val dataFile: File = saveDataFilePath
-
         try {
-            val jsonContent = String(Files.readAllBytes(Paths.get(dataFile.path)), Charsets.UTF_8)
-            return JsonParser().parse(jsonContent).getAsJsonObject()
+            val jsonContent = String(Files.readAllBytes(Paths.get(saveDataFilePath.path)), Charsets.UTF_8)
+            return JsonParser().parse(jsonContent).asJsonObject
+        } catch (e: java.nio.file.NoSuchFileException) {
+            println("File not found: ${saveDataFilePath.path}")
+        } catch (e: IOException) {
+            e.printStackTrace()
+        } catch (e: JsonSyntaxException) {
+            println("Invalid JSON syntax in file: ${saveDataFilePath.path}")
         } catch (e: Exception) {
             e.printStackTrace()
         }

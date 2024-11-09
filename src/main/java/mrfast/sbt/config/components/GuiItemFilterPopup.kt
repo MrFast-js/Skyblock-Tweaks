@@ -200,8 +200,8 @@ class GuiItemFilterPopup(title: String) : WindowScreen(ElementaVersion.V2, newGu
         val unhovered = Color(200, 200, 200)
         val hovered = Color(255, 255, 255)
         val resetImg = UIImage.ofResource("/assets/skyblocktweaks/gui/reset.png").constrain {
-            width = (10*1.5).pixels
-            height = (11*1.5).pixels
+            width = (10 * 1.5).pixels
+            height = (11 * 1.5).pixels
             y = 8.pixels
             x = SiblingConstraintFixed(18f, true)
             color = unhovered.constraint
@@ -457,6 +457,10 @@ class GuiItemFilterPopup(title: String) : WindowScreen(ElementaVersion.V2, newGu
 
     private fun loadFiltersFromDataFile(): List<FilteredItem> {
         val blacklistFilePath = ConfigManager.modDirectoryPath.resolve("itemBlacklist.json")
+        if (!blacklistFilePath.exists()) {
+            resetToDefaultFilters()
+            return filters
+        }
         val profileData = DataManager.loadDataFromFile(blacklistFilePath)
         val jsonFilters = profileData.getAsJsonArray("filters") ?: return (emptyList<FilteredItem>().toMutableList())
         return Gson().fromJson(jsonFilters, Array<FilteredItem>::class.java).toMutableList()
@@ -464,9 +468,8 @@ class GuiItemFilterPopup(title: String) : WindowScreen(ElementaVersion.V2, newGu
 
     private fun saveFiltersFile() {
         val blacklistFilePath = ConfigManager.modDirectoryPath.resolve("itemBlacklist.json")
-        if(!blacklistFilePath.exists()) {
+        if (!blacklistFilePath.exists()) {
             resetToDefaultFilters()
-            return
         }
         val gson = GsonBuilder().setPrettyPrinting().create()
         val newData = JsonObject()
