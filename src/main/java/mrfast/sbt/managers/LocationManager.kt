@@ -25,27 +25,30 @@ object LocationManager {
     var inMasterMode = false
     var selectedDungeonFloor = "7" // Defaults to floor 7, but updates if you click a party finder floor
 
-    private var newWorld = false
+    private var sendingLocraw = false
     private var listeningForLocraw = false
 
     @SubscribeEvent
     fun onWorldChange(event: WorldEvent.Load) {
-        if (newWorld) return
+        if (sendingLocraw) return
 
-        newWorld = true
+        println("RESET LOCATION")
+        sendingLocraw = true
         listeningForLocraw = true
-        inSkyblock = false
         inMasterMode = false
         limboCount = 0
         currentArea = ""
         currentIsland = ""
 
         Utils.setTimeout({
-            if (!listeningForLocraw) return@setTimeout
-
-            newWorld = false
+            if (!listeningForLocraw) {
+                sendingLocraw = false
+                listeningForLocraw = false
+                return@setTimeout
+            }
             ChatUtils.sendPlayerMessage("/locraw")
-        }, 1000)
+            sendingLocraw = false
+        }, 1200)
     }
 
     @SubscribeEvent
@@ -77,15 +80,16 @@ object LocationManager {
     private val gson = Gson()
     private var limboCount = 0
 
-    @SubscribeEvent
+    @SubscribeEvent(receiveCanceled = true)
     fun onChat(event: ClientChatReceivedEvent) {
-        if (!listeningForLocraw) return
-
         if (event.message.formattedText.clean().startsWith("{\"server\":\"")) {
+            println("FOUND LOCRAW MESSAGE")
             val clean = event.message.formattedText.substring(0, event.message.formattedText.indexOf("}") + 1).clean()
             val obj = gson.fromJson(clean, JsonObject::class.java)
 
-            event.isCanceled = true
+            if (listeningForLocraw) {
+                event.isCanceled = true
+            }
 
             if (obj.has("map")) {
                 listeningForLocraw = false

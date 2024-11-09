@@ -1,5 +1,6 @@
 package mrfast.sbt.utils
 
+import mrfast.sbt.config.categories.CustomizationConfig
 import net.minecraft.client.Minecraft
 import net.minecraft.util.ChatComponentText
 import net.minecraft.util.IChatComponent
@@ -10,6 +11,9 @@ object ChatUtils {
     private const val shortModPrefix = "§eSB§9T§6 >>§r "
 
     fun sendPlayerMessage(message: String) {
+        if(CustomizationConfig.developerMode) {
+            println("Sending message: $message")
+        }
         Minecraft.getMinecraft().thePlayer?.sendChatMessage(message)
     }
 
