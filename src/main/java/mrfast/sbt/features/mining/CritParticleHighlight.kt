@@ -30,6 +30,7 @@ object CritParticleHighlight {
         val type = packet.particleType
         val pos = Vec3(packet.xCoordinate, packet.yCoordinate, packet.zCoordinate)
         if (type == EnumParticleTypes.CRIT) {
+            if(pos.distanceTo(Utils.mc.thePlayer.positionVector) > 7) return
             val blockX = floor(pos.xCoord).toInt()
             val blockY = floor(pos.yCoord).toInt()
             val blockZ = floor(pos.zCoord).toInt()
