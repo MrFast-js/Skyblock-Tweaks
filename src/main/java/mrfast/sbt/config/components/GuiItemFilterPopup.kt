@@ -249,6 +249,7 @@ class GuiItemFilterPopup(title: String) : WindowScreen(ElementaVersion.V2, newGu
         if (parent != null) {
             body = parent
         }
+        body ?: return
         body!!.clearChildren()
         filters.forEach {
             createItemFilterComponent(body!!, it)
