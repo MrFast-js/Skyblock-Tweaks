@@ -55,7 +55,7 @@ object CrimsonIsleMap {
         init {
             this.relativeX = 0.0
             this.relativeY = 0.0
-            this.elementName = "Crimson Isle Map"
+            this.elementName = "Crimson Isles Map"
             this.addToList()
             // Image size scaled down by 8x
             this.height = 1429 / 8
