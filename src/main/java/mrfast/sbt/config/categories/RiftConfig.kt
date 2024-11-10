@@ -29,6 +29,36 @@ object RiftConfig : Config() {
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
+        name = "Highlight Thrown Anchor",
+        description = "Highlights the location of the anchor thrown by the T5 Vampire Slayer",
+        category = "The Rift",
+        subcategory = "Vampire Slayer",
+        isParent = true
+    )
+    var highlightVampireAnchors = true
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Draw Tracer",
+        description = "Draws a line from the crosshair to the anchor",
+        category = "The Rift",
+        subcategory = "Vampire Slayer",
+        parentName = "Highlight Thrown Anchor"
+    )
+    var highlightVampireAnchorsTracer = true
+
+    @ConfigProperty(
+        type = ConfigType.COLOR,
+        name = "Color",
+        description = "",
+        category = "The Rift",
+        subcategory = "Vampire Slayer",
+        parentName = "Highlight Thrown Anchor"
+    )
+    var highlightVampireAnchorColor = Color(0xFFD500)
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
         name = "Rift Time Bar",
         description = "Moveable Rift Time Bar that adjusts depending on your time left in the rift / damage taken",
         category = "The Rift",
