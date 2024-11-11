@@ -157,7 +157,7 @@ class GuiEditor : GuiScreen() {
         val wheel = Mouse.getEventDWheel()
 
         if (wheel != 0) {
-            selectedElement?.let {
+            hoveredElement?.let {
                 it.scale += 0.25 * if (wheel > 0) 1 else -1
                 it.scale = it.scale.coerceIn(0.5, 4.0)
             }
