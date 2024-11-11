@@ -158,7 +158,7 @@ class GuiEditor : GuiScreen() {
 
         if (wheel != 0) {
             selectedElement?.let {
-                it.scale += 0.5 * if (wheel > 0) 1 else -1
+                it.scale += 0.25 * if (wheel > 0) 1 else -1
                 it.scale = it.scale.coerceIn(0.5, 4.0)
             }
         }
