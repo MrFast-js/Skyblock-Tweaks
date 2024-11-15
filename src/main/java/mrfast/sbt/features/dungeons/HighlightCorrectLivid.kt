@@ -6,13 +6,17 @@ import mrfast.sbt.config.categories.DungeonConfig.highlightCorrectLividColor
 import mrfast.sbt.customevents.RenderEntityModelEvent
 import mrfast.sbt.managers.LocationManager
 import mrfast.sbt.utils.OutlineUtils
+import mrfast.sbt.utils.RenderUtils
 import mrfast.sbt.utils.Utils
 import net.minecraft.block.BlockStainedGlass
 import net.minecraft.block.state.IBlockState
+import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.Entity
 import net.minecraft.init.Blocks
 import net.minecraft.item.EnumDyeColor
 import net.minecraft.util.BlockPos
+import net.minecraft.util.Vec3
+import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
@@ -56,6 +60,25 @@ object HighlightCorrectLivid {
 
         if (lividEntity != null && lividEntity == event.entity) {
             OutlineUtils.outlineEntity(event, highlightCorrectLividColor)
+        }
+    }
+
+    @SubscribeEvent
+    fun onRenderWorld(event: RenderWorldLastEvent) {
+        if (!LocationManager.inDungeons || LocationManager.dungeonFloor != 5 || !highlightCorrectLivid) return
+
+        if (lividEntity != null && lividEntity!!.isEntityAlive && Utils.mc.thePlayer.canEntityBeSeen(lividEntity)) {
+            val skullPos = lividEntity!!.positionVector.add(Vec3(0.0, lividEntity!!.eyeHeight.toDouble(), 0.0))
+            val playerPos = Utils.mc.thePlayer.getPositionEyes(event.partialTicks)
+            GlStateManager.disableDepth()
+            RenderUtils.drawLine(
+                playerPos,
+                skullPos,
+                2,
+                highlightCorrectLividColor,
+                event.partialTicks
+            )
+            GlStateManager.enableDepth()
         }
     }
 }
