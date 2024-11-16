@@ -32,7 +32,8 @@ object ItemUtils {
         val id = nbt.getString("id")
         return when {
             id == "PET" && nbt.hasKey("petInfo") -> {
-                val petInfoJson = DevUtils.convertStringToJson(nbt.getString("petInfo")) ?: return null
+                val petInfoNbt = nbt.getString("petInfo") ?: return null
+                val petInfoJson = DevUtils.convertStringToJson(petInfoNbt) ?: return null
                 val petInfo = petInfoJson.asJsonObject ?: return null
                 val tierInt = petTierToInt(petInfo.get("tier").asString)
                 "${petInfo.get("type").asString};$tierInt"
