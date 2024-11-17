@@ -6,7 +6,7 @@ import gg.essential.universal.UMatrixStack
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.apis.ItemApi
 import mrfast.sbt.config.categories.AuctionHouseConfig
-import mrfast.sbt.config.components.OutlinedRoundedRectangle
+import mrfast.sbt.guis.components.OutlinedRoundedRectangle
 import mrfast.sbt.customevents.GuiContainerBackgroundDrawnEvent
 import mrfast.sbt.customevents.SignDrawnEvent
 import mrfast.sbt.managers.OverlayManager

@@ -1,4 +1,4 @@
-package mrfast.sbt.config.components
+package mrfast.sbt.guis.components
 
 import gg.essential.elementa.UIComponent
 import gg.essential.elementa.constraints.ConstraintType

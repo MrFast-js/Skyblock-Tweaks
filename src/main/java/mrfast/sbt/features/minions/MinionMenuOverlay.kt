@@ -8,7 +8,7 @@ import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.config.categories.CustomizationConfig
 import mrfast.sbt.config.categories.DeveloperConfig
 import mrfast.sbt.config.categories.MiscellaneousConfig
-import mrfast.sbt.config.components.OutlinedRoundedRectangle
+import mrfast.sbt.guis.components.OutlinedRoundedRectangle
 import mrfast.sbt.customevents.GuiContainerBackgroundDrawnEvent
 import mrfast.sbt.customevents.ProfileLoadEvent
 import mrfast.sbt.customevents.SlotClickedEvent

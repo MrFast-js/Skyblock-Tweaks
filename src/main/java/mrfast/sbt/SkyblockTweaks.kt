@@ -1,8 +1,8 @@
 package mrfast.sbt
 
 import mrfast.sbt.config.Config
-import mrfast.sbt.config.ConfigGui
-import mrfast.sbt.config.GuiManager
+import mrfast.sbt.guis.ConfigGui
+import mrfast.sbt.managers.GuiManager
 import mrfast.sbt.customevents.WorldLoadEvent
 import mrfast.sbt.utils.Utils
 import net.minecraft.command.ICommand

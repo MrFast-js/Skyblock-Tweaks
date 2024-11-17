@@ -1,7 +1,7 @@
 package mrfast.sbt.features.crimsonIsle
 
 import mrfast.sbt.SkyblockTweaks
-import mrfast.sbt.config.GuiManager
+import mrfast.sbt.managers.GuiManager
 import mrfast.sbt.config.categories.CrimsonConfig
 import mrfast.sbt.managers.LocationManager
 import mrfast.sbt.utils.GuiUtils

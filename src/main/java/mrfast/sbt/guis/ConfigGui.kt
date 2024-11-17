@@ -1,4 +1,4 @@
-package mrfast.sbt.config
+package mrfast.sbt.guis
 
 import gg.essential.api.utils.GuiUtil
 import gg.essential.elementa.ElementaVersion
@@ -17,9 +17,11 @@ import gg.essential.elementa.state.constraint
 import gg.essential.universal.UMatrixStack
 import gg.essential.vigilance.gui.settings.SelectorComponent
 import mrfast.sbt.SkyblockTweaks
+import mrfast.sbt.managers.ConfigManager
+import mrfast.sbt.managers.ConfigType
 import mrfast.sbt.config.categories.CustomizationConfig
 import mrfast.sbt.config.categories.DeveloperConfig.showInspector
-import mrfast.sbt.config.components.*
+import mrfast.sbt.guis.components.*
 import mrfast.sbt.managers.VersionManager
 import mrfast.sbt.utils.ChatUtils
 import mrfast.sbt.utils.GuiUtils.drawBackgroundBlur

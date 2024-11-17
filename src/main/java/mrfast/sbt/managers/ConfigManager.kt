@@ -1,4 +1,4 @@
-package mrfast.sbt.config
+package mrfast.sbt.managers
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder

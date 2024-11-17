@@ -1,6 +1,7 @@
-package mrfast.sbt.config
+package mrfast.sbt.guis
 
 import com.mojang.realmsclient.gui.ChatFormatting
+import mrfast.sbt.managers.GuiManager
 import mrfast.sbt.config.categories.CustomizationConfig
 import mrfast.sbt.utils.ChatUtils
 import mrfast.sbt.utils.Utils
@@ -54,7 +55,7 @@ class GuiEditor : GuiScreen() {
 
         drawDefaultBackground()
         updateMousePos(mouseX, mouseY)
-        for (element in guiManager.guiElements) {
+        for (element in GuiManager.guiElements) {
             if (!element.isActive()) continue
             if (!showAllEnabledElements && !element.isVisible()) continue
 
@@ -132,7 +133,7 @@ class GuiEditor : GuiScreen() {
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
         super.mouseClicked(mouseX, mouseY, mouseButton)
-        for (element in guiManager.guiElements) {
+        for (element in GuiManager.guiElements) {
             if (!element.isActive()) continue
             if (!showAllEnabledElements && !element.isVisible()) continue
 
@@ -172,7 +173,7 @@ class GuiEditor : GuiScreen() {
 
     private fun updateMousePos(mouseX: Int, mouseY: Int) {
         hoveredElement = null
-        for (element in guiManager.guiElements) {
+        for (element in GuiManager.guiElements) {
             if (!element.isActive()) continue
             if (!showAllEnabledElements && !element.isVisible()) continue
 
@@ -220,7 +221,7 @@ class GuiEditor : GuiScreen() {
         }
 
         // Reset position if the element is completely off the screen
-        for (element in guiManager.guiElements) {
+        for (element in GuiManager.guiElements) {
             val elementRight = element.relativeX + (element.width * element.scale) / screenWidth.toDouble()
             val elementBottom = element.relativeY + (element.height * element.scale) / screenHeight.toDouble()
             if (element.relativeX >= 1.0 || element.relativeY >= 1.0 || elementRight <= 0.0 || elementBottom <= 0.0) {

@@ -2,10 +2,11 @@ package mrfast.sbt.config.categories
 
 import gg.essential.api.utils.GuiUtil
 import mrfast.sbt.config.Config
-import mrfast.sbt.config.ConfigGui
-import mrfast.sbt.config.ConfigProperty
-import mrfast.sbt.config.ConfigType
-import mrfast.sbt.config.components.GuiItemFilterPopup
+import mrfast.sbt.guis.ConfigGui
+import mrfast.sbt.managers.ConfigProperty
+import mrfast.sbt.managers.ConfigType
+import mrfast.sbt.guis.GuiItemFilterPopup
+import mrfast.sbt.guis.GuiItemFilterPopup.*
 import mrfast.sbt.features.auctionHouse.AuctionFlipper
 import org.lwjgl.input.Keyboard
 import java.awt.Color
@@ -202,11 +203,15 @@ object AuctionHouseConfig : Config() {
         placeholder = "§eEdit Blacklist"
     )
     var AF_blackList = Runnable {
-        val popup = GuiItemFilterPopup("AH Flipper Item Blacklist")
+        val popup = GuiItemFilterPopup(
+            "AH Flipper Item Blacklist",
+            "itemBlacklist.json",
+            { AuctionFlipper.filters },
+            { newFilters -> AuctionFlipper.filters = newFilters.toMutableList() },
+            AuctionFlipper.defaultFilterList
+        )
 
-        popup.setContent(AuctionFlipper.itemIdBlacklist.joinToString("\n"))
         popup.runOnClose {
-            AuctionFlipper.itemIdBlacklist = popup.getContent().split("\n")
             GuiUtil.open(ConfigGui())
         }
         GuiUtil.open(popup)

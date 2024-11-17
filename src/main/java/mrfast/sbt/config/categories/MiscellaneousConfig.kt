@@ -1,9 +1,8 @@
 package mrfast.sbt.config.categories
 
 import mrfast.sbt.config.Config
-import mrfast.sbt.config.ConfigProperty
-import mrfast.sbt.config.ConfigType
-import mrfast.sbt.features.general.TrashHighlighter
+import mrfast.sbt.managers.ConfigProperty
+import mrfast.sbt.managers.ConfigType
 
 object MiscellaneousConfig : Config() {
 

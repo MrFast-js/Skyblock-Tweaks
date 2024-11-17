@@ -1,8 +1,8 @@
 package mrfast.sbt.config.categories
 
 import mrfast.sbt.config.Config
-import mrfast.sbt.config.ConfigProperty
-import mrfast.sbt.config.ConfigType
+import mrfast.sbt.managers.ConfigProperty
+import mrfast.sbt.managers.ConfigType
 import java.awt.Color
 
 object SlayerConfig : Config() {

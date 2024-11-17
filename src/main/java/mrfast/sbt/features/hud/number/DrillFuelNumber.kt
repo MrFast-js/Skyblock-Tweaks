@@ -2,7 +2,7 @@ package mrfast.sbt.features.hud.number
 
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.apis.PlayerStats
-import mrfast.sbt.config.GuiManager
+import mrfast.sbt.managers.GuiManager
 import mrfast.sbt.config.categories.GeneralConfig
 import mrfast.sbt.config.categories.GeneralConfig.drillFuelDisplayColor
 import mrfast.sbt.managers.LocationManager

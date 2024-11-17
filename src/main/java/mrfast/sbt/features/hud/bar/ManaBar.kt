@@ -5,7 +5,7 @@ import gg.essential.universal.UMatrixStack
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.apis.PlayerStats
 import mrfast.sbt.config.categories.GeneralConfig
-import mrfast.sbt.config.GuiManager
+import mrfast.sbt.managers.GuiManager
 import mrfast.sbt.config.categories.GeneralConfig.manaBarBarColor
 import mrfast.sbt.config.categories.GeneralConfig.manaBarManaColor
 import mrfast.sbt.config.categories.GeneralConfig.manaBarOverflowColor

@@ -4,9 +4,9 @@ import gg.essential.elementa.dsl.constraint
 import gg.essential.elementa.state.BasicState
 import gg.essential.universal.UMatrixStack
 import mrfast.sbt.config.categories.DeveloperConfig
-import mrfast.sbt.config.components.OutlinedRoundedRectangle
-import mrfast.sbt.config.components.shader.GaussianBlur
-import mrfast.sbt.config.components.shader.ShaderManager
+import mrfast.sbt.guis.components.OutlinedRoundedRectangle
+import mrfast.sbt.guis.components.shader.GaussianBlur
+import mrfast.sbt.guis.components.shader.ShaderManager
 import mrfast.sbt.utils.Utils.cleanColor
 import mrfast.sbt.utils.Utils.getStringWidth
 import net.minecraft.client.Minecraft
@@ -24,7 +24,6 @@ import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL14
 import java.awt.Color
 import java.util.*
-import kotlin.math.sqrt
 
 
 object GuiUtils {

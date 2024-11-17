@@ -2,7 +2,7 @@ package mrfast.sbt.features.general
 
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.apis.ItemApi
-import mrfast.sbt.config.GuiManager
+import mrfast.sbt.managers.GuiManager
 import mrfast.sbt.config.categories.MiscellaneousConfig
 import mrfast.sbt.config.categories.MiscellaneousConfig.quiverOverlay
 import mrfast.sbt.config.categories.MiscellaneousConfig.quiverOverlayType

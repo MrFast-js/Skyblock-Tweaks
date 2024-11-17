@@ -2,7 +2,6 @@ package mrfast.sbt.managers
 
 import com.google.gson.*
 import mrfast.sbt.SkyblockTweaks
-import mrfast.sbt.config.ConfigManager
 import mrfast.sbt.customevents.ProfileLoadEvent
 import mrfast.sbt.utils.ChatUtils
 import mrfast.sbt.utils.Utils
@@ -20,7 +19,7 @@ import java.nio.file.Paths
 object DataManager {
     private var dataJson = JsonObject()
     private var profileIds = mutableMapOf<String, String>() // UUID, PFID
-    private var profileDataPath = ConfigManager.modDirectoryPath.resolve("profilesData.json")
+    private var profileDataPath = ConfigManager.modDirectoryPath.resolve("data/profilesData.json")
 
     init {
         val profileData = loadDataFromFile(profileDataPath)
@@ -131,6 +130,13 @@ object DataManager {
 
     fun saveDataToFile(savePath: File, newData: JsonObject) {
         try {
+            // Ensure the parent directories exist
+            savePath.parentFile?.mkdirs()
+            // Ensure the file exists
+            if (!savePath.exists()) {
+                savePath.createNewFile()
+            }
+
             FileWriter(savePath.path, false).use { writer ->
                 val gson = GsonBuilder().setPrettyPrinting().create()
                 val jsonString = gson.toJson(newData)
@@ -138,7 +144,7 @@ object DataManager {
                 writer.write(escapedJsonString)
             }
         } catch (e: IOException) {
-            throw RuntimeException(e)
+            e.printStackTrace()
         }
     }
 

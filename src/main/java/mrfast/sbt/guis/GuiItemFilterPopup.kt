@@ -1,4 +1,4 @@
-package mrfast.sbt.config.components
+package mrfast.sbt.guis
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -15,10 +15,12 @@ import gg.essential.elementa.effects.OutlineEffect
 import gg.essential.universal.UMatrixStack
 import gg.essential.vigilance.gui.settings.SelectorComponent
 import mrfast.sbt.apis.ItemApi
-import mrfast.sbt.config.ConfigManager
+import mrfast.sbt.managers.ConfigManager
 import mrfast.sbt.config.categories.CustomizationConfig
-import mrfast.sbt.features.auctionHouse.AuctionFlipper
-import mrfast.sbt.features.auctionHouse.AuctionFlipper.filters
+import mrfast.sbt.guis.components.ItemComponent
+import mrfast.sbt.guis.components.OutlinedRoundedRectangle
+import mrfast.sbt.guis.components.SiblingConstraintFixed
+import mrfast.sbt.guis.components.TextInputComponent
 import mrfast.sbt.managers.DataManager
 import mrfast.sbt.utils.GuiUtils
 import mrfast.sbt.utils.ItemUtils.getSkyblockId
@@ -32,7 +34,13 @@ import java.awt.datatransfer.DataFlavor
 import java.awt.datatransfer.StringSelection
 import java.awt.datatransfer.UnsupportedFlavorException
 
-class GuiItemFilterPopup(title: String) : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
+class GuiItemFilterPopup(
+    title: String,
+    private val jsonFilePath: String,
+    private val getFilters: () -> MutableList<FilteredItem>,
+    private val setFilters: (MutableList<FilteredItem>) -> Unit,
+    private val defaultFilters: List<FilteredItem>
+) : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
 
     class FilteredItem(
         var textInput: String,
@@ -76,21 +84,12 @@ class GuiItemFilterPopup(title: String) : WindowScreen(ElementaVersion.V2, newGu
         var selectedInput = InputType.ITEM_ID
     }
 
-    private var bodyContent = ""
     private var runOnClose: Runnable? = null
     private var tooltipElements: MutableMap<UIComponent, Set<String>> = mutableMapOf()
 
     override fun onScreenClose() {
         super.onScreenClose()
         runOnClose?.run()
-    }
-
-    fun getContent(): String {
-        return bodyContent
-    }
-
-    fun setContent(text: String) {
-        bodyContent = text
     }
 
     fun runOnClose(runnable: Runnable) {
@@ -123,7 +122,7 @@ class GuiItemFilterPopup(title: String) : WindowScreen(ElementaVersion.V2, newGu
     private val mainBorderRadius = 6f
 
     init {
-        filters = loadFiltersFromDataFile() as MutableList<FilteredItem>
+        setFilters(loadFiltersFromDataFile() as MutableList<FilteredItem>)
         saveFiltersFile()
 
         // Create a background panel
@@ -251,7 +250,7 @@ class GuiItemFilterPopup(title: String) : WindowScreen(ElementaVersion.V2, newGu
         }
         body ?: return
         body!!.clearChildren()
-        filters.forEach {
+        getFilters().forEach {
             createItemFilterComponent(body!!, it)
         }
         body!!.addChildren(filterButton!!)
@@ -268,7 +267,9 @@ class GuiItemFilterPopup(title: String) : WindowScreen(ElementaVersion.V2, newGu
         filterButton = addFilterButton
 
         addFilterButton.onMouseClick {
+            val filters = getFilters()
             filters.add(FilteredItem("", FilterType.CONTAINS, InputType.ITEM_ID))
+            setFilters(filters)
             updateFilterComponentList(null)
             saveFiltersFile()
         }
@@ -362,7 +363,9 @@ class GuiItemFilterPopup(title: String) : WindowScreen(ElementaVersion.V2, newGu
             }
         }
         deleteFilterButton.onMouseClick {
+            val filters = getFilters()
             filters.remove(filterItem)
+            setFilters(filters)
             parent.removeChild(backgroundBlock)
             saveFiltersFile()
         }
@@ -457,10 +460,10 @@ class GuiItemFilterPopup(title: String) : WindowScreen(ElementaVersion.V2, newGu
 
 
     private fun loadFiltersFromDataFile(): List<FilteredItem> {
-        val blacklistFilePath = ConfigManager.modDirectoryPath.resolve("itemBlacklist.json")
+        val blacklistFilePath = ConfigManager.modDirectoryPath.resolve("data/$jsonFilePath")
         if (!blacklistFilePath.exists()) {
             resetToDefaultFilters()
-            return filters
+            return getFilters()
         }
         val profileData = DataManager.loadDataFromFile(blacklistFilePath)
         val jsonFilters = profileData.getAsJsonArray("filters") ?: return (emptyList<FilteredItem>().toMutableList())
@@ -468,13 +471,13 @@ class GuiItemFilterPopup(title: String) : WindowScreen(ElementaVersion.V2, newGu
     }
 
     private fun saveFiltersFile() {
-        val blacklistFilePath = ConfigManager.modDirectoryPath.resolve("itemBlacklist.json")
+        val blacklistFilePath = ConfigManager.modDirectoryPath.resolve("data/$jsonFilePath")
         if (!blacklistFilePath.exists()) {
             resetToDefaultFilters()
         }
         val gson = GsonBuilder().setPrettyPrinting().create()
         val newData = JsonObject()
-        val jsonFilters = gson.toJsonTree(filters).asJsonArray // Convert filters to JsonArray
+        val jsonFilters = gson.toJsonTree(getFilters()).asJsonArray // Convert filters to JsonArray
         newData.add("filters", jsonFilters) // Add filters JsonArray to the JsonObject
         DataManager.saveDataToFile(blacklistFilePath, newData)
     }
@@ -485,7 +488,7 @@ class GuiItemFilterPopup(title: String) : WindowScreen(ElementaVersion.V2, newGu
         val clipboard = Toolkit.getDefaultToolkit().systemClipboard
         val selection = StringSelection(filtersString)
         clipboard.setContents(selection, selection)
-        println("Filters copied to clipboard.")
+        if(CustomizationConfig.developerMode) println("Copied filters to clipboard.")
     }
 
     private fun importFilters(importText: UIComponent) {
@@ -493,40 +496,33 @@ class GuiItemFilterPopup(title: String) : WindowScreen(ElementaVersion.V2, newGu
         val data = try {
             clipboard.getData(DataFlavor.stringFlavor) as? String
         } catch (e: UnsupportedFlavorException) {
-            importText.addTooltip(setOf("§cFailed to import filters", "Unsupported clipboard data format."))
+            importText.addTooltip(setOf("§cFailed to import entries", "Unsupported clipboard data format."))
             return
         } catch (e: Exception) {
             e.printStackTrace()
-            importText.addTooltip(setOf("§cFailed to import filters", "An unexpected error occurred."))
+            importText.addTooltip(setOf("§cFailed to import entries", "An unexpected error occurred."))
             return
         }
 
         if (data == null) {
-            importText.addTooltip(setOf("§cFailed to import filters", "Clipboard is empty or data is not a string."))
+            importText.addTooltip(setOf("§cFailed to import entries", "Clipboard is empty or data is not a string."))
             return
         }
 
         try {
             val filters = Gson().fromJson(data, Array<FilteredItem>::class.java).toMutableList()
-            AuctionFlipper.filters = filters
+            setFilters(filters)
             saveFiltersFile()
             updateFilterComponentList(null)
-            importText.addTooltip(setOf("§aImported! ${filters.size} filters added."))
+            importText.addTooltip(setOf("§aImported! ${filters.size} entries added."))
         } catch (e: Exception) {
             e.printStackTrace()
-            importText.addTooltip(setOf("§cFailed to import filters", "Recheck the format and try again."))
+            importText.addTooltip(setOf("§cFailed to import entries", "Recheck the format and try again."))
         }
     }
 
     private fun resetToDefaultFilters() {
-        filters = mutableListOf(
-            FilteredItem("BOUNCY_", FilterType.CONTAINS, InputType.ITEM_ID),
-            FilteredItem("HEAVY_", FilterType.CONTAINS, InputType.ITEM_ID),
-            FilteredItem("Aurora", FilterType.CONTAINS, InputType.DISPLAY_NAME),
-            FilteredItem("_HOE", FilterType.CONTAINS, InputType.ITEM_ID),
-            FilteredItem("_RUNE", FilterType.CONTAINS, InputType.ITEM_ID),
-            FilteredItem("Skin", FilterType.CONTAINS, InputType.DISPLAY_NAME)
-        )
+        setFilters(defaultFilters.toMutableList())
         updateFilterComponentList(null)
     }
 }

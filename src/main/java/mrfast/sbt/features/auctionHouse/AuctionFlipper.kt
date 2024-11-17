@@ -1,5 +1,7 @@
 package mrfast.sbt.features.auctionHouse
 
+import com.google.gson.Gson
+import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.mojang.realmsclient.gui.ChatFormatting
 import kotlinx.coroutines.Dispatchers
@@ -9,8 +11,11 @@ import kotlinx.coroutines.runBlocking
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.apis.ItemApi
 import mrfast.sbt.config.categories.AuctionHouseConfig
-import mrfast.sbt.config.components.GuiItemFilterPopup
+import mrfast.sbt.guis.GuiItemFilterPopup
+import mrfast.sbt.guis.GuiItemFilterPopup.*
 import mrfast.sbt.customevents.SocketMessageEvent
+import mrfast.sbt.managers.ConfigManager
+import mrfast.sbt.managers.DataManager
 import mrfast.sbt.managers.LocationManager
 import mrfast.sbt.managers.PurseManager
 import mrfast.sbt.utils.*
@@ -41,7 +46,6 @@ object AuctionFlipper {
     private var sentStartingText = false
     private var sentBestAuction = false
     private var lastBestAuctionKeybindState = false
-    var itemIdBlacklist = listOf<String>()
 
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {
@@ -257,7 +261,26 @@ object AuctionFlipper {
 
     // Filters for various things
     // Example options: No Runes, No Pets, No Furniture, no pet skins, no armor skins
-    var filters = mutableListOf<GuiItemFilterPopup.FilteredItem>()
+    var defaultFilterList = listOf(
+        FilteredItem("BOUNCY_", FilterType.CONTAINS, InputType.ITEM_ID),
+        FilteredItem("HEAVY_", FilterType.CONTAINS, InputType.ITEM_ID),
+        FilteredItem("Aurora", FilterType.CONTAINS, InputType.DISPLAY_NAME),
+        FilteredItem("_HOE", FilterType.CONTAINS, InputType.ITEM_ID),
+        FilteredItem("_RUNE", FilterType.CONTAINS, InputType.ITEM_ID),
+        FilteredItem("Skin", FilterType.CONTAINS, InputType.DISPLAY_NAME)
+    )
+    var filters = defaultFilterList.toMutableList()
+
+    init {
+        val blacklistFilePath = ConfigManager.modDirectoryPath.resolve("data/itemBlacklist.json")
+
+        if(blacklistFilePath.exists()) {
+            val profileData = DataManager.loadDataFromFile(blacklistFilePath)
+            val jsonFilters = profileData.getAsJsonArray("filters") ?: JsonArray()
+            filters = Gson().fromJson(jsonFilters, Array<FilteredItem>::class.java).toMutableList()
+        }
+    }
+
     private fun filterOutAuction(auctionFlip: AuctionFlip) {
         // Filter out auctions that your already the top bid on
         if (auctionFlip.bidderUUID?.equals(Utils.mc.thePlayer.uniqueID.toString().replace("-", "")) == true) {

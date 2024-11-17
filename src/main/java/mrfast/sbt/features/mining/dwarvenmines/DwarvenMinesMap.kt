@@ -1,8 +1,7 @@
 package mrfast.sbt.features.mining.dwarvenmines
 
 import mrfast.sbt.SkyblockTweaks
-import mrfast.sbt.config.GuiManager
-import mrfast.sbt.config.categories.GeneralConfig
+import mrfast.sbt.managers.GuiManager
 import mrfast.sbt.config.categories.MiningConfig
 import mrfast.sbt.managers.LocationManager
 import mrfast.sbt.utils.GuiUtils

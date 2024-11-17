@@ -1,7 +1,7 @@
 package mrfast.sbt.features.dungeons
 
 import mrfast.sbt.SkyblockTweaks
-import mrfast.sbt.config.GuiManager
+import mrfast.sbt.managers.GuiManager
 import mrfast.sbt.config.categories.DungeonConfig
 import mrfast.sbt.config.categories.GeneralConfig
 import mrfast.sbt.utils.GuiUtils

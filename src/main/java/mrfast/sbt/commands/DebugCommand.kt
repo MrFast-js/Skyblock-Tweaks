@@ -3,7 +3,7 @@ package mrfast.sbt.commands
 import com.mojang.realmsclient.gui.ChatFormatting
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.apis.PlayerStats
-import mrfast.sbt.config.ConfigManager
+import mrfast.sbt.managers.ConfigManager
 import mrfast.sbt.managers.LocationManager
 import mrfast.sbt.utils.*
 import net.minecraft.client.entity.EntityPlayerSP

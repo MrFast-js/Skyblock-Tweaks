@@ -1,4 +1,4 @@
-package mrfast.sbt.config.components.shader
+package mrfast.sbt.guis.components.shader
 
 import org.lwjgl.opengl.GL20
 import java.nio.FloatBuffer

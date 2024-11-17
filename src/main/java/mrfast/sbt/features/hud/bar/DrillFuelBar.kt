@@ -4,7 +4,7 @@ import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.universal.UMatrixStack
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.apis.PlayerStats
-import mrfast.sbt.config.GuiManager
+import mrfast.sbt.managers.GuiManager
 import mrfast.sbt.config.categories.GeneralConfig
 import mrfast.sbt.config.categories.GeneralConfig.drillFuelBarBarColor
 import mrfast.sbt.config.categories.GeneralConfig.drillFuelBarColor

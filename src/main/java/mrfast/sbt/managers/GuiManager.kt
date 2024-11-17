@@ -1,8 +1,9 @@
-package mrfast.sbt.config
+package mrfast.sbt.managers
 
 import com.google.gson.GsonBuilder
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.config.categories.CustomizationConfig
+import mrfast.sbt.guis.GuiEditor
 import mrfast.sbt.utils.Utils
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager

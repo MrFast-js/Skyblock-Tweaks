@@ -1,9 +1,14 @@
 package mrfast.sbt.config.categories
 
+import gg.essential.api.utils.GuiUtil
 import mrfast.sbt.config.Config
-import mrfast.sbt.config.ConfigProperty
-import mrfast.sbt.config.ConfigType
+import mrfast.sbt.features.auctionHouse.AuctionFlipper
+import mrfast.sbt.managers.ConfigProperty
+import mrfast.sbt.managers.ConfigType
 import mrfast.sbt.features.general.TrashHighlighter
+import mrfast.sbt.guis.ConfigGui
+import mrfast.sbt.guis.GuiItemFilterPopup.*
+import mrfast.sbt.guis.GuiItemFilterPopup
 import java.awt.Color
 
 object DungeonConfig : Config() {
@@ -116,7 +121,18 @@ object DungeonConfig : Config() {
         parentName = "Highlight Trash"
     )
     var editTrash = Runnable {
-        TrashHighlighter.openTrashFile()
+        val popup = GuiItemFilterPopup(
+            "Trash Highlighter",
+            "itemTrash.json",
+            { TrashHighlighter.trashList },
+            { newFilters -> TrashHighlighter.trashList = newFilters },
+            TrashHighlighter.defaultList
+        )
+
+        popup.runOnClose {
+            GuiUtil.open(ConfigGui())
+        }
+        GuiUtil.open(popup)
     }
 
     @ConfigProperty(
