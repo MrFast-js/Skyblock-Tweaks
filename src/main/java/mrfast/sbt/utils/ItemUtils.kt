@@ -2,6 +2,7 @@ package mrfast.sbt.utils
 
 import mrfast.sbt.apis.ItemApi
 import mrfast.sbt.utils.Utils.clean
+import mrfast.sbt.utils.Utils.getRegexGroups
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.CompressedStreamTools
 import net.minecraft.nbt.NBTTagCompound
@@ -34,7 +35,8 @@ object ItemUtils {
             id == "PET" && nbt.hasKey("petInfo") -> {
                 val petInfoNbt = nbt.getString("petInfo") ?: return null
                 val petInfoJson = DevUtils.convertStringToJson(petInfoNbt) ?: return null
-                val petInfo = petInfoJson.asJsonObject ?: return null
+                if (!petInfoJson.isJsonObject) return null
+                val petInfo = petInfoJson.asJsonObject
                 val tierInt = petTierToInt(petInfo.get("tier").asString)
                 "${petInfo.get("type").asString};$tierInt"
             }
@@ -44,6 +46,11 @@ object ItemUtils {
                 runeType?.let {
                     "${runeType}_RUNE;${nbt.getCompoundTag("runes").getInteger(runeType)}"
                 }
+            }
+
+            id == "NEW_YEAR_CAKE" -> {
+                val year = nbt.getInteger("new_years_cake")
+                "NEW_YEAR_CAKE+$year"
             }
 
             else -> id
