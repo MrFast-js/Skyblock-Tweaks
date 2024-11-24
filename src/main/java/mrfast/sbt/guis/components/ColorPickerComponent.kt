@@ -4,7 +4,6 @@ import gg.essential.elementa.constraints.CenterConstraint
 import gg.essential.elementa.dsl.*
 import gg.essential.elementa.state.BasicState
 import gg.essential.elementa.state.constraint
-import gg.essential.vigilance.gui.settings.ColorPicker
 import gg.essential.vigilance.gui.settings.SettingComponent
 import java.awt.Color
 
@@ -20,7 +19,7 @@ class ColorPickerComponent(initialColor: Color) : SettingComponent() {
     init {
         constrain {
             color = Color(0x232323).constraint
-            width = 85.pixels
+            width = 120.pixels
             height = 90.pixels
         }
 
@@ -32,7 +31,7 @@ class ColorPickerComponent(initialColor: Color) : SettingComponent() {
             color = Color(18, 18, 18).constraint
         } childOf this
 
-        colorPicker = ColorPicker(initialColor, true).constrain {
+        colorPicker = ColorPicker(initialColor).constrain {
             x = CenterConstraint()
             y = CenterConstraint()
             width = 90.percent

@@ -65,8 +65,6 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
     private var animationFinished = false
 
 
-
-
     override fun onDrawScreen(matrixStack: UMatrixStack, mouseX: Int, mouseY: Int, partialTicks: Float) {
         if (CustomizationConfig.backgroundBlur) drawBackgroundBlur()
         else {
@@ -481,7 +479,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
                         }
                         if (parent != null) {
                             val featureOption =
-                                createFeatureOptionElement(feature, subcategory, parent.featureContainer)
+                                createFeatureOptionElement(feature, subcategory, parent)
                             if (featureOption != null) {
                                 parent.optionElements[feature.name] = featureOption
                                 featureOption.hide(true)
@@ -562,17 +560,20 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
     private fun createFeatureOptionElement(
         feature: ConfigManager.Feature,
         subcategory: ConfigManager.Subcategory,
-        parentComponent: UIComponent
+        parent: ConfigManager.Feature?
     ): UIContainer? {
         // Check if name, description or subcategory contain the search
+        val parentComponent = parent?.featureContainer ?: return null
 
         if (!(containsIgnoreCase(feature.name, searchQuery) ||
                     containsIgnoreCase(feature.description, searchQuery) ||
                     containsIgnoreCase(subcategory.name, searchQuery) ||
-                    containsIgnoreCase(feature.parentName, searchQuery))
+                    containsIgnoreCase(feature.parentName, searchQuery) ||
+                    containsIgnoreCase(parent.description, searchQuery)
+                )
         ) {
             var hasChildFittingSearch = false
-            for (optionElement in feature.optionElements) {
+            for (optionElement in parent.optionElements) {
                 if (containsIgnoreCase(optionElement.key, searchQuery)) {
                     hasChildFittingSearch = true
                 }
@@ -675,7 +676,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
                     height = 16.pixels
                     y = CenterConstraint()
                     x = 10.pixels(true)
-                } childOf featureComponent
+                } childOf featureComponent effect OutlineEffect(Color.YELLOW, 1f)
 
                 colorPicker.hide(true)
 
