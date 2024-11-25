@@ -73,6 +73,15 @@ object GeneralConfig : Config() {
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
+        name = "Hide Secret Count",
+        category = "General",
+        subcategory = "Stat Displays",
+        parentName = "Clean Action Bar"
+    )
+    var hideSecretsFromBar = true
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
         name = "Hide Defense",
         category = "General",
         subcategory = "Stat Displays",
@@ -226,7 +235,7 @@ object GeneralConfig : Config() {
         subcategory = "Stat Displays",
         parentName = "Health Number"
     )
-    var healthDisplayAbsorptionColor = CustomColor(255, 170, 0)
+    var healthDisplayAbsorptionColor = CustomColor(0xFFAA00)
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
@@ -236,6 +245,25 @@ object GeneralConfig : Config() {
         isParent = true
     )
     var speedNumber = false
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Secret Number",
+        category = "General",
+        subcategory = "Stat Displays",
+        isParent = true
+    )
+    var secretNumber = true
+
+    @ConfigProperty(
+        type = ConfigType.DROPDOWN,
+        name = "Text Style",
+        category = "General",
+        subcategory = "Stat Displays",
+        parentName = "Secret Number",
+        dropdownOptions = ["Shadowed", "Default", "Outlined"]
+    )
+    var secretNumberTextStyle = "Shadowed"
 
     @ConfigProperty(
         type = ConfigType.COLOR,
