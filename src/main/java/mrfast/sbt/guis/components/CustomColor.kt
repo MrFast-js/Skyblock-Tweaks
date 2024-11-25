@@ -18,7 +18,7 @@ class CustomColor(var r: Int, var g: Int, var b: Int, var a: Int, var chroma: Bo
         // Calls the primary constructor
     }
 
-    constructor(r: Int, b: Int, g: Int) : this(r, g, b, 255) {
+    constructor(r: Int, g: Int, b: Int) : this(r, g, b, 255) {
         // Converts the hexCode to RGB values and calls the primary constructor
     }
 
