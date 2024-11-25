@@ -1,6 +1,7 @@
 package mrfast.sbt.config.categories
 
 import mrfast.sbt.config.Config
+import mrfast.sbt.guis.components.CustomColor
 import mrfast.sbt.managers.ConfigProperty
 import mrfast.sbt.managers.ConfigType
 import java.awt.Color
@@ -35,7 +36,7 @@ object EventsConfig : Config() {
         subcategory = "Diana",
         parentName = "Diana Mythological Helper"
     )
-    var mythologicalHelperActualColor: Color = Color(255, 85, 85)
+    var mythologicalHelperActualColor = CustomColor(255, 85, 85)
 
     @ConfigProperty(
         type = ConfigType.COLOR,
@@ -45,7 +46,7 @@ object EventsConfig : Config() {
         subcategory = "Diana",
         parentName = "Diana Mythological Helper"
     )
-    var mythologicalHelperPredictionColor: Color = Color.WHITE
+    var mythologicalHelperPredictionColor = CustomColor(Color.WHITE)
 
     @ConfigProperty(
         type = ConfigType.COLOR,
@@ -55,7 +56,7 @@ object EventsConfig : Config() {
         subcategory = "Diana",
         parentName = "Diana Mythological Helper"
     )
-    var mythologicalHelperNextColor: Color = Color.CYAN
+    var mythologicalHelperNextColor = CustomColor(Color.CYAN)
 
     @ConfigProperty(
         type = ConfigType.COLOR,
@@ -65,7 +66,7 @@ object EventsConfig : Config() {
         subcategory = "Diana",
         parentName = "Diana Mythological Helper"
     )
-    var mythologicalHelperDefaultColor: Color = Color.GREEN
+    var mythologicalHelperDefaultColor = CustomColor(Color.GREEN)
 
     @ConfigProperty(
         type = ConfigType.COLOR,
@@ -75,7 +76,7 @@ object EventsConfig : Config() {
         subcategory = "Diana",
         parentName = "Diana Mythological Helper"
     )
-    var mythologicalHelperMobColor: Color = Color.RED
+    var mythologicalHelperMobColor = CustomColor(Color.RED)
 
     @ConfigProperty(
         type = ConfigType.COLOR,
@@ -85,5 +86,5 @@ object EventsConfig : Config() {
         subcategory = "Diana",
         parentName = "Diana Mythological Helper"
     )
-    var mythologicalHelperTreasureColor: Color = Color(0xFFAA00)
+    var mythologicalHelperTreasureColor = CustomColor(0xFFAA00)
 }

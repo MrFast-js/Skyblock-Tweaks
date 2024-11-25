@@ -7,7 +7,7 @@ import gg.essential.universal.UMatrixStack
 import java.awt.Color
 
 class OutlinedRoundedRectangle(
-    val borderColor: ConstantColorConstraint,
+    var borderColor: ConstantColorConstraint,
     val borderWidth: Float,
     val borderRadius: Float
 ) : UIRoundedRectangle(borderRadius) {

@@ -6,7 +6,9 @@ import com.google.gson.JsonSyntaxException
 import com.google.gson.internal.LinkedTreeMap
 import gg.essential.elementa.components.UIContainer
 import mrfast.sbt.SkyblockTweaks
+import mrfast.sbt.guis.components.CustomColor
 import net.minecraft.client.Minecraft
+import java.awt.Color
 import java.io.FileReader
 import java.io.FileWriter
 import java.lang.reflect.Field
@@ -92,6 +94,9 @@ abstract class ConfigManager {
                     // Add the Feature to the Subcategory
                     subcategory.features[fieldName] = feature
                     if (Runnable::class.java.isAssignableFrom(field.type)) continue
+//                    if (CustomColor::class.java.isAssignableFrom(field.type)) {
+//
+//                    }
 
                     fieldMap[fieldName] = value
                 }
@@ -129,8 +134,15 @@ abstract class ConfigManager {
                             val field: Field = config::class.java.getDeclaredField(propertyName)
                             field.isAccessible = true
 
+                            // Deserialize nested objects (e.g., CustomColor) if needed
                             if (loadedValue is LinkedTreeMap<*, *>) {
-                                loadedValue = gson.fromJson(loadedValue.toString(), field.type)
+                                // Check if it's a CustomColor object
+                                if (field.type == CustomColor::class.java) {
+                                    loadedValue = CustomColor(Color.RED).fromString(loadedValue.toString())
+                                } else {
+                                    // Otherwise, deserialize it to the appropriate type
+                                    loadedValue = gson.fromJson(loadedValue.toString(), field.type)
+                                }
                             }
 
                             saveDefault(propertyName, field.get(SkyblockTweaks.config))
@@ -138,7 +150,6 @@ abstract class ConfigManager {
                             try {
                                 field.set(SkyblockTweaks.config, loadedValue)
                             } catch (e: Exception) {
-                                e.printStackTrace()
                                 // type of config option changed, ie boolean -> int
                             }
                         }

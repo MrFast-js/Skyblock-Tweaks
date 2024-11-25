@@ -36,7 +36,7 @@ object EffectiveHealthNumber {
                 centerX,
                 0f,
                 GuiUtils.TextStyle.BLACK_OUTLINE,
-                effectiveHealthNumberColor,
+                effectiveHealthNumberColor.get(),
                 centered = true
             )
         }

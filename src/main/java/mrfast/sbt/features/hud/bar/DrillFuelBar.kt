@@ -32,11 +32,11 @@ object DrillFuelBar {
             val healthFillPerc = PlayerStats.drillFuel.toDouble() / PlayerStats.maxDrillFuel
 
             // Draw background/border
-            UIRoundedRectangle.drawRoundedRectangle(UMatrixStack(), 0f, 0f, 80f, 10f, 5f, drillFuelBarBarColor)
+            UIRoundedRectangle.drawRoundedRectangle(UMatrixStack(), 0f, 0f, 80f, 10f, 5f, drillFuelBarBarColor.get())
 
             UIRoundedRectangle.drawRoundedRectangle(
                 UMatrixStack(), 2f, 2f,
-                (78f * healthFillPerc).toFloat(), 8f, 3f, drillFuelBarColor
+                (78f * healthFillPerc).toFloat(), 8f, 3f, drillFuelBarColor.get()
             )
         }
 

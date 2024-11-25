@@ -1,6 +1,7 @@
 package mrfast.sbt.config.categories
 
 import mrfast.sbt.config.Config
+import mrfast.sbt.guis.components.CustomColor
 import mrfast.sbt.managers.ConfigProperty
 import mrfast.sbt.managers.ConfigType
 import java.awt.Color
@@ -44,7 +45,7 @@ object RenderingConfig : Config() {
         subcategory = "Misc",
         parentName = "Show Item Effective Area"
     )
-    var showItemEffectiveAreaColor = Color.RED
+    var showItemEffectiveAreaColor = CustomColor(Color.RED)
 
 
     @ConfigProperty(
@@ -85,7 +86,7 @@ object RenderingConfig : Config() {
         subcategory = "Misc",
         parentName = "Zealot / Bruiser Spawn Locations"
     )
-    var zealotBruiserLocUnready = Color(0x484848)
+    var zealotBruiserLocUnready = CustomColor(0x484848)
 
     @ConfigProperty(
         type = ConfigType.COLOR,
@@ -95,7 +96,7 @@ object RenderingConfig : Config() {
         subcategory = "Misc",
         parentName = "Zealot / Bruiser Spawn Locations"
     )
-    var zealotBruiserLocReady = Color(0x6A5ACD)
+    var zealotBruiserLocReady = CustomColor(0x6A5ACD)
 
 
     @ConfigProperty(
@@ -115,7 +116,7 @@ object RenderingConfig : Config() {
         subcategory = "Misc",
         parentName = "Show Advanced Dragon Hitbox"
     )
-    var advancedDragonHitboxColor = Color(0x55FF91)
+    var advancedDragonHitboxColor = CustomColor(0x55FF91)
 
 
     @ConfigProperty(
@@ -125,7 +126,7 @@ object RenderingConfig : Config() {
         category = "Rendering",
         subcategory = "Path Tracing §7(/path)"
     )
-    var pathTracingColor1 = Color(0x55FF91)
+    var pathTracingColor1 = CustomColor(0x55FF91)
 
     @ConfigProperty(
         type = ConfigType.COLOR,
@@ -134,7 +135,7 @@ object RenderingConfig : Config() {
         category = "Rendering",
         subcategory = "Path Tracing §7(/path)"
     )
-    var pathTracingColor2 = Color(0x5590FF)
+    var pathTracingColor2 = CustomColor(0x5590FF)
 
     @ConfigProperty(
         type = ConfigType.NUMBER,

@@ -9,6 +9,7 @@ import mrfast.sbt.features.general.TrashHighlighter
 import mrfast.sbt.guis.ConfigGui
 import mrfast.sbt.guis.GuiItemFilterPopup.*
 import mrfast.sbt.guis.GuiItemFilterPopup
+import mrfast.sbt.guis.components.CustomColor
 import java.awt.Color
 
 object DungeonConfig : Config() {
@@ -79,7 +80,7 @@ object DungeonConfig : Config() {
         subcategory = "Highlights",
         parentName = "Highlight Starred Mobs"
     )
-    var outlineStarredMobsColor = Color(0xFFAA00)
+    var outlineStarredMobsColor = CustomColor(0xFFAA00)
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
@@ -99,7 +100,7 @@ object DungeonConfig : Config() {
         subcategory = "Highlights",
         parentName = "Highlight Correct Livid"
     )
-    var highlightCorrectLividColor = Color(0x00FFFF)
+    var highlightCorrectLividColor = CustomColor(0x00FFFF)
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,

@@ -19,7 +19,7 @@ object HighlightStarredMobs {
 
         val mob = SkyblockMobDetector.getSkyblockMob(event.entity) ?: return
         if (mob.mobNameEntity.customNameTag.clean().startsWith("✯") && event.entity == mob.skyblockMob) {
-            OutlineUtils.outlineEntity(event, outlineStarredMobsColor)
+            OutlineUtils.outlineEntity(event, outlineStarredMobsColor.get())
         }
     }
 }

@@ -31,7 +31,7 @@ object RiftTimeBar {
             val timeFillPerc = riftTime.toDouble() / max
 
             // Draw background/border
-            UIRoundedRectangle.drawRoundedRectangle(UMatrixStack(), 0f, 0f, 80f, 10f, 5f, RiftConfig.riftBarBarColor)
+            UIRoundedRectangle.drawRoundedRectangle(UMatrixStack(), 0f, 0f, 80f, 10f, 5f, RiftConfig.riftBarBarColor.get())
 
             // Draw normal blue mana
             UIRoundedRectangle.drawRoundedRectangle(
@@ -41,7 +41,7 @@ object RiftTimeBar {
                 (78f * timeFillPerc).toFloat(),
                 8f,
                 3f,
-                RiftConfig.riftBarFillColor
+                RiftConfig.riftBarFillColor.get()
             )
         }
 
@@ -51,7 +51,7 @@ object RiftTimeBar {
             val timeFillPerc = riftTime.toDouble() / max
 
             // Draw background/border
-            UIRoundedRectangle.drawRoundedRectangle(UMatrixStack(), 0f, 0f, 80f, 10f, 5f, RiftConfig.riftBarBarColor)
+            UIRoundedRectangle.drawRoundedRectangle(UMatrixStack(), 0f, 0f, 80f, 10f, 5f, RiftConfig.riftBarBarColor.get())
 
             // Draw normal blue mana
             UIRoundedRectangle.drawRoundedRectangle(
@@ -61,7 +61,7 @@ object RiftTimeBar {
                 (78f * timeFillPerc).toFloat(),
                 8f,
                 3f,
-                RiftConfig.riftBarFillColor
+                RiftConfig.riftBarFillColor.get()
             )
         }
 

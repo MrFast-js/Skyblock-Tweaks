@@ -21,8 +21,8 @@ object NearlyCoherentFishingRodRadius {
             Utils.mc.thePlayer.positionVector,
             8f,
             72,
-            RiftConfig.nearlyCoherentRodRadiusColor,
-            RiftConfig.nearlyCoherentRodRadiusColor,
+            RiftConfig.nearlyCoherentRodRadiusColor.get(),
+            RiftConfig.nearlyCoherentRodRadiusColor.get(),
             event.partialTicks
         )
     }

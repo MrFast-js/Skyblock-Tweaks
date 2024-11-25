@@ -48,7 +48,7 @@ object ManaBar {
                 ((80f - borderWidth) * manaFillPerc).toFloat(),
                 10f - borderWidth,
                 3f,
-                manaBarManaColor
+                manaBarManaColor.get()
             )
 
             // Draw extra cyan overflow
@@ -65,7 +65,7 @@ object ManaBar {
                     (80 - borderWidth),
                     (10 - borderWidth),
                     3f,
-                    manaBarOverflowColor
+                    manaBarOverflowColor.get()
                 )
             }
         }

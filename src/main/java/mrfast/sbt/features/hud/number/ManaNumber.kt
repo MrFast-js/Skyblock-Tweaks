@@ -29,7 +29,7 @@ object ManaNumber {
         override fun draw() {
             val number = "${PlayerStats.mana.formatNumber()}/${PlayerStats.maxMana.formatNumber()}"
             val centerX = this.width / 2f
-            GuiUtils.drawText(number, centerX, 0f, GuiUtils.TextStyle.BLACK_OUTLINE, manaNumberColor, centered = true)
+            GuiUtils.drawText(number, centerX, 0f, GuiUtils.TextStyle.BLACK_OUTLINE, manaNumberColor.get(), centered = true)
         }
 
         override fun isActive(): Boolean {

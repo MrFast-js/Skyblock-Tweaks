@@ -1,6 +1,7 @@
 package mrfast.sbt.config.categories
 
 import mrfast.sbt.config.Config
+import mrfast.sbt.guis.components.CustomColor
 import mrfast.sbt.managers.ConfigProperty
 import mrfast.sbt.managers.ConfigType
 import java.awt.Color
@@ -46,15 +47,6 @@ object CustomizationConfig : Config() {
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
-        name = "Chroma Config Border",
-        description = "Woah rainbows",
-        category = "§2§rCustomization",
-        subcategory = "Theme"
-    )
-    var chromaConfigBorder = true
-
-    @ConfigProperty(
-        type = ConfigType.TOGGLE,
         name = "Background Blur",
         description = "",
         category = "§2§rCustomization",
@@ -90,7 +82,7 @@ object CustomizationConfig : Config() {
         subcategory = "Theme",
         parentName = "Custom Menu Colors"
     )
-    var onSwitchColor: Color = Color.GREEN
+    var onSwitchColor = CustomColor(Color.GREEN)
 
     @ConfigProperty(
         type = ConfigType.COLOR,
@@ -100,7 +92,7 @@ object CustomizationConfig : Config() {
         subcategory = "Theme",
         parentName = "Custom Menu Colors"
     )
-    var offSwitchColor: Color = Color.GRAY
+    var offSwitchColor = CustomColor(Color.GRAY)
 
     @ConfigProperty(
         type = ConfigType.COLOR,
@@ -110,7 +102,7 @@ object CustomizationConfig : Config() {
         subcategory = "Theme",
         parentName = "Custom Menu Colors"
     )
-    var featureBorderColor: Color = Color.GRAY
+    var featureBorderColor = CustomColor(Color.GRAY)
 
     @ConfigProperty(
         type = ConfigType.COLOR,
@@ -120,7 +112,7 @@ object CustomizationConfig : Config() {
         subcategory = "Theme",
         parentName = "Custom Menu Colors"
     )
-    var windowBorderColor: Color = Color.CYAN
+    var windowBorderColor = CustomColor(Color.CYAN)
 
     @ConfigProperty(
         type = ConfigType.COLOR,
@@ -130,7 +122,7 @@ object CustomizationConfig : Config() {
         subcategory = "Theme",
         parentName = "Custom Menu Colors"
     )
-    var featureBackgroundColor: Color = Color(34, 34, 34)
+    var featureBackgroundColor = CustomColor(34, 34, 34)
 
     @ConfigProperty(
         type = ConfigType.COLOR,
@@ -140,7 +132,7 @@ object CustomizationConfig : Config() {
         subcategory = "Theme",
         parentName = "Custom Menu Colors"
     )
-    var headerBackgroundColor: Color = Color(34, 34, 34)
+    var headerBackgroundColor= CustomColor(34, 34, 34)
 
     @ConfigProperty(
         type = ConfigType.COLOR,
@@ -150,7 +142,7 @@ object CustomizationConfig : Config() {
         subcategory = "Theme",
         parentName = "Custom Menu Colors"
     )
-    var mainBackgroundColor: Color = Color(22, 22, 22)
+    var mainBackgroundColor = CustomColor(22, 22, 22)
 
     @ConfigProperty(
         type = ConfigType.COLOR,
@@ -160,7 +152,7 @@ object CustomizationConfig : Config() {
         subcategory = "Theme",
         parentName = "Custom Menu Colors"
     )
-    var sidebarBackgroundColor: Color = Color(28, 28, 28)
+    var sidebarBackgroundColor = CustomColor(28, 28, 28)
 
     @ConfigProperty(
         type = ConfigType.COLOR,
@@ -170,7 +162,7 @@ object CustomizationConfig : Config() {
         subcategory = "Theme",
         parentName = "Custom Menu Colors"
     )
-    var guiLineColors: Color = Color(130, 130, 130)
+    var guiLineColors = CustomColor(130, 130, 130)
 
     @ConfigProperty(
         type = ConfigType.COLOR,
@@ -180,7 +172,7 @@ object CustomizationConfig : Config() {
         subcategory = "Theme",
         parentName = "Custom Menu Colors"
     )
-    var defaultCategoryColor: Color = Color(180, 180, 180)
+    var defaultCategoryColor = CustomColor(180, 180, 180)
 
     @ConfigProperty(
         type = ConfigType.COLOR,
@@ -190,7 +182,7 @@ object CustomizationConfig : Config() {
         subcategory = "Theme",
         parentName = "Custom Menu Colors"
     )
-    var hoveredCategoryColor: Color = Color(255, 255, 255)
+    var hoveredCategoryColor = CustomColor(255, 255, 255)
 
     @ConfigProperty(
         type = ConfigType.COLOR,
@@ -200,5 +192,5 @@ object CustomizationConfig : Config() {
         subcategory = "Theme",
         parentName = "Custom Menu Colors"
     )
-    var selectedCategoryColor: Color = Color(0, 255, 255)
+    var selectedCategoryColor = CustomColor(0, 255, 255)
 }

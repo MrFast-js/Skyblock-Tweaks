@@ -1,6 +1,7 @@
 package mrfast.sbt.config.categories
 
 import mrfast.sbt.config.Config
+import mrfast.sbt.guis.components.CustomColor
 import mrfast.sbt.managers.ConfigProperty
 import mrfast.sbt.managers.ConfigType
 import java.awt.Color
@@ -96,7 +97,7 @@ object GeneralConfig : Config() {
         subcategory = "Stat Displays",
         parentName = "Health Bar"
     )
-    var healthBarHealthColor = Color.RED
+    var healthBarHealthColor = CustomColor(Color.RED)
 
     @ConfigProperty(
         type = ConfigType.COLOR,
@@ -105,7 +106,7 @@ object GeneralConfig : Config() {
         subcategory = "Stat Displays",
         parentName = "Health Bar"
     )
-    var healthBarAbsorbColor = Color(0xFFAA00)
+    var healthBarAbsorbColor = CustomColor(0xFFAA00)
 
     @ConfigProperty(
         type = ConfigType.COLOR,
@@ -114,7 +115,7 @@ object GeneralConfig : Config() {
         subcategory = "Stat Displays",
         parentName = "Health Bar"
     )
-    var healthBarBarColor = Color.BLACK
+    var healthBarBarColor = CustomColor(Color.BLACK)
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
@@ -133,7 +134,7 @@ object GeneralConfig : Config() {
         subcategory = "Stat Displays",
         parentName = "Mana Bar"
     )
-    var manaBarManaColor = Color(0x5555FF)
+    var manaBarManaColor = CustomColor(0x5555FF)
 
     @ConfigProperty(
         type = ConfigType.COLOR,
@@ -142,7 +143,7 @@ object GeneralConfig : Config() {
         subcategory = "Stat Displays",
         parentName = "Mana Bar"
     )
-    var manaBarOverflowColor = Color(0x55FFFF)
+    var manaBarOverflowColor = CustomColor(0x55FFFF)
 
     @ConfigProperty(
         type = ConfigType.COLOR,
@@ -179,7 +180,7 @@ object GeneralConfig : Config() {
         subcategory = "Stat Displays",
         parentName = "Drill Fuel Bar"
     )
-    var drillFuelBarColor = Color(0x0F540F)
+    var drillFuelBarColor = CustomColor(0x0F540F)
 
     @ConfigProperty(
         type = ConfigType.COLOR,
@@ -188,7 +189,7 @@ object GeneralConfig : Config() {
         subcategory = "Stat Displays",
         parentName = "Drill Fuel Bar"
     )
-    var drillFuelBarBarColor = Color.BLACK
+    var drillFuelBarBarColor = CustomColor(Color.BLACK)
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
@@ -216,7 +217,7 @@ object GeneralConfig : Config() {
         subcategory = "Stat Displays",
         parentName = "Health Number"
     )
-    var healthDisplayColor = Color(255, 85, 85)
+    var healthDisplayColor = CustomColor(255, 85, 85)
 
     @ConfigProperty(
         type = ConfigType.COLOR,
@@ -225,7 +226,7 @@ object GeneralConfig : Config() {
         subcategory = "Stat Displays",
         parentName = "Health Number"
     )
-    var healthDisplayAbsorptionColor = Color(255, 170, 0)
+    var healthDisplayAbsorptionColor = CustomColor(255, 170, 0)
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
@@ -243,7 +244,7 @@ object GeneralConfig : Config() {
         subcategory = "Stat Displays",
         parentName = "Speed Number"
     )
-    var speedNumberColor = Color(255, 255, 255)
+    var speedNumberColor = CustomColor(255, 255, 255)
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
@@ -270,7 +271,7 @@ object GeneralConfig : Config() {
         subcategory = "Stat Displays",
         parentName = "Effective Health Number"
     )
-    var effectiveHealthNumberColor = Color(0, 170, 0)
+    var effectiveHealthNumberColor = CustomColor(0, 170, 0)
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
@@ -288,7 +289,7 @@ object GeneralConfig : Config() {
         subcategory = "Stat Displays",
         parentName = "Drill Fuel Number"
     )
-    var drillFuelDisplayColor = Color(0x167716)
+    var drillFuelDisplayColor = CustomColor(0x167716)
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
@@ -306,7 +307,7 @@ object GeneralConfig : Config() {
         subcategory = "Stat Displays",
         parentName = "Mana Number"
     )
-    var manaNumberColor = Color(85, 85, 255)
+    var manaNumberColor = CustomColor(0x5555FF)
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
@@ -323,7 +324,7 @@ object GeneralConfig : Config() {
         subcategory = "Stat Displays",
         parentName = "Overflow Mana Number"
     )
-    var manaOverflowNumberColor = Color(85, 85, 255)
+    var manaOverflowNumberColor = CustomColor(85, 85, 255)
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
@@ -341,7 +342,7 @@ object GeneralConfig : Config() {
         subcategory = "Stat Displays",
         parentName = "Defense Number"
     )
-    var defenseNumberColor = Color(85, 255, 85)
+    var defenseNumberColor = CustomColor(85, 85, 255)
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,

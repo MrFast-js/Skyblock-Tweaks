@@ -74,7 +74,7 @@ object FireFreezeHelper {
 
             GuiUtils.drawText(
                 currentDisplayText, centerX, 0f, GuiUtils.TextStyle.DROP_SHADOW,
-                GeneralConfig.effectiveHealthNumberColor, centered = true
+                GeneralConfig.effectiveHealthNumberColor.get(), centered = true
             )
             GlStateManager.scale(1 / textScale, 1 / textScale, 1.0)
         }
@@ -85,7 +85,7 @@ object FireFreezeHelper {
 
             GuiUtils.drawText(
                 "§cFire Freeze in 5 seconds!", centerX, 0f, GuiUtils.TextStyle.DROP_SHADOW,
-                GeneralConfig.effectiveHealthNumberColor, centered = true
+                GeneralConfig.effectiveHealthNumberColor.get(), centered = true
             )
             GlStateManager.scale(1 / textScale, 1 / textScale, 1.0)
         }

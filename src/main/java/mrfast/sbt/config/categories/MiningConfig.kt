@@ -1,6 +1,7 @@
 package mrfast.sbt.config.categories
 
 import mrfast.sbt.config.Config
+import mrfast.sbt.guis.components.CustomColor
 import mrfast.sbt.managers.ConfigProperty
 import mrfast.sbt.managers.ConfigType
 import java.awt.Color
@@ -24,7 +25,7 @@ object MiningConfig : Config() {
         parentName = "Crit Particle Highlight",
         subcategory = "Render"
     )
-    var CritParticleHighlightUnfocused = Color.WHITE
+    var CritParticleHighlightUnfocused = CustomColor(Color.WHITE)
 
     @ConfigProperty(
         type = ConfigType.COLOR,
@@ -34,7 +35,7 @@ object MiningConfig : Config() {
         parentName = "Crit Particle Highlight",
         subcategory = "Render"
     )
-    var CritParticleHighlightFocused = Color.RED
+    var CritParticleHighlightFocused = CustomColor(Color.RED)
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,

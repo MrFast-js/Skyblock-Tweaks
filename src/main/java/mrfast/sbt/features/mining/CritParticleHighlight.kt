@@ -79,7 +79,7 @@ object CritParticleHighlight {
             ) != null
         ) MiningConfig.CritParticleHighlightFocused else MiningConfig.CritParticleHighlightUnfocused
 
-        RenderUtils.drawFilledBB(aabb, color, event.partialTicks, 0.5f)
+        RenderUtils.drawFilledBB(aabb, color.get(), event.partialTicks, 0.5f)
     }
 
 }

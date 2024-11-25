@@ -30,7 +30,7 @@ object DrillFuelNumber {
         override fun draw() {
             val display = "${PlayerStats.drillFuel.formatNumber()}/${PlayerStats.maxDrillFuel.formatNumber()} Drill Fuel"
             val centerX = this.width / 2f
-            GuiUtils.drawText(display, centerX, 0f, GuiUtils.TextStyle.BLACK_OUTLINE, drillFuelDisplayColor, centered = true)
+            GuiUtils.drawText(display, centerX, 0f, GuiUtils.TextStyle.BLACK_OUTLINE, drillFuelDisplayColor.get(), centered = true)
         }
 
         override fun isActive(): Boolean {

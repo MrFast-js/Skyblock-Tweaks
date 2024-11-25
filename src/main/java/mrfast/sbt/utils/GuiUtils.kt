@@ -4,6 +4,7 @@ import gg.essential.elementa.dsl.constraint
 import gg.essential.elementa.state.BasicState
 import gg.essential.universal.UMatrixStack
 import mrfast.sbt.config.categories.DeveloperConfig
+import mrfast.sbt.guis.components.ColorPickerComponent
 import mrfast.sbt.guis.components.OutlinedRoundedRectangle
 import mrfast.sbt.guis.components.shader.GaussianBlur
 import mrfast.sbt.guis.components.shader.ShaderManager
@@ -24,21 +25,20 @@ import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL14
 import java.awt.Color
 import java.util.*
+import kotlin.math.sin
 
 
 object GuiUtils {
     var rainbowColor = BasicState(Color.CYAN)
-    var rainbowHueCount = 0
 
     init {
         Timer().scheduleAtFixedRate(object : TimerTask() {
             override fun run() {
-                rainbowHueCount += 5
-                val hue = rainbowHueCount % 360
-                if (rainbowHueCount > 360) rainbowHueCount = 0
-
-                val outlineColor = Color.HSBtoRGB(hue.toFloat() / 360f, 1f, 1f)
-                rainbowColor.set(Color(outlineColor))
+                val time = System.currentTimeMillis() / 4  // Slower rate
+                val red = (sin(time / 200.0) * 127 + 128).toInt()
+                val green = (sin(time / 200.0 + 2) * 127 + 128).toInt()
+                val blue = (sin(time / 200.0 + 4) * 127 + 128).toInt()
+                rainbowColor.set(Color(red, green, blue))
             }
         }, 0, 100)
     }

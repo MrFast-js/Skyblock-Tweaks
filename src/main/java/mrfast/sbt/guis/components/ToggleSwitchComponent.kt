@@ -21,7 +21,7 @@ class ToggleSwitchComponent(initValue: Boolean) : UIRoundedRectangle(0f) {
             radius = (9.5f).pixels
             width = 28.pixels
             height = 16.pixels
-            color = if (activated) activatedColor.constraint else deactivatedColor.constraint
+            color = if (activated) CustomizationConfig.onSwitchColor.colorState.constraint else CustomizationConfig.offSwitchColor.colorState.constraint
         }
 
         val block = UICircle(7.5f)
@@ -56,15 +56,11 @@ class ToggleSwitchComponent(initValue: Boolean) : UIRoundedRectangle(0f) {
                 setColorAnimation(
                     Animations.IN_OUT_CIRCULAR,
                     0.5f,
-                    if (activated) activatedColor.constraint else deactivatedColor.constraint
+                    if (activated) CustomizationConfig.onSwitchColor.colorState.constraint else  CustomizationConfig.offSwitchColor.colorState.constraint
                 )
             }
             Utils.mc.thePlayer.playSound("gui.button.press", 0.25f, 1f)
         }
     }
 
-    companion object {
-        var deactivatedColor = BasicState(CustomizationConfig.offSwitchColor)
-        var activatedColor = BasicState(CustomizationConfig.onSwitchColor)
-    }
 }

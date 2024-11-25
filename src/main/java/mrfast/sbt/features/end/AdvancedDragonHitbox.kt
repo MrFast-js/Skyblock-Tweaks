@@ -30,7 +30,7 @@ object AdvancedDragonHitbox {
                 )
                 RenderUtils.drawSpecialBB(
                     aabb,
-                    RenderingConfig.advancedDragonHitboxColor,
+                    RenderingConfig.advancedDragonHitboxColor.get(),
                     event.partialTicks
                 )
             }

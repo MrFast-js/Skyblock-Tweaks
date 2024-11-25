@@ -33,12 +33,12 @@ object VampireAnchorHighlight {
                                 playerPos,
                                 skullPos,
                                 2,
-                                RiftConfig.highlightVampireAnchorColor,
+                                RiftConfig.highlightVampireAnchorColor.get(),
                                 event.partialTicks
                             )
                         }
                         val bb = it.entityBoundingBox.offset(0.0, 1.5, 0.0).expand(0.2, 0.0, 0.2)
-                        RenderUtils.drawSpecialBB(bb, RiftConfig.highlightVampireAnchorColor, event.partialTicks)
+                        RenderUtils.drawSpecialBB(bb, RiftConfig.highlightVampireAnchorColor.get(), event.partialTicks)
                         GlStateManager.enableDepth()
                     }
                 }

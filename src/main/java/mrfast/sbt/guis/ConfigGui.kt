@@ -114,8 +114,8 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
     init {
 
         // Create a background panel
-        val background = OutlinedRoundedRectangle(mainBorderColorState.constraint, 2f, mainBorderRadius).constrain {
-            color = mainBackgroundColorState.constraint
+        val background = OutlinedRoundedRectangle(mainBorderColorState.get().colorState.constraint, 2f, mainBorderRadius).constrain {
+            color = mainBackgroundColorState.get().colorState.constraint
             width = 4.pixels
             height = 4.pixels
             x = CenterConstraint()
@@ -129,6 +129,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
 
         dynamicColorUpdateTimer.cancel()
         updateGuiColors()
+        updateThemeColors()
 
         if (showInspector) {
             Inspector(background) childOf window
@@ -140,14 +141,14 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
             height = min(30.pixels, 10.percent)
             x = 2.pixels()
             y = 2.pixels()
-            color = headerBackgroundColorState.constraint
+            color = headerBackgroundColorState.get().colorState.constraint
         } childOf background effect ScissorEffect()
 
         if (CustomizationConfig.developerMode) {
             val statusColor = if (SocketUtils.socketConnected) Color(85, 255, 85) else Color(255, 85, 85)
 
-            val socketStatusButton = OutlinedRoundedRectangle(guiLineColorsState.constraint, 1f, 3f).constrain {
-                color = mainBackgroundColorState.constraint
+            val socketStatusButton = OutlinedRoundedRectangle(guiLineColorsState.get().colorState.constraint, 1f, 3f).constrain {
+                color = mainBackgroundColorState.get().colorState.constraint
                 width = 16.pixels
                 height = 16.pixels
                 x = 8.pixels
@@ -178,12 +179,12 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
             socketStatusButton.addTooltip(lore)
         }
 
-        val editGuiLocationsButton = OutlinedRoundedRectangle(guiLineColorsState.constraint, 1f, 3f).constrain {
+        val editGuiLocationsButton = OutlinedRoundedRectangle(guiLineColorsState.get().colorState.constraint, 1f, 3f).constrain {
             width = 16.pixels
             height = 16.pixels
             x = if (CustomizationConfig.developerMode) SiblingConstraintFixed(8f, false) else 8.pixels
             y = CenterConstraint()
-            color = mainBackgroundColorState.constraint
+            color = mainBackgroundColorState.get().colorState.constraint
         } childOf header
         val editGuiLocationsSymbol = UIText("✎").constrain {
             x = CenterConstraint();y = CenterConstraint();color = Color(0xFFFF55).constraint
@@ -206,8 +207,8 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
 
         modVersion.setTextScale(0.75.pixels)
 
-        val searchBar = OutlinedRoundedRectangle(guiLineColorsState.constraint, 1f, 3f).constrain {
-            color = mainBackgroundColorState.constraint
+        val searchBar = OutlinedRoundedRectangle(guiLineColorsState.get().colorState.constraint, 1f, 3f).constrain {
+            color = mainBackgroundColorState.get().colorState.constraint
             width = MinConstraint(12.percent, 100.pixels)
             height = 12.pixels
             x = PixelConstraint(10f, true)
@@ -231,8 +232,8 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
         }
 
         if (showUpdateButton) {
-            val updateButton = OutlinedRoundedRectangle(guiLineColorsState.constraint, 1f, 3f).constrain {
-                color = mainBackgroundColorState.constraint
+            val updateButton = OutlinedRoundedRectangle(guiLineColorsState.get().colorState.constraint, 1f, 3f).constrain {
+                color = mainBackgroundColorState.get().colorState.constraint
                 width = 16.pixels
                 height = 16.pixels
                 x = SiblingConstraintFixed(15f, true)
@@ -261,7 +262,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
             y = 34.pixels
             width = 21.percent - 4.pixels
             height = 100.percent - 32.pixels - 4.pixels
-            color = sidebarBackgroundColorState.constraint
+            color = sidebarBackgroundColorState.get().colorState.constraint
         } childOf background effect ScissorEffect()
 
         val categoryList = ScrollComponent("").constrain {
@@ -328,7 +329,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
                 x = CenterConstraint()
                 y = actualY
                 height = 8.pixels
-                color = defaultCategoryColorState.constraint
+                color = defaultCategoryColorState.get().colorState.constraint
             } childOf categoryList
 
             if (selectedCategory == category.name) {
@@ -340,9 +341,9 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
             categoryComponent.onMouseEnter {
                 // Don't do hover colors if already colored
                 if (selectedCategory != category.name) {
-                    if (!categoryComponent.getColor().equals(hoveredCategoryColorState.constraint)) {
+                    if (!categoryComponent.getColor().equals(hoveredCategoryColorState.get().colorState.constraint)) {
                         categoryComponent.animate {
-                            setColorAnimation(Animations.OUT_EXP, 0.2f, hoveredCategoryColorState.constraint)
+                            setColorAnimation(Animations.OUT_EXP, 0.2f, hoveredCategoryColorState.get().colorState.constraint)
                         }
                     }
                 }
@@ -350,9 +351,9 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
             categoryComponent.onMouseLeave {
                 // Don't do hover colors if already colored
                 if (selectedCategory != category.name) {
-                    if (!categoryComponent.getColor().equals(defaultCategoryColorState.constraint)) {
+                    if (!categoryComponent.getColor().equals(defaultCategoryColorState.get().colorState.constraint)) {
                         categoryComponent.animate {
-                            setColorAnimation(Animations.OUT_EXP, 0.2f, defaultCategoryColorState.constraint)
+                            setColorAnimation(Animations.OUT_EXP, 0.2f, defaultCategoryColorState.get().colorState.constraint)
                         }
                     }
                 }
@@ -400,13 +401,6 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
                 featureBackgroundColorState.set(CustomizationConfig.featureBackgroundColor)
                 headerBackgroundColorState.set(CustomizationConfig.headerBackgroundColor)
                 featureBorderColorState.set(CustomizationConfig.featureBorderColor)
-
-                ToggleSwitchComponent.activatedColor.set(CustomizationConfig.onSwitchColor)
-                ToggleSwitchComponent.deactivatedColor.set(CustomizationConfig.offSwitchColor)
-
-                if (CustomizationConfig.chromaConfigBorder) {
-                    mainBorderColorState.set(mrfast.sbt.utils.GuiUtils.rainbowColor.get())
-                }
             }
         }, 0, 100)
     }
@@ -414,10 +408,10 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
 
     private fun updateSelectedCategoryColor(new: UIComponent, name: String) {
         selectedCategoryComponent?.animate {
-            setColorAnimation(Animations.OUT_EXP, 0.2f, defaultCategoryColorState.constraint)
+            setColorAnimation(Animations.OUT_EXP, 0.2f, defaultCategoryColorState.get().colorState.constraint)
         }
         new.animate {
-            setColorAnimation(Animations.OUT_EXP, 0.2f, selectedCategoryColorState.constraint)
+            setColorAnimation(Animations.OUT_EXP, 0.2f, selectedCategoryColorState.get().colorState.constraint)
         }
         selectedCategoryComponent = new
         selectedCategory = name
@@ -522,12 +516,12 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
             height = ChildBasedSizeConstraint(2f)
         } childOf subcategoryComponent effect ScissorEffect()
 
-        val featureBackground = OutlinedRoundedRectangle(featureBorderColorState.constraint, 1f, 6f).constrain {
+        val featureBackground = OutlinedRoundedRectangle(featureBorderColorState.get().colorState.constraint, 1f, 6f).constrain {
             x = CenterConstraint()
             y = SiblingConstraintFixed(6f)
             width = if (feature.parentName.isEmpty()) 100.percent else 90.percent
             height = ChildBasedSizeConstraint(2f)
-            color = featureBackgroundColorState.constraint
+            color = featureBackgroundColorState.get().colorState.constraint
         } childOf featureContainer
 
         val secondContainer = UIContainer().constrain {
@@ -570,7 +564,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
                     containsIgnoreCase(subcategory.name, searchQuery) ||
                     containsIgnoreCase(feature.parentName, searchQuery) ||
                     containsIgnoreCase(parent.description, searchQuery)
-                )
+                    )
         ) {
             var hasChildFittingSearch = false
             for (optionElement in parent.optionElements) {
@@ -666,17 +660,18 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
 
             }
             if (feature.type == ConfigType.COLOR) {
-                val colorValue = feature.value as Color
-                val colorPicker = ColorPickerComponent(colorValue).constrain {
-                    x = 10.pixels(true)
-                } childOf featureComponent
+                val customColor = if (feature.value is Color) CustomColor(feature.value as Color) else (feature.value as CustomColor)
 
-                val colorDisplay = UIBlock(colorValue.constraint).constrain {
+                val colorDisplay = UIBlock(customColor.colorState).constrain {
                     width = 28.pixels
                     height = 16.pixels
                     y = CenterConstraint()
                     x = 10.pixels(true)
                 } childOf featureComponent effect OutlineEffect(Color.YELLOW, 1f)
+
+                val colorPicker = ColorPickerComponent(customColor,colorDisplay).constrain {
+                    x = 10.pixels(true)
+                } childOf featureComponent
 
                 colorPicker.hide(true)
 
@@ -722,13 +717,24 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
                     val defaultValue = ConfigManager.defaultMap[feature.field.name] ?: Color.GRAY
 
                     feature.field.set(SkyblockTweaks.config, defaultValue)
-                    colorDisplay.setColor(defaultValue as Color)
-                    colorPicker.setPickerColor(defaultValue)
+                    if(defaultValue is Color) {
+                        colorDisplay.setColor(defaultValue)
+                        colorPicker.setPickerColor(defaultValue)
+                        customColor.colorState.set(defaultValue)
+                    }
+                    if(defaultValue is CustomColor) {
+                        customColor.colorState.set(defaultValue.initialColor)
+                        colorDisplay.setColor(defaultValue.initialColor)
+                        colorPicker.setPickerColor(defaultValue.initialColor)
+                    }
                 }
-
                 colorPicker.onValueChange { value: Any? ->
-                    colorDisplay.setColor(value as Color)
-                    feature.field.set(SkyblockTweaks.config, value)
+                    if(colorPicker.chroma) {
+                        colorDisplay.setColor(mrfast.sbt.utils.GuiUtils.rainbowColor.constraint)
+                    } else {
+                        colorDisplay.setColor((value as CustomColor).get())
+                    }
+                    feature.field.set(SkyblockTweaks.config, (value as CustomColor))
                 }
 
                 ignoredHeights.addAll(mutableListOf(colorDisplay, resetImg, colorPicker))
@@ -833,11 +839,11 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
                     height = 18.pixels
                     y = CenterConstraint()
                     x = 10.pixels(alignOpposite = true)
-                } childOf featureComponent effect OutlineEffect(CustomizationConfig.onSwitchColor, 1f)
+                } childOf featureComponent effect OutlineEffect(CustomizationConfig.onSwitchColor.colorState.get(), 1f)
 
                 button.onMouseEnterRunnable {
                     button.animate {
-                        setColorAnimation(Animations.OUT_EXP, 0.5f, headerBackgroundColorState.constraint)
+                        setColorAnimation(Animations.OUT_EXP, 0.5f, headerBackgroundColorState.get().colorState.constraint)
                     }
                 }
                 button.onMouseLeaveRunnable {
@@ -933,58 +939,58 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
         val theme = CustomizationConfig.selectedTheme
         // TODO: Switch to classes
         if (theme == "Gray") {
-            CustomizationConfig.sidebarBackgroundColor = Color(0x1c1c1c)
-            CustomizationConfig.selectedCategoryColor = Color(0xffffff)
+            CustomizationConfig.sidebarBackgroundColor.set(0x1c1c1c)
+            CustomizationConfig.selectedCategoryColor.set(0xffffff)
 
-            CustomizationConfig.mainBackgroundColor = Color(0x161616)
-            CustomizationConfig.windowBorderColor = Color.GRAY
-            CustomizationConfig.hoveredCategoryColor = Color(0xcdcccc)
+            CustomizationConfig.mainBackgroundColor.set(0x161616)
+            CustomizationConfig.windowBorderColor.set(Color.GRAY)
+            CustomizationConfig.hoveredCategoryColor.set(0xcdcccc)
 
-            CustomizationConfig.headerBackgroundColor = Color(0x222222)
-            CustomizationConfig.guiLineColors = Color(0x828282)
+            CustomizationConfig.headerBackgroundColor.set(0x222222)
+            CustomizationConfig.guiLineColors.set(0x828282)
 
-            CustomizationConfig.featureBorderColor = Color(0x808080)
-            CustomizationConfig.featureBackgroundColor = Color(0x222222)
+            CustomizationConfig.featureBorderColor.set(0x808080)
+            CustomizationConfig.featureBackgroundColor.set(0x222222)
 
-            CustomizationConfig.onSwitchColor = Color(0x00ff00)
-            CustomizationConfig.defaultCategoryColor = Color(0xb4b4b4)
+            CustomizationConfig.onSwitchColor.set(0x00ff00)
+            CustomizationConfig.defaultCategoryColor.set(0xb4b4b4)
         }
         if (theme.startsWith("Dark + ")) {
-            CustomizationConfig.sidebarBackgroundColor = Color(0x0f0f0f)
-            CustomizationConfig.mainBackgroundColor = Color(0x090909)
-            CustomizationConfig.windowBorderColor = Color.GRAY
-            CustomizationConfig.headerBackgroundColor = Color(0x0f0f0f)
-            CustomizationConfig.featureBackgroundColor = Color(0x1c1c1c)
-            CustomizationConfig.defaultCategoryColor = Color(0xb2b2b2)
+            CustomizationConfig.sidebarBackgroundColor.set(0x0f0f0f)
+            CustomizationConfig.mainBackgroundColor.set(0x090909)
+            CustomizationConfig.windowBorderColor.set(Color.GRAY)
+            CustomizationConfig.headerBackgroundColor.set(0x0f0f0f)
+            CustomizationConfig.featureBackgroundColor.set(0x1c1c1c)
+            CustomizationConfig.defaultCategoryColor.set(0xb2b2b2)
         }
         if (theme == "Dark + Cyan") {
-            CustomizationConfig.selectedCategoryColor = Color(0x00ffff)
-            CustomizationConfig.windowBorderColor = Color(0x00ffff)
-            CustomizationConfig.hoveredCategoryColor = Color(0xcdf3f4)
+            CustomizationConfig.selectedCategoryColor.set(0x00ffff)
+            CustomizationConfig.windowBorderColor.set(0x00ffff)
+            CustomizationConfig.hoveredCategoryColor.set(0xcdf3f4)
 
-            CustomizationConfig.guiLineColors = Color(0x2ba7b8)
-            CustomizationConfig.featureBorderColor = Color(0x2ba7b8)
-            CustomizationConfig.onSwitchColor = Color(0x00ff96)
-            CustomizationConfig.defaultCategoryColor = Color(0x5f5f5f)
+            CustomizationConfig.guiLineColors.set(0x2ba7b8)
+            CustomizationConfig.featureBorderColor.set(0x2ba7b8)
+            CustomizationConfig.onSwitchColor.set(0x00ff96)
+            CustomizationConfig.defaultCategoryColor.set(0x5f5f5f)
         }
         if (theme == "Dark + Pink") {
-            CustomizationConfig.selectedCategoryColor = Color(0xf700ff)
-            CustomizationConfig.windowBorderColor = Color(0xff00fb)
-            CustomizationConfig.hoveredCategoryColor = Color(0x9539cb)
+            CustomizationConfig.selectedCategoryColor.set(0xf700ff)
+            CustomizationConfig.windowBorderColor.set(0xff00fb)
+            CustomizationConfig.hoveredCategoryColor.set(0x9539cb)
 
-            CustomizationConfig.guiLineColors = Color(0x5d0065)
-            CustomizationConfig.featureBorderColor = Color(0x5d0065)
-            CustomizationConfig.onSwitchColor = Color(0xdb35b8)
-            CustomizationConfig.defaultCategoryColor = Color(0x5f5f5f)
+            CustomizationConfig.guiLineColors.set(0x5d0065)
+            CustomizationConfig.featureBorderColor.set(0x5d0065)
+            CustomizationConfig.onSwitchColor.set(0xdb35b8)
+            CustomizationConfig.defaultCategoryColor.set(0x5f5f5f)
         }
         if (theme == "Dark + Orange") {
-            CustomizationConfig.selectedCategoryColor = Color(0xffb300)
-            CustomizationConfig.windowBorderColor = Color(0xff7500)
-            CustomizationConfig.hoveredCategoryColor = Color(0xd5a98b)
+            CustomizationConfig.selectedCategoryColor.set(0xffb300)
+            CustomizationConfig.windowBorderColor.set(0xff7500)
+            CustomizationConfig.hoveredCategoryColor.set(0xd5a98b)
 
-            CustomizationConfig.guiLineColors = Color(0xb83c2b)
-            CustomizationConfig.featureBorderColor = Color(0xe1651e)
-            CustomizationConfig.onSwitchColor = Color(0xff4400)
+            CustomizationConfig.guiLineColors.set(0xb83c2b)
+            CustomizationConfig.featureBorderColor.set(0xe1651e)
+            CustomizationConfig.onSwitchColor.set(0xff4400)
         }
     }
 }

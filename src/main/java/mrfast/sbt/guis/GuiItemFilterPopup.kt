@@ -12,6 +12,7 @@ import gg.essential.elementa.constraints.*
 import gg.essential.elementa.constraints.animation.Animations
 import gg.essential.elementa.dsl.*
 import gg.essential.elementa.effects.OutlineEffect
+import gg.essential.elementa.state.constraint
 import gg.essential.universal.UMatrixStack
 import gg.essential.vigilance.gui.settings.SelectorComponent
 import mrfast.sbt.apis.ItemApi
@@ -127,8 +128,8 @@ class GuiItemFilterPopup(
 
         // Create a background panel
         val background =
-            OutlinedRoundedRectangle(CustomizationConfig.windowBorderColor.constraint, 2f, mainBorderRadius).constrain {
-                color = CustomizationConfig.mainBackgroundColor.constraint
+            OutlinedRoundedRectangle(CustomizationConfig.windowBorderColor.colorState.constraint, 2f, mainBorderRadius).constrain {
+                color = CustomizationConfig.mainBackgroundColor.colorState.constraint
                 width = MinConstraint(70.percent, 600.pixels)
                 height = MinConstraint(70.percent, 400.pixels)
                 x = CenterConstraint()
@@ -148,7 +149,7 @@ class GuiItemFilterPopup(
             y = 6.pixels
             width = 18.pixels
             height = 18.pixels
-        } childOf background effect OutlineEffect(CustomizationConfig.defaultCategoryColor, 1f)
+        } childOf background effect OutlineEffect(CustomizationConfig.defaultCategoryColor.get(), 1f)
 
         backButton.onMouseClick {
             Utils.mc.displayGuiScreen(null)
@@ -165,7 +166,7 @@ class GuiItemFilterPopup(
             y = 6.pixels
             width = 18.pixels
             height = 18.pixels
-        } childOf background effect OutlineEffect(CustomizationConfig.defaultCategoryColor, 1f)
+        } childOf background effect OutlineEffect(CustomizationConfig.defaultCategoryColor.get(), 1f)
 
         UIText("➥", true).constrain {
             x = CenterConstraint()
@@ -185,7 +186,7 @@ class GuiItemFilterPopup(
             y = 6.pixels
             width = 18.pixels
             height = 18.pixels
-        } childOf background effect OutlineEffect(CustomizationConfig.defaultCategoryColor, 1f)
+        } childOf background effect OutlineEffect(CustomizationConfig.defaultCategoryColor.get(), 1f)
 
         UIText("§a✚", true).constrain {
             x = CenterConstraint()
@@ -223,7 +224,7 @@ class GuiItemFilterPopup(
         resetImg.addTooltip(setOf("§c§lReset to Default Filters", "§6Warning: You will lose all current filters."))
 
         val block = UIRoundedRectangle(4f).constrain {
-            color = CustomizationConfig.headerBackgroundColor.constraint
+            color = CustomizationConfig.headerBackgroundColor.colorState.constraint
             x = CenterConstraint()
             y = SiblingConstraintFixed(4f)
             width = 100.percent - 16.pixels
@@ -345,7 +346,7 @@ class GuiItemFilterPopup(
             y = CenterConstraint()
             width = 18.pixels
             height = 18.pixels
-        } childOf backgroundBlock effect OutlineEffect(CustomizationConfig.defaultCategoryColor, 1f)
+        } childOf backgroundBlock effect OutlineEffect(CustomizationConfig.defaultCategoryColor.get(), 1f)
 
         UIText("§c✖", true).constrain {
             x = CenterConstraint()
@@ -414,7 +415,7 @@ class GuiItemFilterPopup(
             height = 16.pixels
             x = SiblingConstraint(4f, true)
             y = CenterConstraint()
-        } childOf parent effect OutlineEffect(CustomizationConfig.defaultCategoryColor, 1f)
+        } childOf parent effect OutlineEffect(CustomizationConfig.defaultCategoryColor.get(), 1f)
 
         button.onMouseEnterRunnable {
             button.animate {
@@ -433,15 +434,15 @@ class GuiItemFilterPopup(
         } childOf button
 
         if (selected) {
-            button.enableEffect(OutlineEffect(CustomizationConfig.selectedCategoryColor, 1f))
+            button.enableEffect(OutlineEffect(CustomizationConfig.selectedCategoryColor.get(), 1f))
         }
 
         button.onMouseClick {
             runnable.run()
             parent.children.forEach {
-                it.enableEffect(OutlineEffect(CustomizationConfig.defaultCategoryColor, 1f))
+                it.enableEffect(OutlineEffect(CustomizationConfig.defaultCategoryColor.get(), 1f))
             }
-            button.enableEffect(OutlineEffect(CustomizationConfig.selectedCategoryColor, 1f))
+            button.enableEffect(OutlineEffect(CustomizationConfig.selectedCategoryColor.get(), 1f))
         }
 
         return button

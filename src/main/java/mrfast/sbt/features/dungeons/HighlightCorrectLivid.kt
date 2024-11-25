@@ -59,7 +59,7 @@ object HighlightCorrectLivid {
         if (!LocationManager.inDungeons || LocationManager.dungeonFloor != 5 || !highlightCorrectLivid) return
 
         if (lividEntity != null && lividEntity == event.entity) {
-            OutlineUtils.outlineEntity(event, highlightCorrectLividColor)
+            OutlineUtils.outlineEntity(event, highlightCorrectLividColor.get())
         }
     }
 
@@ -75,7 +75,7 @@ object HighlightCorrectLivid {
                 playerPos,
                 skullPos,
                 2,
-                highlightCorrectLividColor,
+                highlightCorrectLividColor.get(),
                 event.partialTicks
             )
             GlStateManager.enableDepth()

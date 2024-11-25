@@ -96,7 +96,7 @@ object ZealotSpawnLocations {
             val color = if (mobsSpawnAt - System.currentTimeMillis() <= 0L) RenderingConfig.zealotBruiserLocReady else RenderingConfig.zealotBruiserLocUnready
             val aabb = AxisAlignedBB(pos.x - 5.0, pos.y + 0.1, pos.z - 5.0, pos.x + 5.0, pos.y - 3.0, pos.z + 5.0)
 
-            if(RenderingConfig.zealotBruiserLocDrawBox) RenderUtils.drawSpecialBB(aabb, color, event.partialTicks)
+            if(RenderingConfig.zealotBruiserLocDrawBox) RenderUtils.drawSpecialBB(aabb, color.get(), event.partialTicks)
 
             if(RenderingConfig.zealotBruiserLocTimer) {
                 RenderUtils.draw3DString(

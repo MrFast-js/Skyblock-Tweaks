@@ -36,18 +36,18 @@ object HealthBar {
             val absorbFillPerc = absorption.toDouble() / total
 
             // Draw background/border
-            UIRoundedRectangle.drawRoundedRectangle(UMatrixStack(), 0f, 0f, 80f, 10f, 5f, healthBarBarColor)
+            UIRoundedRectangle.drawRoundedRectangle(UMatrixStack(), 0f, 0f, 80f, 10f, 5f, healthBarBarColor.get())
 
             UIRoundedRectangle.drawRoundedRectangle(
                 UMatrixStack(), 2f, 2f,
-                (78f * healthFillPerc).toFloat(), 8f, 3f, healthBarHealthColor
+                (78f * healthFillPerc).toFloat(), 8f, 3f, healthBarHealthColor.get()
             )
             if (absorption != 0) {
                 val fillPixels = (78.0 * absorbFillPerc).toInt() + 3
 
                 UIRoundedRectangle.drawRoundedRectangle(
                     UMatrixStack(), minOf(76, maxOf(2, 2 + (78 - fillPixels))).toFloat(), 2f,
-                    78f, 8f, 3f, healthBarAbsorbColor
+                    78f, 8f, 3f, healthBarAbsorbColor.get()
                 )
             }
         }

@@ -34,7 +34,7 @@ object DefenseNumber {
                 centerX,
                 0f,
                 GuiUtils.TextStyle.BLACK_OUTLINE,
-                defenseNumberColor,
+                defenseNumberColor.get(),
                 centered = true
             )
         }

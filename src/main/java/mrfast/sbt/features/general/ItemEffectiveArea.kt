@@ -35,8 +35,8 @@ object ItemEffectiveArea {
                         Vec3(lookingBlock.blockPos).addVector(0.5, 1.0, 0.5),
                         7f,
                         72,
-                        showItemEffectiveAreaColor,
-                        showItemEffectiveAreaColor,
+                        showItemEffectiveAreaColor.get(),
+                        showItemEffectiveAreaColor.get(),
                         event.partialTicks
                     )
                 }

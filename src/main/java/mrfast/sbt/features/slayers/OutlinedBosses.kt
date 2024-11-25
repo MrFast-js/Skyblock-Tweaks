@@ -17,7 +17,7 @@ object OutlinedBosses {
         val sbMob = SkyblockMobDetector.getSkyblockMob(event.entity) ?: return
         if (sbMob.skyblockMob == event.entity && sbMob.skyblockMobId != null) {
             if (SlayerManager.isMiniboss(sbMob)) {
-                OutlineUtils.outlineEntity(event, SlayerConfig.miniBossColor)
+                OutlineUtils.outlineEntity(event, SlayerConfig.miniBossColor.get())
             }
 
             val id = sbMob.skyblockMobId ?: return
@@ -27,9 +27,9 @@ object OutlinedBosses {
                     val laserPhase = sbMob.skyblockMob.isRiding
                     val color =
                         if (laserPhase) SlayerConfig.voidgloomLaserPhase else if (hitPhase) SlayerConfig.voidgloomHitsPhase else SlayerConfig.slayerBossColor
-                    OutlineUtils.outlineEntity(event, color)
+                    OutlineUtils.outlineEntity(event, color.get())
                 } else {
-                    OutlineUtils.outlineEntity(event, SlayerConfig.slayerBossColor)
+                    OutlineUtils.outlineEntity(event, SlayerConfig.slayerBossColor.get())
                 }
             }
         }

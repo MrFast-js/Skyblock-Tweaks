@@ -1,6 +1,7 @@
 package mrfast.sbt.config.categories
 
 import mrfast.sbt.config.Config
+import mrfast.sbt.guis.components.CustomColor
 import mrfast.sbt.managers.ConfigProperty
 import mrfast.sbt.managers.ConfigType
 import java.awt.Color
@@ -33,7 +34,7 @@ object SlayerConfig : Config() {
         subcategory = "Misc",
         parentName = "Highlight Slayer Bosses"
     )
-    var miniBossColor = Color.GREEN
+    var miniBossColor = CustomColor(Color.GREEN)
 
     @ConfigProperty(
         type = ConfigType.COLOR,
@@ -43,7 +44,7 @@ object SlayerConfig : Config() {
         subcategory = "Misc",
         parentName = "Highlight Slayer Bosses"
     )
-    var slayerBossColor = Color.RED
+    var slayerBossColor = CustomColor(Color.RED)
 
     @ConfigProperty(
         type = ConfigType.COLOR,
@@ -53,7 +54,7 @@ object SlayerConfig : Config() {
         subcategory = "Misc",
         parentName = "Highlight Slayer Bosses"
     )
-    var voidgloomLaserPhase = Color.CYAN
+    var voidgloomLaserPhase = CustomColor(Color.CYAN)
 
     @ConfigProperty(
         type = ConfigType.COLOR,
@@ -63,5 +64,5 @@ object SlayerConfig : Config() {
         subcategory = "Misc",
         parentName = "Highlight Slayer Bosses"
     )
-    var voidgloomHitsPhase = Color.MAGENTA
+    var voidgloomHitsPhase = CustomColor(Color.MAGENTA)
 }

@@ -56,7 +56,7 @@ object PathTracer {
                             previousPoint,
                             point,
                             2,
-                            RenderingConfig.pathTracingColor2,
+                            RenderingConfig.pathTracingColor2.get(),
                             event.partialTicks
                         )
                     } else {
@@ -64,7 +64,7 @@ object PathTracer {
                             previousPoint,
                             point,
                             2,
-                            RenderingConfig.pathTracingColor1,
+                            RenderingConfig.pathTracingColor1.get(),
                             event.partialTicks
                         )
                     }

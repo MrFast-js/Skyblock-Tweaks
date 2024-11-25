@@ -36,7 +36,7 @@ object HealthNumber {
             val number = "${PlayerStats.health.formatNumber()}$maxHealth"
 
             val centerX = this.width / 2f
-            GuiUtils.drawText(number, centerX, 0f, GuiUtils.TextStyle.BLACK_OUTLINE, color, centered = true)
+            GuiUtils.drawText(number, centerX, 0f, GuiUtils.TextStyle.BLACK_OUTLINE, color.get(), centered = true)
         }
 
         override fun isActive(): Boolean {

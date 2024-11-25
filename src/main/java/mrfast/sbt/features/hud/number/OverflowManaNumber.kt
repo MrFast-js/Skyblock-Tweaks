@@ -34,7 +34,7 @@ object OverflowManaNumber {
                 centerX,
                 0f,
                 GuiUtils.TextStyle.BLACK_OUTLINE,
-                manaOverflowNumberColor,
+                manaOverflowNumberColor.get(),
                 centered = true
             )
         }

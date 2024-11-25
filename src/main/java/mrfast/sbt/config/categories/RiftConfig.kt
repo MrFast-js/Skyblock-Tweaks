@@ -1,6 +1,7 @@
 package mrfast.sbt.config.categories
 
 import mrfast.sbt.config.Config
+import mrfast.sbt.guis.components.CustomColor
 import mrfast.sbt.managers.ConfigProperty
 import mrfast.sbt.managers.ConfigType
 import java.awt.Color
@@ -25,7 +26,7 @@ object RiftConfig : Config() {
         subcategory = "Farming",
         parentName = "Nearly Coherent Rod Radius Display"
     )
-    var nearlyCoherentRodRadiusColor = Color(0x00FFFF)
+    var nearlyCoherentRodRadiusColor = CustomColor(0x00FFFF)
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
@@ -55,7 +56,7 @@ object RiftConfig : Config() {
         subcategory = "Vampire Slayer",
         parentName = "Highlight Thrown Anchor"
     )
-    var highlightVampireAnchorColor = Color(0xFFD500)
+    var highlightVampireAnchorColor = CustomColor(0xFFD500)
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
@@ -75,7 +76,7 @@ object RiftConfig : Config() {
         subcategory = "Stat Displays",
         parentName = "Rift Time Bar"
     )
-    var riftBarFillColor = Color(0x5A0075FF)
+    var riftBarFillColor = CustomColor(0x5A0075FF)
 
     @ConfigProperty(
         type = ConfigType.COLOR,
@@ -85,7 +86,7 @@ object RiftConfig : Config() {
         subcategory = "Stat Displays",
         parentName = "Rift Time Bar"
     )
-    var riftBarBarColor = Color.BLACK
+    var riftBarBarColor = CustomColor(0x000000)
 
 //    @ConfigProperty(
 //            type = ConfigType.TOGGLE,
