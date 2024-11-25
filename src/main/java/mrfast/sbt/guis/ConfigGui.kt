@@ -756,12 +756,23 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
                 ignoredHeights.add(selector)
             }
             if (feature.type == ConfigType.KEYBIND) {
-                val button = UIImage.ofResource("/assets/skyblocktweaks/gui/button.png").constrain {
-                    width = 66.pixels
-                    height = 20.pixels
+                val button = UIBlock(Color.DARK_GRAY).constrain {
+                    width = 70.pixels
+                    height = 18.pixels
                     y = CenterConstraint()
                     x = 10.pixels(alignOpposite = true)
-                } childOf featureComponent
+                } childOf featureComponent effect OutlineEffect(CustomizationConfig.onSwitchColor.colorState.get(), 1f)
+
+                button.onMouseEnterRunnable {
+                    button.animate {
+                        setColorAnimation(Animations.OUT_EXP, 0.5f, featureBackgroundColorState.get().colorState.constraint)
+                    }
+                }
+                button.onMouseLeaveRunnable {
+                    button.animate {
+                        setColorAnimation(Animations.OUT_EXP, 0.5f, Color.DARK_GRAY.constraint)
+                    }
+                }
                 ignoredHeights.add(button)
 
                 val resetImg = UIImage.ofResource("/assets/skyblocktweaks/gui/reset.png").constrain {

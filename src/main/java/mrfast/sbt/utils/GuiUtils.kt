@@ -4,7 +4,6 @@ import gg.essential.elementa.dsl.constraint
 import gg.essential.elementa.state.BasicState
 import gg.essential.universal.UMatrixStack
 import mrfast.sbt.config.categories.DeveloperConfig
-import mrfast.sbt.guis.components.ColorPickerComponent
 import mrfast.sbt.guis.components.OutlinedRoundedRectangle
 import mrfast.sbt.guis.components.shader.GaussianBlur
 import mrfast.sbt.guis.components.shader.ShaderManager
