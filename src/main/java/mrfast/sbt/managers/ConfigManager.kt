@@ -4,6 +4,7 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonSyntaxException
 import com.google.gson.internal.LinkedTreeMap
+import gg.essential.elementa.UIComponent
 import gg.essential.elementa.components.UIContainer
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.guis.components.CustomColor
@@ -45,8 +46,10 @@ abstract class ConfigManager {
         val placeholder: String,
         var dropdownOptions: Array<String> = arrayOf(),
         val parentName: String = "",
-        var featureContainer: UIContainer = UIContainer(),
-        var optionElements: MutableMap<String, UIContainer> = mutableMapOf(),
+        var parentFeature: Feature? = null,
+        var featureComponent: UIComponent = UIContainer(),
+        var subcategory: Subcategory = Subcategory(""),
+        var optionElements: MutableMap<String, Feature> = mutableMapOf(),
         var optionsHidden: Boolean = true
     )
 
@@ -80,7 +83,7 @@ abstract class ConfigManager {
                         field,
                         placeholder = configAnnotation.placeholder,
                         parentName = configAnnotation.parentName,
-                        isParent = configAnnotation.isParent
+                        isParent = configAnnotation.isParent,
                     )
                     if (feature.type == ConfigType.DROPDOWN) {
                         feature.dropdownOptions = configAnnotation.dropdownOptions
@@ -91,12 +94,10 @@ abstract class ConfigManager {
                     val subcategory =
                         category.subcategories.getOrPut(configAnnotation.subcategory) { Subcategory(configAnnotation.subcategory) }
 
-                    // Add the Feature to the Subcategory
                     subcategory.features[fieldName] = feature
+                    feature.subcategory = subcategory
+
                     if (Runnable::class.java.isAssignableFrom(field.type)) continue
-//                    if (CustomColor::class.java.isAssignableFrom(field.type)) {
-//
-//                    }
 
                     fieldMap[fieldName] = value
                 }
