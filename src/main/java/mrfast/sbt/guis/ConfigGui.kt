@@ -33,6 +33,8 @@ import net.minecraft.client.Minecraft
 import net.minecraftforge.fml.client.config.GuiUtils
 import org.lwjgl.input.Keyboard
 import java.awt.Color
+import java.awt.Desktop
+import java.net.URI
 import java.util.*
 
 
@@ -157,8 +159,8 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
             val socketStatusButton =
                 OutlinedRoundedRectangle(guiLineColorsState.get().colorState.constraint, 1f, 3f).constrain {
                     color = mainBackgroundColorState.get().colorState.constraint
-                    width = 16.pixels
-                    height = 16.pixels
+                    width = 20.pixels
+                    height = 20.pixels
                     x = 8.pixels
                     y = CenterConstraint()
                 } childOf header
@@ -187,11 +189,29 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
             socketStatusButton.addTooltip(lore)
         }
 
+        val discordButton =
+            OutlinedRoundedRectangle(Color(0x3E477F).constraint, 1f, 3f).constrain {
+                width = 20.pixels
+                height = 20.pixels
+                x = if (CustomizationConfig.developerMode) SiblingConstraintFixed(8f, false) else 8.pixels
+                y = CenterConstraint()
+                color = Color(0x5D6AC0).constraint
+            } childOf header
+
+        val discordButtonSymbol = UIImage.ofResource("/assets/skyblocktweaks/gui/discord.png").constrain {
+            width = 14.pixels
+            height = 14.pixels
+            x = CenterConstraint();y = CenterConstraint()
+        } childOf discordButton
+
+        discordButton.onMouseClick { Desktop.getDesktop().browse(URI("https://discord.gg/XKaB6t2ejh")) }
+        discordButton.addTooltip(setOf("§3Click to join our Discord!"))
+
         val editGuiLocationsButton =
             OutlinedRoundedRectangle(guiLineColorsState.get().colorState.constraint, 1f, 3f).constrain {
-                width = 16.pixels
-                height = 16.pixels
-                x = if (CustomizationConfig.developerMode) SiblingConstraintFixed(8f, false) else 8.pixels
+                width = 20.pixels
+                height = 20.pixels
+                x = SiblingConstraintFixed(8f, false)
                 y = CenterConstraint()
                 color = mainBackgroundColorState.get().colorState.constraint
             } childOf header
