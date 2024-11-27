@@ -49,7 +49,13 @@ class SkyblockTweaks {
 
         // Use Kotlin reflection to register each file
         val filesToRegister = reflections.getTypesAnnotatedWith(EventComponent::class.java)
-        filesToRegister.forEach { MinecraftForge.EVENT_BUS.register(it.kotlin.objectInstance) }
+        filesToRegister.forEach {
+            try {
+                MinecraftForge.EVENT_BUS.register(it.kotlin.objectInstance)
+            } catch (_: NullPointerException) {
+                throw Error("Failed to register event component: ${it.simpleName} - Make sure it's an object not a class")
+            }
+        }
 
         // Commands
         val commandsToRegister = reflections.getTypesAnnotatedWith(CommandComponent::class.java)

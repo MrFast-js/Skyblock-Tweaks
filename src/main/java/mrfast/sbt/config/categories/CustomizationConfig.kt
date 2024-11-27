@@ -35,6 +35,36 @@ object CustomizationConfig : Config() {
     )
     var developerMode = false
 
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Christmas Snow Effect",
+        description = "Enables a snowing effect in guis during December",
+        category = "§2§rCustomization",
+        subcategory = "Theme",
+        isParent = true
+    )
+    var snowEffect = true
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Show Only In This Menu",
+        category = "§2§rCustomization",
+        subcategory = "Theme",
+        parentName = "Christmas Snow Effect"
+    )
+    var snowEffectExclusive = false
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Force Enabled",
+        description = "Forces the snowing effect to be enabled, even if it's not December",
+        category = "§2§rCustomization",
+        subcategory = "Theme",
+        parentName = "Christmas Snow Effect"
+    )
+    var snowEffectForce = false
+
+
     // No uses yet
 //    @ConfigProperty(
 //        type = ConfigType.TOGGLE,

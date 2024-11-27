@@ -1,25 +1,32 @@
 package mrfast.sbt.guis
 
-import gg.essential.elementa.WindowScreen
 import mrfast.sbt.utils.GuiUtils
+import mrfast.sbt.utils.Utils
 import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11
 import kotlin.random.Random
 
-class SnowingEffect(private val window: WindowScreen) {
+class SnowingEffect {
     private val snowflakes = mutableListOf<Snowflake>()
+
     init {
-        // Initialize snowflakes
-        for (i in 0 until 100) {
-            snowflakes.add(Snowflake(window.width, window.height))
+        initializeSnowflakes()
+    }
+
+    private fun initializeSnowflakes() {
+        snowflakes.clear()
+        for (i in 0 until 150) {
+            snowflakes.add(Snowflake())
         }
     }
 
-    class Snowflake(private val width: Int, private val height: Int) {
-        var x: Float = Random.nextFloat() * width
-        var y: Float = Random.nextFloat() * height
+    class Snowflake {
+        private val sr = ScaledResolution(Minecraft.getMinecraft())
+        var x: Float = Random.nextFloat() * sr.scaledWidth
+        var y: Float = Random.nextFloat() * sr.scaledHeight
         private val speed: Float = Random.nextFloat() * 2 + 1
         private var rotation: Float = Random.nextFloat() * 360
         private val rotationSpeed: Float = Random.nextFloat() * 2 - 1
@@ -27,15 +34,24 @@ class SnowingEffect(private val window: WindowScreen) {
 
         fun update() {
             val currentTime = System.nanoTime()
-            val deltaTime = (currentTime - lastUpdateTime) / 10_000_000.0f
+            var deltaTime = (currentTime - lastUpdateTime) / 10_000_000.0f
+            val sr = ScaledResolution(Minecraft.getMinecraft())
+
+            // Reset after not moving for a while
+            if (deltaTime > 250) {
+                x = Random.nextFloat() * sr.scaledWidth
+                y = Random.nextFloat() * sr.scaledHeight
+                deltaTime = 0f
+            }
+
             lastUpdateTime = currentTime
 
             y += speed * deltaTime * 0.25f
             rotation += rotationSpeed * deltaTime * 0.2f
 
-            if (y > height) {
+            if (y > sr.scaledHeight) {
                 y = -15f
-                x = Random.nextFloat() * width
+                x = Random.nextFloat() * sr.scaledWidth
             }
         }
 
@@ -45,7 +61,6 @@ class SnowingEffect(private val window: WindowScreen) {
             GlStateManager.rotate(rotation, 0f, 0f, 1f)
             GlStateManager.translate(-(x + 7.5f), -(y + 7.5f), 0f)
             Minecraft.getMinecraft().textureManager.bindTexture(snowFlakeTexture);
-            GlStateManager.color(1f, 1f, 1f)
             GuiUtils.drawTexture(
                 x,
                 y,

@@ -38,7 +38,7 @@ import java.net.URI
 import java.util.*
 
 
-class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
+class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2, drawDefaultBackground = false) {
     companion object {
         var listeningForKeybind = false
         var searchQuery = ""
@@ -66,17 +66,13 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
     private var selectedCategoryComponent: UIComponent? = null
     private var tooltipElements: MutableMap<UIComponent, Set<String>> = mutableMapOf()
     private var openingAnimation = false
-    private var snowingEffect: SnowingEffect? = null
 
     override fun onDrawScreen(matrixStack: UMatrixStack, mouseX: Int, mouseY: Int, partialTicks: Float) {
         if (CustomizationConfig.backgroundBlur) drawBackgroundBlur()
         else {
             resetBlurAnimation()
         }
-
-        if (Calendar.getInstance().get(Calendar.MONTH) == Calendar.DECEMBER || DeveloperConfig.forceSnowingEffect) {
-            snowingEffect?.drawSnowflakes()
-        }
+        drawDefaultBackground()
 
         super.onDrawScreen(matrixStack, mouseX, mouseY, partialTicks)
         // Dont draw tooltips on opening animation
@@ -100,8 +96,6 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
 
     override fun afterInitialization() {
         super.afterInitialization()
-
-        snowingEffect = SnowingEffect(this)
 
         resetBlurAnimation()
         openingAnimation = false
