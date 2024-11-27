@@ -88,6 +88,15 @@ object DeveloperConfig : Config() {
     var showInspector = false
 
     @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Force Christmas Snowing Effect",
+        category = "§eDeveloper",
+        subcategory = "Settings"
+    )
+    var forceSnowingEffect = false
+
+
+    @ConfigProperty(
         type = ConfigType.NUMBER,
         name = "Value Tester",
         category = "§eDeveloper",

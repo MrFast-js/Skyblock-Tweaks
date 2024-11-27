@@ -20,6 +20,7 @@ import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.managers.ConfigManager
 import mrfast.sbt.managers.ConfigType
 import mrfast.sbt.config.categories.CustomizationConfig
+import mrfast.sbt.config.categories.DeveloperConfig
 import mrfast.sbt.config.categories.DeveloperConfig.showInspector
 import mrfast.sbt.guis.components.*
 import mrfast.sbt.managers.VersionManager
@@ -62,8 +63,8 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
     private var selectedCategory = "General"
     private var selectedCategoryComponent: UIComponent? = null
     private var tooltipElements: MutableMap<UIComponent, Set<String>> = mutableMapOf()
-    private var animationFinished = false
-
+    private var openingAnimation = false
+    private var snowingEffect: SnowingEffect? = null
 
     override fun onDrawScreen(matrixStack: UMatrixStack, mouseX: Int, mouseY: Int, partialTicks: Float) {
         if (CustomizationConfig.backgroundBlur) drawBackgroundBlur()
@@ -71,9 +72,13 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
             resetBlurAnimation()
         }
 
+        if (Calendar.getInstance().get(Calendar.MONTH) == Calendar.DECEMBER || DeveloperConfig.forceSnowingEffect) {
+            snowingEffect?.drawSnowflakes()
+        }
+
         super.onDrawScreen(matrixStack, mouseX, mouseY, partialTicks)
         // Dont draw tooltips on opening animation
-        if (!animationFinished) return
+        if (!openingAnimation) return
 
         for (element in tooltipElements.keys) {
             if (element.isHovered()) {
@@ -93,10 +98,13 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
 
     override fun afterInitialization() {
         super.afterInitialization()
+
+        snowingEffect = SnowingEffect(this)
+
         resetBlurAnimation()
-        animationFinished = false
+        openingAnimation = false
         Utils.setTimeout({
-            animationFinished = true
+            openingAnimation = true
         }, 500)
     }
 
@@ -112,7 +120,6 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
     private val mainBorderRadius = 6f;
 
     init {
-
         // Create a background panel
         val background =
             OutlinedRoundedRectangle(mainBorderColorState.get().colorState.constraint, 2f, mainBorderRadius).constrain {
@@ -130,7 +137,6 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
 
         dynamicColorUpdateTimer.cancel()
         updateGuiColors()
-        updateThemeColors()
 
         if (showInspector) {
             Inspector(background) childOf window
@@ -520,6 +526,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
     }
 
     private fun shouldFeatureAppear(feature: ConfigManager.Feature): Boolean {
+        // If feature directly contains the search query, show it
         val mainFeatureShow =
             feature.name.contains(searchQuery, ignoreCase = true) || feature.subcategory.name.contains(
                 searchQuery,
@@ -527,17 +534,28 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
             ) || feature.description.contains(
                 searchQuery,
                 ignoreCase = true
-            ) || feature.parentName.contains(searchQuery, ignoreCase = true)
+            )
 
         if (mainFeatureShow) {
             return true
         }
 
+        // if feature is a suboption, check if parent feature contains search query
+        if (feature.parentFeature?.name?.contains(
+                searchQuery,
+                ignoreCase = true
+            ) == true || feature.parentFeature?.description?.contains(searchQuery, ignoreCase = true) == true
+        ) {
+            return true
+        }
+
+        // If feature is a parent feature, check if any of its suboptions contain the search query
         for (optionElement in feature.optionElements) {
             if (shouldFeatureAppear(optionElement.value)) {
                 return true
             }
         }
+
         return false
     }
 
