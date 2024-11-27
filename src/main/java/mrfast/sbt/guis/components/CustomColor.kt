@@ -56,13 +56,22 @@ class CustomColor(var r: Int, var g: Int, var b: Int, var a: Int, var chroma: Bo
 
     fun set(r: Int, g: Int, b: Int) {
         colorState.set(Color(r, g, b))
+        updateRGB()
     }
 
     fun set(hex: Int) {
         colorState.set(Color(hex))
+        updateRGB()
     }
 
     fun set(color: Color) {
         colorState.set(color)
+        updateRGB()
+    }
+
+    fun updateRGB() {
+        this.r = colorState.get().red
+        this.g = colorState.get().green
+        this.b = colorState.get().blue
     }
 }
