@@ -4,8 +4,11 @@ import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.apis.SkyblockMobDetector
 import mrfast.sbt.config.categories.SlayerConfig
 import mrfast.sbt.customevents.RenderEntityModelEvent
-import mrfast.sbt.utils.OutlineUtils
-import mrfast.sbt.utils.Utils
+import mrfast.sbt.customevents.SlayerEvent
+import mrfast.sbt.utils.*
+import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.util.Vec3
+import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 @SkyblockTweaks.EventComponent
@@ -32,6 +35,29 @@ object OutlinedBosses {
                     OutlineUtils.outlineEntity(event, SlayerConfig.slayerBossColor.get())
                 }
             }
+        }
+    }
+
+    @SubscribeEvent
+    fun onRender(event: RenderWorldLastEvent) {
+        if(SlayerManager.spawnedSlayer != null && SlayerConfig.highlightSlayerBosses) {
+            val slayer = SlayerManager.spawnedSlayer!!.skyblockMob
+            val skullPos = slayer.positionVector.add(Vec3(0.0, slayer.eyeHeight.toDouble(), 0.0))
+            val playerPos = Utils.mc.thePlayer.getPositionEyes(event.partialTicks)
+
+            if(!Utils.mc.thePlayer.canEntityBeSeen(slayer)) return
+
+            GlStateManager.disableDepth()
+            if (SlayerConfig.highlightSlayerBosses) {
+                RenderUtils.drawLine(
+                    playerPos,
+                    skullPos,
+                    2,
+                    SlayerConfig.slayerBossColor.get(),
+                    event.partialTicks
+                )
+            }
+            GlStateManager.enableDepth()
         }
     }
 }

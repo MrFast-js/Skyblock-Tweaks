@@ -32,7 +32,6 @@ object LocationManager {
     fun onWorldChange(event: WorldEvent.Load) {
         if (sendingLocraw) return
 
-        println("RESET LOCATION")
         sendingLocraw = true
         listeningForLocraw = true
         inMasterMode = false

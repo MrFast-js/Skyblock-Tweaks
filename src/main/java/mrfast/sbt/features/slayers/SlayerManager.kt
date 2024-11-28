@@ -17,7 +17,7 @@ object SlayerManager {
     var slayerSpawnedAt = System.currentTimeMillis()
     private var hasSlayerSpawned = false
 
-    private var spawnedSlayer: SkyblockMobDetector.SkyblockMob? = null
+    var spawnedSlayer: SkyblockMobDetector.SkyblockMob? = null
     private val minibosses = mutableListOf(
         "Revenant Sycophant",
         "Revenant Champion",
@@ -49,12 +49,13 @@ object SlayerManager {
 
         if (msg.trim().startsWith("SLAYER QUEST STARTED!")) {
             slayerStartedAt = System.currentTimeMillis()
+            spawnedSlayer = null
         }
         if (msg.trim().startsWith("NICE! SLAYER BOSS SLAIN!") || msg.trim().startsWith("SLAYER QUEST COMPLETE!")) {
             if(hasSlayerSpawned) {
                 MinecraftForge.EVENT_BUS.post(SlayerEvent.Death())
             }
-
+            spawnedSlayer = null
             hasSlayerSpawned = false
             slayerSpawnedAt = 0
             slayerStartedAt = 0
