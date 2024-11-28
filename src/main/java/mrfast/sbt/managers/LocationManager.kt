@@ -21,7 +21,7 @@ object LocationManager {
     var inDungeons = false
     var currentIsland = ""
     var currentArea = ""
-    var dungeonFloor = 0
+    var dungeonFloor = -1
     var inMasterMode = false
     var selectedDungeonFloor = "7" // Defaults to floor 7, but updates if you click a party finder floor
 
@@ -129,8 +129,8 @@ object LocationManager {
                     if (currentArea.contains("(M")) {
                         inMasterMode = true
                     }
-
-                    dungeonFloor = currentArea.replace("[^0-9]".toRegex(), "").toInt()
+                    val floor = currentArea.replace("[^0-9]".toRegex(), "").toIntOrNull() ?: 0
+                    dungeonFloor = floor
                 }
             }
         }
