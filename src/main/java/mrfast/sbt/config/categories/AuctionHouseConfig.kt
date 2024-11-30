@@ -8,6 +8,7 @@ import mrfast.sbt.managers.ConfigType
 import mrfast.sbt.guis.GuiItemFilterPopup
 import mrfast.sbt.guis.GuiItemFilterPopup.*
 import mrfast.sbt.features.auctionHouse.AuctionFlipper
+import mrfast.sbt.guis.components.CustomColor
 import org.lwjgl.input.Keyboard
 import java.awt.Color
 
@@ -235,7 +236,7 @@ object AuctionHouseConfig : Config() {
         subcategory = "Overlays",
         parentName = "Highlight Losing Auctions"
     )
-    var highlightLosingAuctionsColor = Color.RED
+    var highlightLosingAuctionsColor = CustomColor(Color.RED)
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,

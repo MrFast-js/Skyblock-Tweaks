@@ -1,6 +1,7 @@
 package mrfast.sbt.config.categories
 
 import mrfast.sbt.config.Config
+import mrfast.sbt.guis.components.CustomColor
 import mrfast.sbt.managers.ConfigProperty
 import mrfast.sbt.managers.ConfigType
 import java.awt.Color
@@ -33,5 +34,5 @@ object CrimsonConfig : Config() {
         subcategory = "Misc",
         parentName = "Moody Grappleshot Highlight"
     )
-    var moodyGrappleShotHighlightColor = Color.RED
+    var moodyGrappleShotHighlightColor = CustomColor(Color.RED)
 }
