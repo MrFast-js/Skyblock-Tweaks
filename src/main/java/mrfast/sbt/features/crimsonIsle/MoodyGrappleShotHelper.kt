@@ -21,7 +21,7 @@ object MoodyGrappleShotHelper {
         val mob = SkyblockMobDetector.getSkyblockMob(event.entity) ?: return
         if (mob.skyblockMobId == "Smoldering Blaze") {
             if (Utils.mc.thePlayer.getDistanceToEntity(mob.skyblockMob) > 17) return
-            OutlineUtils.outlineEntity(event, CrimsonConfig.moodyGrappleShotHighlightColor)
+            OutlineUtils.outlineEntity(event, CrimsonConfig.moodyGrappleShotHighlightColor.colorState.get())
         }
     }
 }

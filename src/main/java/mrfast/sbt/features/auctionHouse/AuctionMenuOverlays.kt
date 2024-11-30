@@ -80,7 +80,7 @@ object AuctionMenuOverlays {
 
                 // Highlight losing auctions
                 if (AuctionHouseConfig.highlightLosingAuctions && auction.winning == false) {
-                    GuiUtils.highlightSlot(slot, AuctionHouseConfig.highlightLosingAuctionsColor)
+                    GuiUtils.highlightSlot(slot, AuctionHouseConfig.highlightLosingAuctionsColor.colorState.get())
                 }
 
                 setAuctionPricingData(auction)
