@@ -1,11 +1,12 @@
 package mrfast.sbt.customevents
 
 import mrfast.sbt.apis.SkyblockMobDetector
+import net.minecraft.util.Vec3
 import net.minecraftforge.fml.common.eventhandler.Event
 
 open class SkyblockMobEvent(val sbMob: SkyblockMobDetector.SkyblockMob, val partialTicks: Float?) : Event() {
 
-    class Spawn(sbMob: SkyblockMobDetector.SkyblockMob) : SkyblockMobEvent(sbMob, null) {
+    class Spawn(sbMob: SkyblockMobDetector.SkyblockMob, var pos: Vec3) : SkyblockMobEvent(sbMob, null) {
         override fun isCancelable(): Boolean {
             return false
         }

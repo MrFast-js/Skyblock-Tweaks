@@ -69,8 +69,8 @@ object SkyblockMobDetector {
     fun onEntityJoinWorld(event: EntityJoinWorldEvent) {
         Utils.setTimeout({
             val mob = getSkyblockMob(event.entity) ?: return@setTimeout
-            MinecraftForge.EVENT_BUS.post(SkyblockMobEvent.Spawn(mob))
-        }, 1000)
+            MinecraftForge.EVENT_BUS.post(SkyblockMobEvent.Spawn(mob,mob.skyblockMob.positionVector))
+        }, 300)
     }
 
     @SubscribeEvent
