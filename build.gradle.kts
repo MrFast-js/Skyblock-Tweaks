@@ -135,7 +135,7 @@ val remapJar by tasks.named<net.fabricmc.loom.task.RemapJarTask>("remapJar") {
     archiveClassifier.set("")
 
     if (project.hasProperty("toModsFolder")) {
-        destinationDirectory.set(file("${System.getenv("APPDATA")}\\.minecraft\\mods"))
+        destinationDirectory.set(file("${System.getenv("APPDATA")}\\PrismLauncher\\instances\\1.8.9\\minecraft\\mods"))
     }
 
     from(tasks.shadowJar)
@@ -165,14 +165,3 @@ tasks.shadowJar {
 }
 
 tasks.assemble.get().dependsOn(tasks.remapJar)
-
-if (project.hasProperty("toModsFolder")) {
-    tasks.register("finalize") {
-        doLast {
-            project.exec {
-                commandLine("cmd", "/c", "start", "finish.bat")
-            }
-        }
-    }
-    tasks.assemble.get().dependsOn(tasks.getByName("finalize"))
-}
