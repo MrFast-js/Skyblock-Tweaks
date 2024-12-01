@@ -101,13 +101,13 @@ object RenderingConfig : Config() {
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
-        name = "Show Advanced Dragon Hitbox",
-        description = "Draws a better hitbox for dragons. Useful for §cMaster Mode 7§r and §bDragons",
+        name = "Highlight Dragons",
+        description = "Draws a outline for dragons for better visibility. Useful for §cMaster Mode 7§r and §bDragons",
         category = "Rendering",
         subcategory = "Misc",
         isParent = true
     )
-    var advancedDragonHitbox = true
+    var highlightDragon = true
 
     @ConfigProperty(
         type = ConfigType.COLOR,
@@ -116,7 +116,7 @@ object RenderingConfig : Config() {
         subcategory = "Misc",
         parentName = "Show Advanced Dragon Hitbox"
     )
-    var advancedDragonHitboxColor = CustomColor(0x55FF91)
+    var highlightDragonColor = CustomColor(0x55FF91)
 
 
     @ConfigProperty(
