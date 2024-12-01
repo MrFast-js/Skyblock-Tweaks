@@ -1,4 +1,3 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.apache.commons.lang3.SystemUtils
 import org.jetbrains.kotlin.gradle.plugin.mpp.pm20.util.archivesName
 
