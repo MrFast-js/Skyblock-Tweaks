@@ -114,7 +114,7 @@ object RenderingConfig : Config() {
         name = "Hitbox Color",
         category = "Rendering",
         subcategory = "Misc",
-        parentName = "Show Advanced Dragon Hitbox"
+        parentName = "Highlight Dragons"
     )
     var highlightDragonColor = CustomColor(0x55FF91)
 
