@@ -16,7 +16,6 @@ import java.awt.Color
 import kotlin.math.max
 
 class GuiEditor : GuiScreen() {
-    private val guiManager = GuiManager // Your GuiManager object
     private var hoveredElement: GuiManager.Element? = null
     private var selectedElement: GuiManager.Element? = null
     private var showAllEnabledElements = false
@@ -53,7 +52,6 @@ class GuiEditor : GuiScreen() {
         screenWidth = scaledResolution.scaledWidth
         screenHeight = scaledResolution.scaledHeight
 
-        drawDefaultBackground()
         updateMousePos(mouseX, mouseY)
         for (element in GuiManager.guiElements) {
             if (!element.isActive()) continue
