@@ -88,6 +88,27 @@ object RiftConfig : Config() {
     )
     var riftBarBarColor = CustomColor(0x000000)
 
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Shen Puzzle Helper",
+        description = "Highlights the buttons you need to press for the Shen Puzzle",
+        category = "The Rift",
+        subcategory = "Puzzles",
+        isParent = true
+    )
+    var shenPuzzleHelper = true
+
+    @ConfigProperty(
+        type = ConfigType.COLOR,
+        name = "Button Highlight Color",
+        description = "",
+        category = "The Rift",
+        subcategory = "Puzzles",
+        parentName = "Shen Puzzle Helper"
+    )
+    var shenButtonColor = CustomColor(0x55FF55)
+
+
 //    @ConfigProperty(
 //            type = ConfigType.TOGGLE,
 //            name = "Larva Silk Display",
