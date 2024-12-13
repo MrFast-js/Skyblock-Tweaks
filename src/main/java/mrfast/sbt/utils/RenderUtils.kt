@@ -65,6 +65,15 @@ object RenderUtils {
 
         GlStateManager.popMatrix()
     }
+    fun draw3DString(
+        text: String,
+        worldPos: BlockPos,
+        partialTicks: Float,
+        depth: Boolean? = false,
+        shadow: Boolean? = true
+    ) {
+        draw3DString(text, Vec3(worldPos).addVector(.5, 0.5, 0.5), partialTicks, depth, shadow)
+    }
 
     fun drawLine(from: Vec3, to: Vec3, thickness: Int, color: Color, partialTicks: Float) {
         val player = mc.thePlayer
