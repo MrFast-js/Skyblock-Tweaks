@@ -156,4 +156,8 @@ object Utils {
     fun GuiChest.getInventory(): IInventory {
         return ((this.inventorySlots) as ContainerChest).lowerChestInventory
     }
+
+    fun BlockPos.toString(): String {
+        return "($x, $y, $z)"
+    }
 }

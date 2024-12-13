@@ -56,6 +56,7 @@ object PlayerStats {
     fun onTick(event: ClientTickEvent) {
         if (event.phase != TickEvent.Phase.START) return
         if (!LocationManager.inSkyblock) return
+        if(Utils.mc.thePlayer == null) return
 
         if (LocationManager.currentIsland == "The Rift") {
             health = Utils.mc.thePlayer.health.toInt()
