@@ -41,7 +41,7 @@ object ShenPuzzleHelper {
             if (clickedButtons.map{it.toString()}.contains(buttonStrings[button-1]) || clickedButtons.map{it.toString()}.contains(blockStrings[button-1])) continue
             highLightButton(button, event.partialTicks)
             RenderUtils.draw3DString(
-                "Step ${i + 1}",
+                "${i + 1}",
                 buttons[button-1],
                 event.partialTicks,
                 true,
@@ -73,7 +73,7 @@ object ShenPuzzleHelper {
             for (line in item.getLore()) {
                 if (line.contains("SELECTED")) {
                     current = slot - 20
-                    ChatUtils.sendClientMessage("Current pattern: $current")
+                    //ChatUtils.sendClientMessage("Current pattern: $current")
                     return;
                 }
             }
@@ -82,18 +82,19 @@ object ShenPuzzleHelper {
 
     @SubscribeEvent
     fun onGuiClick(e: SlotClickedEvent){
+        if (!LocationManager.inSkyblock || LocationManager.currentIsland != "The Rift" || !RiftConfig.shenPuzzleHelper) return
         if(e.gui !is GuiChest) return
+
+        val player = Utils.mc.thePlayer
+        if (player.position.distanceSq(buttons[0]) > 400) return
+
+        //ChatUtils.sendClientMessage("Slot clicked: ${e.gui.chestName()}, slot {${e.slot.slotNumber}}")
         if (!e.gui.chestName().contains("Shen's")) return
         val chestInventory = e.gui.getInventory()
         if (e.slot.slotNumber in 20..24) {
             val item = chestInventory.getStackInSlot(e.slot.slotNumber) ?: return
-            for (line in item.getLore()) {
-                if (line.contains("SELECTED")) {
-                    current = e.slot.slotNumber - 20
-                    ChatUtils.sendClientMessage("Current pattern: $current")
-                    return;
-                }
-            }
+            current = e.slot.slotNumber - 20
+            //ChatUtils.sendClientMessage("Current pattern: $current")
         }
     }
 
@@ -106,7 +107,7 @@ object ShenPuzzleHelper {
         if (player.position.distanceSq(buttons[0]) > 400) return
 
         if (e.pos.toString() in buttons.map { it.toString() } || e.pos.toString() in blocks.map { it.toString() }) {
-            ChatUtils.sendClientMessage("Button clicked" )
+            //ChatUtils.sendClientMessage("Button clicked" )
             clickedButtons.add(e.pos)
         }
 
@@ -117,7 +118,7 @@ object ShenPuzzleHelper {
 
     private fun highLightButton(index: Int, partialTicks: Float) {
         RenderUtils.drawSpecialBB(
-            buttons[index-1],
+            blocks[index-1],
             RiftConfig.shenButtonColor.get(),
             partialTicks
         )
