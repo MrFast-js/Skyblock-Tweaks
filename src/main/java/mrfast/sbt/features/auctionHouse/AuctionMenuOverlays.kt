@@ -276,7 +276,7 @@ object AuctionMenuOverlays {
         }
 
         override fun isActive(event: Event): Boolean {
-            if (event !is GuiContainerBackgroundDrawnEvent) return false
+            if (event !is GuiContainerBackgroundDrawnEvent || event.gui == null) return false
 
             return (event.gui as GuiContainer).chestName() == "Your Bids" && AuctionHouseConfig.biddingOverlay
         }
