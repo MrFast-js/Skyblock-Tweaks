@@ -64,17 +64,6 @@ object CustomizationConfig : Config() {
     )
     var snowEffectForce = false
 
-
-    // No uses yet
-//    @ConfigProperty(
-//        type = ConfigType.TOGGLE,
-//        name = "Use At Own Risk Features",
-//        description = "Toggles whether §cUse At Own Risk§r features will show inside of the config menu",
-//        category = "§2§rCustomization",
-//        subcategory = "Mod"
-//    )
-//    var riskyFeatures = true
-
     @ConfigProperty(
         type = ConfigType.TOGGLE,
         name = "Background Blur",
@@ -223,4 +212,23 @@ object CustomizationConfig : Config() {
         parentName = "Custom Menu Colors"
     )
     var selectedCategoryColor = CustomColor(0, 255, 255)
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Custom Player Scale",
+        description = "Change players size globally",
+        category = "§2§rCustomization",
+        subcategory = "Fun"
+    )
+    var smallPlayers = false
+
+    @ConfigProperty(
+        type = ConfigType.NUMBER,
+        name = "Player Scale %",
+        description = "The scale of the player model, 100% is normal size",
+        category = "§2§rCustomization",
+        subcategory = "Fun",
+        parentName = "Smaller Player Models"
+    )
+    var smallPlayersScale = 50
 }
