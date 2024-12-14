@@ -15,8 +15,10 @@ import net.minecraft.util.MovingObjectPosition
 import net.minecraftforge.client.event.GuiScreenEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.entity.player.PlayerInteractEvent
+import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.input.Mouse
+
 
 @SkyblockTweaks.EventComponent
 object ShenPuzzleHelper {
@@ -66,6 +68,11 @@ object ShenPuzzleHelper {
     }
 
     @SubscribeEvent
+    fun onWorldChange(event: WorldEvent.Load?) {
+        clickedButtons.clear()
+    }
+
+    @SubscribeEvent
     fun onGuiScreen(event: GuiScreenEvent) {
         if ((event !is GuiScreenEvent.InitGuiEvent && event !is GuiScreenEvent.MouseInputEvent) || shouldReturn()) return
 
@@ -109,7 +116,6 @@ object ShenPuzzleHelper {
     }
 
     private fun shouldReturn(): Boolean {
-        return false
         if (Utils.mc.thePlayer != null) {
             if (Utils.mc.thePlayer!!.position.distanceSq(buttons[0]) > 400) return true
         }

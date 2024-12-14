@@ -21,7 +21,6 @@ object RiftConfig : Config() {
     @ConfigProperty(
         type = ConfigType.COLOR,
         name = "Circle Color",
-        description = "",
         category = "The Rift",
         subcategory = "Farming",
         parentName = "Nearly Coherent Rod Radius Display"
@@ -71,7 +70,6 @@ object RiftConfig : Config() {
     @ConfigProperty(
         type = ConfigType.COLOR,
         name = "Rift Fill Color",
-        description = "",
         category = "The Rift",
         subcategory = "Stat Displays",
         parentName = "Rift Time Bar"
@@ -81,7 +79,6 @@ object RiftConfig : Config() {
     @ConfigProperty(
         type = ConfigType.COLOR,
         name = "Rift Bar Background",
-        description = "",
         category = "The Rift",
         subcategory = "Stat Displays",
         parentName = "Rift Time Bar"
@@ -101,7 +98,6 @@ object RiftConfig : Config() {
     @ConfigProperty(
         type = ConfigType.COLOR,
         name = "Button Highlight Color",
-        description = "",
         category = "The Rift",
         subcategory = "Puzzles",
         parentName = "Shen Puzzle Helper"
@@ -109,33 +105,69 @@ object RiftConfig : Config() {
     var shenButtonColor = CustomColor(0x55FF55)
 
 
-//    @ConfigProperty(
-//            type = ConfigType.TOGGLE,
-//            name = "Larva Silk Display",
-//            description = "Highlights where the line will be drawn when using Larva Silk.",
-//            category = "The Rift",
-//            subcategory = "General",
-//            isParent = true
-//    )
-//    var larvaSilkDisplay = true
-//
-//    @ConfigProperty(
-//            type = ConfigType.COLOR,
-//            name = "Larva Silk Block Color",
-//            description = "",
-//            category = "The Rift",
-//            subcategory = "General",
-//            parentName = "Larva Silk Display"
-//    )
-//    var larvaSilkBlockColor: Color = Color.ORANGE
-//
-//    @ConfigProperty(
-//            type = ConfigType.COLOR,
-//            name = "Larva Silk Line Color",
-//            description = "",
-//            category = "The Rift",
-//            subcategory = "General",
-//            parentName = "Larva Silk Display"
-//    )
-//    var larvaSilkLineColor: Color = Color.CYAN
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Larva Silk Display",
+        description = "Highlights where the line will be drawn when using Larva Silk.",
+        category = "The Rift",
+        subcategory = "General",
+        isParent = true
+    )
+    var larvaSilkDisplay = true
+
+    @ConfigProperty(
+        type = ConfigType.COLOR,
+        name = "Larva Silk Block Color",
+        category = "The Rift",
+        subcategory = "General",
+        parentName = "Larva Silk Display"
+    )
+    var larvaSilkBlockColor = CustomColor(Color.ORANGE)
+
+    @ConfigProperty(
+        type = ConfigType.COLOR,
+        name = "Larva Silk Line Color",
+        category = "The Rift",
+        subcategory = "General",
+        parentName = "Larva Silk Display"
+    )
+    var larvaSilkLineColor = CustomColor(Color.CYAN)
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Rift Time Display",
+        description = "Displays the time remaining in the rift as a movable ui element",
+        category = "The Rift",
+        subcategory = "Stat Displays",
+        isParent = true
+    )
+    var riftTimeDisplay = false
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Show max time",
+        category = "The Rift",
+        subcategory = "Stat Displays",
+        parentName = "Rift Time Display"
+    )
+    var riftTimeShowMax = false
+
+    @ConfigProperty(
+        type = ConfigType.COLOR,
+        name = "Text Color",
+        category = "The Rift",
+        subcategory = "Stat Displays",
+        parentName = "Rift Time Display"
+    )
+    var riftTimeColor = CustomColor(85,255,255)
+
+    @ConfigProperty(
+        type = ConfigType.DROPDOWN,
+        name = "Text Style",
+        category = "The Rift",
+        subcategory = "Stat Displays",
+        dropdownOptions = ["Shadowed", "Default", "Outlined"],
+        parentName = "Rift Time Display"
+    )
+    var riftTimeTextStyle = "Shadowed"
 }
