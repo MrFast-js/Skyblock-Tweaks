@@ -125,7 +125,7 @@ class DebugCommand : CommandBase() {
 
     private fun reflect(args: Array<String>) {
         if (args.size < 2) {
-            ChatUtils.sendClientMessage("§cInvalid Usage! §e/sbtdebug set/read <loc> <value>")
+            ChatUtils.sendClientMessage("§cInvalid Usage! §e/sbtdebug write/read <loc> <value>")
             return
         }
         val location = args[1].split(".").dropLast(1).joinToString(".")
@@ -134,7 +134,7 @@ class DebugCommand : CommandBase() {
             val clazz = Class.forName(location)
             val field = clazz.getDeclaredField(variableName).apply { isAccessible = true }
 
-            if (args[0] == "set") {
+            if (args[0] == "write") {
                 val valueStr = args[2]
                 val value: Any? = when {
                     valueStr.equals("true", ignoreCase = true) || valueStr.equals(
