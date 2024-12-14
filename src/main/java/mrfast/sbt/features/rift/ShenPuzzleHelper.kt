@@ -70,6 +70,7 @@ object ShenPuzzleHelper {
         if ((event !is GuiScreenEvent.InitGuiEvent && event !is GuiScreenEvent.MouseInputEvent) || shouldReturn()) return
 
         val gui = event.gui
+
         if (gui !is GuiChest || !gui.chestName().contains("Shen's")) return
 
         if (event is GuiScreenEvent.InitGuiEvent) {
