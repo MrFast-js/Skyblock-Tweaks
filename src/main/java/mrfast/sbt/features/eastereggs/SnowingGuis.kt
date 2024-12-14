@@ -21,9 +21,6 @@ object SnowingGuis {
 
         if(CustomizationConfig.snowEffectExclusive && event.gui !is ConfigGui) return
 
-        // Darken the snowflakes
-        GlStateManager.color(0.5f, 0.5f, 0.5f, 0.7f)
         snowingEffect.drawSnowflakes()
-        GlStateManager.color(1f, 1f, 1f)
     }
 }
