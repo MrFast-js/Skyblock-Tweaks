@@ -4,121 +4,122 @@ import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.config.categories.RiftConfig
 import mrfast.sbt.customevents.SlotClickedEvent
 import mrfast.sbt.managers.LocationManager
-import mrfast.sbt.utils.ChatUtils
 import mrfast.sbt.utils.GuiUtils.chestName
 import mrfast.sbt.utils.ItemUtils.getLore
 import mrfast.sbt.utils.RenderUtils
 import mrfast.sbt.utils.Utils
 import mrfast.sbt.utils.Utils.getInventory
-import mrfast.sbt.utils.Utils.toString
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.util.BlockPos
+import net.minecraft.util.MovingObjectPosition
 import net.minecraftforge.client.event.GuiScreenEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.entity.player.PlayerInteractEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import org.lwjgl.input.Mouse
 
 @SkyblockTweaks.EventComponent
 object ShenPuzzleHelper {
-    private val buttons = listOf(BlockPos(-262, 20, -61), BlockPos(-262, 20, -62), BlockPos(-262, 20, -63), BlockPos(-262, 20, -64), BlockPos(-262, 20, -65), BlockPos(-262, 20, -66), BlockPos(-262, 20, -67))
-    private val blocks = listOf(BlockPos(-263, 20, -61), BlockPos(-263, 20, -62), BlockPos(-263, 20, -63), BlockPos(-263, 20, -64), BlockPos(-263, 20, -65), BlockPos(-263, 20, -66), BlockPos(-263, 20, -67))
-    val buttonStrings = buttons.map { it.toString() }
-    val blockStrings = blocks.map { it.toString() }
-    private val patterns =
-        listOf(listOf(2, 3, 4, 5, 6, 7), listOf(2, 4, 6), listOf(3, 4, 5), listOf(3, 4, 7), listOf(3, 5, 6, 7))
+    private val basePos = BlockPos(-262, 20, -61)
+    private val buttons = List(7) { i -> basePos.add(0, 0, -i) }
+    private val blocks = buttons.map { it.add(-1, 0, 0) }
+
+    private val buttonStrings = buttons.map { it.toString() }
+    private val blockStrings = blocks.map { it.toString() }
+
+    private val patterns = listOf(
+        listOf(2, 3, 4, 5, 6, 7),
+        listOf(2, 4, 6),
+        listOf(3, 4, 5),
+        listOf(3, 4, 7),
+        listOf(3, 5, 6, 7)
+    )
+
     private var current = 0
     private var clickedButtons = mutableListOf<BlockPos>()
 
+    private val itemSlots = listOf(20, 21, 22, 23, 24)
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        if (!LocationManager.inSkyblock || LocationManager.currentIsland != "The Rift" || !RiftConfig.shenPuzzleHelper) return
-        val player = Utils.mc.thePlayer
-        if (player.position.distanceSq(buttons[0]) > 400) return
+        if (shouldReturn()) return
+
+        // Looking at reset button
+        val rayTraceResult = Utils.mc.thePlayer.rayTrace(4.0, event.partialTicks)
+        if (rayTraceResult != null && rayTraceResult.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
+            if(rayTraceResult.blockPos == BlockPos(-262, 20, -60) || rayTraceResult.blockPos == BlockPos(-263, 20, -60)) {
+                if (Mouse.isButtonDown(0) || Mouse.isButtonDown(1)) {
+                    clickedButtons.clear()
+                }
+            }
+        }
+
         val selectedPattern = patterns[current]
 
         for ((i, button) in selectedPattern.withIndex()) {
-            if (clickedButtons.map{it.toString()}.contains(buttonStrings[button-1]) || clickedButtons.map{it.toString()}.contains(blockStrings[button-1])) continue
-            highLightButton(button, event.partialTicks)
-            RenderUtils.draw3DString(
-                "${i + 1}",
-                buttons[button-1],
-                event.partialTicks,
-                true,
-                true
-            )
-        }
+            if (clickedButtons.map { it.toString() }
+                    .contains(buttonStrings[button - 1]) || clickedButtons.map { it.toString() }
+                    .contains(blockStrings[button - 1])) continue
 
+            highLightButton(button, event.partialTicks)
+        }
     }
 
     @SubscribeEvent
-    fun onGuiScreen(e: GuiScreenEvent) {
-        if (e !is GuiScreenEvent.InitGuiEvent && e !is GuiScreenEvent.MouseInputEvent) return
+    fun onGuiScreen(event: GuiScreenEvent) {
+        if ((event !is GuiScreenEvent.InitGuiEvent && event !is GuiScreenEvent.MouseInputEvent) || shouldReturn()) return
 
-        if (!LocationManager.inSkyblock || LocationManager.currentIsland != "The Rift" || !RiftConfig.shenPuzzleHelper) return
+        val gui = event.gui
+        if (gui !is GuiChest || !gui.chestName().contains("Shen's")) return
 
-        val player = Utils.mc.thePlayer ?: return
-        if (player.position.distanceSq(buttons[0]) > 400) return
-
-        val gui = e.gui ?: return
-        if (gui !is GuiChest) return
-        if(e is GuiScreenEvent.InitGuiEvent){
+        if (event is GuiScreenEvent.InitGuiEvent) {
             clickedButtons.clear()
         }
-        if (!gui.chestName().contains("Shen's")) return
-        val chestInventory = gui.getInventory()
-        val slots = listOf(20, 21, 22, 23, 24)
-        for (slot in slots) {
-            val item = chestInventory.getStackInSlot(slot) ?: continue
+
+        for (slot in itemSlots) {
+            val item = gui.getInventory().getStackInSlot(slot) ?: continue
+
             for (line in item.getLore()) {
-                if (line.contains("SELECTED")) {
-                    current = slot - 20
-                    //ChatUtils.sendClientMessage("Current pattern: $current")
-                    return;
-                }
+                if (!line.contains("SELECTED")) continue
+
+                current = itemSlots.indexOf(slot)
+                break
             }
         }
     }
 
     @SubscribeEvent
-    fun onGuiClick(e: SlotClickedEvent){
-        if (!LocationManager.inSkyblock || LocationManager.currentIsland != "The Rift" || !RiftConfig.shenPuzzleHelper) return
-        if(e.gui !is GuiChest) return
+    fun onGuiClick(event: SlotClickedEvent) {
+        if (shouldReturn() || event.gui !is GuiChest || !event.gui.chestName().contains("Shen's")) return
 
-        val player = Utils.mc.thePlayer
-        if (player.position.distanceSq(buttons[0]) > 400) return
-
-        //ChatUtils.sendClientMessage("Slot clicked: ${e.gui.chestName()}, slot {${e.slot.slotNumber}}")
-        if (!e.gui.chestName().contains("Shen's")) return
-        val chestInventory = e.gui.getInventory()
-        if (e.slot.slotNumber in 20..24) {
-            val item = chestInventory.getStackInSlot(e.slot.slotNumber) ?: return
-            current = e.slot.slotNumber - 20
-            //ChatUtils.sendClientMessage("Current pattern: $current")
+        if (event.slot.slotNumber in 20..24) {
+            current = itemSlots.indexOf(event.slot.slotNumber)
         }
     }
 
     @SubscribeEvent
     fun onPlayerInteract(e: PlayerInteractEvent) {
-        if(e.action != PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK) return
-        if (!LocationManager.inSkyblock || LocationManager.currentIsland != "The Rift" || !RiftConfig.shenPuzzleHelper) return
+        if (e.action != PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK || shouldReturn()) return
 
-        val player = Utils.mc.thePlayer
-        if (player.position.distanceSq(buttons[0]) > 400) return
-
-        if (e.pos.toString() in buttons.map { it.toString() } || e.pos.toString() in blocks.map { it.toString() }) {
-            //ChatUtils.sendClientMessage("Button clicked" )
+        if (e.pos.toString() in buttons.toList().map { it.toString() } || e.pos.toString() in blocks.toList()
+                .map { it.toString() }) {
             clickedButtons.add(e.pos)
         }
+    }
 
+    private fun shouldReturn(): Boolean {
+        return false
+        if (Utils.mc.thePlayer != null) {
+            if (Utils.mc.thePlayer!!.position.distanceSq(buttons[0]) > 400) return true
+        }
 
-
+        return !LocationManager.inSkyblock || LocationManager.currentIsland != "The Rift" || !RiftConfig.shenPuzzleHelper
     }
 
 
     private fun highLightButton(index: Int, partialTicks: Float) {
         RenderUtils.drawSpecialBB(
-            blocks[index-1],
+            blocks[index - 1],
             RiftConfig.shenButtonColor.get(),
             partialTicks
         )
