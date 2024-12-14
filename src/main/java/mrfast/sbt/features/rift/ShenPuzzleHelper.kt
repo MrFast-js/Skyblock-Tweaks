@@ -47,7 +47,7 @@ object ShenPuzzleHelper {
         // Looking at reset button
         val rayTraceResult = Utils.mc.thePlayer.rayTrace(4.0, event.partialTicks)
         if (rayTraceResult != null && rayTraceResult.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
-            if(rayTraceResult.blockPos == BlockPos(-262, 20, -60) || rayTraceResult.blockPos == BlockPos(-263, 20, -60)) {
+            if(rayTraceResult.blockPos == BlockPos(-261, 20, -60) || rayTraceResult.blockPos == BlockPos(-262, 20, -60)) {
                 if (Mouse.isButtonDown(0) || Mouse.isButtonDown(1)) {
                     clickedButtons.clear()
                 }
