@@ -13,13 +13,13 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 
 @SkyblockTweaks.EventComponent
-object FireFreezeDisplay {
+object FireFreezeTimer {
     private var activatedPos: Vec3? = null
     private var activatedAt = 0L
 
     @SubscribeEvent
     fun onItemUse(event: UseItemAbilityEvent) {
-        if (MiscellaneousConfig.fireFreezeVisual) return
+        if (!MiscellaneousConfig.fireFreezeVisual) return
 
         if (event.ability.itemId == "FIRE_FREEZE_STAFF") {
             activatedAt = System.currentTimeMillis()
@@ -29,7 +29,7 @@ object FireFreezeDisplay {
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        if (MiscellaneousConfig.fireFreezeVisual || activatedPos == null) return
+        if (!MiscellaneousConfig.fireFreezeVisual || activatedPos == null) return
 
         val pos = activatedPos!!
 
