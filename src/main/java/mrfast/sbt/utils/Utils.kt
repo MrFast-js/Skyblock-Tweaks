@@ -140,7 +140,7 @@ object Utils {
 
     fun Long.toFormattedSeconds(): String {
         val seconds = this / 1000.0
-        return "${seconds.roundToTwoDecimalPlaces()}s"
+        return "${"%.2f".format(seconds)}s"
     }
 
     fun copyToClipboard(text: String) {

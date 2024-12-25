@@ -1,8 +1,10 @@
 package mrfast.sbt.config.categories
 
 import mrfast.sbt.config.Config
+import mrfast.sbt.guis.components.CustomColor
 import mrfast.sbt.managers.ConfigProperty
 import mrfast.sbt.managers.ConfigType
+import java.awt.Color
 
 object MiscellaneousConfig : Config() {
 
@@ -74,7 +76,7 @@ object MiscellaneousConfig : Config() {
     )
     var quiverOverlayType = false
 
-//    @ConfigProperty(
+    //    @ConfigProperty(
 //            type = ConfigType.TOGGLE,
 //            name = "Fire Veil Timer",
 //            description = "Shows the time until the Fire Veil ability ends.",
@@ -92,14 +94,24 @@ object MiscellaneousConfig : Config() {
 //    )
 //    var gloomlockGrimoireProtection = true
 //
-//    @ConfigProperty(
-//            type = ConfigType.TOGGLE,
-//            name = "Show §5Fire Freeze Staff§r Freeze Timer",
-//            description = "Shows a timer in the world for when the §5Fire Freeze Staff's§r ability will freeze",
-//            category = "Miscellaneous",
-//            subcategory = "Items"
-//    )
-//    var fireFreezeStaffFreezeTimer = true
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Fire Freeze Staff Visual",
+        description = "Shows a radius & timer in the world for when the §5Fire Freeze Staff's§r ability will freeze",
+        category = "Miscellaneous",
+        subcategory = "Items"
+    )
+    var fireFreezeVisual = true
+
+    @ConfigProperty(
+        type = ConfigType.COLOR,
+        name = "Focused Highlight Color",
+        description = "Color of the highlight when focused",
+        category = "Mining",
+        parentName = "Fire Freeze Staff Visual",
+        subcategory = "Render"
+    )
+    var fireFreezeVisualColor = CustomColor(Color.RED)
 
 //    @ConfigProperty(
 //            type = ConfigType.TOGGLE,

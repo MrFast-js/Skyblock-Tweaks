@@ -228,7 +228,7 @@ object CustomizationConfig : Config() {
         description = "The scale of the player model, 100% is normal size",
         category = "§2§rCustomization",
         subcategory = "Fun",
-        parentName = "Smaller Player Models"
+        parentName = "Custom Player Scale"
     )
     var smallPlayersScale = 50
 }

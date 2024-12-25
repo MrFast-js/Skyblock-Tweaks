@@ -54,20 +54,9 @@ object ItemAbilities {
     class ItemAbility(var itemId: String) {
         var cooldownSeconds = 0.0
         var currentCount = 0.0
-        var usedAt: Long
-        var abilityName: String = "Unknown"
+        var usedAt = System.currentTimeMillis()
+        var abilityName = "Unknown"
         var type: String? = null
-
-        init {
-            usedAt = System.currentTimeMillis()
-        }
-
-        fun reset() {
-            if (cooldownSeconds - currentCount <= 0) {
-                currentCount = 0.0
-            }
-            usedAt = System.currentTimeMillis()
-        }
     }
 
     @SubscribeEvent
@@ -175,7 +164,7 @@ object ItemAbilities {
     /**
      * Handle left click events differently
      * as they just don't work like normal and more commonly used right click abilities
-    */
+     */
     @SubscribeEvent
     fun onMouseClick(event: MouseEvent) {
         if (!LocationManager.inSkyblock || Utils.mc.theWorld == null) return
@@ -200,12 +189,12 @@ object ItemAbilities {
     @SubscribeEvent
     fun onPlayerInteract(event: PlayerInteractEvent) {
         if (!LocationManager.inSkyblock || Utils.mc.theWorld == null) return
+
         val heldItem: ItemStack = ItemUtils.getHeldItem() ?: return
         val skyblockId: String? = heldItem.getSkyblockId()
-
         if (skyblockId == null || !itemCooldowns.containsKey(skyblockId)) return
-        val cdItem = itemCooldowns[skyblockId]
 
+        val cdItem = itemCooldowns[skyblockId]
         val sneaking: Boolean = Utils.mc.thePlayer.isSneaking
         if (event.action == PlayerInteractEvent.Action.RIGHT_CLICK_AIR) {
 
@@ -258,6 +247,4 @@ object ItemAbilities {
         }
         return cooldownCount - secondsToAdd
     }
-
-
 }
