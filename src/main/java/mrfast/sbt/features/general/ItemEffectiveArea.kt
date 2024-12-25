@@ -25,7 +25,7 @@ object ItemEffectiveArea {
 
         val heldItemId = Utils.mc.thePlayer.heldItem?.getSkyblockId() ?: return
 
-        if (heldItemId == "BAT_WAND" || heldItemId == "STARRED_BAT_WAND" || heldItemId == "HYPERION") {
+        if (heldItemId == "BAT_WAND" || heldItemId == "STARRED_BAT_WAND" || heldItemId == "HYPERION" || heldItemId == "ASTRAEA" || heldItemId == "SCYLLA" || heldItemId == "VALKYRIE") {
             val lookingBlock = Utils.mc.thePlayer.rayTrace(if(heldItemId == "HYPERION") 9.0 else 45.0, event.partialTicks)
             if (lookingBlock.blockPos != null && lookingBlock.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
                 if (!showItemEffectiveAreaMobsNearby || SkyblockMobDetector.getLoadedSkyblockMobs()
