@@ -107,7 +107,7 @@ object VersionManager {
         val mainVersionPart = version.split("-")[0]
         val mainVersionNum = mainVersionPart.replace("[^0-9]".toRegex(), "").toDouble()
 
-        return if ("BETA" in version) {
+        return if ("beta" in version.toLowerCase()) {
             val betaPart = version.split("-")[1]
             val betaNum = betaPart.replace("[^0-9]".toRegex(), "").toDouble()
             // 1.1.5-BETA5 (pre) -> 114.005

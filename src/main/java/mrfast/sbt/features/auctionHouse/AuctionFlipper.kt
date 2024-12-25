@@ -160,7 +160,7 @@ object AuctionFlipper {
         }
     }
 
-    private var maxPagesToScan = 40
+    private var maxPagesToScan = 50
 
     // Scans each page of auction house for potential flips
     // Each Page = 1000 Auctions
@@ -168,7 +168,7 @@ object AuctionFlipper {
         auctionsNotified = 0
         checkedAuctions = 0
         sentAuctionFlips.clear()
-
+        filterDebugCounts.clear()
         ChatUtils.sendClientMessage("", false)
         ChatUtils.sendClientMessage("§eSB§9T§6 >> §7Starting Auction House Scan..")
         ChatUtils.sendClientMessage("", false)
@@ -267,6 +267,8 @@ object AuctionFlipper {
             auctionFlip.sellFor = suggestedListingPrice.toLong()
 
             filterOutAuction(auctionFlip)
+        } else {
+            incrementFilterCount("Price > Suggested Price")
         }
     }
 
@@ -368,7 +370,7 @@ object AuctionFlipper {
         if (auctionFlip.endTime != null) {
             val msTillEnd = auctionFlip.endTime!! - System.currentTimeMillis()
             if (auctionFlip.bin == false && msTillEnd > AuctionHouseConfig.AF_minimumTime * 1000 * 60 || msTillEnd < 0) {
-                incrementFilterCount("Auction Ends Too Far Away")
+                incrementFilterCount("Auction Duration Too Long")
                 return
             }
         }
@@ -399,7 +401,7 @@ object AuctionFlipper {
 
         // Filter based on purse limit
         if (AuctionHouseConfig.AF_usePurseLimit && auctionFlip.price > PurseManager.coinsInPurse) {
-            incrementFilterCount("Price Exceeds Purse Limit")
+            incrementFilterCount("Price > Purse Limit")
             return
         }
 
@@ -421,9 +423,9 @@ object AuctionFlipper {
     }
 
     private fun getFilterSummary(): String {
-        val out = mutableListOf("§b§lFilter Summary:")
+        val out = mutableListOf("§b§lFilter Summary")
         filterDebugCounts.forEach { (filter, count) ->
-            out.add("§6$filter: §c$count §7auctions removed")
+            out.add("§6$filter: §c${count.formatNumber()} §7auctions removed")
         }
         return out.joinToString("\n")
     }
