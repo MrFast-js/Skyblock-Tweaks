@@ -16,9 +16,8 @@ object ItemApi {
     private var skyblockItems = JsonObject()
     private var skyblockItemPrices = JsonObject()
     private var skyblockItemsLoaded = false
-
     init {
-        println("Loading Skyblock Items from HySky API")
+        println("Loading Skyblock Items from Neu Repo Zip")
 
         // Update Item Prices every ~15 Minutes
         Timer().scheduleAtFixedRate(object : TimerTask() {
@@ -32,21 +31,20 @@ object ItemApi {
         Thread {
             if (!skyblockItemsLoaded) {
                 try {
-                    val items = NetworkUtils.apiRequestAndParse("https://hysky.de/api/items")
-                    items.remove("timestamp")
-                    skyblockItems = items
+                    println("Starting to download Skyblock Items from NEU API")
+                    NetworkUtils.downloadAndProcessRepo()
+                    skyblockItems = NetworkUtils.NeuItems
                 } catch (e: Exception) {
                     println("There was a problem loading Skyblock Items.. ${e.message}")
                 }
             }
 
             skyblockItemsLoaded = true
-            if (logging) println("Loaded Skyblock Items from HySky API!!")
+            if (logging) println("Loaded Skyblock Items from NEU API!")
 
             if (logging) println("Loading Lowest Bin Prices from Moulberry NEU API")
             try {
-                val lowestBins =
-                    NetworkUtils.apiRequestAndParse("https://moulberry.codes/lowestbin.json", caching = false)
+                val lowestBins = NetworkUtils.apiRequestAndParse("https://moulberry.codes/lowestbin.json", caching = false)
                 if (lowestBins.entrySet().size > 0) {
                     lowestBins.entrySet().forEach {
                         if (!skyblockItemPrices.has(it.key)) {

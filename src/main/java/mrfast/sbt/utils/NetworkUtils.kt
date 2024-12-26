@@ -2,14 +2,18 @@ package mrfast.sbt.utils
 
 import com.google.gson.Gson
 import com.google.gson.JsonObject
+import com.google.gson.JsonParser
 import moe.nea.libautoupdate.UpdateUtils
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.config.categories.CustomizationConfig
 import mrfast.sbt.config.categories.DeveloperConfig
+import mrfast.sbt.managers.ConfigManager
+import mrfast.sbt.managers.DataManager
 import net.minecraft.util.ChatComponentText
 import org.apache.http.HttpEntity
 import org.apache.http.HttpVersion
 import org.apache.http.client.methods.HttpGet
+import org.apache.http.client.methods.HttpHead
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory
 import org.apache.http.impl.client.CloseableHttpClient
 import org.apache.http.impl.client.HttpClients
@@ -18,8 +22,11 @@ import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
 import java.nio.charset.StandardCharsets
+import java.nio.file.Files
 import java.security.KeyStore
 import java.util.stream.Collectors
+import java.util.zip.ZipEntry
+import java.util.zip.ZipInputStream
 import javax.net.ssl.*
 
 
@@ -27,6 +34,7 @@ object NetworkUtils {
     private val myApiUrl = DeveloperConfig.modAPIURL
     private var client: CloseableHttpClient = HttpClients.createDefault()
     private val jsonCache: MutableMap<String, CacheObject> = HashMap()
+    private const val zipUrl = "https://github.com/NotEnoughUpdates/NotEnoughUpdates-Repo/archive/master.zip"
     var tempApiAuthKey = ""
 
     // Follow these directions
@@ -56,7 +64,7 @@ object NetworkUtils {
                 .build()
 
             UpdateUtils.patchConnection {
-                if(it is HttpsURLConnection) it.sslSocketFactory = ctx.socketFactory
+                if (it is HttpsURLConnection) it.sslSocketFactory = ctx.socketFactory
             }
         } catch (e: Exception) {
             println("Failed to load keystore. A lot of API requests won't work");
@@ -254,5 +262,71 @@ object NetworkUtils {
 
     private fun formatUUID(input: String): String {
         return input.replace(Regex("(.{8})(.{4})(.{4})(.{4})(.{12})"), "$1-$2-$3-$4-$5")
+    }
+
+
+    var NeuItems = JsonObject()
+    private var NeuMobs = JsonObject()
+    private var NeuConstants = JsonObject()
+
+    fun downloadAndProcessRepo() {
+        val etagFile = ConfigManager.modDirectoryPath.resolve("repo/NEUAPI-ETAG.txt")
+
+        // Ensure the ETag file exists, create if not
+        if (!etagFile.exists()) {
+            etagFile.parentFile?.mkdirs()
+            if (!etagFile.exists()) {
+                etagFile.createNewFile()
+            }
+        }
+
+        // Read previous ETag from file
+        val previousEtag = String(Files.readAllBytes(etagFile.toPath()), Charsets.UTF_8)
+
+        // Get current ETag from server
+        val currentEtag = client.execute(HttpHead(zipUrl).apply {
+            previousEtag.takeIf { it.isNotEmpty() }?.let { setHeader("If-None-Match", it) }
+        }).takeIf { it.statusLine.statusCode != 304 }?.getFirstHeader("ETag")?.value
+
+        // If ETag is different, download and process the ZIP file
+        if (currentEtag != previousEtag) {
+            client.execute(HttpGet(zipUrl))
+                .takeIf { it.statusLine.statusCode == 200 }?.entity?.content?.use { zipStream ->
+                    ZipInputStream(zipStream).use { zip ->
+                        var entry: ZipEntry? = zip.nextEntry
+                        while (entry != null) {
+                            if (entry.name.endsWith(".json")) {
+                                val jsonContent = zip.bufferedReader().readText()
+                                val name = entry.name.split("/").last().removeSuffix(".json")
+                                val value = JsonParser().parse(jsonContent).asJsonObject
+                                when {
+                                    entry.name.contains("/items/") -> {
+                                        NeuItems.add(name, value)
+                                    }
+                                    entry.name.contains("/mobs/") -> {
+                                        NeuMobs.add(name, value)
+                                    }
+                                    entry.name.contains("/constants/") -> {
+                                        NeuConstants.add(name, value)
+                                    }
+                                }
+                            }
+                            entry = zip.nextEntry
+                        }
+                    }
+                }
+            // Save the new ETag to file
+            currentEtag?.let {
+                Files.write(etagFile.toPath(), it.toByteArray(StandardCharsets.UTF_8))
+            }
+            DataManager.saveDataToFile(ConfigManager.modDirectoryPath.resolve("repo/NeuItems.json"), NeuItems)
+            DataManager.saveDataToFile(ConfigManager.modDirectoryPath.resolve("repo/NeuMobs.json"), NeuMobs)
+            DataManager.saveDataToFile(ConfigManager.modDirectoryPath.resolve("repo/NeuConstants.json"), NeuConstants)
+        } else {
+            println("Debug: ETag matches. No need to download. Loading from file...")
+            NeuItems = DataManager.loadDataFromFile(ConfigManager.modDirectoryPath.resolve("repo/NeuItems.json"))
+            NeuMobs = DataManager.loadDataFromFile(ConfigManager.modDirectoryPath.resolve("repo/NeuMobs.json"))
+            NeuConstants = DataManager.loadDataFromFile(ConfigManager.modDirectoryPath.resolve("repo/NeuConstants.json"))
+        }
     }
 }
