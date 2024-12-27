@@ -57,7 +57,8 @@ object LocationManager {
 
     @SubscribeEvent
     fun onSlotClick(event: SlotClickedEvent) {
-        if (event.gui.chestName() == "Catacombs Gate" && event.slot.stack.displayName.contains("Floor")) {
+        val stack = event.slot.stack ?: return
+        if (event.gui.chestName() == "Catacombs Gate" && stack.displayName.contains("Floor")) {
             val clean = event.slot.stack.displayName.clean()
             val floorString = clean.split(" - ")[1]
 
