@@ -23,7 +23,7 @@ public class MixinGuiContainer {
 
     @Inject(method = "handleMouseClick(Lnet/minecraft/inventory/Slot;III)V", at = @At("HEAD"), cancellable = true)
     private void onHandleMouseClick(Slot slot, int slotId, int clickedButton, int mode, CallbackInfo ci) {
-        if (slot != null) {
+        if (slot != null && Minecraft.getMinecraft().currentScreen != null) {
             if (MinecraftForge.EVENT_BUS.post(new SlotClickedEvent(slot, (GuiContainer) Minecraft.getMinecraft().currentScreen))) {
                 ci.cancel();
             }
