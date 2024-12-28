@@ -97,7 +97,7 @@
     <summary>
         <strong>Accurate Dwarven Mines Map</strong>
     </summary>
-    <i>Customizable colors. Works for hyperion, Spirit Scepter, + more in future</i><br>
+    <i>Show a map of the dwarven mines, highlighting key points of interest and helping you navigate</i><br>
     <img src="https://github.com/user-attachments/assets/0f411b48-945c-42aa-89fc-37ac55cde1a0" alt="Effective Item Area Display">
   </details>
 
