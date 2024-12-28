@@ -37,20 +37,20 @@ object ItemUtils {
                 val petInfoJson = DevUtils.convertStringToJson(petInfoNbt) ?: return null
                 if (!petInfoJson.isJsonObject) return null
                 val petInfo = petInfoJson.asJsonObject
-                val tierInt = petTierToInt(petInfo.get("tier").asString)
-                "${petInfo.get("type").asString};$tierInt"
+                val tier = petInfo.get("tier").asString
+                "${petInfo.get("type").asString}-$tier"
             }
 
             id == "RUNE" && nbt.hasKey("runes") -> {
                 val runeType = nbt.getCompoundTag("runes")?.keySet?.firstOrNull()
                 runeType?.let {
-                    "${runeType}_RUNE;${nbt.getCompoundTag("runes").getInteger(runeType)}"
+                    "${runeType}_RUNE-${nbt.getCompoundTag("runes").getInteger(runeType)}"
                 }
             }
 
             id == "NEW_YEAR_CAKE" -> {
                 val year = nbt.getInteger("new_years_cake")
-                "NEW_YEAR_CAKE+$year"
+                "NEW_YEAR_CAKE-$year"
             }
 
             else -> id

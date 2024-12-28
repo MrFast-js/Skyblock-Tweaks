@@ -2,6 +2,8 @@ package mrfast.sbt.apis
 
 import com.google.gson.JsonObject
 import mrfast.sbt.SkyblockTweaks
+import mrfast.sbt.config.categories.CustomizationConfig
+import mrfast.sbt.config.categories.DeveloperConfig
 import mrfast.sbt.utils.ItemUtils.getSkyblockId
 import mrfast.sbt.utils.NetworkUtils
 import mrfast.sbt.utils.Utils
@@ -16,12 +18,14 @@ object ItemApi {
     private var skyblockItems = JsonObject()
     private var skyblockItemPrices = JsonObject()
     private var skyblockItemsLoaded = false
+
     init {
         println("Loading Skyblock Items from Neu Repo Zip")
-
+        loadSkyblockItems(true)
         // Update Item Prices every ~15 Minutes
         Timer().scheduleAtFixedRate(object : TimerTask() {
             override fun run() {
+                if (Utils.mc.theWorld == null) return
                 loadSkyblockItems(false)
             }
         }, 0, 1000 * 60 * 15)
@@ -31,7 +35,7 @@ object ItemApi {
         Thread {
             if (!skyblockItemsLoaded) {
                 try {
-                    println("Starting to download Skyblock Items from NEU API")
+                    if (logging) println("Starting to download Skyblock Items from NEU Repo")
                     NetworkUtils.downloadAndProcessRepo()
                     skyblockItems = NetworkUtils.NeuItems
                 } catch (e: Exception) {
@@ -40,11 +44,17 @@ object ItemApi {
             }
 
             skyblockItemsLoaded = true
-            if (logging) println("Loaded Skyblock Items from NEU API!")
+            if (logging) println("Loaded Skyblock Items from NEU Repo!")
 
-            if (logging) println("Loading Lowest Bin Prices from Moulberry NEU API")
+            while (Utils.mc.theWorld == null) {
+                Thread.sleep(5000)
+            }
+
+            var ranIntoError = false
+
+            if (logging) println("Loading Lowest Bin Prices from Skyblock Tweaks API")
             try {
-                val lowestBins = NetworkUtils.apiRequestAndParse("https://moulberry.codes/lowestbin.json", caching = false)
+                val lowestBins = NetworkUtils.apiRequestAndParse(DeveloperConfig.modAPIURL + "аpi/lowestBin", caching = false)
                 if (lowestBins.entrySet().size > 0) {
                     lowestBins.entrySet().forEach {
                         if (!skyblockItemPrices.has(it.key)) {
@@ -53,63 +63,35 @@ object ItemApi {
                         skyblockItemPrices[it.key].asJsonObject.addProperty("lowestBin", it.value.asLong)
                         skyblockItemPrices[it.key].asJsonObject.addProperty("basePrice", it.value.asLong)
                     }
-                    if (logging) println("Loaded Lowest Bin Prices from Moulberry NEU API!!")
 
-                    if (logging) println("Loading Average Bin Prices from Moulberry NEU API")
-                    val averageBins =
-                        NetworkUtils.apiRequestAndParse(
-                            "https://moulberry.codes/auction_averages/3day.json",
-                            caching = false
-                        )
-                    if (averageBins.entrySet().size > 0) {
-                        averageBins.entrySet().forEach {
-                            if (!skyblockItemPrices.has(it.key)) {
-                                skyblockItemPrices.add(it.key, JsonObject())
-                            }
-
-                            val item = skyblockItemPrices[it.key].asJsonObject
-                            it.value.asJsonObject.entrySet().forEach { priceStat ->
-                                item.add(priceStat.key + "_avg", priceStat.value)
-                            }
-
-                            if (item.has("price_avg")) {
-                                item.addProperty(
-                                    "basePrice",
-                                    item["price_avg"].asLong
-                                )
-                            }
-
-                            // Change 'worth' depending on available prices and anti market manipulations math, requires lbin & abin
-                            if (skyblockItemPrices[it.key].asJsonObject.has("lowestBin") && skyblockItemPrices[
-                                    it.key
-                                ].asJsonObject.has("price_avg")
-                            ) {
-                                val lbin = item["lowestBin"].asDouble
-                                var abin = item["price_avg"].asDouble
-                                if (item.has("clean_price_avg")) {
-                                    abin = item["clean_price_avg"].asDouble
-                                }
-
-                                var basePrice = (abin * 0.4 + lbin * 0.6)
-
-                                // If the lowest bin is more than average bin * 50% it can be inferred that likely the lowest bin is currently high or possibly manipulated
-                                // Find a semi middle ground that is fair, but much more weighted towards lbin for selling faster
-                                if (lbin > abin + 300_000 || lbin > abin * 1.5) {
-                                    basePrice = (abin * 0.6 + lbin * 0.4)
-                                }
-                                if (lbin > abin + 500_00) {
-                                    basePrice = lbin - 100_000
-                                }
-
-                                item.addProperty("basePrice", basePrice.toLong())
-                            }
-                        }
-
-                        if (logging) println("Loaded Average Bin Prices from Moulberry NEU API!!")
-                    }
+                    if (logging) println("Loaded Lowest Bin Prices Skyblock Tweaks API!!")
                 }
             } catch (e: Exception) {
-                println("There was a problem loading NEU Prices.. Retrying in 5 seconds..")
+                e.printStackTrace()
+                ranIntoError = true
+            }
+
+            try {
+                if (logging) println("Loading Average Bin Prices from SBT API")
+                val averageBins = NetworkUtils.apiRequestAndParse(DeveloperConfig.modAPIURL + "аpi/lowestBinAvg", caching = false)
+                if (averageBins.entrySet().isEmpty()) return@Thread
+
+                averageBins.entrySet().forEach {
+                    if (!skyblockItemPrices.has(it.key)) {
+                        println("Adding ${it.key} to skyblockItemPrices")
+                        skyblockItemPrices.add(it.key, JsonObject())
+                    }
+                    skyblockItemPrices[it.key].asJsonObject.addProperty("price_avg", it.value.asLong)
+                }
+
+                if (logging) println("Loaded Average Bin Prices from Skyblock Tweaks API!!")
+            } catch (e: Exception) {
+                e.printStackTrace()
+                ranIntoError = true
+            }
+
+            if (ranIntoError) {
+                println("There was a problem loading SBT Prices.. Retrying in 5 seconds..")
                 Utils.setTimeout({
                     loadSkyblockItems(logging)
                 }, 5000)
