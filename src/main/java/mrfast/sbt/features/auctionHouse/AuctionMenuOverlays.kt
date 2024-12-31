@@ -1,5 +1,6 @@
 package mrfast.sbt.features.auctionHouse
 
+import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import gg.essential.elementa.dsl.constraint
 import gg.essential.universal.UMatrixStack
@@ -36,6 +37,7 @@ import net.minecraft.util.ChatComponentText
 import net.minecraftforge.fml.common.eventhandler.Event
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.awt.Color
+import kotlin.math.max
 
 @SkyblockTweaks.EventComponent
 object AuctionMenuOverlays {
@@ -47,8 +49,9 @@ object AuctionMenuOverlays {
     open class Auction(var slot: Slot, var uuid: String) {
         var price = 0L
         var profit = 0L
-        var suggestedListingPrice = 0
+        var suggestedListingPrice = 0L
         var winning: Boolean? = null
+        var shouldSellBIN = false
         var seller: String? = null
         var otherBidder: String? = null
         var pricingData: JsonObject? = null
@@ -130,7 +133,7 @@ object AuctionMenuOverlays {
 
                 for (line in submitBidStack.getLore(clean = true)) {
                     if (line.matches(NEW_BID_REGEX)) {
-                        newBidPrice = line.getRegexGroups(NEW_BID_REGEX)!![1]!!.value.replace(",","").toLong()
+                        newBidPrice = line.getRegexGroups(NEW_BID_REGEX)!![1]!!.value.replace(",", "").toLong()
                         break
                     }
                 }
@@ -175,12 +178,13 @@ object AuctionMenuOverlays {
 
     private fun setAuctionPricingData(auction: Auction) {
         val id = auction.stack?.getSkyblockId() ?: return
-        auction.pricingData = ItemApi.getItemPriceInfo(id) ?: return
+        auction.pricingData = ItemApi.getItemInfo(id) ?: return
 
         val stack = auction.stack ?: return
         val suggestedListingPrice = ItemUtils.getSuggestListingPrice(stack) ?: return
 
-        auction.suggestedListingPrice = suggestedListingPrice
+        auction.suggestedListingPrice = suggestedListingPrice.get("price").asLong
+        auction.shouldSellBIN = suggestedListingPrice.get("bin").asBoolean
         auction.profit = auction.suggestedListingPrice - auction.price
     }
 
@@ -295,9 +299,46 @@ object AuctionMenuOverlays {
 
             val viewedItem = (event.gui as GuiChest).getInventory().getStackInSlot(13) ?: return
             val itemId = viewedItem.getSkyblockId() ?: return
-            val pricingData = ItemApi.getItemPriceInfo(itemId) ?: return
+            val pricingData = ItemApi.getItemInfo(itemId) ?: return
             val resellProfit = lastViewedAuction?.profit ?: return
             val coloredSymbol = if (resellProfit > 0) "§a+" else "§c"
+
+            // Pricing and count for Live Auction listings and their prices
+            val activeAucNum = if (pricingData.has("activeAuc")) pricingData.get("activeAuc").asInt else -1
+            val activeAuc = if (activeAucNum != -1) activeAucNum.formatNumber() else "§cUnknown"
+            val activeAucPrices = pricingData.get("activeAucPrices").asJsonArray
+
+            // Pricing and count for Live Bin Listings and their prices
+            val activeBinNum = if (pricingData.has("activeBin")) pricingData.get("activeBin").asInt else -1
+            val activeBin = if (activeBinNum != -1) activeBinNum.formatNumber() else "§cUnknown"
+            val activeBinPrices = pricingData.get("activeBinPrices").asJsonArray
+
+            // Pricing and count for recently ended auction listings and their prices
+            val soldAucNum = if (pricingData.has("aucSold")) pricingData.get("aucSold").asInt else -1
+            val soldAuc = if (soldAucNum != -1) soldAucNum.formatNumber() else "§cUnknown"
+            val soldAucPrices = if(pricingData.has("aucSoldPrices")) pricingData.get("aucSoldPrices").asJsonArray else JsonArray()
+
+            // Pricing and count for recently ended Bin Listings and their prices
+            val soldBinNum = if (pricingData.has("binSold")) pricingData.get("binSold").asInt else -1
+            val soldBin = if (soldBinNum != -1) soldBinNum.formatNumber() else "§cUnknown"
+            val soldBinPrices = if(pricingData.has("binSoldPrices")) pricingData.get("binSoldPrices").asJsonArray else JsonArray()
+
+            val recentlySoldHover = mutableListOf(
+                "§b§lRecently Sold Listings",
+                "§9$soldAuc Sold Auctions"
+            ) + getPrices(soldAucPrices) + listOf("§3$soldBin Sold BINs") + getPrices(soldBinPrices)
+
+            val activeListingsHover = mutableListOf(
+                "§b§lActive Listings",
+                "§9$activeAuc Auctions"
+            ) + getPrices(activeAucPrices) + listOf("§3$activeBin BINs") + getPrices(activeBinPrices)
+
+            val flipPotential = mutableListOf(
+                "§e§lFlip Potential",
+                "§7Buy for §a${(lastViewedAuction!!.price).formatNumber()}",
+                "§7Sell for §d${(lastViewedAuction!!.suggestedListingPrice).formatNumber()}"
+            )
+            if(!lastViewedAuction!!.shouldSellBIN) flipPotential.add("§c§lSELL AS AUCTION")
 
             val lines = mutableListOf(
                 Element(
@@ -310,33 +351,44 @@ object AuctionMenuOverlays {
                 Element(
                     5f,
                     18f,
-                    "§rLowest BIN: §6${if (pricingData.has("lowestBin")) pricingData.get("lowestBin").asInt.formatNumber() else "§cUnknown"}",
+                    "§rLowest BIN: §6${if (pricingData.has("lowestBin")) pricingData.get("lowestBin").asLong.formatNumber() else "§cUnknown"}",
                     null,
                     null
                 ), Element(
                     5f,
                     28f,
-                    "§rAverage BIN: §3${if (pricingData.has("price_avg")) pricingData.get("price_avg").asInt.formatNumber() else "§cUnknown"}",
+                    "§rAverage BIN: §3${if (pricingData.has("avgLowestBin")) pricingData.get("avgLowestBin").asLong.formatNumber() else "§cUnknown"}",
                     null,
                     null
                 ), Element(
                     5f,
-                    43f,
+                    41f,
+                    "§b§l${max(activeAucNum + activeBinNum, 0).formatNumber()} Active Listings",
+                    activeListingsHover,
+                    null
+                ),
+                Element(
+                    5f,
+                    51f,
+                    "§b§l${max(soldAucNum + soldBinNum, 0).formatNumber()} Recently Sold",
+                    recentlySoldHover,
+                    null
+                ),
+                Element(
+                    5f,
+                    64f,
                     "§rResell Profit: ${coloredSymbol}${resellProfit.formatNumber()}",
-                    listOf(
-                        "§e§lFlip Potential",
-                        "§7Buy for §a${(lastViewedAuction!!.price).formatNumber()}",
-                        "§7Sell for §d${(lastViewedAuction!!.suggestedListingPrice).formatNumber()}"
-                    ),
+                    flipPotential,
                     null
                 )
             )
 
+            // Add special button to party the other bidder if they are being annoying
             if (lastViewedAuction!!.otherBidder != null && lastViewedAuction!!.otherBidder != Utils.mc.thePlayer.name) {
                 lines.add(
                     Element(
                         7f,
-                        55f,
+                        78f,
                         "§9Party Bidder",
                         listOf(
                             "§e/party ${lastViewedAuction!!.otherBidder}",
@@ -384,6 +436,16 @@ object AuctionMenuOverlays {
         }
     }
 
+    fun getPrices(pricesArray: JsonArray): List<String> {
+        val out = mutableListOf<String>()
+        for (price in pricesArray) {
+            if (!price.isJsonNull) {
+                out.add("§8 - §6${price.asLong.formatNumber()}")
+            }
+        }
+        return out
+    }
+
     class AuctionPriceOverlay : OverlayManager.Overlay() {
         init {
             this.x = 50.0
@@ -399,23 +461,65 @@ object AuctionMenuOverlays {
 
             val itemName = itemLore[0]
 
+            // Pricing and count for Live Auction listings and their prices
+            val activeAucNum = if (pricingData.has("activeAuc")) pricingData.get("activeAuc").asInt else -1
+            val activeAuc = if (activeAucNum != -1) activeAucNum.formatNumber() else "§cUnknown"
+            val activeAucPrices = pricingData.get("activeAucPrices").asJsonArray
+
+            // Pricing and count for Live Bin Listings and their prices
+            val activeBinNum = if (pricingData.has("activeBin")) pricingData.get("activeBin").asInt else -1
+            val activeBin = if (activeBinNum != -1) activeBinNum.formatNumber() else "§cUnknown"
+            val activeBinPrices = pricingData.get("activeBinPrices").asJsonArray
+
+            // Pricing and count for recently ended auction listings and their prices
+            val soldAucNum = if (pricingData.has("aucSold")) pricingData.get("aucSold").asInt else -1
+            val soldAuc = if (soldAucNum != -1) soldAucNum.formatNumber() else "§cUnknown"
+            val soldAucPrices = pricingData.get("aucSoldPrices").asJsonArray
+
+            // Pricing and count for recently ended Bin Listings and their prices
+            val soldBinNum = if (pricingData.has("binSold")) pricingData.get("binSold").asInt else -1
+            val soldBin = if (soldBinNum != -1) soldBinNum.formatNumber() else "§cUnknown"
+            val soldBinPrices = pricingData.get("binSoldPrices").asJsonArray
+
+            val recentlySoldHover = mutableListOf(
+                "§b§lRecently Sold Listings",
+                "§9$soldAuc Sold Auctions"
+            ) + getPrices(soldAucPrices) + listOf("§3$soldBin Sold BINs") + getPrices(soldBinPrices)
+
+            val activeListingsHover = mutableListOf(
+                "§b§lActive Listings",
+                "§9$activeAuc Auctions"
+            ) + getPrices(activeAucPrices) + listOf("§3$activeBin BINs") + getPrices(activeBinPrices)
+
             val lines = mutableListOf(
                 Element(5f, 5f, itemName, itemLore, null), Element(
                     5f,
                     20f,
-                    "§rLowest BIN: §6${if (pricingData.has("lowestBin")) pricingData.get("lowestBin").asInt.formatNumber() else "§cUnknown"}",
+                    "§rLowest BIN: §6${if (pricingData.has("lowestBin")) pricingData.get("lowestBin").asLong.formatNumber() else "§cUnknown"}",
                     null,
                     null
                 ), Element(
                     5f,
                     30f,
-                    "§rAverage BIN: §3${if (pricingData.has("price_avg")) pricingData.get("price_avg").asInt.formatNumber() else "§cUnknown"}",
+                    "§rAverage BIN: §3${if (pricingData.has("avgLowestBin")) pricingData.get("avgLowestBin").asLong.formatNumber() else "§cUnknown"}",
                     null,
                     null
                 ), Element(
-                    7f,
+                    5f,
                     43f,
-                    "§rSug Price: §a${if (sellingAuction?.suggestedListingPrice != 0) sellingAuction?.suggestedListingPrice?.formatNumber() else "§cUnknown"}",
+                    "§b§l${max(activeAucNum + activeBinNum, 0).formatNumber()} Active Listings",
+                    activeListingsHover,
+                    null
+                ), Element(
+                    5f,
+                    53f,
+                    "§b§l${max(soldAucNum + soldBinNum, 0).formatNumber()} Recently Sold",
+                    recentlySoldHover,
+                    null
+                ), Element(
+                    7f,
+                    66f,
+                    "§rSug Price: §a${if (sellingAuction?.suggestedListingPrice != 0L) sellingAuction?.suggestedListingPrice?.formatNumber() else "§cUnknown"}",
                     listOf(
                         "§e§lSuggested Listing Price",
                         "§7Click to set §6${sellingAuction?.suggestedListingPrice?.formatNumber()} §7as price",
@@ -429,6 +533,20 @@ object AuctionMenuOverlays {
                     drawBackground = true
                 )
             )
+
+            if(!lastViewedAuction!!.shouldSellBIN) {
+                lines.add(
+                    Element(
+                        7f,
+                        78f,
+                        "§c§lSELL AS AN AUCTION!!",
+                        listOf(
+                            "§cThis item has a higher value as an auction"
+                        ),
+                        null
+                    )
+                )
+            }
 
             val width =
                 (lines.sortedBy { it.text.getStringWidth() }[lines.size - 1].text.getStringWidth() + 15).coerceIn(
