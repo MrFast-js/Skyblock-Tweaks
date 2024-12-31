@@ -1,16 +1,15 @@
 package mrfast.sbt.features.general
 
-import com.google.gson.JsonObject
 import mrfast.sbt.SkyblockTweaks
-import mrfast.sbt.apis.ItemApi
-import mrfast.sbt.managers.GuiManager
 import mrfast.sbt.config.categories.GeneralConfig.itemPickupLog
 import mrfast.sbt.config.categories.GeneralConfig.itemPickupLogItemIds
 import mrfast.sbt.config.categories.GeneralConfig.itemPickupLogItemPrices
 import mrfast.sbt.config.categories.GeneralConfig.itemPickupLogTextStyle
 import mrfast.sbt.customevents.SkyblockInventoryItemEvent
 import mrfast.sbt.customevents.WorldLoadEvent
+import mrfast.sbt.managers.GuiManager
 import mrfast.sbt.utils.GuiUtils
+import mrfast.sbt.utils.ItemUtils
 import mrfast.sbt.utils.ItemUtils.getLore
 import mrfast.sbt.utils.Utils
 import mrfast.sbt.utils.Utils.clean
@@ -99,13 +98,7 @@ object ItemPickupLog {
 
                 if (itemPickupLogItemIds) display += " §7$materialId"
                 if (itemPickupLogItemPrices) {
-                    val info = ItemApi.getItemPriceInfo(materialId) ?: JsonObject()
-                    val price = if (info.has("sellPrice")) {
-                        info.get("sellPrice").asDouble * entry.value.count
-                    } else {
-                        (info.get("lowestBin")?.asDouble ?: 0.0) * entry.value.count
-                    }
-
+                    val price = ItemUtils.getItemBasePrice(materialId) * entry.value.count
                     display += " §6$${abs(price).formatNumber()}"
                 }
                 val style = when (itemPickupLogTextStyle) {

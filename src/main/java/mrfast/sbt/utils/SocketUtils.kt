@@ -18,6 +18,7 @@ object SocketUtils {
     }
 
     fun setupSocket() {
+        socketConnected = false
         println("Attempting connection to SBT websocket! ${DeveloperConfig.modSocketURL}")
         try {
             if (socket != null) {

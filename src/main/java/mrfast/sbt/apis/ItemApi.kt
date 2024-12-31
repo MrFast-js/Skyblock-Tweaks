@@ -2,8 +2,8 @@ package mrfast.sbt.apis
 
 import com.google.gson.JsonObject
 import mrfast.sbt.SkyblockTweaks
-import mrfast.sbt.config.categories.CustomizationConfig
 import mrfast.sbt.config.categories.DeveloperConfig
+import mrfast.sbt.utils.ItemUtils
 import mrfast.sbt.utils.ItemUtils.getSkyblockId
 import mrfast.sbt.utils.NetworkUtils
 import mrfast.sbt.utils.Utils
@@ -11,33 +11,48 @@ import mrfast.sbt.utils.Utils.clean
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.JsonToNBT
+import java.lang.Integer.parseInt
 import java.util.*
 
 @SkyblockTweaks.EventComponent
 object ItemApi {
     private var skyblockItems = JsonObject()
-    private var skyblockItemPrices = JsonObject()
-    private var skyblockItemsLoaded = false
+    var skyblockItemsLoaded = false
 
     init {
         println("Loading Skyblock Items from Neu Repo Zip")
-        loadSkyblockItems(true)
-        // Update Item Prices every ~15 Minutes
+        // Update Item Prices every 15 Minutes
         Timer().scheduleAtFixedRate(object : TimerTask() {
             override fun run() {
-                if (Utils.mc.theWorld == null) return
-                loadSkyblockItems(false)
+                updateSkyblockItemData(false)
             }
         }, 0, 1000 * 60 * 15)
     }
 
-    private fun loadSkyblockItems(logging: Boolean) {
+    fun updateSkyblockItemData(logging: Boolean) {
         Thread {
             if (!skyblockItemsLoaded) {
+                skyblockItems = JsonObject()
                 try {
                     if (logging) println("Starting to download Skyblock Items from NEU Repo")
                     NetworkUtils.downloadAndProcessRepo()
-                    skyblockItems = NetworkUtils.NeuItems
+                    NetworkUtils.NeuItems.entrySet().forEach {
+                        var newKey = it.key
+                        // Convert NEU ID system to Skyblock-Tweaks ID system
+                        // MEGALODON;3 -> MEGALODON-EPIC
+                        // ULTIMATE_WISE;2 -> ENCHANTMENT_ULTIMATE_WISE_2
+                        if (newKey.contains(";")) {
+                            if(it.value.asJsonObject.get("displayname").asString.contains("[Lvl")) {
+                                val parts = it.key.split(";")
+                                newKey = "${parts[0]}-${ItemUtils.intToPetTier(parseInt(parts[1]))}"
+                            }
+                            if(it.value.asJsonObject.get("itemid").asString == "minecraft:enchanted_book") {
+                                newKey = "ENCHANTMENT_${it.key.replace(";", "_")}"
+                            }
+                        }
+
+                        skyblockItems.add(newKey, it.value)
+                    }
                 } catch (e: Exception) {
                     println("There was a problem loading Skyblock Items.. ${e.message}")
                 }
@@ -46,78 +61,42 @@ object ItemApi {
             skyblockItemsLoaded = true
             if (logging) println("Loaded Skyblock Items from NEU Repo!")
 
-            while (Utils.mc.theWorld == null) {
+            while (Utils.mc.theWorld?.playerEntities == null) {
                 Thread.sleep(5000)
             }
 
-            var ranIntoError = false
-
-            if (logging) println("Loading Lowest Bin Prices from Skyblock Tweaks API")
+            if (logging) println("Loading Lowest Item Prices from SBT API")
             try {
-                val lowestBins = NetworkUtils.apiRequestAndParse(DeveloperConfig.modAPIURL + "аpi/lowestBin", caching = false)
-                if (lowestBins.entrySet().size > 0) {
-                    lowestBins.entrySet().forEach {
-                        if (!skyblockItemPrices.has(it.key)) {
-                            skyblockItemPrices.add(it.key, JsonObject())
-                        }
-                        skyblockItemPrices[it.key].asJsonObject.addProperty("lowestBin", it.value.asLong)
-                        skyblockItemPrices[it.key].asJsonObject.addProperty("basePrice", it.value.asLong)
-                    }
+                val data = NetworkUtils.apiRequestAndParse(
+                    url = "${DeveloperConfig.modAPIURL}аpi/pricingData",
+                    useProxy = false,
+                    caching = false
+                )
+                if(data.entrySet().size == 0) {
+                    Utils.setTimeout({
+                        updateSkyblockItemData(logging)
+                    }, 5000)
+                    return@Thread
+                }
 
-                    if (logging) println("Loaded Lowest Bin Prices Skyblock Tweaks API!!")
+                println("Loaded ${data.entrySet().size} Items From Skyblock-Tweaks Item API")
+                data.entrySet().forEach {
+                    val item = it.value.asJsonObject
+                    val itemId = it.key
+                    val itemJson = skyblockItems[itemId]?.asJsonObject ?: JsonObject()
+
+                    // Merge all properties from `item` into `itemJson`
+                    for ((key, value) in item.entrySet()) {
+                        itemJson.add(key, value)
+                    }
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                ranIntoError = true
-            }
-
-            try {
-                if (logging) println("Loading Average Bin Prices from SBT API")
-                val averageBins = NetworkUtils.apiRequestAndParse(DeveloperConfig.modAPIURL + "аpi/lowestBinAvg", caching = false)
-                if (averageBins.entrySet().isEmpty()) return@Thread
-
-                averageBins.entrySet().forEach {
-                    if (!skyblockItemPrices.has(it.key)) {
-                        println("Adding ${it.key} to skyblockItemPrices")
-                        skyblockItemPrices.add(it.key, JsonObject())
-                    }
-                    skyblockItemPrices[it.key].asJsonObject.addProperty("price_avg", it.value.asLong)
-                }
-
-                if (logging) println("Loaded Average Bin Prices from Skyblock Tweaks API!!")
-            } catch (e: Exception) {
-                e.printStackTrace()
-                ranIntoError = true
-            }
-
-            if (ranIntoError) {
                 println("There was a problem loading SBT Prices.. Retrying in 5 seconds..")
                 Utils.setTimeout({
-                    loadSkyblockItems(logging)
+                    updateSkyblockItemData(logging)
                 }, 5000)
                 return@Thread
-            }
-
-            if (logging) println("Loading bazaar prices from hypixel api")
-            val bzPrices = NetworkUtils.apiRequestAndParse(
-                "https://api.hypixel.net/skyblock/bazaar",
-                caching = true,
-                useProxy = false
-            )
-            if (bzPrices.entrySet().size > 0) {
-                val bzItems = bzPrices["products"].asJsonObject
-                for (product in bzItems.entrySet()) {
-                    val quickStats = product.value.asJsonObject["quick_status"].asJsonObject
-                    val sellPrice = quickStats["sellPrice"].asDouble
-                    val buyPrice = quickStats["buyPrice"].asDouble
-
-                    val productJson = JsonObject()
-                    productJson.addProperty("sellPrice", sellPrice)
-                    productJson.addProperty("buyPrice", buyPrice)
-                    productJson.addProperty("basePrice", sellPrice)
-
-                    skyblockItemPrices.add(product.key, productJson)
-                }
             }
         }.start()
     }
@@ -227,17 +206,9 @@ object ItemApi {
         return itemStack
     }
 
-    fun getItemPriceInfo(itemId: String): JsonObject? {
-        if (!skyblockItemPrices.has(itemId) && itemId.contains(";")) {
-            // REJUVENATE;1  -> ENCHANTMENT_REJUVENATE_1
-            return getItemPriceInfo("ENCHANTMENT_${itemId.replace(";", "_")}")
-        }
-        return skyblockItemPrices[itemId]?.asJsonObject
-    }
-
     fun getItemInfo(itemId: String): JsonObject? = skyblockItems[itemId]?.asJsonObject
 
     fun getSkyblockItems(): JsonObject = skyblockItems
 
-    fun getItemInfo(stack: ItemStack): JsonObject? = stack.getSkyblockId()?.let { skyblockItems[it].asJsonObject }
+    fun getItemInfo(stack: ItemStack): JsonObject? = stack.getSkyblockId()?.let { skyblockItems[it]?.asJsonObject }
 }

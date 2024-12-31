@@ -18,6 +18,7 @@ import mrfast.sbt.features.profitTracking.ProfitTracker.whitelistItems
 import mrfast.sbt.managers.DataManager
 import mrfast.sbt.utils.GuiUtils
 import mrfast.sbt.utils.GuiUtils.Button
+import mrfast.sbt.utils.ItemUtils
 import mrfast.sbt.utils.ItemUtils.getLore
 import mrfast.sbt.utils.Utils
 import mrfast.sbt.utils.Utils.abbreviateNumber
@@ -280,7 +281,10 @@ class ProfitTrackerGui : WindowScreen(ElementaVersion.V2) {
         for (entry in items) {
             val itemId = entry.key
             val itemCount = entry.value
-            val itemValue = ItemApi.getItemPriceInfo(itemId)?.asJsonObject?.get("basePrice")?.asFloat ?: 0F
+            var itemValue = ItemUtils.getItemBasePrice(itemId)
+
+            if (itemValue == -1.0) itemValue = 0.0
+
             val multiValue = (itemValue * itemCount).toLong()
 
             totalItemWorth[itemId] = Pair(multiValue, itemCount)

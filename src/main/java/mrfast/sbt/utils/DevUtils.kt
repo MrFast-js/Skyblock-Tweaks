@@ -92,12 +92,6 @@ object DevUtils {
                 val genericItemData = prettyPrintJsonToString(itemData).replace("\"", "").split("\n")
                 event.toolTip.add("Generic Item Data")
                 event.toolTip.addAll(genericItemData)
-
-                val priceData = ItemApi.getItemPriceInfo(id) ?: return
-
-                val itemPriceData = prettyPrintJsonToString(priceData).replace("\"", "").split("\n")
-                event.toolTip.add("Item Price Data")
-                event.toolTip.addAll(itemPriceData)
             } else {
                 val nbt = prettyPrintNBTtoString(event.itemStack.getExtraAttributes()!!).replace("\"", "").split("\n")
                 event.toolTip.addAll(nbt)

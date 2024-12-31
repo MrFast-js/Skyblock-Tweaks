@@ -2,6 +2,7 @@ package mrfast.sbt.commands
 
 import com.mojang.realmsclient.gui.ChatFormatting
 import mrfast.sbt.SkyblockTweaks
+import mrfast.sbt.apis.ItemApi
 import mrfast.sbt.apis.PlayerStats
 import mrfast.sbt.managers.ConfigManager
 import mrfast.sbt.managers.LocationManager
@@ -67,14 +68,15 @@ class DebugCommand : CommandBase() {
             "tiles" -> getMobData(tileEntities = true, distance = dist)
             "location", "loc" -> {
                 ChatUtils.sendClientMessage(
-            "§6Area: '${LocationManager.currentArea}'\n" +
-                    "§bIsland: '${LocationManager.currentIsland}'\n" +
-                    "§cDungeons: '${LocationManager.inDungeons}'\n" +
-                    "§eMaster Mode: '${LocationManager.inMasterMode}'\n" +
-                    "§aDungeon Floor: '${LocationManager.dungeonFloor}'\n" +
-                    "§dSkyblock: '${LocationManager.inSkyblock}'"
+                    "§6Area: '${LocationManager.currentArea}'\n" +
+                            "§bIsland: '${LocationManager.currentIsland}'\n" +
+                            "§cDungeons: '${LocationManager.inDungeons}'\n" +
+                            "§eMaster Mode: '${LocationManager.inMasterMode}'\n" +
+                            "§aDungeon Floor: '${LocationManager.dungeonFloor}'\n" +
+                            "§dSkyblock: '${LocationManager.inSkyblock}'"
                 )
             }
+
             "stats", "stat" -> {
                 ChatUtils.sendClientMessage(
                     "§cHealth: ${PlayerStats.health} | Max: ${PlayerStats.health} | §6Absorb: ${PlayerStats.absorption}\n" +
@@ -82,6 +84,23 @@ class DebugCommand : CommandBase() {
                             "§dRift Time: ${PlayerStats.riftTimeSeconds} | Max: ${PlayerStats.maxRiftTime}\n" +
                             "§aDefense: ${PlayerStats.defense} | Effective: ${PlayerStats.effectiveHealth} | Effective Max: ${PlayerStats.maxEffectiveHealth}\n"
                 )
+            }
+
+            "refresh", "reload" -> {
+                Thread {
+                    ChatUtils.sendClientMessage("Reconnecting to SBT Websocket..")
+                    SocketUtils.setupSocket()
+                    while(!SocketUtils.socketConnected) Thread.sleep(300)
+                    ChatUtils.sendClientMessage("Connected to SBT Websocket!")
+                    Utils.playSound("random.orb", 0.5)
+                    Thread.sleep(300)
+
+                    ChatUtils.sendClientMessage("Reloading Skyblock Item Data..")
+                    ItemApi.skyblockItemsLoaded = false
+                    ItemApi.updateSkyblockItemData(true)
+                    ChatUtils.sendClientMessage("Reloaded Skyblock Item Data!")
+                    Utils.playSound("random.orb", 0.1)
+                }.start()
             }
 
             "entities" -> getMobData(tileEntities = true, mobs = true, dist)
