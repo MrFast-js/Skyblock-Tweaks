@@ -242,7 +242,7 @@ object AuctionFlipper {
         auctionFlip.itemID = itemID
         auctionFlip.itemStack = itemStack
 
-        val pricingData = ItemApi.getItemPriceInfo(itemID)
+        val pricingData = ItemApi.getItemInfo(itemID)
         if(pricingData == null) {
             incrementFilterCount("No Item Pricing Data")
             return
@@ -255,16 +255,17 @@ object AuctionFlipper {
     // Will find a 'base price' for the item, found by using average bin ideally, with the lowest bin as a backup
     private fun calcAuctionProfit(auctionFlip: AuctionFlip, pricingData: JsonObject) {
         val suggestedListingPrice = ItemUtils.getSuggestListingPrice(auctionFlip.itemStack!!)!!
+        val price = suggestedListingPrice.get("price").asLong
 
-        if (auctionFlip.price < suggestedListingPrice) {
+        if (auctionFlip.price < price) {
             // Already take out 8% accounting for your upcoming bid
             val nextBidPrice = (auctionFlip.price * 1.08).toLong()
-            auctionFlip.profit = suggestedListingPrice - nextBidPrice
-            if (pricingData.has("sales_avg")) {
-                auctionFlip.volume = pricingData.get("sales_avg").asInt
+            auctionFlip.profit = price - nextBidPrice
+            if (pricingData.has("sold")) {
+                auctionFlip.volume = pricingData.get("sold").asInt
             }
 
-            auctionFlip.sellFor = suggestedListingPrice.toLong()
+            auctionFlip.sellFor = price.toLong()
 
             filterOutAuction(auctionFlip)
         } else {
