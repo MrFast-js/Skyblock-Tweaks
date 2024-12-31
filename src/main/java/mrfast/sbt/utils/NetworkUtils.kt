@@ -75,19 +75,19 @@ object NetworkUtils {
     data class CacheObject(val url: String, val response: JsonObject, val createdAt: Long = System.currentTimeMillis())
 
     fun apiRequestAndParse(
-        urlString: String, headers: List<String> = listOf(), caching: Boolean = true, useProxy: Boolean = true
+        url: String, headers: List<String> = listOf(), caching: Boolean = true, useProxy: Boolean = true
     ): JsonObject {
-        var modifiedUrlString = urlString
-        if (urlString.contains("api.hypixel.net") && useProxy) {
-            modifiedUrlString = urlString.replace("https://api.hypixel.net", myApiUrl + "аpi")
+        var modifiedUrlString = url
+        if (url.contains("api.hypixel.net") && useProxy) {
+            modifiedUrlString = url.replace("https://api.hypixel.net", myApiUrl + "аpi")
         }
         val isMyApi = modifiedUrlString.contains(myApiUrl)
 
         if (CustomizationConfig.developerMode && DeveloperConfig.logNetworkRequests) {
             val message = if (modifiedUrlString.contains("#")) {
-                val url = modifiedUrlString.split("#")[0]
+                val urlString = modifiedUrlString.split("#")[0]
                 val reason = modifiedUrlString.split("#")[1]
-                "Sending request to $url Reason: $reason"
+                "Sending request to $urlString Reason: $reason"
             } else {
                 "Sending request to $modifiedUrlString"
             }
@@ -117,9 +117,7 @@ object NetworkUtils {
                 if (tempApiAuthKey.isNotEmpty()) {
                     request.setHeader("temp-auth-key", tempApiAuthKey)
                 }
-
-                val nearby = Utils.mc.theWorld.playerEntities.stream().map { e -> e.uniqueID.toString() }.limit(20)
-                    .collect(Collectors.toList())
+                val nearby = Utils.mc.theWorld.playerEntities.stream().map { e -> e.uniqueID.toString() }.limit(20).collect(Collectors.toList())
 
                 request.setHeader("x-players", nearby.toString())
                 request.setHeader("x-request-author", Utils.mc.thePlayer.toString())

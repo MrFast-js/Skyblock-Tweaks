@@ -1,8 +1,9 @@
 package mrfast.sbt.utils
 
+import com.google.gson.JsonObject
 import mrfast.sbt.apis.ItemApi
 import mrfast.sbt.utils.Utils.clean
-import mrfast.sbt.utils.Utils.getRegexGroups
+import net.minecraft.init.Items
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.CompressedStreamTools
 import net.minecraft.nbt.NBTTagCompound
@@ -53,18 +54,30 @@ object ItemUtils {
                 "NEW_YEAR_CAKE-$year"
             }
 
+            id == "ENCHANTED_BOOK" || this.item == Items.enchanted_book -> {
+                val enchants = this.getSkyblockEnchants()
+                if (enchants.isNotEmpty()) {
+                    val enchName = enchants.keys.first()
+                    val enchLvl = enchants[enchName]
+
+                    "ENCHANTMENT_${enchants.keys.first().uppercase()}_$enchLvl"
+                } else {
+                    id
+                }
+            }
+
             else -> id
         }
     }
 
-    private fun petTierToInt(tier: String): Int {
-        if (tier == "MYTHIC") return 5
-        if (tier == "LEGENDARY") return 4
-        if (tier == "EPIC") return 3
-        if (tier == "RARE") return 2
-        if (tier == "UNCOMMON") return 1
-        if (tier == "COMMON") return 0
-        return -1
+    fun intToPetTier(tier: Int): String {
+        if (tier == 5) return "MYTHIC"
+        if (tier == 4) return "LEGENDARY"
+        if (tier == 3) return "EPIC"
+        if (tier == 2) return "RARE"
+        if (tier == 1) return "UNCOMMON"
+        if (tier == 0) return "COMMON"
+        return "UNKNOWN"
     }
 
     fun rarityToColor(tier: Int): String {
@@ -161,36 +174,102 @@ object ItemUtils {
         return null
     }
 
-    fun ItemStack.getItemBasePrice(): Double {
-        val id = this.getSkyblockId() ?: return -1.0;
-        if (ItemApi.getItemPriceInfo(id) != null) {
-            return ItemApi.getItemPriceInfo(id)?.get("basePrice")?.asDouble ?: 0.0
+    fun getItemBasePrice(id: String): Double {
+        val itemInfo = ItemApi.getItemInfo(id) ?: return -1.0
+
+        if (itemInfo.has("bazaarSell")) {
+            return itemInfo.get("bazaarSell").asDouble
         }
-        return 0.0
+        if (itemInfo.has("avgLowestBin")) {
+            return itemInfo.get("avgLowestBin").asDouble
+        }
+
+        return -1.0;
     }
 
-    fun getSuggestListingPrice(itemStack: ItemStack): Int? {
+    fun ItemStack.getItemBasePrice(): Double {
+        val id = this.getSkyblockId() ?: return -1.0
+        return getItemBasePrice(id)
+    }
+
+    fun getSuggestListingPrice(itemStack: ItemStack): JsonObject? {
         val itemID = itemStack.getSkyblockId()!!
-        val pricingData = ItemApi.getItemPriceInfo(itemID) ?: return null
+        val pricingData = ItemApi.getItemInfo(itemID) ?: return null
 
-        val lbin = if (pricingData.has("lowestBin")) pricingData.get("lowestBin").asDouble else null
-        val abin = if (pricingData.has("price_avg")) pricingData.get("price_avg").asDouble else null
+        val lbin = if (pricingData.has("lowestBin")) pricingData.get("lowestBin").asLong else null
+        val abin = if (pricingData.has("avgLowestBin")) pricingData.get("avgLowestBin").asLong else null
 
-        val suggestedListingPrice = when {
-            lbin != null && abin != null -> Math.round((lbin * 0.6 + abin * 0.4) * 0.99).toInt()
-            lbin != null -> Math.round(lbin - 1000).toInt()
-            abin != null -> Math.round(abin - 1000).toInt()
-            else -> 0
+        val activeBins = if (pricingData.has("activeBin")) pricingData.get("activeBin").asInt else null
+        val aucPrice = if (pricingData.has("aucPrice")) pricingData.get("aucPrice").asLong else null
+        val aucSoldPrices = if (pricingData.has("aucSoldPrices")) pricingData.get("aucSoldPrices").asJsonArray else null
+        val avgAucSoldPrice = aucSoldPrices?.takeIf { it.size() > 0 }?.let { prices ->
+            prices.sumOf { it.asLong } / prices.size()
+        } ?: -1L
+
+        val binSoldPrices = if (pricingData.has("binSoldPrices")) pricingData.get("binSoldPrices").asJsonArray else null
+        val avgBinSoldPrice = binSoldPrices?.takeIf { it.size() > 0 }?.let { prices ->
+            prices.sumOf { it.asLong } / prices.size()
+        } ?: -1L
+
+        val binActivePrices = if (pricingData.has("activeBinPrices")) pricingData.get("activeBinPrices").asJsonArray else null
+        val avgActiveBINPrice = binActivePrices?.takeIf { it.size() > 0 }?.let { prices ->
+            prices.sumOf { it.asLong } / prices.size()
+        } ?: -1L
+
+        // If there are active BIN prices, suggest BIN price if it's lower than the average BIN price
+        if(binActivePrices != null) {
+            if(avgActiveBINPrice!= -1L) {
+                if (abin != null) {
+                    if(avgActiveBINPrice < abin) {
+                        return JsonObject().apply {
+                            addProperty("price", avgActiveBINPrice)
+                            addProperty("bin", true)
+                        }
+                    }
+                }
+            }
+        }
+        var suggestedListingPrice = 0L
+        if (activeBins != null) {
+            if (activeBins > 5) {
+                suggestedListingPrice = if (abin != null && lbin != null) {
+                    // If the average BIN price is more than double the lowest BIN price, don't suggest listing price
+                    if (abin > (lbin * 1.75)) {
+                        (avgBinSoldPrice * 0.99).toLong()
+                    } else {
+                        Math.round((lbin * 0.6 + abin * 0.4) * 0.99)
+                    }
+                } else {
+                    // Calc suggested listing price based on lowest and average BIN prices
+                    when {
+                        lbin != null -> lbin - 1000L
+                        abin != null -> abin - 1000L
+                        else -> 0L
+                    }
+                }
+            } else {
+                // Calc suggested listing price based on average AUC price for items that should be sold as auctions not BIN
+                if (avgAucSoldPrice != -1L) {
+                    if (aucPrice != null) {
+                        suggestedListingPrice = Math.round((avgAucSoldPrice * 0.6 + aucPrice * 0.4) * 0.99)
+                    }
+                }
+            }
         }
 
         var bonusPricing = 0.0
         val extraAttributes = itemStack.getExtraAttributes()!!
 
         if (extraAttributes.hasKey("rarity_upgrades") && !extraAttributes.hasKey("item_tier")) {
-            val recombInfo = ItemApi.getItemPriceInfo("RECOMBOBULATOR_3000")
-            bonusPricing += recombInfo?.get("sellPrice")!!.asInt * 0.6
+            val recombInfo = ItemApi.getItemInfo("RECOMBOBULATOR_3000")
+            bonusPricing += recombInfo?.get("bazaarSell")!!.asInt * 0.6
         }
 
-        return (suggestedListingPrice + bonusPricing).toInt()
+        return JsonObject().apply {
+            addProperty("price", (suggestedListingPrice + bonusPricing).toLong())
+            if (activeBins != null) {
+                addProperty("bin", activeBins > 5)
+            }
+        }
     }
 }
