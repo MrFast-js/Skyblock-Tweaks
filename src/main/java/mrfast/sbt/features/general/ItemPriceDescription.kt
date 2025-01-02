@@ -12,6 +12,7 @@ object ItemPriceDescription {
 
     @SubscribeEvent
     fun onToolTip(event: ItemTooltipEvent) {
+
         val stack = event.itemStack
         val pricingData = ItemApi.getItemInfo(stack) ?: return
 
