@@ -50,6 +50,12 @@ object ItemApi {
                                 newKey = "ENCHANTMENT_${it.key.replace(";", "_")}"
                             }
                         }
+                        // Add rarity to item api
+                        if(it.value.asJsonObject.has("lore")) {
+                            val lore = it.value.asJsonObject.get("lore").asJsonArray
+                            val rarity = ItemUtils.extractRarity(lore[lore.size() - 1].asString)
+                            it.value.asJsonObject.addProperty("rarity", rarity)
+                        }
 
                         skyblockItems.add(newKey, it.value)
                     }

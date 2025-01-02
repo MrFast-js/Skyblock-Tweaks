@@ -265,7 +265,7 @@ object AuctionFlipper {
                 auctionFlip.volume = pricingData.get("sold").asInt
             }
 
-            auctionFlip.sellFor = price.toLong()
+            auctionFlip.sellFor = price
 
             filterOutAuction(auctionFlip)
         } else {

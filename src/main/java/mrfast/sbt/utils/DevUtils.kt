@@ -86,6 +86,8 @@ object DevUtils {
                 event.toolTip.clear()
                 val id = event.itemStack.getSkyblockId() ?: return
                 val itemData = ItemApi.getItemInfo(id) ?: return
+
+                // Remove these tags as they are too big to display
                 itemData.remove("nbttag")
                 itemData.remove("lore")
 

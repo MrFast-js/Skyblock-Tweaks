@@ -272,4 +272,16 @@ object ItemUtils {
             }
         }
     }
+
+    fun extractRarity(itemDescription: String): String? {
+        val rarities = listOf("COMMON", "UNCOMMON", "RARE", "EPIC", "LEGENDARY", "MYTHIC", "DIVINE", "SPECIAL", "VERY_SPECIAL", "SUPREME")
+        // Reverse so uncommon is checked before common
+        for (rarity in rarities.reversed()) {
+            if (itemDescription.contains(rarity, ignoreCase = true)) {
+                return rarity
+            }
+        }
+
+        return null
+    }
 }
