@@ -4,6 +4,7 @@ import com.mojang.realmsclient.gui.ChatFormatting
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.apis.ItemApi
 import mrfast.sbt.apis.PlayerStats
+import mrfast.sbt.features.bazaar.BazaarNPCNotifier
 import mrfast.sbt.managers.ConfigManager
 import mrfast.sbt.managers.LocationManager
 import mrfast.sbt.utils.*
@@ -128,6 +129,10 @@ class DebugCommand : CommandBase() {
             "gui" -> {
                 val data = File(ConfigManager.modDirectoryPath, "guiConfig.json")
                 openFile(data, copyToClipboard)
+            }
+
+            "test" -> {
+                BazaarNPCNotifier.checkBazaar()
             }
 
             "tablist", "tab" -> getTablistData()
