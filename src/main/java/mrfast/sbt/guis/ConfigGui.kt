@@ -20,7 +20,6 @@ import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.managers.ConfigManager
 import mrfast.sbt.managers.ConfigType
 import mrfast.sbt.config.categories.CustomizationConfig
-import mrfast.sbt.config.categories.DeveloperConfig
 import mrfast.sbt.config.categories.DeveloperConfig.showInspector
 import mrfast.sbt.guis.components.*
 import mrfast.sbt.managers.VersionManager

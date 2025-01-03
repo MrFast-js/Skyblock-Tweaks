@@ -7,6 +7,7 @@ import mrfast.sbt.customevents.SkyblockMobEvent
 import mrfast.sbt.customevents.SlayerEvent
 import mrfast.sbt.utils.ChatUtils
 import mrfast.sbt.utils.ScoreboardUtils
+import mrfast.sbt.utils.Utils.cleanColor
 import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -64,7 +65,7 @@ object SlayerManager {
 
 
     @SubscribeEvent
-    fun onSbMobSpawn(event: SkyblockMobEvent.Render) {
+    fun onSbMobRender(event: SkyblockMobEvent.Render) {
         if (hasSlayerSpawned || event.sbMob.skyblockMobId == null) return
         val id = event.sbMob.skyblockMobId ?: return
 
@@ -74,7 +75,7 @@ object SlayerManager {
             for (line: String in ScoreboardUtils.getSidebarLines(true)) {
                 if (nextLine) {
                     nextLine = false
-                    slayerName = getActualSlayerName(line)
+                    slayerName = getActualSlayerName(line.cleanColor())
                 }
                 if (line.contains("Slayer Quest")) {
                     nextLine = true
@@ -99,7 +100,7 @@ object SlayerManager {
     private fun getActualSlayerName(sidebarName: String): String {
         return when {
             sidebarName.contains("Revenant Horror V") -> "Atoned Horror"
-            sidebarName.contains("Riftslalker Bloodfiend") -> "Bloodfiend"
+            sidebarName.contains("Riftstalker Bloodfiend") -> "Bloodfiend"
             else -> sidebarName
         }
     }

@@ -1,8 +1,5 @@
 package mrfast.sbt.utils
 
-import mrfast.sbt.utils.LevelingUtils.roundToTwoDecimalPlaces
-import mrfast.sbt.utils.Utils.containsCoordinates
-import mrfast.sbt.utils.Utils.extractCoordinates
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.inventory.ContainerChest
@@ -12,9 +9,6 @@ import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
 import java.time.*
 import java.time.format.DateTimeFormatter
-import java.util.regex.Matcher
-import java.util.regex.Pattern
-import kotlin.math.floor
 
 object Utils {
     val mc: Minecraft = Minecraft.getMinecraft()
