@@ -64,7 +64,7 @@ object SlayerManager {
 
 
     @SubscribeEvent
-    fun onSbMobSpawn(event: SkyblockMobEvent.Render) {
+    fun onSbMobRender(event: SkyblockMobEvent.Render) {
         if (hasSlayerSpawned || event.sbMob.skyblockMobId == null) return
         val id = event.sbMob.skyblockMobId ?: return
 
@@ -99,7 +99,7 @@ object SlayerManager {
     private fun getActualSlayerName(sidebarName: String): String {
         return when {
             sidebarName.contains("Revenant Horror V") -> "Atoned Horror"
-            sidebarName.contains("Riftslalker Bloodfiend") -> "Bloodfiend"
+            sidebarName.contains("Riftstalker Bloodfiend") -> "Bloodfiend"
             else -> sidebarName
         }
     }
