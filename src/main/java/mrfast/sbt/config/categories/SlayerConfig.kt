@@ -27,6 +27,16 @@ object SlayerConfig : Config() {
     var highlightSlayerBosses = false
 
     @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Tracer to Slayer Boss",
+        description = "",
+        category = "Slayers",
+        subcategory = "Misc",
+        parentName = "Highlight Slayer Bosses"
+    )
+    var slayerTracer = true
+
+    @ConfigProperty(
         type = ConfigType.COLOR,
         name = "Mini-Boss Color",
         description = "",

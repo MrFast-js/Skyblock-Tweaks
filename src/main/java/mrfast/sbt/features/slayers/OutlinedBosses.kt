@@ -40,7 +40,7 @@ object OutlinedBosses {
 
     @SubscribeEvent
     fun onRender(event: RenderWorldLastEvent) {
-        if(SlayerManager.spawnedSlayer != null && SlayerConfig.highlightSlayerBosses) {
+        if(SlayerManager.spawnedSlayer != null && SlayerConfig.highlightSlayerBosses && SlayerConfig.slayerTracer) {
             val slayer = SlayerManager.spawnedSlayer!!.skyblockMob
             val skullPos = slayer.positionVector.add(Vec3(0.0, slayer.eyeHeight.toDouble(), 0.0))
             val playerPos = Utils.mc.thePlayer.getPositionEyes(event.partialTicks)
