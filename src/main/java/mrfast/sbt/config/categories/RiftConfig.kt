@@ -59,6 +59,171 @@ object RiftConfig : Config() {
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
+        name = "Auto Holy Icey Spicy",
+        description = "Automatically uses §9Holy Ice§r before Twin Claws activates.",
+        category = "The Rift",
+        subcategory = "Vampire Slayer",
+        isParent = true,
+        risky = true
+    )
+    var AutoIceySpicy = false
+
+    @ConfigProperty(
+        type = ConfigType.NUMBER,
+        name = "Swap Delay",
+        description = "Delay in milliseconds to swap to the §9Holy Ice§r in your hotbar. Default is 300ms",
+        category = "The Rift",
+        subcategory = "Vampire Slayer",
+        parentName = "Auto Holy Icey Spicy"
+    )
+    var autoIceySpicySwapDelay = 300
+
+    @ConfigProperty(
+        type = ConfigType.NUMBER,
+        name = "Use Item Delay",
+        description = "Delay in milliseconds after swapping to the §9Holy Ice§r to use it. Default is 200ms",
+        category = "The Rift",
+        subcategory = "Vampire Slayer",
+        parentName = "Auto Holy Icey Spicy"
+    )
+    var autoIceySpicyUseDelay = 200
+
+    @ConfigProperty(
+        type = ConfigType.NUMBER,
+        name = "Total Delay",
+        description = "Delay in milliseconds in between how many times this can activate. Default is 1200ms",
+        category = "The Rift",
+        subcategory = "Vampire Slayer",
+        parentName = "Auto Holy Icey Spicy"
+    )
+    var autoIceySpicyTotalDelay = 4000
+
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Auto Melon Muncher",
+        description = "Automatically eats healing melons when below a % health.",
+        category = "The Rift",
+        subcategory = "Vampire Slayer",
+        isParent = true,
+        risky = true
+    )
+    var AutoMelonMuncher = false
+
+    @ConfigProperty(
+        type = ConfigType.NUMBER,
+        name = "Health Trigger %",
+        description = "The % of health to trigger the Auto Melon Muncher. Default is 50%",
+        category = "The Rift",
+        subcategory = "Vampire Slayer",
+        parentName = "Auto Melon Muncher"
+    )
+    var autoMelonMuncherPercent = 50
+
+    @ConfigProperty(
+        type = ConfigType.NUMBER,
+        name = "Swap Delay",
+        description = "Delay in milliseconds to swap to the melon in your hotbar. Default is 300ms",
+        category = "The Rift",
+        subcategory = "Vampire Slayer",
+        parentName = "Auto Melon Muncher"
+    )
+    var autoMelonMuncherMelonDelay = 300
+
+    @ConfigProperty(
+        type = ConfigType.NUMBER,
+        name = "Use Item Delay",
+        description = "Delay in milliseconds after swapping to the melon to use it. Default is 200ms",
+        category = "The Rift",
+        subcategory = "Vampire Slayer",
+        parentName = "Auto Melon Muncher"
+    )
+    var autoMelonMuncherUseDelay = 200
+
+    @ConfigProperty(
+        type = ConfigType.NUMBER,
+        name = "Total Delay",
+        description = "Delay in milliseconds in between how many times this can activate. Default is 1200ms",
+        category = "The Rift",
+        subcategory = "Vampire Slayer",
+        parentName = "Auto Melon Muncher"
+    )
+    var autoMelonMuncherTotalDelay = 1200
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Auto Tower Toucher",
+        description = "Automatically punches the Killer Springs during Vampire Slayer",
+        category = "The Rift",
+        subcategory = "Vampire Slayer",
+        isParent = true,
+        risky = true
+    )
+    var AutoTowerPuncher = false
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Highlight Tower",
+        description = "",
+        category = "The Rift",
+        subcategory = "Vampire Slayer",
+        parentName = "Auto Tower Toucher"
+    )
+    var AutoTowerPuncherHighlight = false
+
+    @ConfigProperty(
+        type = ConfigType.COLOR,
+        name = "Highlight Color",
+        description = "",
+        category = "The Rift",
+        subcategory = "Vampire Slayer",
+        parentName = "Auto Tower Toucher"
+    )
+    var AutoTowerPuncherHighlightColor = Color.RED
+
+    @ConfigProperty(
+        type = ConfigType.NUMBER,
+        name = "Minimum Punches Per Second",
+        description = "",
+        category = "The Rift",
+        subcategory = "Vampire Slayer",
+        parentName = "Auto Tower Toucher"
+    )
+    var AutoTowerPuncherMin = 8
+
+    @ConfigProperty(
+        type = ConfigType.NUMBER,
+        name = "Maximum Punches Per Second",
+        description = "",
+        category = "The Rift",
+        subcategory = "Vampire Slayer",
+        parentName = "Auto Tower Toucher"
+    )
+    var AutoTowerPuncherMax = 10
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Auto Stake Smoker",
+        description = "Automatically equips Steake Steak when the Bloodfiend is below 20%, allowing you to smoke his ass.",
+        category = "The Rift",
+        subcategory = "Vampire Slayer",
+        isParent = true,
+        risky = true
+    )
+    var AutoSteakSmoker = false
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Force Hold",
+        description = "Doesnt allow your held item to be changed off of the Steak until slayer is killed.",
+        category = "The Rift",
+        subcategory = "Vampire Slayer",
+        parentName = "Auto Stake Smoker"
+    )
+    var AutoSteakSmokerForce = false
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
         name = "Rift Time Bar",
         description = "Moveable Rift Time Bar that adjusts depending on your time left in the rift / damage taken",
         category = "The Rift",
