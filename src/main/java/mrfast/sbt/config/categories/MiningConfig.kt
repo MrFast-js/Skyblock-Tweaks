@@ -46,6 +46,14 @@ object MiningConfig : Config() {
     )
     var dwarvenMinesMap = true
 
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Gemstone Grinder Overlay",
+        description = "Enables an overlay for the Gemstone Grinder GUI, displaying useful information about gemstone slots, including costs and other details.",
+        category = "Mining",
+        subcategory = "Misc."
+    )
+    var gemstoneOverlay = true
 
 //    @ConfigProperty(
 //        type = ConfigType.TOGGLE,
