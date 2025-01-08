@@ -104,6 +104,15 @@ object MiscellaneousConfig : Config() {
     var fireFreezeVisual = true
 
     @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Show Item Pricing Data",
+        description = "Data provided by the Skyblock Tweaks API!",
+        category = "Miscellaneous",
+        subcategory = "Items"
+    )
+    var showItemPricingData = false
+
+    @ConfigProperty(
         type = ConfigType.COLOR,
         name = "Focused Highlight Color",
         description = "Color of the highlight when focused",

@@ -3,6 +3,7 @@ package mrfast.sbt.features.general
 import com.google.gson.JsonArray
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.apis.ItemApi
+import mrfast.sbt.config.categories.MiscellaneousConfig
 import mrfast.sbt.utils.Utils.formatNumber
 import net.minecraftforge.event.entity.player.ItemTooltipEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -12,6 +13,7 @@ object ItemPriceDescription {
 
     @SubscribeEvent
     fun onToolTip(event: ItemTooltipEvent) {
+        if(!MiscellaneousConfig.showItemPricingData) return
 
         val stack = event.itemStack
         val pricingData = ItemApi.getItemInfo(stack) ?: return
