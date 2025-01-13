@@ -90,6 +90,64 @@ object ItemUtils {
         return "§f"
     }
 
+    fun ItemStack.getDataString(): String {
+        val output = mutableListOf<String>()
+        val reforge = this.getExtraAttributes()?.getString("modifier") ?: ""
+        val recomb = this.getExtraAttributes()?.hasKey("rarity_upgrades") ?: false
+        val hpb = this.getExtraAttributes()?.getInteger("hot_potato_count") ?: 0
+        val stars = this.getExtraAttributes()?.getInteger("dungeon_item_level") ?: 0
+        val masterStars = this.getExtraAttributes()?.getInteger("upgrade_level") ?: 0
+        val scrolls = this.getExtraAttributes()?.getTagList("ability_scroll", 8)
+        val attributes = getAttributesShort(this)
+
+        this.getSkyblockEnchants().forEach { (key, value) ->
+            if (key.contains("ultimate")) {
+                output.add("E:${key.replace("ultimate_", "")}$value")
+            }
+        }
+        if(recomb) {
+            output.add("R")
+        }
+        if(reforge.isNotEmpty()) {
+            output.add("Re:${reforge}")
+        }
+        if(hpb > 0) {
+            output.add("${hpb}HP")
+        }
+        if(masterStars > 0) {
+            output.add("${masterStars}S")
+        } else if(stars > 0) {
+            output.add("${stars}S")
+        }
+        if(scrolls != null) {
+            val total = mutableListOf<String>()
+            for(i in 0 until scrolls.tagCount()) {
+                val scroll = scrolls.getStringTagAt(i).substring(0, 3)
+                total.add(scroll)
+            }
+            if(total.isNotEmpty()) output.add("SC:${total.joinToString(",")}")
+        }
+        if(attributes.isNotEmpty()) {
+            output.add("AT:$attributes")
+        }
+
+        return output.joinToString("+")
+    }
+
+    private fun getAttributesShort(stack: ItemStack): String {
+        val attributes = stack.getAttributeShards()
+        val out = mutableListOf<String>()
+        attributes.forEach { (name, lvl) ->
+            // if attribute name is one word, take first 2 letters,
+            // else take first letter and first 3 letters of second word
+            val abbreviation = name.split('_').let {
+                if (it.size == 1) it[0].take(2) else it[0].take(1) + it[1].take(3)
+            }
+            out.add("$abbreviation$lvl")
+        }
+        return out.joinToString(",")
+    }
+
     fun ItemStack.getExtraAttributes(): NBTTagCompound? {
         if (hasTagCompound()) {
             if (tagCompound != null && tagCompound.hasKey("ExtraAttributes")) {
@@ -108,6 +166,17 @@ object ItemUtils {
             enchantsOut[enchantment] = lvl
         }
         return enchantsOut
+    }
+
+    fun ItemStack.getAttributeShards(): MutableMap<String, Int> {
+        val attributes = this.getExtraAttributes() ?: return mutableMapOf()
+        val attributeMap = attributes.getCompoundTag("attributes")
+        val attributeOut = mutableMapOf<String, Int>()
+        for (attribute in attributeMap.keySet) {
+            val lvl = attributeMap.getInteger(attribute)
+            attributeOut[attribute] = lvl
+        }
+        return attributeOut
     }
 
     fun ItemStack.getLore(clean: Boolean? = false): MutableList<String> {
@@ -211,16 +280,17 @@ object ItemUtils {
             prices.sumOf { it.asLong } / prices.size()
         } ?: -1L
 
-        val binActivePrices = if (pricingData.has("activeBinPrices")) pricingData.get("activeBinPrices").asJsonArray else null
+        val binActivePrices =
+            if (pricingData.has("activeBinPrices")) pricingData.get("activeBinPrices").asJsonArray else null
         val avgActiveBINPrice = binActivePrices?.takeIf { it.size() > 0 }?.let { prices ->
             prices.sumOf { it.asLong } / prices.size()
         } ?: -1L
 
         // If there are active BIN prices, suggest BIN price if it's lower than the average BIN price
-        if(binActivePrices != null) {
-            if(avgActiveBINPrice!= -1L) {
+        if (binActivePrices != null) {
+            if (avgActiveBINPrice != -1L) {
                 if (abin != null) {
-                    if(avgActiveBINPrice < abin) {
+                    if (avgActiveBINPrice < abin) {
                         return JsonObject().apply {
                             addProperty("price", avgActiveBINPrice)
                             addProperty("bin", true)
@@ -274,7 +344,18 @@ object ItemUtils {
     }
 
     fun extractRarity(itemDescription: String): String? {
-        val rarities = listOf("COMMON", "UNCOMMON", "RARE", "EPIC", "LEGENDARY", "MYTHIC", "DIVINE", "SPECIAL", "VERY_SPECIAL", "SUPREME")
+        val rarities = listOf(
+            "COMMON",
+            "UNCOMMON",
+            "RARE",
+            "EPIC",
+            "LEGENDARY",
+            "MYTHIC",
+            "DIVINE",
+            "SPECIAL",
+            "VERY_SPECIAL",
+            "SUPREME"
+        )
         // Reverse so uncommon is checked before common
         for (rarity in rarities.reversed()) {
             if (itemDescription.contains(rarity, ignoreCase = true)) {

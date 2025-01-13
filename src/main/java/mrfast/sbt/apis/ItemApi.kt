@@ -17,6 +17,8 @@ import java.util.*
 @SkyblockTweaks.EventComponent
 object ItemApi {
     private var skyblockItems = JsonObject()
+    var liveAuction = JsonObject()
+
     var skyblockItemsLoaded = false
 
     init {
@@ -85,7 +87,7 @@ object ItemApi {
                     return@Thread
                 }
 
-                println("Loaded ${data.entrySet().size} Items From Skyblock-Tweaks Item API")
+                if (logging) println("Loaded ${data.entrySet().size} Items From Skyblock-Tweaks Item API")
                 data.entrySet().forEach {
                     val item = it.value.asJsonObject
                     val itemId = it.key
@@ -99,6 +101,33 @@ object ItemApi {
             } catch (e: Exception) {
                 e.printStackTrace()
                 println("There was a problem loading SBT Prices.. Retrying in 5 seconds..")
+                Utils.setTimeout({
+                    updateSkyblockItemData(true)
+                }, 5000)
+                return@Thread
+            }
+
+
+            if (logging) println("Loading Live Item Prices from SBT API")
+            try {
+                val data = NetworkUtils.apiRequestAndParse(
+                    url = "${DeveloperConfig.modAPIURL}аpi/liveAuctions",
+                    useProxy = false,
+                    caching = false
+                )
+                if(data.entrySet().size == 0) {
+                    Utils.setTimeout({
+                        updateSkyblockItemData(logging)
+                    }, 5000)
+                    return@Thread
+                }
+
+                if (logging) println("Loaded Live ${data.entrySet().size} Auctions Item From Skyblock-Tweaks Item API")
+
+                liveAuction = data
+            } catch (e: Exception) {
+                e.printStackTrace()
+                println("There was a problem loading SBT Live Prices.. Retrying in 5 seconds..")
                 Utils.setTimeout({
                     updateSkyblockItemData(logging)
                 }, 5000)
