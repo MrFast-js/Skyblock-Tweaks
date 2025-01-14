@@ -100,10 +100,7 @@ object ItemApi {
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                println("There was a problem loading SBT Prices.. Retrying in 5 seconds..")
-                Utils.setTimeout({
-                    updateSkyblockItemData(true)
-                }, 5000)
+                println("There was a problem loading SBT Prices..")
                 return@Thread
             }
 
@@ -127,10 +124,7 @@ object ItemApi {
                 liveAuction = data
             } catch (e: Exception) {
                 e.printStackTrace()
-                println("There was a problem loading SBT Live Prices.. Retrying in 5 seconds..")
-                Utils.setTimeout({
-                    updateSkyblockItemData(logging)
-                }, 5000)
+                println("There was a problem loading SBT Live Prices..")
                 return@Thread
             }
         }.start()
