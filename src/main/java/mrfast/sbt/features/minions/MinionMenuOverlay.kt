@@ -220,7 +220,7 @@ object MinionMenuOverlay {
         }
 
         override fun draw(mouseX: Int, mouseY: Int, event: Event) {
-            val minionObj = minions[closestMinion?.position.toString()].getAsJsonObject() ?: return
+            val minionObj = minions[closestMinion?.position.toString()]?.getAsJsonObject() ?: return
             val lastCollectedAt = minionObj["lastCollectedAt"]?.asLong ?: return
             val lastCollectedDuration = System.currentTimeMillis() - lastCollectedAt
 

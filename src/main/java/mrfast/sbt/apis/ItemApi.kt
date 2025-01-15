@@ -69,7 +69,7 @@ object ItemApi {
             skyblockItemsLoaded = true
             if (logging) println("Loaded Skyblock Items from NEU Repo!")
 
-            while (Utils.mc.theWorld?.playerEntities == null) {
+            while (Utils.mc.theWorld?.playerEntities?.stream() == null) {
                 Thread.sleep(5000)
             }
 
@@ -81,9 +81,7 @@ object ItemApi {
                     caching = false
                 )
                 if(data.entrySet().size == 0) {
-                    Utils.setTimeout({
-                        updateSkyblockItemData(logging)
-                    }, 5000)
+                    print("There was a problem loading SBT Prices..")
                     return@Thread
                 }
 
@@ -116,9 +114,7 @@ object ItemApi {
                     caching = false
                 )
                 if(data.entrySet().size == 0) {
-                    Utils.setTimeout({
-                        updateSkyblockItemData(logging)
-                    }, 5000)
+                    print("There was a problem loading SBT Live Prices..")
                     return@Thread
                 }
 

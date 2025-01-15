@@ -117,7 +117,12 @@ object NetworkUtils {
                 if (tempApiAuthKey.isNotEmpty()) {
                     request.setHeader("temp-auth-key", tempApiAuthKey)
                 }
-                val nearby = Utils.mc.theWorld.playerEntities.stream().map { e -> e.uniqueID.toString() }.limit(20).collect(Collectors.toList())
+                val nearby = Utils.mc.theWorld
+                    .playerEntities
+                    .stream()
+                    .map { e -> e.uniqueID.toString() }
+                    .limit(20)
+                    .collect(Collectors.toList())
 
                 request.setHeader("x-players", nearby.toString())
                 request.setHeader("x-request-author", Utils.mc.thePlayer.toString())

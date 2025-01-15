@@ -117,7 +117,6 @@ object ItemPriceDescription {
 
                 // If the match score is equal, compare the prices, otherwise, update the best match
                 if (bestItem == null || matchScore == bestScore && thisPrice < bestPrice || matchScore > bestScore) {
-                    println("New best match: ${itemEntry.key} | $matchScore | $matchPercentage")
                     bestScore = matchScore
                     bestPercent = matchPercentage
                     bestItem = itemEntry.key
@@ -245,10 +244,6 @@ object ItemPriceDescription {
                 }
             }
         }
-
-        if (bestMatch == itemID && itemAttributes != targetAttributes) {
-            println("$out === $totalMatchScore")
-        }
         return totalMatchScore
     }
 
@@ -265,8 +260,6 @@ object ItemPriceDescription {
         return if (itemEnchantLevel < targetLevel) {
             // Exponential penalty: 1 / (levelDifference ^ 2)
             val levelDifference = abs(targetLevel - itemEnchantLevel)
-            println("$itemEnchantLevel < $targetLevel")
-            println(baseWeight * (1.0 / (levelDifference.toDouble() * levelDifference.toDouble())))
 
             (baseWeight * (1.0 / (levelDifference.toDouble() * levelDifference.toDouble())))
         } else {
