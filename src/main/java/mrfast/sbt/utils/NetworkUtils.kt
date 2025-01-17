@@ -67,8 +67,8 @@ object NetworkUtils {
                 if (it is HttpsURLConnection) it.sslSocketFactory = ctx.socketFactory
             }
         } catch (e: Exception) {
-            println("Failed to load keystore. A lot of API requests won't work");
-            e.printStackTrace();
+            println("Failed to load keystore. A lot of API requests won't work")
+            e.printStackTrace()
         }
     }
 
@@ -140,14 +140,18 @@ object NetworkUtils {
                     if (isMyApi) {
                         if (parsedJson.has("auth-key")) {
                             tempApiAuthKey = parsedJson.get("auth-key").asString
-                            println("GOT AUTH KEY $tempApiAuthKey")
+                            if(DeveloperConfig.logNetworkRequests) {
+                                println("GOT SBT AUTH KEY $tempApiAuthKey")
+                            }
                             return apiRequestAndParse(modifiedUrlString, headers, caching, useProxy)
                         }
                         if (statusCode != 200) {
-                            ChatUtils.sendClientMessage(
-                                "§cServer Error: ${parsedJson.get("cause").asString} §e§o${parsedJson.get("err_code")} $modifiedUrlString",
-                                true
-                            )
+                            if(DeveloperConfig.showServerErrors) {
+                                ChatUtils.sendClientMessage(
+                                    "§cServer Error: ${parsedJson.get("cause").asString} §e§o${parsedJson.get("err_code")} $modifiedUrlString",
+                                    true
+                                )
+                            }
                             return JsonObject()
                         }
                     }
@@ -159,8 +163,13 @@ object NetworkUtils {
             }
         } catch (ex: SSLHandshakeException) {
             ex.printStackTrace()
-            player.addChatMessage(ChatComponentText("§cThis API request has been blocked by your network! $modifiedUrlString"))
+            if(DeveloperConfig.showServerErrors) {
+                player.addChatMessage(ChatComponentText("§cSSL Handshake Exception! §cThis API request has been blocked by your network! §e§o$modifiedUrlString"))
+            }
         } catch (ex: Exception) {
+            if(DeveloperConfig.showServerErrors) {
+                player.addChatMessage(ChatComponentText("§cEncountered Exception when connecting to §e§o$modifiedUrlString"))
+            }
             ex.printStackTrace()
         }
         return JsonObject()

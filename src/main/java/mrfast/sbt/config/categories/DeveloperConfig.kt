@@ -54,6 +54,15 @@ object DeveloperConfig : Config() {
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
+        name = "Show Server Errors",
+        description = "Logs any server connection errors to the console.",
+        category = "§eDeveloper",
+        subcategory = "Settings"
+    )
+    var showServerErrors = false
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
         name = "Log Action Bar",
         description = "Log any action bar messages",
         category = "§eDeveloper",
