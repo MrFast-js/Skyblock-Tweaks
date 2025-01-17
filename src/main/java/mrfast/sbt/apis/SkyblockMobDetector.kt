@@ -7,6 +7,7 @@ import mrfast.sbt.config.categories.DeveloperConfig.showMobIdsThroughWalls
 import mrfast.sbt.customevents.SkyblockMobEvent
 import mrfast.sbt.customevents.WorldLoadEvent
 import mrfast.sbt.managers.LocationManager
+import mrfast.sbt.managers.TickManager
 import mrfast.sbt.utils.RenderUtils
 import mrfast.sbt.utils.Utils
 import mrfast.sbt.utils.Utils.clean
@@ -39,6 +40,8 @@ object SkyblockMobDetector {
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {
         if (Utils.mc.theWorld == null || !LocationManager.inSkyblock) return
+
+        if(TickManager.tickCount % 4 != 0) return
 
         for (entity in Utils.mc.theWorld.loadedEntityList) {
             if (Utils.mc.thePlayer.getDistanceToEntity(entity) > 30) continue

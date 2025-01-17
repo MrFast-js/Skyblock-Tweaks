@@ -3,6 +3,8 @@ package mrfast.sbt.features.mining
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.config.categories.MiningConfig
 import mrfast.sbt.customevents.PacketEvent
+import mrfast.sbt.managers.LocationManager
+import mrfast.sbt.managers.TickManager
 import mrfast.sbt.utils.RenderUtils
 import mrfast.sbt.utils.Utils
 import net.minecraft.init.Blocks
@@ -13,6 +15,7 @@ import net.minecraft.util.EnumParticleTypes
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 import kotlin.math.ceil
 import kotlin.math.floor
@@ -51,7 +54,10 @@ object CritParticleHighlight {
 
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
-        if (currentlyMinedBlock == null || particlePosition == null || !MiningConfig.CritParticleHighlight || Utils.mc.theWorld == null) return
+        if (event.phase != TickEvent.Phase.START || !LocationManager.inSkyblock || Utils.mc.theWorld == null) return
+        if (currentlyMinedBlock == null || particlePosition == null || !MiningConfig.CritParticleHighlight) return
+
+        if(TickManager.tickCount % 5 != 0) return
 
         val selectedBlock = Utils.mc.theWorld.getBlockState(currentlyMinedBlock).block
         if (selectedBlock == Blocks.bedrock || selectedBlock == Blocks.air) {

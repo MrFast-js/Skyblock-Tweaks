@@ -13,6 +13,7 @@ import mrfast.sbt.utils.Utils.clean
 import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 
 @SkyblockTweaks.EventComponent
@@ -52,6 +53,9 @@ object LocationManager {
 
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
+        if (event.phase != TickEvent.Phase.START || Utils.mc.theWorld == null) return
+        if(TickManager.tickCount % 10 != 0) return
+
         updatePlayerLocation()
     }
 

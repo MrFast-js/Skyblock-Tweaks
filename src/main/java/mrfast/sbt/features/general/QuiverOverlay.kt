@@ -6,9 +6,11 @@ import mrfast.sbt.managers.GuiManager
 import mrfast.sbt.config.categories.MiscellaneousConfig
 import mrfast.sbt.config.categories.MiscellaneousConfig.quiverOverlay
 import mrfast.sbt.config.categories.MiscellaneousConfig.quiverOverlayType
+import mrfast.sbt.features.end.ZealotSpawnLocations
 import mrfast.sbt.utils.GuiUtils
 import mrfast.sbt.utils.ItemUtils.getLore
 import mrfast.sbt.managers.LocationManager
+import mrfast.sbt.managers.TickManager
 import mrfast.sbt.utils.Utils
 import mrfast.sbt.utils.Utils.clean
 import mrfast.sbt.utils.Utils.formatNumber
@@ -25,12 +27,14 @@ object QuiverOverlay {
     private var currentArrow = ""
     private var currentArrowCount = 0
     private var currentArrowId = ""
-    val QUIVER_REGEX = """^§8Quiver.*""".toRegex()
-    val ACTIVE_ARROW_REGEX = """§7Active Arrow: (.+?) §7\(§e(\d+)§7\)""".toRegex()
+    private val QUIVER_REGEX = """^§8Quiver.*""".toRegex()
+    private val ACTIVE_ARROW_REGEX = """§7Active Arrow: (.+?) §7\(§e(\d+)§7\)""".toRegex()
 
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
         if (event.phase != TickEvent.Phase.START || !LocationManager.inSkyblock || Utils.mc.theWorld == null) return
+
+        if(TickManager.tickCount % 5 != 0) return
 
         for (itemStack in Utils.mc.thePlayer.inventory.mainInventory) {
             if (itemStack == null || !itemStack.hasDisplayName() || !itemStack.displayName.matches(QUIVER_REGEX)) continue

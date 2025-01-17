@@ -3,7 +3,9 @@ package mrfast.sbt.features.end
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.config.categories.RenderingConfig
 import mrfast.sbt.customevents.SkyblockMobEvent
+import mrfast.sbt.features.dungeons.HighlightCorrectLivid
 import mrfast.sbt.managers.LocationManager
+import mrfast.sbt.managers.TickManager
 import mrfast.sbt.utils.RenderUtils
 import mrfast.sbt.utils.Utils.toFormattedDuration
 import net.minecraft.util.AxisAlignedBB
@@ -74,6 +76,8 @@ object ZealotSpawnLocations {
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
         if (!RenderingConfig.zealotBruiserLocations || !LocationManager.inSkyblock || (LocationManager.currentArea != "Dragon's Nest" && LocationManager.currentArea != "Zealot Bruiser Hideout")) return
+
+        if(TickManager.tickCount % 10 != 0) return
 
         val msTillSpawn = mobsSpawnAt - System.currentTimeMillis()
         val secondsRemaining = if (msTillSpawn > 1000) {

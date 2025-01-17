@@ -3,6 +3,7 @@ package mrfast.sbt.features.dungeons
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.config.categories.DungeonConfig
 import mrfast.sbt.managers.LocationManager
+import mrfast.sbt.managers.TickManager
 import mrfast.sbt.utils.RenderUtils
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.util.Vec3
@@ -24,12 +25,12 @@ object ScarfSpawnTimers {
 
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {
-        if (!DungeonConfig.floor2SpawnTimer || LocationManager.dungeonFloor != 2) return
+        if (!DungeonConfig.floor2SpawnTimer || LocationManager.dungeonFloor != 2 || event.phase != TickEvent.Phase.START || !LocationManager.inSkyblock) return
 
-        if (event.phase != TickEvent.Phase.START) return
+        if(TickManager.tickCount % 2 != 0) return
 
         if (startMinionCount || startBossCount) {
-            time -= 0.05
+            time -= 0.1
             if (time <= -5) {
                 startMinionCount = false
                 startBossCount = false

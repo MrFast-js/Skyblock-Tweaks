@@ -1,10 +1,13 @@
 package mrfast.sbt.features.dungeons
 
 import mrfast.sbt.SkyblockTweaks
+import mrfast.sbt.apis.ItemAbilities
 import mrfast.sbt.config.categories.DungeonConfig.highlightCorrectLivid
 import mrfast.sbt.config.categories.DungeonConfig.highlightCorrectLividColor
 import mrfast.sbt.customevents.RenderEntityModelEvent
+import mrfast.sbt.features.end.ZealotSpawnLocations
 import mrfast.sbt.managers.LocationManager
+import mrfast.sbt.managers.TickManager
 import mrfast.sbt.utils.OutlineUtils
 import mrfast.sbt.utils.RenderUtils
 import mrfast.sbt.utils.Utils
@@ -28,6 +31,8 @@ object HighlightCorrectLivid {
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
         if (!LocationManager.inDungeons || LocationManager.dungeonFloor != 5 || !highlightCorrectLivid || event.phase != TickEvent.Phase.START) return
+
+        if(TickManager.tickCount % 20 != 0) return
 
         val state: IBlockState = Utils.mc.theWorld.getBlockState(BlockPos(5, 108, 42))
         if (state.block != Blocks.stained_glass) return

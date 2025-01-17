@@ -4,7 +4,10 @@ import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.config.categories.DeveloperConfig.showItemAbilities
 import mrfast.sbt.customevents.UseItemAbilityEvent
 import mrfast.sbt.customevents.WorldLoadEvent
+import mrfast.sbt.features.auctionHouse.AuctionFlipper
+import mrfast.sbt.features.end.ZealotSpawnLocations
 import mrfast.sbt.managers.LocationManager
+import mrfast.sbt.managers.TickManager
 import mrfast.sbt.utils.*
 import mrfast.sbt.utils.ItemUtils.getLore
 import mrfast.sbt.utils.ItemUtils.getSkyblockId
@@ -62,6 +65,8 @@ object ItemAbilities {
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
         if (event.phase != TickEvent.Phase.START || !LocationManager.inSkyblock || Utils.mc.theWorld == null) return
+
+        if(TickManager.tickCount % 10 != 0) return
 
         for (cooldown in activeCooldowns) {
             // Does the countdown

@@ -9,15 +9,14 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import mrfast.sbt.SkyblockTweaks
+import mrfast.sbt.apis.ItemAbilities
 import mrfast.sbt.apis.ItemApi
 import mrfast.sbt.config.categories.AuctionHouseConfig
 import mrfast.sbt.config.categories.CustomizationConfig
 import mrfast.sbt.guis.GuiItemFilterPopup.*
 import mrfast.sbt.customevents.SocketMessageEvent
-import mrfast.sbt.managers.ConfigManager
-import mrfast.sbt.managers.DataManager
-import mrfast.sbt.managers.LocationManager
-import mrfast.sbt.managers.PurseManager
+import mrfast.sbt.features.end.ZealotSpawnLocations
+import mrfast.sbt.managers.*
 import mrfast.sbt.utils.*
 import mrfast.sbt.utils.ItemUtils.getLore
 import mrfast.sbt.utils.ItemUtils.getSkyblockId
@@ -49,6 +48,10 @@ object AuctionFlipper {
 
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {
+        if (event.phase != TickEvent.Phase.START) return
+
+        if(TickManager.tickCount % 10 != 0) return
+
         if (AuctionHouseConfig.auctionFlipper) {
             if (!sentStartingText) {
                 sentStartingText = true;
@@ -188,10 +191,12 @@ object AuctionFlipper {
             }
 
             delay(9000)
-            if(CustomizationConfig.developerMode) getFilterSummary()
+            if (CustomizationConfig.developerMode) getFilterSummary()
             ChatUtils.sendClientMessage("", false)
-            val text = ChatComponentText("§eSB§9T§6 >> §7Scanned §9${checkedAuctions.formatNumber()}§7 auctions! §3${auctionsNotified.formatNumber()}§7 matched your filter. (hover)")
-            text.chatStyle.chatHoverEvent = HoverEvent(HoverEvent.Action.SHOW_TEXT, ChatComponentText(getFilterSummary()))
+            val text =
+                ChatComponentText("§eSB§9T§6 >> §7Scanned §9${checkedAuctions.formatNumber()}§7 auctions! §3${auctionsNotified.formatNumber()}§7 matched your filter. (hover)")
+            text.chatStyle.chatHoverEvent =
+                HoverEvent(HoverEvent.Action.SHOW_TEXT, ChatComponentText(getFilterSummary()))
             ChatUtils.sendClientMessage(text)
             ChatUtils.sendClientMessage("", false)
         }
@@ -228,13 +233,13 @@ object AuctionFlipper {
 
         val itemBytes = auction.get("item_bytes").asString
         val itemStack = ItemUtils.decodeBase64Item(itemBytes)
-        if(itemStack == null) {
+        if (itemStack == null) {
             incrementFilterCount("Could Not Resolve Item")
             return
         }
 
         val itemID = itemStack.getSkyblockId()
-        if(itemID == null) {
+        if (itemID == null) {
             incrementFilterCount("Could Not Find Item ID")
             return
         }
@@ -243,7 +248,7 @@ object AuctionFlipper {
         auctionFlip.itemStack = itemStack
 
         val pricingData = ItemApi.getItemInfo(itemID)
-        if(pricingData == null) {
+        if (pricingData == null) {
             incrementFilterCount("No Item Pricing Data")
             return
         }
@@ -290,12 +295,13 @@ object AuctionFlipper {
     init {
         val blacklistFilePath = ConfigManager.modDirectoryPath.resolve("data/itemBlacklist.json")
 
-        if(blacklistFilePath.exists()) {
+        if (blacklistFilePath.exists()) {
             val profileData = DataManager.loadDataFromFile(blacklistFilePath)
             val jsonFilters = profileData.getAsJsonArray("filters") ?: JsonArray()
             filters = Gson().fromJson(jsonFilters, Array<FilteredItem>::class.java).toMutableList()
         }
     }
+
     private val filterDebugCounts = mutableMapOf<String, Int>()
 
     private fun filterOutAuction(auctionFlip: AuctionFlip) {

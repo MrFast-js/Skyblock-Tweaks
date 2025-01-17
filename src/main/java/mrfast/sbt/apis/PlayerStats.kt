@@ -4,7 +4,9 @@ import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.config.categories.DeveloperConfig
 import mrfast.sbt.config.categories.GeneralConfig
 import mrfast.sbt.customevents.WorldLoadEvent
+import mrfast.sbt.features.end.ZealotSpawnLocations
 import mrfast.sbt.managers.LocationManager
+import mrfast.sbt.managers.TickManager
 import mrfast.sbt.utils.Utils
 import mrfast.sbt.utils.Utils.getRegexGroups
 import mrfast.sbt.utils.Utils.matches
@@ -54,9 +56,8 @@ object PlayerStats {
 
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
-        if (event.phase != TickEvent.Phase.START) return
-        if (!LocationManager.inSkyblock) return
-        if(Utils.mc.thePlayer == null) return
+        if (event.phase != TickEvent.Phase.START || !LocationManager.inSkyblock || Utils.mc.thePlayer == null) return
+        if(TickManager.tickCount % 10 != 0) return
 
         if (LocationManager.currentIsland == "The Rift") {
             health = Utils.mc.thePlayer.health.toInt()

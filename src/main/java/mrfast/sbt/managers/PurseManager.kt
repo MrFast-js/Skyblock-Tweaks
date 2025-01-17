@@ -30,6 +30,8 @@ object PurseManager {
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
         if (event.phase != TickEvent.Phase.START) return
+        if(TickManager.tickCount % 5 != 0) return
+
         val lines = ScoreboardUtils.getSidebarLines(true)
         for (line in lines) {
             if (line.matches(PURSE_REGEX)) {

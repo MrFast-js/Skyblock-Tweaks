@@ -6,6 +6,7 @@ import mrfast.sbt.customevents.ProfileLoadEvent
 import mrfast.sbt.customevents.PurseChangeEvent
 import mrfast.sbt.customevents.SkyblockInventoryItemEvent
 import mrfast.sbt.managers.DataManager
+import mrfast.sbt.managers.TickManager
 import mrfast.sbt.utils.ItemUtils.getSkyblockEnchants
 import mrfast.sbt.utils.Utils
 import net.minecraft.client.gui.inventory.GuiInventory
@@ -54,9 +55,11 @@ object ProfitTracker {
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
         if (event.phase != TickEvent.Phase.START) return
+        if(TickManager.tickCount % 2 != 0) return
+
         if (paused && started) {
-            // Add 50ms every tick
-            pausedDuration += 50
+            // Add 100ms every 2 ticks
+            pausedDuration += 100
         }
     }
 

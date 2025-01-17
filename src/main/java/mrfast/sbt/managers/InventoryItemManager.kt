@@ -26,6 +26,8 @@ object InventoryItemManager {
     fun onTick(event: ClientTickEvent) {
         if (event.phase != TickEvent.Phase.START || !LocationManager.inSkyblock || Utils.mc.theWorld == null) return
 
+        if(TickManager.tickCount % 4 != 0) return
+
         val currentInventory = getCurrentInventoryState()
 
         // Compare current inventory with previous inventory when the GUI is closed
