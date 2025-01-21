@@ -29,7 +29,7 @@ object PathTracer {
     fun onTick(event: ClientTickEvent) {
         if (event.phase != TickEvent.Phase.START || Utils.mc.thePlayer == null || !recordingMovement) return
 
-        if(TickManager.tickCount % 4 != 0) return
+        if(TickManager.tickCount % 2 != 0) return
 
         val pos = Utils.mc.thePlayer.positionVector.add(Vec3(0.0, 0.2, 0.0))
         if (!pathPoints.contains(pos)) {

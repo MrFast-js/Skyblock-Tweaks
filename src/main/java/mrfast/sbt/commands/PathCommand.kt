@@ -50,14 +50,14 @@ class PathCommand : CommandBase() {
                 PathTracer.pathPoints.clear();
                 PathTracer.creatingPath = true;
                 ChatUtils.sendClientMessage(
-                    "§3Path creation started. Use §a/path§b• record start§3 to record your movement",
+                    "§3Path creation started. Use §a/path§b record start§3 to record your movement",
                     true
                 );
             }
 
             "add" -> {
                 if (!PathTracer.creatingPath) {
-                    ChatUtils.sendClientMessage("§cNo path being created. Make one with §a/path§b• start", true)
+                    ChatUtils.sendClientMessage("§cNo path being created. Make one with §a/path§b start", true)
                     return
                 }
                 if (args.size >= 4) {
@@ -68,14 +68,14 @@ class PathCommand : CommandBase() {
                         ChatUtils.sendClientMessage("§3Added Point §a($x,$y,$z)§3 to your current path", true)
                         PathTracer.pathPoints.add(Vec3(x.toDouble(), y.toDouble(), z.toDouble()))
                     } catch (e: Exception) {
-                        ChatUtils.sendClientMessage("§cIncorrect Command Usage:§a /path§b• add <x> <y> <z>", true)
+                        ChatUtils.sendClientMessage("§cIncorrect Command Usage:§a /path§b add <x> <y> <z>", true)
                     }
                 }
             }
 
             "record" -> {
                 if (!PathTracer.creatingPath) {
-                    ChatUtils.sendClientMessage("§cNo path being created. Make one with §a/path§b• start", true);
+                    ChatUtils.sendClientMessage("§cNo path being created. Make one with §a/path§b start", true);
                     return;
                 }
                 if (args.size >= 2) {
@@ -83,7 +83,7 @@ class PathCommand : CommandBase() {
                         PathTracer.pathPoints.clear();
                         PathTracer.recordingMovement = true;
                         ChatUtils.sendClientMessage(
-                            "§3Movement recording started started. Use §a/path§b• record stop§3 to stop",
+                            "§3Movement recording started started. Use §a/path§b record stop§3 to stop",
                             true
                         );
                     }
@@ -103,7 +103,7 @@ class PathCommand : CommandBase() {
                 if (args.size >= 2) {
                     PathTracer.loadPath(args[1]);
                 } else {
-                    ChatUtils.sendClientMessage("§cYou didnt specify the name of path.§a /path§b• load <name>", true);
+                    ChatUtils.sendClientMessage("§cYou didnt specify the name of path.§a /path§b load <name>", true);
                 }
             }
 
@@ -139,7 +139,7 @@ class PathCommand : CommandBase() {
                     PathTracer.creatingPath = false;
                     PathTracer.recordingMovement = false;
                 } else {
-                    ChatUtils.sendClientMessage("§cYou didnt specify the name of path.§a /path§b• save <name>", true);
+                    ChatUtils.sendClientMessage("§cYou didnt specify the name of path.§a /path§b save <name>", true);
                 }
             }
 
@@ -151,7 +151,7 @@ class PathCommand : CommandBase() {
                         PathTracer.savePaths();
                     }
                 } else {
-                    ChatUtils.sendClientMessage("§cYou didnt specify the name of path.§a /path§b• delete <name>", true);
+                    ChatUtils.sendClientMessage("§cYou didnt specify the name of path.§a /path§b delete <name>", true);
                 }
             }
 

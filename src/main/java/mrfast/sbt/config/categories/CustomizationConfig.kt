@@ -101,7 +101,7 @@ object CustomizationConfig : Config() {
         subcategory = "Theme",
         parentName = "Custom Menu Colors"
     )
-    var onSwitchColor = CustomColor(Color.GREEN)
+    var onSwitchColor = CustomColor(0x00ff96)
 
     @ConfigProperty(
         type = ConfigType.COLOR,
@@ -121,7 +121,7 @@ object CustomizationConfig : Config() {
         subcategory = "Theme",
         parentName = "Custom Menu Colors"
     )
-    var featureBorderColor = CustomColor(Color.GRAY)
+    var featureBorderColor = CustomColor(0x2ba7b8)
 
     @ConfigProperty(
         type = ConfigType.COLOR,
@@ -131,7 +131,7 @@ object CustomizationConfig : Config() {
         subcategory = "Theme",
         parentName = "Custom Menu Colors"
     )
-    var windowBorderColor = CustomColor(Color.CYAN)
+    var windowBorderColor = CustomColor(0x00ffff)
 
     @ConfigProperty(
         type = ConfigType.COLOR,
@@ -181,7 +181,7 @@ object CustomizationConfig : Config() {
         subcategory = "Theme",
         parentName = "Custom Menu Colors"
     )
-    var guiLineColors = CustomColor(130, 130, 130)
+    var guiLineColors = CustomColor(0x2ba7b8)
 
     @ConfigProperty(
         type = ConfigType.COLOR,
@@ -191,7 +191,7 @@ object CustomizationConfig : Config() {
         subcategory = "Theme",
         parentName = "Custom Menu Colors"
     )
-    var defaultCategoryColor = CustomColor(180, 180, 180)
+    var defaultCategoryColor = CustomColor(0x5f5f5f)
 
     @ConfigProperty(
         type = ConfigType.COLOR,
@@ -201,7 +201,7 @@ object CustomizationConfig : Config() {
         subcategory = "Theme",
         parentName = "Custom Menu Colors"
     )
-    var hoveredCategoryColor = CustomColor(255, 255, 255)
+    var hoveredCategoryColor = CustomColor(0xcdf3f4)
 
     @ConfigProperty(
         type = ConfigType.COLOR,
@@ -211,7 +211,7 @@ object CustomizationConfig : Config() {
         subcategory = "Theme",
         parentName = "Custom Menu Colors"
     )
-    var selectedCategoryColor = CustomColor(0, 255, 255)
+    var selectedCategoryColor = CustomColor(0x00ffff)
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,

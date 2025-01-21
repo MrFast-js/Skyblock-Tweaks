@@ -35,7 +35,7 @@ object RenderingConfig : Config() {
         subcategory = "Misc",
         parentName = "Show Item Effective Area"
     )
-    var showItemEffectiveAreaMobsNearby = true
+    var showItemEffectiveAreaMobsNearby = false
 
     @ConfigProperty(
         type = ConfigType.COLOR,

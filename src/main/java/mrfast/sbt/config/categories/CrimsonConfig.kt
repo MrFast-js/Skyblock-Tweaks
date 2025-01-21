@@ -29,7 +29,7 @@ object CrimsonConfig : Config() {
     @ConfigProperty(
         type = ConfigType.COLOR,
         name = "Highlight Color",
-        description = "Highlights Blazes in-range to be hooked with the Moody Grappleshot",
+        description = "",
         category = "Crimson Isles",
         subcategory = "Misc",
         parentName = "Moody Grappleshot Highlight"
