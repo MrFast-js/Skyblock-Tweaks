@@ -115,6 +115,11 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2, drawDefaultB
     private val mainBorderRadius = 6f;
 
     init {
+        // Backwards compatability for old color system, update to new default theme
+        if(CustomizationConfig.onSwitchColor == CustomColor(Color.GREEN) && CustomizationConfig.selectedTheme == "Dark + Cyan") {
+            updateThemeColors()
+        }
+
         // Create a background panel
         val background =
             OutlinedRoundedRectangle(mainBorderColorState.get().colorState.constraint, 2f, mainBorderRadius).constrain {
