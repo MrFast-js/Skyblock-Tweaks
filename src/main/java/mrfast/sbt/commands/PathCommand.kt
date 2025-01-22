@@ -90,12 +90,12 @@ class PathCommand : CommandBase() {
                     if (args[1].contains("stop")) {
                         PathTracer.recordingMovement = false;
                         ChatUtils.sendClientMessage(
-                            "§3Movement recording stopped. Use §a/path§b• save <name>§3 to save your path",
+                            "§3Movement recording stopped. Use §a/path§b save <name>§3 to save your path",
                             true
                         );
                     }
                 } else {
-                    ChatUtils.sendClientMessage("§cIncorrect Command Usage:§a /path§b• record <start|stop>", true);
+                    ChatUtils.sendClientMessage("§cIncorrect Command Usage:§a /path§b record <start|stop>", true);
                 }
             }
 

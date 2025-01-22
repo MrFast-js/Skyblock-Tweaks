@@ -44,16 +44,16 @@ object ItemApi {
                         // MEGALODON;3 -> MEGALODON-EPIC
                         // ULTIMATE_WISE;2 -> ENCHANTMENT_ULTIMATE_WISE_2
                         if (newKey.contains(";")) {
-                            if(it.value.asJsonObject.get("displayname").asString.contains("[Lvl")) {
+                            if (it.value.asJsonObject.get("displayname").asString.contains("[Lvl")) {
                                 val parts = it.key.split(";")
                                 newKey = "${parts[0]}-${ItemUtils.intToPetTier(parseInt(parts[1]))}"
                             }
-                            if(it.value.asJsonObject.get("itemid").asString == "minecraft:enchanted_book") {
+                            if (it.value.asJsonObject.get("itemid").asString == "minecraft:enchanted_book") {
                                 newKey = "ENCHANTMENT_${it.key.replace(";", "_")}"
                             }
                         }
                         // Add rarity to item api
-                        if(it.value.asJsonObject.has("lore")) {
+                        if (it.value.asJsonObject.has("lore")) {
                             val lore = it.value.asJsonObject.get("lore").asJsonArray
                             val rarity = ItemUtils.extractRarity(lore[lore.size() - 1].asString)
                             it.value.asJsonObject.addProperty("rarity", rarity)
@@ -69,7 +69,7 @@ object ItemApi {
             skyblockItemsLoaded = true
             if (logging) println("Loaded Skyblock Items from NEU Repo!")
 
-            while (Utils.mc.theWorld?.playerEntities?.stream() == null) {
+            while (Utils.mc.theWorld == null || Utils.mc.theWorld?.playerEntities?.stream() == null) {
                 Thread.sleep(5000)
             }
 
@@ -80,7 +80,7 @@ object ItemApi {
                     useProxy = false,
                     caching = false
                 )
-                if(data.entrySet().size == 0) {
+                if (data.entrySet().size == 0) {
                     print("There was a problem loading SBT Prices..")
                     return@Thread
                 }
@@ -110,7 +110,7 @@ object ItemApi {
                     useProxy = false,
                     caching = false
                 )
-                if(data.entrySet().size == 0) {
+                if (data.entrySet().size == 0) {
                     print("There was a problem loading SBT Live Prices..")
                     return@Thread
                 }
