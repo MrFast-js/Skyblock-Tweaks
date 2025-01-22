@@ -3,6 +3,7 @@ package mrfast.sbt.utils
 import gg.essential.elementa.dsl.constraint
 import gg.essential.elementa.state.BasicState
 import gg.essential.universal.UMatrixStack
+import mrfast.sbt.config.categories.CustomizationConfig
 import mrfast.sbt.config.categories.DeveloperConfig
 import mrfast.sbt.guis.components.OutlinedRoundedRectangle
 import mrfast.sbt.guis.components.shader.GaussianBlur
@@ -33,11 +34,15 @@ object GuiUtils {
     init {
         Timer().scheduleAtFixedRate(object : TimerTask() {
             override fun run() {
-                val time = System.currentTimeMillis() / 4  // Slower rate
-                val red = (sin(time / 200.0) * 127 + 128).toInt()
-                val green = (sin(time / 200.0 + 2) * 127 + 128).toInt()
-                val blue = (sin(time / 200.0 + 4) * 127 + 128).toInt()
-                rainbowColor.set(Color(red, green, blue))
+                try {
+                    val time = System.currentTimeMillis() / 4  // Slower rate
+                    val red = (sin(time / 200.0) * 127 + 128).toInt()
+                    val green = (sin(time / 200.0 + 2) * 127 + 128).toInt()
+                    val blue = (sin(time / 200.0 + 4) * 127 + 128).toInt()
+                    rainbowColor.set(Color(red, green, blue))
+                } catch (e: Exception) {
+                    // Do nothing
+                }
             }
         }, 0, 100)
     }

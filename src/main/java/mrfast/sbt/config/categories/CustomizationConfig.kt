@@ -218,7 +218,8 @@ object CustomizationConfig : Config() {
         name = "Custom Player Scale",
         description = "Change players size globally",
         category = "§2§rCustomization",
-        subcategory = "Fun"
+        subcategory = "Fun",
+        isParent = true
     )
     var smallPlayers = false
 
