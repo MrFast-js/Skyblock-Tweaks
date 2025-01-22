@@ -140,13 +140,13 @@ object NetworkUtils {
                     if (isMyApi) {
                         if (parsedJson.has("auth-key")) {
                             tempApiAuthKey = parsedJson.get("auth-key").asString
-                            if(DeveloperConfig.logNetworkRequests) {
+                            if (DeveloperConfig.logNetworkRequests) {
                                 println("GOT SBT AUTH KEY $tempApiAuthKey")
                             }
                             return apiRequestAndParse(modifiedUrlString, headers, caching, useProxy)
                         }
                         if (statusCode != 200) {
-                            if(DeveloperConfig.showServerErrors) {
+                            if (DeveloperConfig.showServerErrors && player != null) {
                                 ChatUtils.sendClientMessage(
                                     "§cServer Error: ${parsedJson.get("cause").asString} §e§o${parsedJson.get("err_code")} $modifiedUrlString",
                                     true
@@ -163,11 +163,11 @@ object NetworkUtils {
             }
         } catch (ex: SSLHandshakeException) {
             ex.printStackTrace()
-            if(DeveloperConfig.showServerErrors) {
+            if (DeveloperConfig.showServerErrors && player != null) {
                 player.addChatMessage(ChatComponentText("§cSSL Handshake Exception! §cThis API request has been blocked by your network! §e§o$modifiedUrlString"))
             }
         } catch (ex: Exception) {
-            if(DeveloperConfig.showServerErrors) {
+            if (DeveloperConfig.showServerErrors && player != null) {
                 player.addChatMessage(ChatComponentText("§cEncountered Exception when connecting to §e§o$modifiedUrlString"))
             }
             ex.printStackTrace()
@@ -315,9 +315,11 @@ object NetworkUtils {
                                     entry.name.contains("/items/") -> {
                                         NeuItems.add(name, value)
                                     }
+
                                     entry.name.contains("/mobs/") -> {
                                         NeuMobs.add(name, value)
                                     }
+
                                     entry.name.contains("/constants/") -> {
                                         NeuConstants.add(name, value)
                                     }
@@ -338,7 +340,8 @@ object NetworkUtils {
             println("Debug: ETag matches. No need to download. Loading from file...")
             NeuItems = DataManager.loadDataFromFile(ConfigManager.modDirectoryPath.resolve("repo/NeuItems.json"))
             NeuMobs = DataManager.loadDataFromFile(ConfigManager.modDirectoryPath.resolve("repo/NeuMobs.json"))
-            NeuConstants = DataManager.loadDataFromFile(ConfigManager.modDirectoryPath.resolve("repo/NeuConstants.json"))
+            NeuConstants =
+                DataManager.loadDataFromFile(ConfigManager.modDirectoryPath.resolve("repo/NeuConstants.json"))
         }
     }
 }

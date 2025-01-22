@@ -54,7 +54,7 @@ object PartyManager {
                     // Clear all old party members but self
                     partyMembers.entries.removeIf { it.key != Utils.mc.thePlayer.name }
                     if (partyMembers.isEmpty()) {
-                        addSelfToParty()
+                        addSelfToParty(true)
                     }
 
                     for (line in event.slot.stack.getLore()) {
@@ -81,14 +81,15 @@ object PartyManager {
         }
     }
 
-    private fun addSelfToParty() {
+    private fun addSelfToParty(selfLeader: Boolean) {
         // Add self to party
         playerInParty = true
         if (partyMembers.containsKey(Utils.mc.thePlayer.name)) return
         val pm = PartyMember(Utils.mc.thePlayer.name)
-        pm.leader = true
+        pm.leader = selfLeader
         partyMembers[pm.name] = pm
-        if (GeneralConfig.autoPartyChat && !playerInParty) {
+
+        if (GeneralConfig.autoPartyChat) {
             ChatUtils.sendPlayerMessage("/chat p")
         }
     }
@@ -99,7 +100,7 @@ object PartyManager {
         if (clean.matches(JOINED_PARTY_REGEX)) {
             val pm = PartyMember(clean.getRegexGroups(JOINED_PARTY_REGEX)!![1]!!.value)
             partyMembers[pm.name] = pm
-            addSelfToParty()
+            addSelfToParty(true)
         }
 
         // Other players leave party
@@ -155,7 +156,7 @@ object PartyManager {
 
             pm.leader = true
             partyMembers[pm.name] = pm
-            addSelfToParty()
+            addSelfToParty(false)
         }
 
         // /p list
@@ -209,7 +210,7 @@ object PartyManager {
 
             partyMembers[pm.name] = pm
 
-            addSelfToParty()
+            addSelfToParty(false)
             if (clean.contains(Utils.mc.thePlayer.name)) {
                 partyMembers[Utils.mc.thePlayer.name]?.leader = false
             }

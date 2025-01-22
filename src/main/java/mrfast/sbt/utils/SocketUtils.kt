@@ -2,6 +2,7 @@ package mrfast.sbt.utils
 
 import io.socket.engineio.client.Socket
 import mrfast.sbt.SkyblockTweaks
+import mrfast.sbt.apis.ItemApi
 import mrfast.sbt.config.categories.DeveloperConfig
 import mrfast.sbt.customevents.SocketMessageEvent
 import net.minecraftforge.common.MinecraftForge
@@ -10,19 +11,18 @@ import java.net.URISyntaxException
 @SkyblockTweaks.EventComponent
 object SocketUtils {
     private var socket: Socket? = null
-    private var internalClose = false
     var socketConnected = true
 
     init {
         setupSocket()
     }
 
+    private var lostConnection = false
     fun setupSocket() {
         socketConnected = false
-        println("Attempting connection to SBT websocket! ${DeveloperConfig.modSocketURL}")
+        if(DeveloperConfig.showServerErrors) println("Attempting connection to SBT websocket! ${DeveloperConfig.modSocketURL}")
         try {
             if (socket != null) {
-                internalClose = true
                 socket!!.close()
             }
             // Connect to the Socket.IO server
@@ -33,8 +33,12 @@ object SocketUtils {
                 println("Opened connection to SBT websocket! ${DeveloperConfig.modSocketURL}")
                 socket.send("ClientInfo|${SkyblockTweaks.MOD_VERSION}|${Utils.mc.session.profile.name}")
 
+                if(lostConnection) {
+                    ItemApi.updateSkyblockItemData(false)
+                }
+
+                lostConnection = false
                 socketConnected = true
-                internalClose = false
             }
 
             socket.on(Socket.EVENT_MESSAGE) { args: Array<Any> ->
@@ -46,22 +50,27 @@ object SocketUtils {
             }
 
             socket.on(Socket.EVENT_CLOSE) {
-                if (internalClose) return@on
-                println("Lost connection to SBT websocket! Retrying in 5 seconds..")
-                Utils.setTimeout({
-                    setupSocket()
-                }, 5000)
-                socketConnected = false
+                retryConnection()
             }
 
             socket.on(Socket.EVENT_ERROR) {
-                if (internalClose) return@on
-                socketConnected = false
+
             }
 
             socket.open()
         } catch (e: URISyntaxException) {
             e.printStackTrace()
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
+    }
+
+    private fun retryConnection() {
+        if(DeveloperConfig.showServerErrors) println("Lost connection to SBT websocket! Retrying in 5 seconds..")
+        lostConnection = true
+        Utils.setTimeout({
+            setupSocket()
+        }, 5000)
+        socketConnected = false
     }
 }
