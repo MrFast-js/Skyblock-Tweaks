@@ -22,9 +22,6 @@ object SocketUtils {
         socketConnected = false
         if(DeveloperConfig.showServerErrors) println("Attempting connection to SBT websocket! ${DeveloperConfig.modSocketURL}")
         try {
-            if (socket != null) {
-                socket!!.close()
-            }
             // Connect to the Socket.IO server
             socket = Socket(DeveloperConfig.modSocketURL)
             val socket = socket ?: return
@@ -49,7 +46,9 @@ object SocketUtils {
                 }
             }
 
-            socket.on(Socket.EVENT_CLOSE) {
+            socket.on(Socket.EVENT_CLOSE) { args: Array<Any> ->
+                val reason = if (args.isNotEmpty()) args[0].toString() else "Unknown reason"
+                println("Connection closed: $reason")
                 retryConnection()
             }
 

@@ -36,6 +36,11 @@ object DwarvenMinesMap {
         }
 
         override fun draw() {
+            val player: EntityPlayerSP = Utils.mc.thePlayer
+
+            val inTunnels = player.posX > -150 && player.posX < 40 && player.posZ > 183
+            if(inTunnels) return
+
             GlStateManager.pushMatrix()
             GlStateManager.enableBlend()
             GlStateManager.color(1f, 1f, 1f, 1f)
@@ -54,7 +59,6 @@ object DwarvenMinesMap {
             )
             GlStateManager.popMatrix()
 
-            val player: EntityPlayerSP = Utils.mc.thePlayer
             var x = lastPlayerX
             var z = lastPlayerZ
             var rotation = lastPlayerR
