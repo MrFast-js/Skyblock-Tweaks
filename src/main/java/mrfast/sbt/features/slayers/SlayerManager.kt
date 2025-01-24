@@ -48,8 +48,12 @@ object SlayerManager {
         val msg = event.message.unformattedText
 
         if (msg.trim().startsWith("SLAYER QUEST STARTED!")) {
+            // Default to when the slayer quest started in case new times are not found
             slayerStartedAt = System.currentTimeMillis()
+            slayerSpawnedAt = System.currentTimeMillis()
+
             spawnedSlayer = null
+            hasSlayerSpawned = false
         }
         if (msg.trim().startsWith("NICE! SLAYER BOSS SLAIN!") || msg.trim().startsWith("SLAYER QUEST COMPLETE!")) {
             if(hasSlayerSpawned) {
@@ -57,8 +61,6 @@ object SlayerManager {
             }
             spawnedSlayer = null
             hasSlayerSpawned = false
-            slayerSpawnedAt = 0
-            slayerStartedAt = 0
         }
     }
 
@@ -76,21 +78,22 @@ object SlayerManager {
                     nextLine = false
                     slayerName = getActualSlayerName(line)
                 }
-                if (line.contains("Slayer Quest")) {
-                    nextLine = true
-                }
+                if (line.contains("Slayer Quest")) nextLine = true
                 if (line.contains("Slay the boss!")) {
                     if (CustomizationConfig.developerMode) {
-                        ChatUtils.sendClientMessage("Detected sidebar slayer spawned")
+                        ChatUtils.sendClientMessage("Detected sidebar slayer spawned '$slayerName'", shortPrefix = true)
                     }
                     hasSlayerSpawned = true
                 }
+            }
+            if(hasSlayerSpawned && CustomizationConfig.developerMode) {
+                ChatUtils.sendClientMessage("Checking '$id' starts with '$slayerName'", shortPrefix = true)
             }
             if (id.startsWith(slayerName) && hasSlayerSpawned) {
                 slayerSpawnedAt = System.currentTimeMillis()
                 spawnedSlayer = event.sbMob
                 if (CustomizationConfig.developerMode) {
-                    ChatUtils.sendClientMessage("Slayer Spawned")
+                    ChatUtils.sendClientMessage("Slayer Spawned '${event.sbMob.skyblockMobId}'", shortPrefix = true)
                 }
             }
         }
