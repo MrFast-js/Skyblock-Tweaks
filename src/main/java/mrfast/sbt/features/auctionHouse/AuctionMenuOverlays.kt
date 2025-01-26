@@ -181,7 +181,7 @@ object AuctionMenuOverlays {
         auction.pricingData = ItemApi.getItemInfo(id) ?: return
 
         val stack = auction.stack ?: return
-        val suggestedListingPrice = ItemUtils.getSuggestListingPrice(stack) ?: return
+        val suggestedListingPrice = ItemUtils.getSuggestListingPrice(stack, ) ?: return
 
         auction.suggestedListingPrice = suggestedListingPrice.get("price").asLong
         auction.shouldSellBIN = suggestedListingPrice.get("bin")?.asBoolean == true
@@ -306,12 +306,12 @@ object AuctionMenuOverlays {
             // Pricing and count for Live Auction listings and their prices
             val activeAucNum = if (pricingData.has("activeAuc")) pricingData.get("activeAuc").asInt else -1
             val activeAuc = if (activeAucNum != -1) activeAucNum.formatNumber() else "§cUnknown"
-            val activeAucPrices = pricingData.get("activeAucPrices").asJsonArray
+            val activeAucPrices = if(pricingData.has("activeAucPrices")) pricingData.get("activeAucPrices").asJsonArray else JsonArray()
 
             // Pricing and count for Live Bin Listings and their prices
             val activeBinNum = if (pricingData.has("activeBin")) pricingData.get("activeBin").asInt else -1
             val activeBin = if (activeBinNum != -1) activeBinNum.formatNumber() else "§cUnknown"
-            val activeBinPrices = pricingData.get("activeBinPrices").asJsonArray
+            val activeBinPrices = if(pricingData.has("activeBinPrices")) pricingData.get("activeBinPrices").asJsonArray else JsonArray()
 
             // Pricing and count for recently ended auction listings and their prices
             val soldAucNum = if (pricingData.has("aucSold")) pricingData.get("aucSold").asInt else -1

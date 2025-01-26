@@ -2,9 +2,8 @@ package mrfast.sbt.utils
 
 import com.google.gson.JsonObject
 import mrfast.sbt.apis.ItemApi
+import mrfast.sbt.config.categories.AuctionHouseConfig
 import mrfast.sbt.features.general.ItemPriceDescription
-import mrfast.sbt.utils.ItemUtils.getDataString
-import mrfast.sbt.utils.ItemUtils.getSkyblockId
 import mrfast.sbt.utils.Utils.clean
 import net.minecraft.init.Items
 import net.minecraft.item.ItemStack
@@ -265,6 +264,23 @@ object ItemUtils {
     }
 
     fun getSuggestListingPrice(itemStack: ItemStack): JsonObject? {
+
+        if (AuctionHouseConfig.usePriceMatch) {
+            val match = getPriceMatch(itemStack)
+
+            if (match != null) {
+                val priceMatch = match.first
+                val percentMatch = match.second
+
+                if (percentMatch > 90) {
+                    return JsonObject().apply {
+                        addProperty("price", priceMatch * 0.99)
+                        addProperty("bin", true)
+                    }
+                }
+            }
+        }
+
         val itemID = itemStack.getSkyblockId()!!
         val pricingData = ItemApi.getItemInfo(itemID) ?: return null
 
@@ -367,5 +383,16 @@ object ItemUtils {
         }
 
         return null
+    }
+
+    fun getPriceMatch(stack: ItemStack): Pair<Long, Double>? {
+        return getPriceMatch(stack.getDataString(),stack.getSkyblockId()!!)
+    }
+
+    private fun getPriceMatch(dataString: String, id: String): Pair<Long, Double>? {
+        if(dataString == "" || !ItemApi.liveAuction.has(id)) return null
+        val itemData = ItemApi.liveAuction.get(id).asJsonObject
+
+        return ItemPriceDescription.findBestMatch(itemData.asJsonObject, dataString, id)
     }
 }

@@ -23,6 +23,7 @@ import mrfast.sbt.guis.components.OutlinedRoundedRectangle
 import mrfast.sbt.guis.components.SiblingConstraintFixed
 import mrfast.sbt.guis.components.TextInputComponent
 import mrfast.sbt.managers.DataManager
+import mrfast.sbt.utils.ChatUtils
 import mrfast.sbt.utils.GuiUtils
 import mrfast.sbt.utils.ItemUtils.getSkyblockId
 import mrfast.sbt.utils.Utils
@@ -90,6 +91,12 @@ class GuiItemFilterPopup(
 
     override fun onScreenClose() {
         super.onScreenClose()
+        getFilters().removeIf {
+            it.textInput.isEmpty().also { isEmpty ->
+                if (isEmpty) ChatUtils.sendClientMessage("§cEmpty filter found. As a result, it has been removed.")
+            }
+        }
+        saveFiltersFile()
         runOnClose?.run()
     }
 

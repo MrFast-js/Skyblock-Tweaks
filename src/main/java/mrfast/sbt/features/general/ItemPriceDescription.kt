@@ -77,7 +77,6 @@ object ItemPriceDescription {
     }
 
     private val weights = mapOf(
-        "ReforgeMatch" to 1.0,
         "RecombMatch" to 5.0,
         "DefaultEnchantMatch" to 4.0,
         "HotPotatoMatchFull" to 3.0
@@ -170,21 +169,21 @@ object ItemPriceDescription {
                 }
 
                 // Reforges: Format Re:<name>, e.g., Re:precise
-                attribute.startsWith("Re:") -> {
-                    val reforgeName = attribute.substringAfter("Re:")
-                    val targetReforge = targetAttributes.find { it.startsWith("Re:$reforgeName") }
-
-                    if (targetReforge != null) {
-                        val weight = weights["ReforgeMatch"]!! ?: 0.0
-                        totalMatchScore += weight
-                        if (debugBestMatch == itemID) out += "Reforge ($reforgeName | $targetReforge | $weight)"
-                    } else {
-                        // If no match in target for reforge, apply penalty
-                        val weight = -weights["ReforgeMatch"]!! ?: 0.0
-                        totalMatchScore += weight
-                        if (debugBestMatch == itemID) out += "Missing Reforge ($reforgeName | $targetReforge | $weight)"
-                    }
-                }
+//                attribute.startsWith("Re:") -> {
+//                    val reforgeName = attribute.substringAfter("Re:")
+//                    val targetReforge = targetAttributes.find { it.startsWith("Re:$reforgeName") }
+//
+//                    if (targetReforge != null) {
+//                        val weight = weights["ReforgeMatch"]!! ?: 0.0
+//                        totalMatchScore += weight
+//                        if (debugBestMatch == itemID) out += "Reforge ($reforgeName | $targetReforge | $weight)"
+//                    } else {
+//                        // If no match in target for reforge, apply penalty
+//                        val weight = -weights["ReforgeMatch"]!! ?: 0.0
+//                        totalMatchScore += weight
+//                        if (debugBestMatch == itemID) out += "Missing Reforge ($reforgeName | $targetReforge | $weight)"
+//                    }
+//                }
 
                 // Recomb: Format R
                 attribute == "R" -> {

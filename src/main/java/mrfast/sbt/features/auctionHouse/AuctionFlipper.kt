@@ -258,7 +258,7 @@ object AuctionFlipper {
     // Will find a 'base price' for the item, found by using average bin ideally, with the lowest bin as a backup
     private fun calcAuctionProfit(auctionFlip: AuctionFlip, pricingData: JsonObject) {
         val suggestedListingPrice = ItemUtils.getSuggestListingPrice(auctionFlip.itemStack!!)!!
-        val priceToSellFor = suggestedListingPrice.get("price").asLong
+        var priceToSellFor = suggestedListingPrice.get("price").asLong
 
         if (auctionFlip.price < priceToSellFor) {
             // Already take out 8% accounting for your upcoming bid

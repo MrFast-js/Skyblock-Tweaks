@@ -19,10 +19,19 @@ object AuctionHouseConfig : Config() {
         name = "Auction Flipper",
         description = "Scans the Hypixel API to display auctions based on the lowest BINs and 3-day price averages.\n§c§lRequires you to be in the hub if you don't have a booster cookie! §4This feature can make mistakes.",
         category = "§1§rAuction House",
+        subcategory = "Auction Flipper"
+    )
+    var auctionFlipper = false
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Use Price Matching §e(Experimental)",
+        description = "If a §a> 90%§r matched price is found, it will be used for the suggested selling price.",
+        category = "§1§rAuction House",
         subcategory = "Auction Flipper",
         isParent = true
     )
-    var auctionFlipper = false
+    var usePriceMatch = false
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
@@ -124,6 +133,7 @@ object AuctionHouseConfig : Config() {
         parentName = "Auction Flipper"
     )
     var AF_usePurseLimit = false
+
 
     @ConfigProperty(
         type = ConfigType.KEYBIND,
