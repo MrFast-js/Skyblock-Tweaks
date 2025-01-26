@@ -353,7 +353,7 @@ class ProfitTrackerGui : WindowScreen(ElementaVersion.V2) {
                 val textToShow = mutableListOf(
                     "§e${itemStack.displayName}",
                     "§7${itemCount.abbreviateNumber()}x Collected",
-                    "§b${itemsPerHour.abbreviateNumber()}x / hr",
+                    "§b${itemsPerHour.abbreviateNumber()} / hr",
                     "§6$${itemWorth.abbreviateNumber()} Value",
                     "§b$${coinsPerHour.abbreviateNumber()} / hr"
                 )

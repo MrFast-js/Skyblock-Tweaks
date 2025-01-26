@@ -9,13 +9,11 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import mrfast.sbt.SkyblockTweaks
-import mrfast.sbt.apis.ItemAbilities
 import mrfast.sbt.apis.ItemApi
 import mrfast.sbt.config.categories.AuctionHouseConfig
 import mrfast.sbt.config.categories.CustomizationConfig
 import mrfast.sbt.guis.GuiItemFilterPopup.*
 import mrfast.sbt.customevents.SocketMessageEvent
-import mrfast.sbt.features.end.ZealotSpawnLocations
 import mrfast.sbt.managers.*
 import mrfast.sbt.utils.*
 import mrfast.sbt.utils.ItemUtils.getLore
@@ -50,7 +48,7 @@ object AuctionFlipper {
     fun onTick(event: TickEvent.ClientTickEvent) {
         if (event.phase != TickEvent.Phase.START) return
 
-        if(TickManager.tickCount % 10 != 0) return
+        if (TickManager.tickCount % 10 != 0) return
 
         if (AuctionHouseConfig.auctionFlipper) {
             if (!sentStartingText) {
@@ -234,13 +232,13 @@ object AuctionFlipper {
         val itemBytes = auction.get("item_bytes").asString
         val itemStack = ItemUtils.decodeBase64Item(itemBytes)
         if (itemStack == null) {
-            incrementFilterCount("Could Not Resolve Item")
+            filterOutWithReason("Could Not Resolve Item")
             return
         }
 
         val itemID = itemStack.getSkyblockId()
         if (itemID == null) {
-            incrementFilterCount("Could Not Find Item ID")
+            filterOutWithReason("Could Not Find Item ID")
             return
         }
 
@@ -249,7 +247,7 @@ object AuctionFlipper {
 
         val pricingData = ItemApi.getItemInfo(itemID)
         if (pricingData == null) {
-            incrementFilterCount("No Item Pricing Data")
+            filterOutWithReason("No Item Pricing Data")
             return
         }
 
@@ -260,21 +258,21 @@ object AuctionFlipper {
     // Will find a 'base price' for the item, found by using average bin ideally, with the lowest bin as a backup
     private fun calcAuctionProfit(auctionFlip: AuctionFlip, pricingData: JsonObject) {
         val suggestedListingPrice = ItemUtils.getSuggestListingPrice(auctionFlip.itemStack!!)!!
-        val price = suggestedListingPrice.get("price").asLong
+        val priceToSellFor = suggestedListingPrice.get("price").asLong
 
-        if (auctionFlip.price < price) {
+        if (auctionFlip.price < priceToSellFor) {
             // Already take out 8% accounting for your upcoming bid
             val nextBidPrice = (auctionFlip.price * 1.08).toLong()
-            auctionFlip.profit = price - nextBidPrice
+            auctionFlip.profit = priceToSellFor - nextBidPrice
             if (pricingData.has("sold")) {
                 auctionFlip.volume = pricingData.get("sold").asInt
             }
 
-            auctionFlip.sellFor = price
+            auctionFlip.sellFor = priceToSellFor
 
-            filterOutAuction(auctionFlip)
+            filterAndSendFlip(auctionFlip)
         } else {
-            incrementFilterCount("Price > Suggested Price")
+            filterOutWithReason("Price > Suggested Price")
         }
     }
 
@@ -304,17 +302,17 @@ object AuctionFlipper {
 
     private val filterDebugCounts = mutableMapOf<String, Int>()
 
-    private fun filterOutAuction(auctionFlip: AuctionFlip) {
+    private fun filterAndSendFlip(auctionFlip: AuctionFlip) {
         // Filter out auctions that your already the top bid on
         if (auctionFlip.bidderUUID?.equals(Utils.mc.thePlayer.uniqueID.toString().replace("-", "")) == true) {
-            incrementFilterCount("Already top bidder")
+            filterOutWithReason("Already top bidder")
             return
         }
 
         if (filters.isNotEmpty()) {
             for (filter in filters) {
                 if (filter.matches(auctionFlip.itemStack!!)) {
-                    incrementFilterCount("Matched A Blacklist Filter")
+                    filterOutWithReason("Matched A Blacklist Filter")
                     return
                 }
             }
@@ -326,8 +324,17 @@ object AuctionFlipper {
                 auctionFlip.itemStack?.getSkyblockId()?.equals("COCO_CHOPPER") == true ||
                 auctionFlip.itemStack?.getSkyblockId()?.contains("_DICER") == true
             ) {
-                incrementFilterCount("Farming tools Filter")
+                filterOutWithReason("Farming tools Filter")
                 return
+            }
+        }
+
+        if (AuctionHouseConfig.AF_commonFilter) {
+            ItemApi.getItemInfo(auctionFlip.itemID!!)?.let {
+                if (it.has("rarity") && it.get("rarity").asString == "COMMON") {
+                    filterOutWithReason("Common Item Filter")
+                    return
+                }
             }
         }
 
@@ -335,7 +342,7 @@ object AuctionFlipper {
         if (AuctionHouseConfig.AF_furnitureFilter && auctionFlip.itemStack?.getLore().toString()
                 .contains("Furniture")
         ) {
-            incrementFilterCount("Furniture Filter")
+            filterOutWithReason("Furniture Filter")
             return
         }
 
@@ -343,7 +350,7 @@ object AuctionFlipper {
         if (AuctionHouseConfig.AF_furnitureFilter && auctionFlip.itemStack?.getLore().toString()
                 .contains("Decoration")
         ) {
-            incrementFilterCount("Decoration Filter")
+            filterOutWithReason("Decoration Filter")
             return
         }
 
@@ -351,25 +358,25 @@ object AuctionFlipper {
         if (AuctionHouseConfig.AF_petFilter && auctionFlip.itemStack?.displayName?.clean()
                 ?.startsWith("[Lvl") == true
         ) {
-            incrementFilterCount("Pet Filter")
+            filterOutWithReason("Pet Filter")
             return
         }
 
         // Filter out Dyes
         if (AuctionHouseConfig.AF_dyeFilter && auctionFlip.itemStack?.displayName?.clean()?.contains("Dye") == true) {
-            incrementFilterCount("Dye Filter")
+            filterOutWithReason("Dye Filter")
             return
         }
 
         // Block BIN auctions if enabled
         if (!AuctionHouseConfig.AF_binFlips && auctionFlip.bin == true) {
-            incrementFilterCount("Is A BIN Auction")
+            filterOutWithReason("Is A BIN Auction")
             return
         }
 
         // Block regular auctions if enabled
         if (!AuctionHouseConfig.AF_AucFlips && auctionFlip.bin == false) {
-            incrementFilterCount("Is A Regular Auction")
+            filterOutWithReason("Is A Regular Auction")
             return
         }
 
@@ -377,7 +384,7 @@ object AuctionFlipper {
         if (auctionFlip.endTime != null) {
             val msTillEnd = auctionFlip.endTime!! - System.currentTimeMillis()
             if (auctionFlip.bin == false && msTillEnd > AuctionHouseConfig.AF_minimumTime * 1000 * 60 || msTillEnd < 0) {
-                incrementFilterCount("Auction Duration Too Long")
+                filterOutWithReason("Auction Duration Too Long")
                 return
             }
         }
@@ -385,7 +392,7 @@ object AuctionFlipper {
         // Filter based on profit margin
         if (auctionFlip.profit != null) {
             if (auctionFlip.profit!! < AuctionHouseConfig.AF_profitMargin) {
-                incrementFilterCount("Profit Margin Too Low")
+                filterOutWithReason("Profit Margin Too Low")
                 return
             }
         }
@@ -393,7 +400,7 @@ object AuctionFlipper {
         // Filter based on volume
         if (auctionFlip.volume != null) {
             if (auctionFlip.volume!! < AuctionHouseConfig.AF_minimumVolume) {
-                incrementFilterCount("Volume Too Low")
+                filterOutWithReason("Volume Too Low")
                 return
             }
         }
@@ -401,20 +408,20 @@ object AuctionFlipper {
         // Filter based on profit percentage
         if (auctionFlip.sellFor != null) {
             if (auctionFlip.sellFor!!.toFloat() / auctionFlip.price.toFloat() <= AuctionHouseConfig.AF_minimumPercent / 100) {
-                incrementFilterCount("Profit Percentage Too Low")
+                filterOutWithReason("Profit Percentage Too Low")
                 return
             }
         }
 
         // Filter based on purse limit
         if (AuctionHouseConfig.AF_usePurseLimit && auctionFlip.price > PurseManager.coinsInPurse) {
-            incrementFilterCount("Price > Purse Limit")
+            filterOutWithReason("Price > Purse Limit")
             return
         }
 
         // Filter based on max notifications
         if (auctionsNotified > AuctionHouseConfig.AF_maxNotifications) {
-            incrementFilterCount("Beyond Max Notifications")
+            filterOutWithReason("Beyond Max Notifications")
             return
         }
 
@@ -425,7 +432,7 @@ object AuctionFlipper {
         auctionFlip.sendToChat()
     }
 
-    private fun incrementFilterCount(filterName: String) {
+    private fun filterOutWithReason(filterName: String) {
         filterDebugCounts[filterName] = filterDebugCounts.getOrDefault(filterName, 0) + 1
     }
 

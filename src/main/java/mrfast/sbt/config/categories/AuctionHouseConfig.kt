@@ -176,6 +176,16 @@ object AuctionHouseConfig : Config() {
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
+        name = "Filter Out Common Rarity Items",
+        description = "Filters out items such as §fWolf Talisman §rand even though you can make profit from them, they can only be sold for 5x their npc price, this only effects some items.",
+        category = "§1§rAuction House",
+        subcategory = "Auction Flipper",
+        parentName = "Auction Flipper Filters"
+    )
+    var AF_commonFilter = false
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
         name = "Filter Out Furniture & Decorations",
         description = "Filters out furniture from Auction Flipper",
         category = "§1§rAuction House",

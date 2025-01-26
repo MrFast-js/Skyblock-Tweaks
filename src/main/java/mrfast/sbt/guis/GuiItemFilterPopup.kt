@@ -523,7 +523,9 @@ class GuiItemFilterPopup(
     }
 
     private fun resetToDefaultFilters() {
-        setFilters(defaultFilters.toMutableList())
+        setFilters(defaultFilters.map { filter ->
+            FilteredItem(filter.textInput, filter.itemFilter.selectedFilter, filter.itemFilter.selectedInput)
+        }.toMutableList())
         updateFilterComponentList(null)
     }
 }

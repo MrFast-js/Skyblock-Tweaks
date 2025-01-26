@@ -4,7 +4,6 @@ import com.google.gson.JsonObject
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.apis.ItemApi
 import mrfast.sbt.config.categories.MiscellaneousConfig
-import mrfast.sbt.utils.ChatUtils
 import mrfast.sbt.utils.ItemUtils.getDataString
 import mrfast.sbt.utils.ItemUtils.getSkyblockId
 import mrfast.sbt.utils.Utils.abbreviateNumber
@@ -61,21 +60,19 @@ object ItemPriceDescription {
             event.toolTip.add("§3Bazaar: §a$bazaarBuy Buy §7| §b$bazaarSell Sell")
         }
 
-        val string = stack.getDataString()
+        val dataString = stack.getDataString()
         val id = stack.getSkyblockId()
 
-        if (string != "" && ItemApi.liveAuction.has(id)) {
+        if (dataString != "" && ItemApi.liveAuction.has(id)) {
 //            event.toolTip.add("§3Data String: §7$string")
             val itemData = ItemApi.liveAuction.get(id).asJsonObject
 
-            val best = findBestMatch(itemData.asJsonObject, string, id!!)
+            val best = findBestMatch(itemData, dataString, id!!)?: return
+            val priceMatch = best.first
+            val percentMatch = best.second
 
-            if (best.first != null) {
-                val bestMatch = best.first
-                val stringMatch = itemData.get(bestMatch).asLong
-                event.toolTip.add("§a§lMATCHED PRICE: §7${stringMatch.formatNumber()} §8${best.second.abbreviateNumber()}%")
+            event.toolTip.add("§a§lMATCHED PRICE: §7${priceMatch.formatNumber()} §8${percentMatch.abbreviateNumber()}%")
 //                event.toolTip.add("§a§lBest: §e${bestMatch}")
-            }
         }
     }
 
@@ -86,8 +83,8 @@ object ItemPriceDescription {
         "HotPotatoMatchFull" to 3.0
     )
 
-    private var bestMatch = ""
-    private fun findBestMatch(itemsJson: JsonObject, targetAttributes: String, itemId: String): Pair<String?, Double> {
+    private var debugBestMatch = ""
+    fun findBestMatch(itemsJson: JsonObject, targetAttributes: String, itemId: String): Pair<Long, Double>? {
         var bestItem: String? = null
         var bestScore = Double.MIN_VALUE
         var bestPercent = 0.0
@@ -124,8 +121,10 @@ object ItemPriceDescription {
             }
         }
 
-        bestMatch = bestItem ?: ""
-        return (bestItem to bestPercent)
+        debugBestMatch = bestItem ?: ""
+
+        if(bestPercent==0.0 || bestItem==null) return null
+        return ((itemsJson.get(bestItem).asLong) to bestPercent)
     }
 
     private fun getMatchScore(itemAttributes: List<String>, targetAttributes: List<String>): Double {
@@ -148,13 +147,13 @@ object ItemPriceDescription {
                         if (itemLevel == targetLevel) {
                             val weight = getEnchantWeight(enchantName, itemLevel, targetLevel)
                             totalMatchScore += weight
-                            if (bestMatch == itemID) out += "Ench ($enchantName | $itemLevel | $targetLevel | $weight)"
+                            if (debugBestMatch == itemID) out += "Ench ($enchantName | $itemLevel | $targetLevel | $weight)"
                         } else {
                             // If has enchant but not matching level
                             val weight = getEnchantWeight(enchantName, itemLevel, targetLevel)
                             totalMatchScore += weight
-                            if (bestMatch == itemID) out += "Ench-Step ($enchantName | $itemLevel | $targetLevel | $weight)"
-                            if (bestMatch == itemID) out += "Ench-Step2 (${
+                            if (debugBestMatch == itemID) out += "Ench-Step ($enchantName | $itemLevel | $targetLevel | $weight)"
+                            if (debugBestMatch == itemID) out += "Ench-Step2 (${
                                 getEnchantWeight(
                                     enchantName,
                                     targetLevel,
@@ -166,7 +165,7 @@ object ItemPriceDescription {
                         // If no enchantment match in the target, apply a penalty
                         val penalty = -1.0 // Apply a penalty for missing enchantment in the target
                         totalMatchScore += penalty
-                        if (bestMatch == itemID) out += "Ench-Pen ($enchantName | $itemLevel | $targetLevel | $penalty)"
+                        if (debugBestMatch == itemID) out += "Ench-Pen ($enchantName | $itemLevel | $targetLevel | $penalty)"
                     }
                 }
 
@@ -178,12 +177,12 @@ object ItemPriceDescription {
                     if (targetReforge != null) {
                         val weight = weights["ReforgeMatch"]!! ?: 0.0
                         totalMatchScore += weight
-                        if (bestMatch == itemID) out += "Reforge ($reforgeName | $targetReforge | $weight)"
+                        if (debugBestMatch == itemID) out += "Reforge ($reforgeName | $targetReforge | $weight)"
                     } else {
                         // If no match in target for reforge, apply penalty
                         val weight = -weights["ReforgeMatch"]!! ?: 0.0
                         totalMatchScore += weight
-                        if (bestMatch == itemID) out += "Missing Reforge ($reforgeName | $targetReforge | $weight)"
+                        if (debugBestMatch == itemID) out += "Missing Reforge ($reforgeName | $targetReforge | $weight)"
                     }
                 }
 
@@ -193,15 +192,12 @@ object ItemPriceDescription {
                     if (targetRecomb != null) {
                         val weight = weights["RecombMatch"]!! ?: 0.0
                         totalMatchScore += weight
-                        if (bestMatch == itemID) out += "Recomb ($weight)"
+                        if (debugBestMatch == itemID) out += "Recomb ($weight)"
                     } else {
-                        if (bestMatch == itemID) {
-                            ChatUtils.sendClientMessage("§eNO RECOMB")
-                        }
                         // If no match in target for recomb, apply penalty
                         val weight = -weights["RecombMatch"]!! ?: 0.0
                         totalMatchScore += weight
-                        if (bestMatch == itemID) out += "Missing Recomb ($weight)"
+                        if (debugBestMatch == itemID) out += "Missing Recomb ($weight)"
                     }
                 }
 
@@ -215,12 +211,12 @@ object ItemPriceDescription {
                     if (itemStars == targetStars && itemStars in starWeights.indices) {
                         val weight = starWeights[itemStars]
                         totalMatchScore += weight
-                        if (bestMatch == itemID) out += "Stars ($itemStars | $targetStars | $weight)"
+                        if (debugBestMatch == itemID) out += "Stars ($itemStars | $targetStars | $weight)"
                     } else {
                         // Penalize if itemStars exceed targetStars
                         val weight = -((itemStars - targetStars) * 0.5)
                         totalMatchScore += weight
-                        if (bestMatch == itemID) out += "Stars ($itemStars | $targetStars | $weight)"
+                        if (debugBestMatch == itemID) out += "Stars ($itemStars | $targetStars | $weight)"
                     }
                 }
 
@@ -233,12 +229,12 @@ object ItemPriceDescription {
                     // If target doesn't have HP, treat it as 0 and penalize if item has HP
                     totalMatchScore += if (targetHP == 0) {
                         val weight = (-itemHP.toDouble() / 15.0) * 3.0 // Penalize for having HP if target is missing it
-                        if (bestMatch == itemID) out += "NOHP ($itemHP | $targetHP | $weight)"
+                        if (debugBestMatch == itemID) out += "NOHP ($itemHP | $targetHP | $weight)"
                         weight
                     } else {
                         // If target has HP, reward or penalize accordingly
                         val weight = ((15 - abs(itemHP - targetHP)) / 15.0) * 3.0
-                        if (bestMatch == itemID) out += "HP ($itemHP | $targetHP | $weight)"
+                        if (debugBestMatch == itemID) out += "HP ($itemHP | $targetHP | $weight)"
                         weight
                     }
                 }
