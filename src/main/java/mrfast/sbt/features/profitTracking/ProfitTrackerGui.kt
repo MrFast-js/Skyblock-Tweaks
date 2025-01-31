@@ -30,6 +30,7 @@ import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.gui.GuiTextField
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.init.Blocks
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
@@ -465,42 +466,34 @@ class ProfitTrackerGui : WindowScreen(ElementaVersion.V2) {
                 mouseY > guiTop + 49 + y && mouseY < guiTop + 49 + y + itemButtonHeight
             ) {
                 if (item != null) {
-
                     GlStateManager.pushMatrix()
-                    GlStateManager.pushAttrib()
-                    GlStateManager.translate(0f, 0f, 20f)
-                    GuiUtils.renderItemStackOnScreen(
-                        ItemStack(Item.getItemFromBlock(Blocks.barrier)),
-                        guiLeft + 18 + x + 1,
-                        guiTop + 49 + y + 1,
-                        16f,
-                        16f
-                    )
-                    GlStateManager.translate(0f, 0f, -20f)
-                    GlStateManager.popAttrib()
+                        GlStateManager.translate(0f, 0f, 20f)
+                        GuiUtils.renderItemStackOnScreen(
+                            ItemStack(Item.getItemFromBlock(Blocks.barrier)),
+                            guiLeft + 18 + x + 1,
+                            guiTop + 49 + y + 1,
+                            16f,
+                            16f
+                        )
+                        GlStateManager.translate(0f, 0f, -20f)
                     GlStateManager.popMatrix()
 
-                    GlStateManager.pushMatrix()
                     var hoverText = item.displayName
                     if (item.displayName.clean() == "Enchanted Book") {
                         hoverText = item.getLore()[1]
                     }
 
                     GlStateManager.pushMatrix()
-                    GlStateManager.pushAttrib()
-                    net.minecraftforge.fml.client.config.GuiUtils.drawHoveringText(
-                        listOf(hoverText),
-                        mouseX.toInt(),
-                        mouseY.toInt(),
-                        Utils.mc.displayWidth,
-                        Utils.mc.displayHeight,
-                        -1,
-                        Utils.mc.fontRendererObj
-                    )
-                    GlStateManager.popAttrib()
-                    GlStateManager.popMatrix()
-
-
+                        RenderHelper.disableStandardItemLighting();
+                        net.minecraftforge.fml.client.config.GuiUtils.drawHoveringText(
+                            listOf(hoverText),
+                            mouseX.toInt(),
+                            mouseY.toInt(),
+                            Utils.mc.displayWidth,
+                            Utils.mc.displayHeight,
+                            -1,
+                            Utils.mc.fontRendererObj
+                        )
                     GlStateManager.popMatrix()
                 }
             }
