@@ -489,22 +489,22 @@ object AuctionMenuOverlays {
             // Pricing and count for Live Auction listings and their prices
             val activeAucNum = if (pricingData.has("activeAuc")) pricingData.get("activeAuc").asInt else -1
             val activeAuc = if (activeAucNum != -1) activeAucNum.formatNumber() else "§cUnknown"
-            val activeAucPrices = pricingData.get("activeAucPrices").asJsonArray
+            val activeAucPrices = if(pricingData.has("activeAucPrices")) pricingData.get("activeAucPrices").asJsonArray else JsonArray()
 
             // Pricing and count for Live Bin Listings and their prices
             val activeBinNum = if (pricingData.has("activeBin")) pricingData.get("activeBin").asInt else -1
             val activeBin = if (activeBinNum != -1) activeBinNum.formatNumber() else "§cUnknown"
-            val activeBinPrices = pricingData.get("activeBinPrices").asJsonArray
+            val activeBinPrices = if(pricingData.has("activeBinPrices")) pricingData.get("activeBinPrices").asJsonArray else JsonArray()
 
             // Pricing and count for recently ended auction listings and their prices
             val soldAucNum = if (pricingData.has("aucSold")) pricingData.get("aucSold").asInt else -1
             val soldAuc = if (soldAucNum != -1) soldAucNum.formatNumber() else "§cUnknown"
-            val soldAucPrices = pricingData.get("aucSoldPrices").asJsonArray
+            val soldAucPrices = if(pricingData.has("aucSoldPrices")) pricingData.get("aucSoldPrices").asJsonArray else JsonArray()
 
             // Pricing and count for recently ended Bin Listings and their prices
             val soldBinNum = if (pricingData.has("binSold")) pricingData.get("binSold").asInt else -1
             val soldBin = if (soldBinNum != -1) soldBinNum.formatNumber() else "§cUnknown"
-            val soldBinPrices = pricingData.get("binSoldPrices").asJsonArray
+            val soldBinPrices = if(pricingData.has("binSoldPrices")) pricingData.get("binSoldPrices").asJsonArray else JsonArray()
 
             val recentlySoldHover = mutableListOf(
                 "§b§lRecently Sold Listings",
