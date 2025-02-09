@@ -527,12 +527,15 @@ class DungeonPartyGui : WindowScreen(ElementaVersion.V2) {
             // For future implementation
 //            val onlineStatusColor = if (PartyManager.partyMembers[username]!!.online) "§a" else "§c"
             val data = partyMemberApiData[username] ?: return
-            val dungeonsData = data["dungeons"].asJsonObject ?: return
-            val selectedClass = dungeonsData["selected_dungeon_class"].asString
-            val classLvl =
-                LevelingUtils.calculateDungeonsLevel(dungeonsData["player_classes"].asJsonObject[selectedClass].asJsonObject["experience"].asDouble)
-                    .toInt()
+            val dungeonsData = if(data.has("dungeons")) data["dungeons"].asJsonObject else JsonObject()
+            val selectedClass = if(dungeonsData.has("selected_dungeon_class")) dungeonsData["selected_dungeon_class"].asString else "archer" // Default to archer
+            val classLvl = if(dungeonsData.has("player_classes")) {
+                if(dungeonsData["player_classes"].asJsonObject.has(selectedClass)) {
+                    LevelingUtils.calculateDungeonsLevel(dungeonsData["player_classes"].asJsonObject[selectedClass].asJsonObject["experience"].asDouble).toInt()
+                } else 0
+            } else 0
             val leaderText = if (PartyManager.partyMembers[username]?.leader == true) " §6♚" else ""
+
             GuiUtils.drawText(
                 "§7Lvl $classLvl ${getClassColor(selectedClass)}${selectedClass.toTitleCase()}$leaderText",
                 tabX + 4,
