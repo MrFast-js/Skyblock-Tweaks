@@ -526,9 +526,9 @@ class DungeonPartyGui : WindowScreen(ElementaVersion.V2) {
 
             // For future implementation
 //            val onlineStatusColor = if (PartyManager.partyMembers[username]!!.online) "§a" else "§c"
-            val data = partyMemberApiData[username] ?: return
+            val data = partyMemberApiData[username]?:return
             val dungeonsData = if(data.has("dungeons")) data["dungeons"].asJsonObject else JsonObject()
-            val selectedClass = if(dungeonsData.has("selected_dungeon_class")) dungeonsData["selected_dungeon_class"].asString else "archer" // Default to archer
+            val selectedClass = if(dungeonsData.has("selected_dungeon_class")) dungeonsData["selected_dungeon_class"].asString else "NO API" // Default to archer
             val classLvl = if(dungeonsData.has("player_classes")) {
                 if(dungeonsData["player_classes"].asJsonObject.has(selectedClass)) {
                     LevelingUtils.calculateDungeonsLevel(dungeonsData["player_classes"].asJsonObject[selectedClass].asJsonObject["experience"].asDouble).toInt()
@@ -575,11 +575,24 @@ class DungeonPartyGui : WindowScreen(ElementaVersion.V2) {
     }
 
     private fun drawStats() {
-        val data = partyMemberApiData[selectedPlayer] ?: return
+        val data = partyMemberApiData[selectedPlayer]
+
+        GlStateManager.translate(guiLeft + 115f, guiTop + 18f, 0f)
+        if(data == null) {
+            fontRendererObj.drawString("§c§lCould not get API data for player", 0f, -12f, 0xFFFFFF, true)
+            GlStateManager.translate(-(guiLeft + 115f), -(guiTop + 18f), 0f)
+            return
+        }
+        if(!data.has("dungeons")) {
+            fontRendererObj.drawString("§c§lPlayer has never played dungeons", 0f, -12f, 0xFFFFFF, true)
+            fontRendererObj.drawString("§c§lor has API disabled", 0f, -1f, 0xFFFFFF, true)
+            GlStateManager.translate(-(guiLeft + 115f), -(guiTop + 18f), 0f)
+            return
+        }
+
         val dungeonsData = data["dungeons"].asJsonObject
-        val selectedClass = dungeonsData["selected_dungeon_class"].asString
-        val classLvl =
-            LevelingUtils.calculateDungeonsLevel(dungeonsData["player_classes"].asJsonObject[selectedClass].asJsonObject["experience"].asDouble)
+        val selectedClass = dungeonsData["selected_dungeon_class"]?.asString ?: "UNKNOWN"
+        val classLvl = LevelingUtils.calculateDungeonsLevel(dungeonsData["player_classes"].asJsonObject[selectedClass].asJsonObject["experience"].asDouble)
         val secrets = data.getAsJsonObject("dungeons")
             ?.get("secrets")
             ?.asInt ?: -1
