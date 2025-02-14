@@ -584,7 +584,7 @@ class DungeonPartyGui : WindowScreen(ElementaVersion.V2) {
             return
         }
         if(!data.has("dungeons")) {
-            fontRendererObj.drawString("§c§lPlayer has never played dungeons", 0f, -12f, 0xFFFFFF, true)
+            fontRendererObj.drawString("§c§lNo dungeon data. Player's first run?", 0f, -12f, 0xFFFFFF, true)
             fontRendererObj.drawString("§c§lor has API disabled", 0f, -1f, 0xFFFFFF, true)
             GlStateManager.translate(-(guiLeft + 115f), -(guiTop + 18f), 0f)
             return
