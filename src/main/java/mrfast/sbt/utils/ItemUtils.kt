@@ -351,7 +351,8 @@ object ItemUtils {
 
         if (extraAttributes.hasKey("rarity_upgrades") && !extraAttributes.hasKey("item_tier")) {
             val recombInfo = ItemApi.getItemInfo("RECOMBOBULATOR_3000")
-            bonusPricing += recombInfo?.get("bazaarSell")!!.asInt * 0.6
+            val price = recombInfo?.get("bazaarSell")?.asInt ?: 0
+            bonusPricing += price * 0.6
         }
 
         return JsonObject().apply {
