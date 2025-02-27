@@ -600,7 +600,6 @@ class DungeonPartyGui : WindowScreen(ElementaVersion.V2) {
         val cataLvl = LevelingUtils.calculateDungeonsLevel(cataXp)
         val catacombsWatcherKills = data["player_stats"].getAsJsonObject()["kills"].asJsonObject["watcher_summon_undead"]?.asInt ?: 0
 
-        GlStateManager.translate(guiLeft + 115f, guiTop + 18f, 0f)
         fontRendererObj.drawString("§e§lPlayer Stats", 0f, 0f, 0xFFFFFF, true)
         fontRendererObj.drawString("§6Catacombs: $cataLvl", 0f, 10f, 0xFFFFFF, true)
         fontRendererObj.drawString(

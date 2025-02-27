@@ -19,7 +19,8 @@ object AuctionHouseConfig : Config() {
         name = "Auction Flipper",
         description = "Scans the Hypixel API to display auctions based on the lowest BINs and 3-day price averages.\n§c§lRequires you to be in the hub if you don't have a booster cookie! §4This feature can make mistakes.",
         category = "§1§rAuction House",
-        subcategory = "Auction Flipper"
+        subcategory = "Auction Flipper",
+        isParent = true
     )
     var auctionFlipper = false
 
@@ -28,8 +29,7 @@ object AuctionHouseConfig : Config() {
         name = "Use Price Matching §e(Experimental)",
         description = "If a §a> 90%§r matched price is found, it will be used for the suggested selling price.",
         category = "§1§rAuction House",
-        subcategory = "Auction Flipper",
-        isParent = true
+        subcategory = "Auction Flipper"
     )
     var usePriceMatch = false
 

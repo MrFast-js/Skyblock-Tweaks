@@ -27,10 +27,28 @@ object PartyManager {
         var classLvl = ""
     }
 
+    private var hidePartyList = false
+    private var gotPartyStart = false
     @SubscribeEvent
     fun onChat(event: ClientChatReceivedEvent) {
         if (event.type.toInt() == 2) return
         val clean = event.message.unformattedText.clean()
+
+        if(hidePartyList && gotPartyStart) event.isCanceled = true
+
+        // Hide party start marker and messages after it
+        if(clean == "-----------------------------------------------------" && hidePartyList) {
+            if(gotPartyStart) {
+                // Second marker
+                event.isCanceled = true
+                hidePartyList = false
+                gotPartyStart = false
+            } else {
+                gotPartyStart = true
+            }
+            event.isCanceled = true
+        }
+
         handleVanillaParty(clean)
         handleDungeonPartyFinder(clean)
     }
@@ -53,9 +71,7 @@ object PartyManager {
 
                     // Clear all old party members but self
                     partyMembers.entries.removeIf { it.key != Utils.mc.thePlayer.name }
-                    if (partyMembers.isEmpty()) {
-                        addSelfToParty(true)
-                    }
+                    addSelfToParty(false)
 
                     for (line in event.slot.stack.getLore()) {
                         val regex = """^(\w+):\s(\w+)\s\((\d+)\)$""".toRegex()
@@ -101,6 +117,8 @@ object PartyManager {
             val pm = PartyMember(clean.getRegexGroups(JOINED_PARTY_REGEX)!![1]!!.value)
             partyMembers[pm.name] = pm
             addSelfToParty(true)
+            ChatUtils.sendPlayerMessage("/p list")
+            hidePartyList = true
         }
 
         // Other players leave party
@@ -189,8 +207,8 @@ object PartyManager {
             partyMembers[partyLeader]?.leader = true
         }
 
-        // Joining existing parties
-        if (clean.startsWith("^You'll be partying with: ")) {
+        // Joining existing parties, Disabled because this can exceed 5 party members
+        if (clean.startsWith("You'll be partying with: ")) {
             val membersLine = clean.split("You'll be partying with:")[1].trim()
             for (member in membersLine.split(", ")) {
 //                val pm = PartyMember(parsePlayerName(member))
@@ -211,6 +229,8 @@ object PartyManager {
             partyMembers[pm.name] = pm
 
             addSelfToParty(false)
+            ChatUtils.sendPlayerMessage("/p list")
+            hidePartyList = true
             if (clean.contains(Utils.mc.thePlayer.name)) {
                 partyMembers[Utils.mc.thePlayer.name]?.leader = false
             }
