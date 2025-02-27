@@ -30,7 +30,7 @@ object HighlightCorrectLivid {
 
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
-        if (!LocationManager.inDungeons || LocationManager.dungeonFloor != 5 || !highlightCorrectLivid || event.phase != TickEvent.Phase.START) return
+        if (!LocationManager.inDungeons || LocationManager.dungeonFloor != 5 || !highlightCorrectLivid || event.phase != TickEvent.Phase.START || Utils.mc.theWorld == null) return
 
         if(TickManager.tickCount % 20 != 0) return
 
