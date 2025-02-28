@@ -264,6 +264,14 @@ object AuctionFlipper {
             // Already take out 8% accounting for your upcoming bid
             val nextBidPrice = (auctionFlip.price * 1.08).toLong()
             auctionFlip.profit = priceToSellFor - nextBidPrice
+
+            // Subtract listing fee, 1% of profit if price < 10m, 2% if < 100m, else 2.5%
+            auctionFlip.profit = when {
+                priceToSellFor < 10_000_000 -> auctionFlip.profit!! - (auctionFlip.profit!! * 0.01).toLong()
+                priceToSellFor < 100_000_000 -> auctionFlip.profit!! - (auctionFlip.profit!! * 0.02).toLong()
+                else -> auctionFlip.profit!! - (auctionFlip.profit!! * 0.025).toLong()
+            }
+
             if (pricingData.has("sold")) {
                 auctionFlip.volume = pricingData.get("sold").asInt
             }
