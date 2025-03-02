@@ -223,7 +223,8 @@ object GuiUtils {
         var text: String,
         var hoverText: List<String>?,
         var onClick: Runnable? = null,
-        var drawBackground: Boolean = false
+        var drawBackground: Boolean = false,
+        var backgroundColor: Color = Color.GRAY
     ) {
         var width = 0
         var height = Utils.mc.fontRendererObj.FONT_HEIGHT
@@ -245,7 +246,7 @@ object GuiUtils {
                     height + 3f,
                     3f,
                     Color(40, 40, 40),
-                    Color(85, 255, 85).constraint,
+                    backgroundColor.constraint,
                     1f
                 )
             }

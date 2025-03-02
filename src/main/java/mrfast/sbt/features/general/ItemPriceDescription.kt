@@ -3,6 +3,7 @@ package mrfast.sbt.features.general
 import com.google.gson.JsonObject
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.apis.ItemApi
+import mrfast.sbt.config.categories.CustomizationConfig
 import mrfast.sbt.config.categories.MiscellaneousConfig
 import mrfast.sbt.utils.ItemUtils.getDataString
 import mrfast.sbt.utils.ItemUtils.getSkyblockId
@@ -64,7 +65,7 @@ object ItemPriceDescription {
         val id = stack.getSkyblockId()
 
         if (dataString != "" && ItemApi.liveAuction.has(id)) {
-//            event.toolTip.add("§3Data String: §7$string")
+            if(CustomizationConfig.developerMode) event.toolTip.add("§3Data String: §7$dataString")
             val itemData = ItemApi.liveAuction.get(id).asJsonObject
 
             val best = findBestMatch(itemData, dataString, id!!)?: return

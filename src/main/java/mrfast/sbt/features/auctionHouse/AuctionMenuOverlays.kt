@@ -7,9 +7,9 @@ import gg.essential.universal.UMatrixStack
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.apis.ItemApi
 import mrfast.sbt.config.categories.AuctionHouseConfig
-import mrfast.sbt.guis.components.OutlinedRoundedRectangle
 import mrfast.sbt.customevents.GuiContainerBackgroundDrawnEvent
 import mrfast.sbt.customevents.SignDrawnEvent
+import mrfast.sbt.guis.components.OutlinedRoundedRectangle
 import mrfast.sbt.managers.OverlayManager
 import mrfast.sbt.utils.ChatUtils
 import mrfast.sbt.utils.GuiUtils
@@ -25,8 +25,8 @@ import mrfast.sbt.utils.Utils.clean
 import mrfast.sbt.utils.Utils.cleanRanks
 import mrfast.sbt.utils.Utils.formatNumber
 import mrfast.sbt.utils.Utils.getInventory
-import mrfast.sbt.utils.Utils.getStringWidth
 import mrfast.sbt.utils.Utils.getRegexGroups
+import mrfast.sbt.utils.Utils.getStringWidth
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.client.gui.inventory.GuiContainer
@@ -104,16 +104,14 @@ object AuctionMenuOverlays {
             auction.stack = stack
 
             setAuctionInfoFromLore(auction)
-
             setAuctionPricingData(auction)
 
             // Increase price based off of next bid
-
-            if (inventory.getStackInSlot(33) != null) {
-                val bidHistory = inventory.getStackInSlot(33)
+            val bidHistoryItem = inventory.getStackInSlot(33)
+            if (bidHistoryItem != null) {
                 val pastBids = mutableListOf<String>()
                 val BIDDER_REGEX = """By: (.*)""".toRegex()
-                for (line in bidHistory.getLore()) {
+                for (line in bidHistoryItem.getLore()) {
                     if (line.clean().matches(BIDDER_REGEX)) {
                         pastBids.add(line.clean().getRegexGroups(BIDDER_REGEX)!![1]!!.value.cleanRanks())
                     }
@@ -128,7 +126,7 @@ object AuctionMenuOverlays {
 
             if (auction.winning == false) {
                 val submitBidStack = inventory.getStackInSlot(29) ?: return
-                var newBidPrice = 0L
+                var newBidPrice = -1L
                 val NEW_BID_REGEX = """New bid: ([\d,]+) coins""".toRegex()
 
                 for (line in submitBidStack.getLore(clean = true)) {
@@ -137,7 +135,8 @@ object AuctionMenuOverlays {
                         break
                     }
                 }
-                auction.price = newBidPrice
+                // Only update price if a new bid is found
+                if(newBidPrice != -1L) auction.price = newBidPrice
             }
 
             auction.profit = auction.suggestedListingPrice - auction.price
@@ -198,6 +197,9 @@ object AuctionMenuOverlays {
             }
             if (line.clean().matches("""(?:Starting bid|Top bid|Buy it now): (.*) coins""".toRegex())) {
                 auction.price = line.clean().replace("\\D+".toRegex(), "").toLong()
+            }
+            if(line.clean().matches("""Seller: (.*)""".toRegex())) {
+                auction.seller = line.clean().getRegexGroups("""Seller: (.*)""".toRegex())!![1]!!.value.cleanRanks()
             }
         }
     }
@@ -266,7 +268,7 @@ object AuctionMenuOverlays {
                 2f,
                 0f,
                 width.toFloat(),
-                (10 + 12 * lines.size).toFloat(),
+                getLowestY(lines) + 10f,
                 4f,
                 Color(18, 18, 18),
                 GuiUtils.rainbowColor.get().constraint,
@@ -391,20 +393,20 @@ object AuctionMenuOverlays {
             } ?: "UNKNOWN"
 
             if (rarity == "COMMON") {
-                    lines.add(
-                        Element(
-                            5f,
-                            78f,
-                            "§c§lONLY 5x NPC VALUE!",
-                            listOf(
-                                "§7This item is a common rarity item",
-                                "§7and can only be sold for 5x NPC price.",
-                                "§7You can still make profit by flipping it",
-                                "§7but it will be harder."
-                            ),
-                            null
-                        )
+                lines.add(
+                    Element(
+                        5f,
+                        getLowestY(lines)+14f,
+                        "§c§lONLY 5x NPC VALUE!",
+                        listOf(
+                            "§7This item is a common rarity item",
+                            "§7and can only be sold for 5x NPC price.",
+                            "§7You can still make profit by flipping it",
+                            "§7but it will be harder."
+                        ),
+                        null
                     )
+                )
             }
 
             // Add special button to party the other bidder if they are being annoying
@@ -412,7 +414,7 @@ object AuctionMenuOverlays {
                 lines.add(
                     Element(
                         7f,
-                        if(rarity == "COMMON") 92f else 78f,
+                        getLowestY(lines)+14f,
                         "§9Party Bidder",
                         listOf(
                             "§e/party ${lastViewedAuction!!.otherBidder}",
@@ -423,11 +425,30 @@ object AuctionMenuOverlays {
                             Utils.mc.thePlayer.closeScreen()
                             ChatUtils.sendPlayerMessage("/party ${lastViewedAuction!!.otherBidder}")
                         },
-                        drawBackground = true
+                        drawBackground = true,
+                        backgroundColor = Color(85, 85, 255)
                     )
                 )
             }
 
+            lines.add(
+                Element(
+                    7f,
+                    getLowestY(lines)+15f,
+                    "§cSellers AH",
+                    listOf(
+                        "§e/ah ${lastViewedAuction!!.seller}",
+                        "§7Check if more profitable auctions",
+                        "§7are being sold by the same seller"
+                    ),
+                    {
+                        Utils.mc.thePlayer.closeScreen()
+                        ChatUtils.sendPlayerMessage("/ah ${lastViewedAuction!!.seller}")
+                    },
+                    drawBackground = true,
+                    backgroundColor = Color(255, 85, 85)
+                )
+            )
 
             val width =
                 (lines.sortedBy { it.text.getStringWidth() }[lines.size - 1].text.getStringWidth() + 15).coerceIn(
@@ -459,6 +480,10 @@ object AuctionMenuOverlays {
             return (event.gui as GuiContainer).chestName()
                 .contains("Auction View") && AuctionHouseConfig.auctionViewOverlay
         }
+    }
+
+    fun getLowestY(lines: List<Element>): Float {
+        return lines.sortedByDescending { it.y }[0].y
     }
 
     fun getPrices(pricesArray: JsonArray): List<String> {
