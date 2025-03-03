@@ -140,7 +140,7 @@ object PartyManager {
         }
 
         // /p transfer
-        val TRANSFER_PARTY_REGEX = """^The party was transferred to (?:\[[^\]]+\]\s*)?(?<newLeader>[^ ]+)(?:(?: because (?<leavingPlayer>[^ ]+) left)|(?: by .*))""".toRegex()
+        val TRANSFER_PARTY_REGEX = """^The party was transferred to (?:\[[^\]]+\]\s*)?(?<newLeader>[^ ]+)(?:(?: because (?<leavingPlayer>[^ ]+) left)|(?: by .*))?""".toRegex()
         if (clean.matches(TRANSFER_PARTY_REGEX)) {
             partyMembers.values.forEach { it.leader = false }
             val groups = clean.getRegexGroups(TRANSFER_PARTY_REGEX)!!
