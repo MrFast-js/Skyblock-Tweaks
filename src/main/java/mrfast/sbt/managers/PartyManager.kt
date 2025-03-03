@@ -32,6 +32,7 @@ object PartyManager {
     @SubscribeEvent
     fun onChat(event: ClientChatReceivedEvent) {
         if (event.type.toInt() == 2) return
+
         val clean = event.message.unformattedText.clean()
 
         if(hidePartyList && gotPartyStart) event.isCanceled = true
