@@ -29,6 +29,7 @@ object PartyManager {
 
     private var hidePartyList = false
     private var gotPartyStart = false
+
     @SubscribeEvent
     fun onChat(event: ClientChatReceivedEvent) {
         if (event.type.toInt() == 2) return
