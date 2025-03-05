@@ -1,95 +1,102 @@
 package mrfast.sbt.features.general
 
+import com.google.gson.JsonArray
+import com.google.gson.JsonObject
+import com.google.gson.JsonPrimitive
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.config.categories.MiscellaneousConfig
+import mrfast.sbt.customevents.ProfileLoadEvent
 import mrfast.sbt.customevents.SlotClickedEvent
 import mrfast.sbt.customevents.SlotDrawnEvent
+import mrfast.sbt.managers.DataManager
+import mrfast.sbt.utils.GuiUtils
 import mrfast.sbt.utils.GuiUtils.chestName
 import mrfast.sbt.utils.ItemUtils.getSkyblockId
 import mrfast.sbt.utils.Utils
 import mrfast.sbt.utils.Utils.clean
 import mrfast.sbt.utils.Utils.getRegexGroups
-import net.minecraft.client.gui.Gui
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.awt.Color
 
-/*
-TODO: Add saving profile data so dont require re opening cake bag every session
- */
-
 @SkyblockTweaks.EventComponent
 object NewYearsCakeHelper {
-    private val sortedCakeBag = mutableListOf<String>()
+    private var cakebagJson = JsonObject()
+    private var cakebagArray = JsonArray()
+    private var sortedCakebagArray = JsonArray()
+
+    @SubscribeEvent
+    fun onProfileSwap(event: ProfileLoadEvent?) {
+        cakebagJson = DataManager.getProfileDataDefault("cakebag", JsonObject()) as JsonObject
+        cakebagArray = cakebagJson.getAsJsonArray("bag") ?: JsonArray()
+        sortCakeBag()
+    }
 
     @SubscribeEvent
     fun onSlotClicked(event: SlotClickedEvent) {
         if (event.gui.chestName() != "New Year Cake Bag" || !MiscellaneousConfig.cakeBagSortingHelper) return
         lastClickedSlot = event.slot.slotIndex
+        cakebagJson.add("bag", cakebagArray)
+        DataManager.saveProfileData("cakebag", cakebagJson)
+    }
+
+    private fun sortCakeBag() {
+        // Convert JsonArray to a List, sort by the extracted year, and convert back to JsonArray
+        sortedCakebagArray = cakebagArray
+            .map { it.asString }
+            .sortedBy { it.getRegexGroups(newYearCakeRegex)!![1]!!.value.toInt() }
+            .let { sortedList ->
+                JsonArray().apply {
+                    sortedList.forEach { add(JsonPrimitive(it)) }
+                }
+            }
     }
 
     private var lastClickedSlot = 0
+    private val newYearCakeIDRegex = """NEW_YEAR_CAKE-.*""".toRegex()
+    private val newYearCakeRegex = """New Year Cake \(Year (.*)\)""".toRegex()
 
     @SubscribeEvent
     fun onSlotDrawPost(event: SlotDrawnEvent.Post) {
-        if(!MiscellaneousConfig.cakeBagSortingHelper && !MiscellaneousConfig.highlightMissingNewYearCakes) return;
-        val isCake = event.slot.hasStack && event.slot.stack.getSkyblockId() == "NEW_YEAR_CAKE";
+        if(!MiscellaneousConfig.cakeBagSortingHelper && !MiscellaneousConfig.highlightMissingNewYearCakes) return
 
-        if (MiscellaneousConfig.highlightMissingNewYearCakes && event.gui.chestName()
-                .startsWith("Auctions") && isCake
-        ) {
-            val cleanedName = event.slot.stack.displayName.clean()
-            if (!sortedCakeBag.contains(cleanedName)) {
-                Gui.drawRect(
-                    event.slot.xDisplayPosition,
-                    event.slot.yDisplayPosition,
-                    event.slot.xDisplayPosition + 16,
-                    event.slot.yDisplayPosition + 16,
-                    Color(85, 255, 85, 100).rgb
-                )
-            }
-        }
-        if (event.gui.chestName() != "New Year Cake Bag" || !MiscellaneousConfig.cakeBagSortingHelper) return
+        val isCake = event.slot.stack?.getSkyblockId()?.matches(newYearCakeIDRegex) ?: false
+        val inCakeBag = event.gui.chestName() == "New Year Cake Bag"
 
-        if (isCake) {
-            val cleanedName = event.slot.stack.displayName.clean()
-            if (!sortedCakeBag.contains(cleanedName)) {
-                sortedCakeBag.add(cleanedName)
-                sortedCakeBag.sortBy {
-                    it.getRegexGroups("""New Year Cake \(Year (.*)\)""".toRegex())!![1]!!.value.toInt()
-                }
-            }
-            val idealSlotIndex = sortedCakeBag.indexOf(cleanedName)
-            if (event.slot.slotIndex != idealSlotIndex) {
-                Gui.drawRect(
-                    event.slot.xDisplayPosition,
-                    event.slot.yDisplayPosition,
-                    event.slot.xDisplayPosition + 16,
-                    event.slot.yDisplayPosition + 16,
-                    Color(255, 0, 0, 100).rgb
-                )
-            }
-        }
+        // Highlight held item to show where it should go
+        if (inCakeBag && Utils.mc.thePlayer.inventory.itemStack != null && MiscellaneousConfig.cakeBagSortingHelper) {
+            val heldItemClean = JsonPrimitive(Utils.mc.thePlayer.inventory.itemStack.displayName.clean())
 
-
-        if (Utils.mc.thePlayer.inventory.itemStack != null) {
-            val heldItemClean = Utils.mc.thePlayer.inventory.itemStack.displayName.clean()
-
-            if (sortedCakeBag.contains(heldItemClean)) {
+            if (cakebagArray.contains(heldItemClean)) {
                 if (lastClickedSlot == event.slot.slotIndex) {
-                    val idealSlotIndex = sortedCakeBag.indexOf(heldItemClean)
+                    val idealSlotIndex = sortedCakebagArray.indexOf(heldItemClean)
                     val idealSlot = event.gui.inventorySlots.getSlot(idealSlotIndex) ?: return
 
-                    Gui.drawRect(
-                        idealSlot.xDisplayPosition,
-                        idealSlot.yDisplayPosition,
-                        idealSlot.xDisplayPosition + 16,
-                        idealSlot.yDisplayPosition + 16,
-                        Color(85, 255, 85, 255).rgb
-                    )
+                    GuiUtils.highlightSlot(idealSlot, Color(85, 255, 85, 100))
                 }
             }
         }
+
+        if(!isCake) return
+
+        val cleanedName = JsonPrimitive(event.slot.stack.displayName.clean())
+
+        // Highlight slots that are not in the correct order
+        val idealSlotIndex = sortedCakebagArray.indexOf(cleanedName)
+        if (inCakeBag && event.slot.slotIndex != idealSlotIndex && MiscellaneousConfig.cakeBagSortingHelper) {
+            GuiUtils.highlightSlot(event.slot, Color(255, 0, 0, 100))
+        }
+
+        // Highlight missing cakes
+        if (event.gui.chestName().startsWith("Auctions") && MiscellaneousConfig.highlightMissingNewYearCakes) {
+            if (!cakebagArray.contains(cleanedName)) {
+                GuiUtils.highlightSlot(event.slot, Color(85, 255, 85, 100))
+            }
+        }
+
+        // Add missing cakes to cakebag
+        if (inCakeBag && !cakebagArray.contains(cleanedName)) {
+            cakebagArray.add(cleanedName)
+            sortCakeBag()
+        }
     }
-
-
 }

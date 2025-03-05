@@ -34,42 +34,41 @@ object ItemUtils {
         if (!nbt.hasKey("id")) return null
 
         val id = nbt.getString("id")
-        return when {
-            id == "PET" && nbt.hasKey("petInfo") -> {
-                val petInfoNbt = nbt.getString("petInfo") ?: return null
-                val petInfoJson = DevUtils.convertStringToJson(petInfoNbt) ?: return null
-                if (!petInfoJson.isJsonObject) return null
-                val petInfo = petInfoJson.asJsonObject
-                val tier = petInfo.get("tier").asString
-                "${petInfo.get("type").asString}-$tier"
-            }
 
-            id == "RUNE" && nbt.hasKey("runes") -> {
-                val runeType = nbt.getCompoundTag("runes")?.keySet?.firstOrNull()
-                runeType?.let {
-                    "${runeType}_RUNE-${nbt.getCompoundTag("runes").getInteger(runeType)}"
-                }
-            }
-
-            id == "NEW_YEAR_CAKE" -> {
-                val year = nbt.getInteger("new_years_cake")
-                "NEW_YEAR_CAKE-$year"
-            }
-
-            id == "ENCHANTED_BOOK" || this.item == Items.enchanted_book -> {
-                val enchants = this.getSkyblockEnchants()
-                if (enchants.isNotEmpty()) {
-                    val enchName = enchants.keys.first()
-                    val enchLvl = enchants[enchName]
-
-                    "ENCHANTMENT_${enchants.keys.first().uppercase()}_$enchLvl"
-                } else {
-                    id
-                }
-            }
-
-            else -> id
+        if (id == "PET" && nbt.hasKey("petInfo")) {
+            val petInfoNbt = nbt.getString("petInfo") ?: return null
+            val petInfoJson = DevUtils.convertStringToJson(petInfoNbt) ?: return null
+            if (!petInfoJson.isJsonObject) return null
+            val petInfo = petInfoJson.asJsonObject
+            val tier = petInfo.get("tier").asString
+            return "${petInfo.get("type").asString}-$tier"
         }
+
+        if (id == "RUNE" && nbt.hasKey("runes")) {
+            val runeType = nbt.getCompoundTag("runes")?.keySet?.firstOrNull()
+            if (runeType != null) {
+                return "${runeType}_RUNE-${nbt.getCompoundTag("runes").getInteger(runeType)}"
+            }
+        }
+
+        if (id == "NEW_YEAR_CAKE") {
+            val year = nbt.getInteger("new_years_cake")
+            return "NEW_YEAR_CAKE-$year"
+        }
+
+        if (id == "ENCHANTED_BOOK" || this.item == Items.enchanted_book) {
+            val enchants = this.getSkyblockEnchants()
+            if (enchants.isNotEmpty()) {
+                val enchName = enchants.keys.first()
+                val enchLvl = enchants[enchName]
+                return "ENCHANTMENT_${enchants.keys.first().uppercase()}_$enchLvl"
+            } else {
+                return id
+            }
+        }
+
+        return id
+
     }
 
     fun intToPetTier(tier: Int): String {
@@ -264,7 +263,6 @@ object ItemUtils {
     }
 
     fun getSuggestListingPrice(itemStack: ItemStack): JsonObject? {
-
         if (AuctionHouseConfig.usePriceMatch) {
             val match = getPriceMatch(itemStack)
 
@@ -342,6 +340,13 @@ object ItemUtils {
                     if (aucPrice != null) {
                         suggestedListingPrice = Math.round((avgAucSoldPrice * 0.6 + aucPrice * 0.4) * 0.99)
                     }
+                } else if(avgBinSoldPrice != -1L && avgActiveBINPrice != -1L) {
+                    suggestedListingPrice = Math.round((avgBinSoldPrice * 0.6 + avgActiveBINPrice * 0.4) * 0.99)
+                } else {
+                    // Backup
+                    if(abin != null && lbin != null) {
+                        suggestedListingPrice = Math.round((lbin * 0.6 + abin * 0.4) * 0.99)
+                    }
                 }
             }
         }
@@ -386,7 +391,7 @@ object ItemUtils {
         return null
     }
 
-    fun getPriceMatch(stack: ItemStack): Pair<Long, Double>? {
+    private fun getPriceMatch(stack: ItemStack): Pair<Long, Double>? {
         return getPriceMatch(stack.getDataString(),stack.getSkyblockId()!!)
     }
 
