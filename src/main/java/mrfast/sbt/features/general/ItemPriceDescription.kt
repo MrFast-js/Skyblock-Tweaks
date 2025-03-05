@@ -73,7 +73,7 @@ object ItemPriceDescription {
             val percentMatch = best.second
 
             event.toolTip.add("§a§lMATCHED PRICE: §7${priceMatch.formatNumber()} §8${percentMatch.abbreviateNumber()}%")
-//                event.toolTip.add("§a§lBest: §e${bestMatch}")
+//            event.toolTip.add("§a§lBest: §e${bestMatch}")
         }
     }
 

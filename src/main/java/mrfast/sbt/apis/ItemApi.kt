@@ -89,6 +89,12 @@ object ItemApi {
                 data.entrySet().forEach {
                     val item = it.value.asJsonObject
                     val itemId = it.key
+
+                    if(!skyblockItems.has(itemId)) {
+                        skyblockItems.add(itemId, item)
+                        return@forEach
+                    }
+
                     val itemJson = skyblockItems[itemId]?.asJsonObject ?: JsonObject()
 
                     // Merge all properties from `item` into `itemJson`
