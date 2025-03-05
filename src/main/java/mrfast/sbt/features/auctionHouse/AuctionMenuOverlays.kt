@@ -180,7 +180,7 @@ object AuctionMenuOverlays {
         auction.pricingData = ItemApi.getItemInfo(id) ?: return
 
         val stack = auction.stack ?: return
-        val suggestedListingPrice = ItemUtils.getSuggestListingPrice(stack, ) ?: return
+        val suggestedListingPrice = ItemUtils.getSuggestListingPrice(stack) ?: return
 
         auction.suggestedListingPrice = suggestedListingPrice.get("price").asLong
         auction.shouldSellBIN = suggestedListingPrice.get("bin")?.asBoolean == true
@@ -246,7 +246,7 @@ object AuctionMenuOverlays {
                     5f, 30f, "§rEnded Auctions: §6${endedAuctions}", null, null
                 ),
                 Element(
-                    5f,
+                    7f,
                     43f,
                     "§rFlip Profit: §6${totalFlipPotential.formatNumber()}",
                     flipList,
@@ -268,7 +268,7 @@ object AuctionMenuOverlays {
                 2f,
                 0f,
                 width.toFloat(),
-                getLowestY(lines) + 10f,
+                getLowestY(lines),
                 4f,
                 Color(18, 18, 18),
                 GuiUtils.rainbowColor.get().constraint,
@@ -396,7 +396,7 @@ object AuctionMenuOverlays {
                 lines.add(
                     Element(
                         5f,
-                        getLowestY(lines)+14f,
+                        getLowestY(lines) + 2f,
                         "§c§lONLY 5x NPC VALUE!",
                         listOf(
                             "§7This item is a common rarity item",
@@ -414,7 +414,7 @@ object AuctionMenuOverlays {
                 lines.add(
                     Element(
                         7f,
-                        getLowestY(lines)+14f,
+                        getLowestY(lines) + 4f,
                         "§9Party Bidder",
                         listOf(
                             "§e/party ${lastViewedAuction!!.otherBidder}",
@@ -434,7 +434,7 @@ object AuctionMenuOverlays {
             lines.add(
                 Element(
                     7f,
-                    getLowestY(lines)+15f,
+                    getLowestY(lines) + 3f,
                     "§cSellers AH",
                     listOf(
                         "§e/ah ${lastViewedAuction!!.seller}",
@@ -462,7 +462,7 @@ object AuctionMenuOverlays {
                 2f,
                 0f,
                 width.toFloat(),
-                (10 + 12 * lines.size).toFloat(),
+                getLowestY(lines) + 2f,
                 4f,
                 Color(18, 18, 18),
                 GuiUtils.rainbowColor.get().constraint,
@@ -483,7 +483,10 @@ object AuctionMenuOverlays {
     }
 
     fun getLowestY(lines: List<Element>): Float {
-        return lines.sortedByDescending { it.y }[0].y
+        val lowestElement = lines.sortedByDescending { it.y }[0]
+        var lowestY = lowestElement.y + lowestElement.height
+        if(lowestElement.drawBackground) lowestY += 5
+        return lowestY
     }
 
     fun getPrices(pricesArray: JsonArray): List<String> {

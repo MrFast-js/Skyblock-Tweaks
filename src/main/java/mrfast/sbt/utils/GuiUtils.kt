@@ -119,6 +119,8 @@ object GuiUtils {
     }
 
     fun highlightSlot(slot: Slot, backgroundColor: Color) {
+        GL11.glColor4f(1f, 1f, 1f, 1f)
+        GlStateManager.color(1f, 1f, 1f, 1f)
         Gui.drawRect(
             slot.xDisplayPosition,
             slot.yDisplayPosition,
