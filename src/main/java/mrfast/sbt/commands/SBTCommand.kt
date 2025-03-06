@@ -12,10 +12,12 @@ import mrfast.sbt.guis.GuiEditor
 import mrfast.sbt.utils.ChatUtils
 import net.minecraft.command.CommandBase
 import net.minecraft.command.ICommandSender
+import net.minecraft.util.BlockPos
 import net.minecraftforge.fml.common.FMLCommonHandler
 
 @SkyblockTweaks.CommandComponent
 class SBTCommand : CommandBase() {
+    private var arguments = mutableListOf("edit", "update", "blacklist", "trash", "help")
 
     override fun getCommandName(): String = "skyblocktweaks"
 
@@ -80,4 +82,19 @@ class SBTCommand : CommandBase() {
     }
 
     override fun canCommandSenderUseCommand(sender: ICommandSender?): Boolean = true
+
+    override fun addTabCompletionOptions(
+        sender: ICommandSender,
+        args: Array<out String>,
+        pos: BlockPos?
+    ): List<String> {
+        val subCommands = listOf("edit", "update", "blacklist", "trash", "help")
+        if (args.size == 1) {
+            return getListOfStringsMatchingLastWord(args, subCommands)
+        }
+        if (args.size == 2 && args[0] == "update") {
+            return getListOfStringsMatchingLastWord(args, listOf("check", "pre", "full"))
+        }
+        return emptyList()
+    }
 }

@@ -15,7 +15,8 @@ import net.minecraft.util.Vec3
 
 @SkyblockTweaks.CommandComponent
 class PathCommand : CommandBase() {
-    private var arguments = mutableListOf("start", "add", "record", "load", "unload", "list", "save", "delete")
+    private val arguments = listOf("start", "add", "record", "load", "unload", "list", "save", "delete")
+    private val recordOptions = listOf("start", "stop")
 
     private fun invalidUsage() {
         val usage = ChatFormatting.RED.toString() + "Invalid Usage!\n" +
@@ -34,8 +35,13 @@ class PathCommand : CommandBase() {
 
     override fun getCommandUsage(sender: ICommandSender): String = "/path [action]"
 
-    override fun addTabCompletionOptions(sender: ICommandSender, args: Array<String>, pos: BlockPos): List<String> =
-        arguments
+    override fun addTabCompletionOptions(sender: ICommandSender, args: Array<String>, pos: BlockPos?): List<String> {
+        return when (args.size) {
+            1 -> getListOfStringsMatchingLastWord(args, arguments)
+            2 -> if (args[0] == "record") getListOfStringsMatchingLastWord(args, recordOptions) else emptyList()
+            else -> emptyList()
+        }
+    }
 
     override fun getRequiredPermissionLevel(): Int = 0
 

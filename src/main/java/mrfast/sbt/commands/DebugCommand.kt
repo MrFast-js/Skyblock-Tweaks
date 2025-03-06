@@ -1,5 +1,6 @@
 package mrfast.sbt.commands
 
+import com.google.common.collect.Lists
 import com.mojang.realmsclient.gui.ChatFormatting
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.apis.ItemApi
@@ -15,6 +16,7 @@ import net.minecraft.entity.Entity
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.tileentity.TileEntity
+import net.minecraft.util.BlockPos
 import java.awt.Desktop
 import java.io.File
 import java.io.IOException
@@ -36,12 +38,15 @@ class DebugCommand : CommandBase() {
             Pair("read/write <location> <value>", "Read/Write data to variables"),
             Pair("config §7<-copy>?", "Open or copy config.json"),
             Pair("gui §7<-copy>?", "Open or copy guiConfig.json"),
-            Pair("data §7<-copy>?", "Open or copy profilesData.json")
+            Pair("data §7<-copy>?", "Open or copy profilesData.json"),
+            Pair("folder", "Open SBT mod folder"),
         )
 
     override fun getCommandName(): String = "sbtdebug"
 
     override fun getCommandUsage(sender: ICommandSender): String = "/sbtdebug"
+
+    override fun getCommandAliases(): List<String> = Lists.newArrayList("sbtd")
 
     override fun getRequiredPermissionLevel(): Int = 0
 
@@ -82,23 +87,24 @@ class DebugCommand : CommandBase() {
                     "§cHealth: ${PlayerStats.health} | Max: ${PlayerStats.health} | §6Absorb: ${PlayerStats.absorption}\n" +
                             "§9Mana: ${PlayerStats.mana} | Max: ${PlayerStats.maxMana} | §3Overflow: ${PlayerStats.overflowMana}\n" +
                             "§dRift Time: ${PlayerStats.riftTimeSeconds} | Max: ${PlayerStats.maxRiftTime}\n" +
-                            "§aDefense: ${PlayerStats.defense} | Effective: ${PlayerStats.effectiveHealth} | Effective Max: ${PlayerStats.maxEffectiveHealth}\n"
+                            "§aDefense: ${PlayerStats.defense} | Effective: ${PlayerStats.effectiveHealth} | Effective Max: ${PlayerStats.maxEffectiveHealth}"
                 )
             }
 
             "refresh", "reload" -> {
                 Thread {
-                    ChatUtils.sendClientMessage("Reconnecting to SBT Websocket..")
+                    ChatUtils.sendClientMessage("§7Reconnecting to SBT Websocket..", prefix = true)
                     SocketUtils.setupSocket()
                     while(!SocketUtils.socketConnected) Thread.sleep(300)
-                    ChatUtils.sendClientMessage("Connected to SBT Websocket!")
+                    ChatUtils.sendClientMessage("§aConnected to SBT Websocket!", prefix = true)
                     Utils.playSound("random.orb", 0.5)
+
                     Thread.sleep(300)
 
-                    ChatUtils.sendClientMessage("Reloading Skyblock Item Data..")
-                    ItemApi.skyblockItemsLoaded = false
-                    ItemApi.updateSkyblockItemData(true)
-                    ChatUtils.sendClientMessage("Reloaded Skyblock Item Data!")
+                    ChatUtils.sendClientMessage("§7Reloading Skyblock Item Data..", prefix = true)
+                    ItemApi.updateSkyblockItemData(logging = true, force = true)
+                    while (ItemApi.getSkyblockItems().entrySet().isEmpty()) Thread.sleep(300)
+                    ChatUtils.sendClientMessage("§aLoaded Skyblock Item Data! §7(${ItemApi.getSkyblockItems().entrySet().size} items)", prefix = true)
                     Utils.playSound("random.orb", 0.1)
                 }.start()
             }
@@ -108,6 +114,11 @@ class DebugCommand : CommandBase() {
             "sidebar" -> getSidebarData()
             "write", "read" -> {
                 reflect(args)
+            }
+
+            "folder" -> {
+                val folder = ConfigManager.modDirectoryPath
+                openFile(folder, false)
             }
 
             "log" -> {
@@ -214,8 +225,8 @@ class DebugCommand : CommandBase() {
         }
     }
 
-    private fun openFile(file: File, copyToClipboard: Boolean) {
-        if (copyToClipboard) {
+    private fun openFile(file: File, copyContents: Boolean) {
+        if (copyContents) {
             Utils.copyToClipboard(file.readText())
             ChatUtils.sendClientMessage("§aCopied ${file.name} to clipboard!")
             return
@@ -300,6 +311,19 @@ class DebugCommand : CommandBase() {
             }
         }
         return stringBuilder.toString()
+    }
+
+    override fun addTabCompletionOptions(sender: ICommandSender, args: Array<String>, pos: BlockPos?): List<String> {
+        val subCommands = subcommands.map { it.first.split(" ")[0] }
+        return when (args.size) {
+            1 -> getListOfStringsMatchingLastWord(args, subCommands)
+            2 -> when (args[0]) {
+                "log", "config", "gui", "data" -> getListOfStringsMatchingLastWord(args, listOf("-copy"))
+                "read", "write" -> getListOfStringsMatchingLastWord(args, listOf("<location>"))
+                else -> emptyList()
+            }
+            else -> emptyList()
+        }
     }
 }
 
