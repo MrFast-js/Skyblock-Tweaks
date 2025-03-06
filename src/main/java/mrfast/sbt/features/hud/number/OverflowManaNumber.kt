@@ -27,7 +27,7 @@ object OverflowManaNumber {
         }
 
         override fun draw() {
-            val number = "§3${PlayerStats.overflowMana.formatNumber()}ʬ"
+            val number = "${PlayerStats.overflowMana.formatNumber()}ʬ"
             val centerX = this.width / 2f
             GuiUtils.drawText(
                 number,

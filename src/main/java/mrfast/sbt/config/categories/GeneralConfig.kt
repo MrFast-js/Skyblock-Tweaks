@@ -341,7 +341,8 @@ object GeneralConfig : Config() {
         type = ConfigType.TOGGLE,
         name = "Overflow Mana Number",
         category = "General",
-        subcategory = "Stat Displays"
+        subcategory = "Stat Displays",
+        isParent = true
     )
     var overflowManaNumber = false
 
@@ -352,7 +353,7 @@ object GeneralConfig : Config() {
         subcategory = "Stat Displays",
         parentName = "Overflow Mana Number"
     )
-    var manaOverflowNumberColor = CustomColor(85, 85, 255)
+    var manaOverflowNumberColor = CustomColor(0, 170, 170)
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
