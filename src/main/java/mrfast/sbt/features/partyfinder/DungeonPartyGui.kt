@@ -77,7 +77,7 @@ class DungeonPartyGui : WindowScreen(ElementaVersion.V2) {
                         "§cYou must be in a party with players to use the Dungeon Party Gui!",
                         prefix = true
                     )
-                    Utils.mc.displayGuiScreen(null)
+                    GuiUtils.closeGui()
                 }
             }
         }
@@ -123,7 +123,7 @@ class DungeonPartyGui : WindowScreen(ElementaVersion.V2) {
 
 
         if (joinDungeonButton.isClicked(this.mouseX, this.mouseY, guiLeft, guiTop) && mouseClicking) {
-            Utils.mc.displayGuiScreen(null)
+            GuiUtils.closeGui()
             ChatUtils.sendClientCommand("/jd $selectedFloor")
         }
         if (transferPartyButton.isClicked(this.mouseX, this.mouseY, guiLeft, guiTop) && mouseClicking) {

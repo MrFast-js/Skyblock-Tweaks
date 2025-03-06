@@ -6,7 +6,7 @@ import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.features.partyfinder.DungeonPartyGui
 import mrfast.sbt.managers.PartyManager
 import mrfast.sbt.utils.ChatUtils
-import mrfast.sbt.utils.Utils
+import mrfast.sbt.utils.GuiUtils
 import net.minecraft.command.CommandBase
 import net.minecraft.command.ICommandSender
 
@@ -31,7 +31,7 @@ class DungeonPartyCommand : CommandBase() {
                 "§cYou must be in a party with players to use the Dungeon Party Gui!",
                 prefix = true
             )
-            Utils.mc.displayGuiScreen(null)
+            GuiUtils.closeGui()
             return
         }
         GuiUtil.open(DungeonPartyGui())

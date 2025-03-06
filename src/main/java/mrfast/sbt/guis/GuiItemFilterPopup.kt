@@ -159,7 +159,7 @@ class GuiItemFilterPopup(
         } childOf background effect OutlineEffect(CustomizationConfig.defaultCategoryColor.get(), 1f)
 
         backButton.onMouseClick {
-            Utils.mc.displayGuiScreen(null)
+            GuiUtils.closeGui()
         }
 
         UIText("⬅", true).constrain {

@@ -179,7 +179,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2, drawDefaultB
                 socketStatusButton.onMouseClick {
                     SocketUtils.setupSocket()
                     ChatUtils.sendClientMessage("§eRe-attempting socket connection...", prefix = true)
-                    Utils.mc.displayGuiScreen(null)
+                    mrfast.sbt.utils.GuiUtils.closeGui()
                 }
                 lore.add("§eClick to re-attempt connection")
             }
@@ -333,7 +333,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2, drawDefaultB
 
         searchBarInput.onKeyType { _, keycode ->
             if (keycode == Keyboard.KEY_ESCAPE) {
-                Utils.mc.displayGuiScreen(null)
+                mrfast.sbt.utils.GuiUtils.closeGui()
                 return@onKeyType
             }
             searchQuery = searchBarInput.getText()
@@ -688,7 +688,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2, drawDefaultB
 
                     // Reopen the config gui if developer mode is toggled
                     if(feature.name=="§cDeveloper Mode") {
-                        Utils.mc.displayGuiScreen(null)
+                        mrfast.sbt.utils.GuiUtils.closeGui()
                         GuiUtil.open(ConfigGui())
                     }
                 }

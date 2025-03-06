@@ -301,6 +301,10 @@ object GuiUtils {
         }
     }
 
+    fun closeGui() {
+        Utils.mc.displayGuiScreen(null)
+    }
+
     fun drawBackgroundBlur() {
         if (time < duration) {
             time += 1f // Increment time (can adjust speed)

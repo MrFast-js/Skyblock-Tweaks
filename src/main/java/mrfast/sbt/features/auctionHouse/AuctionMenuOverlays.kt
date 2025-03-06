@@ -469,6 +469,9 @@ object AuctionMenuOverlays {
                         val blacklistFilePath = ConfigManager.modDirectoryPath.resolve("data/itemBlacklist.json")
                         val filters = AuctionFlipper.filters
 
+                        // Close the menu
+                        GuiUtils.closeGui()
+
                         if(filters.any { it.textInput == lastViewedAuction!!.stack?.getSkyblockId() }) {
                             ChatUtils.sendClientMessage("§cItem is already blacklisted. §7/sbt blacklist", prefix = true)
                             return@Element
