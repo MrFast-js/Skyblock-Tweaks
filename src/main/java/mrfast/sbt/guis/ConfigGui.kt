@@ -191,7 +191,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2, drawDefaultB
             OutlinedRoundedRectangle(guiLineColorsState.get().colorState.constraint, 1f, 3f).constrain {
                 width = 20.pixels
                 height = 20.pixels
-                x = SiblingConstraintFixed(8f, false)
+                x = if(!CustomizationConfig.developerMode) 8.pixels else SiblingConstraintFixed(8f, false)
                 y = CenterConstraint()
                 color = mainBackgroundColorState.get().colorState.constraint
             } childOf header
@@ -672,11 +672,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2, drawDefaultB
         return feature
     }
 
-    private fun containsIgnoreCase(source: String, target: String): Boolean {
-        return source.lowercase(Locale.getDefault()).contains(target.lowercase(Locale.getDefault()))
-    }
-
-    var floatingColorPicker: ColorPickerComponent? = null
+    private var floatingColorPicker: ColorPickerComponent? = null
     private fun populateFeature(
         feature: ConfigManager.Feature,
         featureComponent: UIComponent
@@ -689,6 +685,12 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2, drawDefaultB
                 } childOf featureComponent
                 toggleSwitch.onMouseClick {
                     feature.field.set(SkyblockTweaks.config, toggleSwitch.activated)
+
+                    // Reopen the config gui if developer mode is toggled
+                    if(feature.name=="§cDeveloper Mode") {
+                        Utils.mc.displayGuiScreen(null)
+                        GuiUtil.open(ConfigGui())
+                    }
                 }
                 ignoredHeights.add(toggleSwitch)
             }

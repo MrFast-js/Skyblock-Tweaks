@@ -396,8 +396,8 @@ object ItemUtils {
     }
 
     private fun getPriceMatch(dataString: String, id: String): Pair<Long, Double>? {
-        if(dataString == "" || !ItemApi.liveAuction.has(id)) return null
-        val itemData = ItemApi.liveAuction.get(id).asJsonObject
+        if(dataString == "" || !ItemApi.liveAuctionData.has(id)) return null
+        val itemData = ItemApi.liveAuctionData.get(id).asJsonObject
 
         return ItemPriceDescription.findBestMatch(itemData.asJsonObject, dataString, id)
     }

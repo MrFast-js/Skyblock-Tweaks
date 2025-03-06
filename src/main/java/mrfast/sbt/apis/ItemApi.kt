@@ -2,7 +2,11 @@ package mrfast.sbt.apis
 
 import com.google.gson.JsonObject
 import mrfast.sbt.SkyblockTweaks
+import mrfast.sbt.config.categories.CustomizationConfig
 import mrfast.sbt.config.categories.DeveloperConfig
+import mrfast.sbt.managers.ConfigManager
+import mrfast.sbt.managers.DataManager
+import mrfast.sbt.managers.DataManager.loadDataFromFile
 import mrfast.sbt.utils.ItemUtils
 import mrfast.sbt.utils.ItemUtils.getSkyblockId
 import mrfast.sbt.utils.NetworkUtils
@@ -16,14 +20,25 @@ import java.util.*
 
 @SkyblockTweaks.EventComponent
 object ItemApi {
+    private var loadedNEURepo = false
     private var skyblockItems = JsonObject()
-    var liveAuction = JsonObject()
+    var liveAuctionData = JsonObject()
 
-    var skyblockItemsLoaded = false
+    private val itemDataPath = ConfigManager.modDirectoryPath.resolve("data/itemData.json")
+    private var itemDataCache = loadDataFromFile(itemDataPath)
+
+    private val liveAuctionDataPath = ConfigManager.modDirectoryPath.resolve("data/liveAuctionData.json")
+    private var liveAuctionDataCache = loadDataFromFile(liveAuctionDataPath)
 
     init {
-        println("Loading Skyblock Items from Neu Repo Zip")
+        if(itemDataCache.entrySet().size > 0) {
+            skyblockItems = itemDataCache
+            loadedNEURepo = true
+        }
+        if(liveAuctionDataCache.entrySet().size > 0) liveAuctionData = liveAuctionDataCache
+
         // Update Item Prices every 15 Minutes
+        if(CustomizationConfig.developerMode) println("Starting 15 Minute Interval for Item Data")
         Timer().scheduleAtFixedRate(object : TimerTask() {
             override fun run() {
                 updateSkyblockItemData(false)
@@ -31,105 +46,139 @@ object ItemApi {
         }, 0, 1000 * 60 * 15)
     }
 
-    fun updateSkyblockItemData(logging: Boolean) {
-        Thread {
-            if (!skyblockItemsLoaded) {
-                skyblockItems = JsonObject()
-                try {
-                    if (logging) println("Starting to download Skyblock Items from NEU Repo")
-                    NetworkUtils.downloadAndProcessRepo()
-                    NetworkUtils.NeuItems.entrySet().forEach {
-                        var newKey = it.key
-                        // Convert NEU ID system to Skyblock-Tweaks ID system
-                        // MEGALODON;3 -> MEGALODON-EPIC
-                        // ULTIMATE_WISE;2 -> ENCHANTMENT_ULTIMATE_WISE_2
-                        if (newKey.contains(";")) {
-                            if (it.value.asJsonObject.get("displayname").asString.contains("[Lvl")) {
-                                val parts = it.key.split(";")
-                                newKey = "${parts[0]}-${ItemUtils.intToPetTier(parseInt(parts[1]))}"
-                            }
-                            if (it.value.asJsonObject.get("itemid").asString == "minecraft:enchanted_book") {
-                                newKey = "ENCHANTMENT_${it.key.replace(";", "_")}"
-                            }
-                        }
-                        // Add rarity to item api
-                        if (it.value.asJsonObject.has("lore")) {
-                            val lore = it.value.asJsonObject.get("lore").asJsonArray
-                            val rarity = ItemUtils.extractRarity(lore[lore.size() - 1].asString)
-                            it.value.asJsonObject.addProperty("rarity", rarity)
-                        }
+    private fun loadNeuRepo(logging: Boolean) {
+        skyblockItems = JsonObject()
+        try {
+            if (logging) println("Starting to download Skyblock Items from NEU Repo")
 
-                        skyblockItems.add(newKey, it.value)
+            NetworkUtils.downloadAndProcessRepo()
+            NetworkUtils.NeuItems.entrySet().forEach {
+                var newKey = it.key
+                // Convert NEU ID system to Skyblock-Tweaks ID system
+                // MEGALODON;3 -> MEGALODON-EPIC
+                // ULTIMATE_WISE;2 -> ENCHANTMENT_ULTIMATE_WISE_2
+                if (newKey.contains(";")) {
+                    if (it.value.asJsonObject.get("displayname").asString.contains("[Lvl")) {
+                        val parts = it.key.split(";")
+                        newKey = "${parts[0]}-${ItemUtils.intToPetTier(parseInt(parts[1]))}"
                     }
-                } catch (e: Exception) {
-                    println("There was a problem loading Skyblock Items.. ${e.message}")
+                    if (it.value.asJsonObject.get("itemid").asString == "minecraft:enchanted_book") {
+                        newKey = "ENCHANTMENT_${it.key.replace(";", "_")}"
+                    }
                 }
+                // Add rarity to item properties
+                if (it.value.asJsonObject.has("lore")) {
+                    val lore = it.value.asJsonObject.get("lore").asJsonArray
+                    val rarity = ItemUtils.extractRarity(lore[lore.size() - 1].asString)
+                    it.value.asJsonObject.addProperty("rarity", rarity)
+                }
+
+                skyblockItems.add(newKey, it.value)
             }
 
-            skyblockItemsLoaded = true
+            if(skyblockItems.entrySet().size > 0) loadedNEURepo = true
+
             if (logging) println("Loaded Skyblock Items from NEU Repo!")
+        } catch (e: Exception) {
+            println("There was a problem loading NEU Repo.. ${e.message}")
+        }
+    }
 
-            while (Utils.mc.theWorld == null || Utils.mc.theWorld?.playerEntities?.stream() == null) {
-                Thread.sleep(5000)
-            }
+    /*
+     * Responsible for getting item data from NEU Repo and SBT API,
+     * if fails, it has a backup of the last known data.
+     */
+    fun updateSkyblockItemData(logging: Boolean, force: Boolean = false) {
+        if (force) {
+            // Clear existing data
+            skyblockItems = JsonObject()
+            loadedNEURepo = false
+        }
 
-            if (logging) println("Loading Lowest Item Prices from SBT API")
+        Thread {
+            if (!loadedNEURepo) loadNeuRepo(logging)
+
             try {
-                val data = NetworkUtils.apiRequestAndParse(
-                    url = "${DeveloperConfig.modAPIURL}аpi/pricingData",
-                    useProxy = false,
-                    caching = false
-                )
-                if (data.entrySet().size == 0) {
-                    print("There was a problem loading SBT Prices..")
-                    return@Thread
-                }
-
-                if (logging) println("Loaded ${data.entrySet().size} Items From Skyblock-Tweaks Item API")
-                data.entrySet().forEach {
-                    val item = it.value.asJsonObject
-                    val itemId = it.key
-
-                    if(!skyblockItems.has(itemId)) {
-                        skyblockItems.add(itemId, item)
-                        return@forEach
-                    }
-
-                    val itemJson = skyblockItems[itemId]?.asJsonObject ?: JsonObject()
-
-                    // Merge all properties from `item` into `itemJson`
-                    for ((key, value) in item.entrySet()) {
-                        itemJson.add(key, value)
-                    }
+                // Wait until player is in world, for some reason this can fail
+                while (Utils.mc.theWorld == null || Utils.mc.theWorld?.playerEntities?.stream() == null) {
+                    Thread.sleep(5_000)
                 }
             } catch (e: Exception) {
-                e.printStackTrace()
-                println("There was a problem loading SBT Prices..")
+                if(logging) println("Waiting for player to join world..")
+
+                Thread.sleep(10_000)
+                updateSkyblockItemData(logging, force)
+
                 return@Thread
             }
 
+            loadPricingData(logging)
+            loadLiveAuctionData(logging)
 
-            if (logging) println("Loading Live Item Prices from SBT API")
-            try {
-                val data = NetworkUtils.apiRequestAndParse(
-                    url = "${DeveloperConfig.modAPIURL}аpi/liveAuctions",
-                    useProxy = false,
-                    caching = false
-                )
-                if (data.entrySet().size == 0) {
-                    print("There was a problem loading SBT Live Prices..")
-                    return@Thread
-                }
-
-                if (logging) println("Loaded Live ${data.entrySet().size} Auctions Item From Skyblock-Tweaks Item API")
-
-                liveAuction = data
-            } catch (e: Exception) {
-                e.printStackTrace()
-                println("There was a problem loading SBT Live Prices..")
-                return@Thread
-            }
+            DataManager.saveDataToFile(itemDataPath, skyblockItems)
+            DataManager.saveDataToFile(liveAuctionDataPath, liveAuctionData)
         }.start()
+    }
+
+    private fun loadPricingData(logging: Boolean) {
+        if (logging) println("Loading Lowest Item Prices from SBT API")
+
+        try {
+            val data = NetworkUtils.apiRequestAndParse(
+                url = "${DeveloperConfig.modAPIURL}аpi/pricingData",
+                useProxy = false,
+                caching = false
+            )
+            if (data.entrySet().size == 0) {
+                print("There was a problem loading SBT Prices..")
+                return
+            }
+
+            if (logging) println("Loaded ${data.entrySet().size} Items From Skyblock-Tweaks Item API")
+            data.entrySet().forEach {
+                val item = it.value.asJsonObject
+                val itemId = it.key
+
+                if (!skyblockItems.has(itemId)) {
+                    skyblockItems.add(itemId, item)
+                    return@forEach
+                }
+
+                val itemJson = skyblockItems[itemId]?.asJsonObject ?: JsonObject()
+
+                // Merge all properties from item into itemJson
+                for ((key, value) in item.entrySet()) {
+                    itemJson.add(key, value)
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            println("There was a problem loading SBT Pricing Data..")
+            return
+        }
+    }
+
+    private fun loadLiveAuctionData(logging: Boolean) {
+        if (logging) println("Loading Live Item Prices from SBT API")
+        try {
+            val data = NetworkUtils.apiRequestAndParse(
+                url = "${DeveloperConfig.modAPIURL}аpi/liveAuctions",
+                useProxy = false,
+                caching = false
+            )
+            if (data.entrySet().size == 0) {
+                print("There was a problem loading SBT Live Prices..")
+                return
+            }
+
+            if (logging) println("Loaded Live ${data.entrySet().size} Auctions Item From Skyblock-Tweaks Item API")
+
+            liveAuctionData = data
+        } catch (e: Exception) {
+            e.printStackTrace()
+            println("There was a problem loading SBT Live Prices..")
+            return
+        }
     }
 
     fun getItemIdFromName(displayName: String, ignoreFormatting: Boolean? = false): String? {
@@ -178,7 +227,6 @@ object ItemApi {
             itemStackCache[itemId] = itemStack
             return itemStack
         }
-
         if (itemId == "ACCESSORY_BAG") {
             val itemJson = skyblockItems["LARGE_DUNGEON_SACK"]?.asJsonObject ?: return null
             var nbtString = itemJson["nbttag"]?.asString ?: return null

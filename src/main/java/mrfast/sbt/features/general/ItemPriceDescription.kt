@@ -64,9 +64,9 @@ object ItemPriceDescription {
         val dataString = stack.getDataString()
         val id = stack.getSkyblockId()
 
-        if (dataString != "" && ItemApi.liveAuction.has(id)) {
+        if (dataString != "" && ItemApi.liveAuctionData.has(id)) {
             if(CustomizationConfig.developerMode) event.toolTip.add("§3Data String: §7$dataString")
-            val itemData = ItemApi.liveAuction.get(id).asJsonObject
+            val itemData = ItemApi.liveAuctionData.get(id).asJsonObject
 
             val best = findBestMatch(itemData, dataString, id!!)?: return
             val priceMatch = best.first
@@ -107,7 +107,7 @@ object ItemPriceDescription {
 
             // Update the best match if this item's score is higher
             if (matchScore >= bestScore) {
-                val itemData = ItemApi.liveAuction.get(itemId).asJsonObject
+                val itemData = ItemApi.liveAuctionData.get(itemId).asJsonObject
 
                 val bestPrice = itemData?.get(bestItem)?.asLong ?: 0
                 val thisPrice = itemData?.get(itemEntry.key)?.asLong ?: 0
