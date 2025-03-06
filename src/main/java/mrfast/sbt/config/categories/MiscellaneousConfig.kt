@@ -88,7 +88,7 @@ object MiscellaneousConfig : Config() {
     @ConfigProperty(
         type = ConfigType.TOGGLE,
         name = "Show Item Pricing Data",
-        description = "Data provided by the Skyblock Tweaks API!",
+        description = "Data provided by the Skyblock Tweaks API! Shows Lowest BIN, Average BIN, Soonest Auction Price, Average Auction Price, Active Listings, Price Matching, Sales / Day",
         category = "Miscellaneous",
         subcategory = "Items"
     )

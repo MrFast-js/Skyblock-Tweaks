@@ -115,7 +115,7 @@ object DungeonConfig : Config() {
     @ConfigProperty(
         type = ConfigType.BUTTON,
         name = "§eEdit Trash",
-        description = "The trash list will be updated once you save the file. \nTrash is an item whose Skyblock ID contains any of the entries.",
+        description = "",
         category = "Miscellaneous",
         subcategory = "Items",
         placeholder = "§cEdit Trash",
