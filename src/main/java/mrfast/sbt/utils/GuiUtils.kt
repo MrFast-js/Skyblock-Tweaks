@@ -3,7 +3,6 @@ package mrfast.sbt.utils
 import gg.essential.elementa.dsl.constraint
 import gg.essential.elementa.state.BasicState
 import gg.essential.universal.UMatrixStack
-import mrfast.sbt.config.categories.CustomizationConfig
 import mrfast.sbt.config.categories.DeveloperConfig
 import mrfast.sbt.guis.components.OutlinedRoundedRectangle
 import mrfast.sbt.guis.components.shader.GaussianBlur
@@ -218,7 +217,7 @@ object GuiUtils {
         GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST)
         GlStateManager.disableBlend()
     }
-
+    var elementClicked = false
     class Element(
         var x: Float,
         var y: Float,
@@ -271,9 +270,15 @@ object GuiUtils {
                     GlStateManager.popMatrix()
                     GlStateManager.popAttrib()
                 }
-                if (onClick != null && Mouse.isButtonDown(0)) {
-                    onClick!!.run()
+                if(onClick != null) {
+                    if(Mouse.isButtonDown(0) && !elementClicked) {
+                        elementClicked = true
+                        onClick!!.run()
+                    }
                 }
+            }
+            if(!Mouse.isButtonDown(0)) {
+                elementClicked = false
             }
         }
     }

@@ -183,8 +183,8 @@ object ItemApi {
 
     fun getItemIdFromName(displayName: String, ignoreFormatting: Boolean? = false): String? {
         return skyblockItems.entrySet().find { entry ->
-            val itemName = entry.value.asJsonObject["displayname"].asString
-            val cleanedItemName = if (ignoreFormatting == true) itemName?.clean() else itemName
+            val itemName = entry.value?.asJsonObject?.get("displayname")?.asString ?: return@find false
+            val cleanedItemName = if (ignoreFormatting == true) itemName.clean() else itemName
             val cleanedDisplayName = if (ignoreFormatting == true) displayName.clean() else displayName
             cleanedItemName == cleanedDisplayName
         }?.key

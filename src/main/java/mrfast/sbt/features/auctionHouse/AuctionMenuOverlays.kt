@@ -1,5 +1,6 @@
 package mrfast.sbt.features.auctionHouse
 
+import com.google.gson.GsonBuilder
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import gg.essential.elementa.dsl.constraint
@@ -9,7 +10,10 @@ import mrfast.sbt.apis.ItemApi
 import mrfast.sbt.config.categories.AuctionHouseConfig
 import mrfast.sbt.customevents.GuiContainerBackgroundDrawnEvent
 import mrfast.sbt.customevents.SignDrawnEvent
+import mrfast.sbt.guis.GuiItemFilterPopup
 import mrfast.sbt.guis.components.OutlinedRoundedRectangle
+import mrfast.sbt.managers.ConfigManager
+import mrfast.sbt.managers.DataManager
 import mrfast.sbt.managers.OverlayManager
 import mrfast.sbt.utils.ChatUtils
 import mrfast.sbt.utils.GuiUtils
@@ -136,7 +140,7 @@ object AuctionMenuOverlays {
                     }
                 }
                 // Only update price if a new bid is found
-                if(newBidPrice != -1L) auction.price = newBidPrice
+                if (newBidPrice != -1L) auction.price = newBidPrice
             }
 
             auction.profit = auction.suggestedListingPrice - auction.price
@@ -198,7 +202,7 @@ object AuctionMenuOverlays {
             if (line.clean().matches("""(?:Starting bid|Top bid|Buy it now): (.*) coins""".toRegex())) {
                 auction.price = line.clean().replace("\\D+".toRegex(), "").toLong()
             }
-            if(line.clean().matches("""Seller: (.*)""".toRegex())) {
+            if (line.clean().matches("""Seller: (.*)""".toRegex())) {
                 auction.seller = line.clean().getRegexGroups("""Seller: (.*)""".toRegex())!![1]!!.value.cleanRanks()
             }
         }
@@ -308,12 +312,14 @@ object AuctionMenuOverlays {
             // Pricing and count for Live Auction listings and their prices
             val activeAucNum = if (pricingData.has("activeAuc")) pricingData.get("activeAuc").asInt else -1
             val activeAuc = if (activeAucNum != -1) activeAucNum.formatNumber() else "§cUnknown"
-            val activeAucPrices = if(pricingData.has("activeAucPrices")) pricingData.get("activeAucPrices").asJsonArray else JsonArray()
+            val activeAucPrices =
+                if (pricingData.has("activeAucPrices")) pricingData.get("activeAucPrices").asJsonArray else JsonArray()
 
             // Pricing and count for Live Bin Listings and their prices
             val activeBinNum = if (pricingData.has("activeBin")) pricingData.get("activeBin").asInt else -1
             val activeBin = if (activeBinNum != -1) activeBinNum.formatNumber() else "§cUnknown"
-            val activeBinPrices = if(pricingData.has("activeBinPrices")) pricingData.get("activeBinPrices").asJsonArray else JsonArray()
+            val activeBinPrices =
+                if (pricingData.has("activeBinPrices")) pricingData.get("activeBinPrices").asJsonArray else JsonArray()
 
             // Pricing and count for recently ended auction listings and their prices
             val soldAucNum = if (pricingData.has("aucSold")) pricingData.get("aucSold").asInt else -1
@@ -402,7 +408,7 @@ object AuctionMenuOverlays {
                             "§7This item is a common rarity item",
                             "§7and can only be sold for 5x NPC price.",
                             "§7You can still make profit by flipping it",
-                            "§7but it will be harder."
+                            "§7on Auction but it will be harder."
                         ),
                         null
                     )
@@ -435,7 +441,7 @@ object AuctionMenuOverlays {
                 Element(
                     7f,
                     getLowestY(lines) + 3f,
-                    "§cSellers AH",
+                    "§6Sellers AH",
                     listOf(
                         "§e/ah ${lastViewedAuction!!.seller}",
                         "§7Check if more profitable auctions",
@@ -444,6 +450,45 @@ object AuctionMenuOverlays {
                     {
                         Utils.mc.thePlayer.closeScreen()
                         ChatUtils.sendPlayerMessage("/ah ${lastViewedAuction!!.seller}")
+                    },
+                    drawBackground = true,
+                    backgroundColor = Color(255, 170, 0)
+                )
+            )
+
+            lines.add(
+                Element(
+                    7f,
+                    getLowestY(lines) + 3f,
+                    "§cBlacklist Item",
+                    listOf(
+                        "§cBlacklists ${lastViewedAuction!!.stack?.getSkyblockId()} from",
+                        "§cappearing in Auction Flipper."
+                    ),
+                    {
+                        val blacklistFilePath = ConfigManager.modDirectoryPath.resolve("data/itemBlacklist.json")
+                        val filters = AuctionFlipper.filters
+
+                        if(filters.any { it.textInput == lastViewedAuction!!.stack?.getSkyblockId() }) {
+                            ChatUtils.sendClientMessage("§cItem is already blacklisted. §7/sbt blacklist", prefix = true)
+                            return@Element
+                        }
+
+                        filters.add(
+                            GuiItemFilterPopup.FilteredItem(
+                                lastViewedAuction!!.stack?.getSkyblockId()!!,
+                                GuiItemFilterPopup.FilterType.EQUALS,
+                                GuiItemFilterPopup.InputType.ITEM_ID
+                            )
+                        )
+                        val gson = GsonBuilder().setPrettyPrinting().create()
+                        val newData = JsonObject()
+                        val jsonFilters = gson.toJsonTree(filters).asJsonArray // Convert filters to JsonArray
+                        newData.add("filters", jsonFilters) // Add filters JsonArray to the JsonObject
+                        DataManager.saveDataToFile(blacklistFilePath, newData)
+
+                        ChatUtils.sendClientMessage("§cAdded ${lastViewedAuction!!.stack?.getSkyblockId()} to blacklist.", prefix = true)
+                        ChatUtils.sendClientMessage("§7You can remove this item in /sbt blacklist", prefix = true)
                     },
                     drawBackground = true,
                     backgroundColor = Color(255, 85, 85)
@@ -485,7 +530,7 @@ object AuctionMenuOverlays {
     fun getLowestY(lines: List<Element>): Float {
         val lowestElement = lines.sortedByDescending { it.y }[0]
         var lowestY = lowestElement.y + lowestElement.height
-        if(lowestElement.drawBackground) lowestY += 5
+        if (lowestElement.drawBackground) lowestY += 5
         return lowestY
     }
 
@@ -517,22 +562,26 @@ object AuctionMenuOverlays {
             // Pricing and count for Live Auction listings and their prices
             val activeAucNum = if (pricingData.has("activeAuc")) pricingData.get("activeAuc").asInt else -1
             val activeAuc = if (activeAucNum != -1) activeAucNum.formatNumber() else "§cUnknown"
-            val activeAucPrices = if(pricingData.has("activeAucPrices")) pricingData.get("activeAucPrices").asJsonArray else JsonArray()
+            val activeAucPrices =
+                if (pricingData.has("activeAucPrices")) pricingData.get("activeAucPrices").asJsonArray else JsonArray()
 
             // Pricing and count for Live Bin Listings and their prices
             val activeBinNum = if (pricingData.has("activeBin")) pricingData.get("activeBin").asInt else -1
             val activeBin = if (activeBinNum != -1) activeBinNum.formatNumber() else "§cUnknown"
-            val activeBinPrices = if(pricingData.has("activeBinPrices")) pricingData.get("activeBinPrices").asJsonArray else JsonArray()
+            val activeBinPrices =
+                if (pricingData.has("activeBinPrices")) pricingData.get("activeBinPrices").asJsonArray else JsonArray()
 
             // Pricing and count for recently ended auction listings and their prices
             val soldAucNum = if (pricingData.has("aucSold")) pricingData.get("aucSold").asInt else -1
             val soldAuc = if (soldAucNum != -1) soldAucNum.formatNumber() else "§cUnknown"
-            val soldAucPrices = if(pricingData.has("aucSoldPrices")) pricingData.get("aucSoldPrices").asJsonArray else JsonArray()
+            val soldAucPrices =
+                if (pricingData.has("aucSoldPrices")) pricingData.get("aucSoldPrices").asJsonArray else JsonArray()
 
             // Pricing and count for recently ended Bin Listings and their prices
             val soldBinNum = if (pricingData.has("binSold")) pricingData.get("binSold").asInt else -1
             val soldBin = if (soldBinNum != -1) soldBinNum.formatNumber() else "§cUnknown"
-            val soldBinPrices = if(pricingData.has("binSoldPrices")) pricingData.get("binSoldPrices").asJsonArray else JsonArray()
+            val soldBinPrices =
+                if (pricingData.has("binSoldPrices")) pricingData.get("binSoldPrices").asJsonArray else JsonArray()
 
             val recentlySoldHover = mutableListOf(
                 "§b§lRecently Sold Listings",
