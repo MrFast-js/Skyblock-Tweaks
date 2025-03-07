@@ -32,6 +32,7 @@
   <img src="https://i.imgur.com/PlxnvgW.png" alt="Auction Overlay 1">
   <img src="https://i.imgur.com/UB57upB.png" alt="Auction Overlay 2">
   <img src="https://i.imgur.com/CshNWbB.png" alt="Auction Overlay 3">
+  <img src="https://i.imgur.com/2ZGvxU1.png" alt="Auction Overlay 4">
 </details>
 
 <details>
