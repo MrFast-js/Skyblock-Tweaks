@@ -208,22 +208,7 @@ object NetworkUtils {
         return null
     }
 
-    private var latestProfileIdCache = HashMap<String, String>()
     private var latestProfileCache = HashMap<String, JsonObject>()
-
-    fun getActiveProfileId(playerUUID: String): String? {
-        if (latestProfileIdCache.containsKey(playerUUID)) return latestProfileIdCache[playerUUID]
-
-        val apiUrl = "https://api.hypixel.net/skyblock/profiles?uuid=$playerUUID"
-        val profiles = apiRequestAndParse(apiUrl).getAsJsonArray("profiles")
-        val pfid =
-            profiles.firstOrNull { it.asJsonObject["selected"].asBoolean }?.asJsonObject?.get("profile_id")?.asString
-                ?: profiles.firstOrNull()?.asJsonObject?.get("profile_id")?.asString
-
-        latestProfileIdCache[playerUUID] = pfid!!
-
-        return pfid
-    }
 
     fun getActiveProfile(playerUUID: String): JsonObject? {
         if (latestProfileCache.containsKey(playerUUID)) return latestProfileCache[playerUUID]
@@ -240,20 +225,6 @@ object NetworkUtils {
 
 
     private val nameCache = mutableMapOf<String, String>()
-
-    fun getName(uuid: String): String? {
-        nameCache[uuid]?.let { return it }
-
-        try {
-            val json = apiRequestAndParse("https://api.mojang.com/user/profile/$uuid")
-            if (json.has("error")) return null
-            val name = json["name"].asString.lowercase()
-            nameCache[uuid] = name
-            return name
-        } catch (e: Exception) {
-            return null
-        }
-    }
 
     fun getUUID(username: String, formatted: Boolean = false): String? {
         nameCache.entries.find { it.value.equals(username, ignoreCase = true) }?.let {
@@ -340,8 +311,7 @@ object NetworkUtils {
             println("Debug: ETag matches. No need to download. Loading from file...")
             NeuItems = DataManager.loadDataFromFile(ConfigManager.modDirectoryPath.resolve("repo/NeuItems.json"))
             NeuMobs = DataManager.loadDataFromFile(ConfigManager.modDirectoryPath.resolve("repo/NeuMobs.json"))
-            NeuConstants =
-                DataManager.loadDataFromFile(ConfigManager.modDirectoryPath.resolve("repo/NeuConstants.json"))
+            NeuConstants = DataManager.loadDataFromFile(ConfigManager.modDirectoryPath.resolve("repo/NeuConstants.json"))
         }
     }
 }

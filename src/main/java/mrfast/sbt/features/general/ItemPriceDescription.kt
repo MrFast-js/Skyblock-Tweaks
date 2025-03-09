@@ -64,6 +64,8 @@ object ItemPriceDescription {
         val dataString = stack.getDataString()
         val id = stack.getSkyblockId()
 
+        event.toolTip.add("§8SBTID: ${id ?: "§4Unknown"}")
+
         if (dataString != "" && ItemApi.liveAuctionData.has(id)) {
             if(CustomizationConfig.developerMode) event.toolTip.add("§3Data String: §7$dataString")
             val itemData = ItemApi.liveAuctionData.get(id).asJsonObject

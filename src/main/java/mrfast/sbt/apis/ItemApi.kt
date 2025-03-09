@@ -15,7 +15,6 @@ import mrfast.sbt.utils.Utils.clean
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.JsonToNBT
-import java.lang.Integer.parseInt
 import java.util.*
 
 @SkyblockTweaks.EventComponent
@@ -53,19 +52,10 @@ object ItemApi {
 
             NetworkUtils.downloadAndProcessRepo()
             NetworkUtils.NeuItems.entrySet().forEach {
-                var newKey = it.key
-                // Convert NEU ID system to Skyblock-Tweaks ID system
-                // MEGALODON;3 -> MEGALODON-EPIC
-                // ULTIMATE_WISE;2 -> ENCHANTMENT_ULTIMATE_WISE_2
-                if (newKey.contains(";")) {
-                    if (it.value.asJsonObject.get("displayname").asString.contains("[Lvl")) {
-                        val parts = it.key.split(";")
-                        newKey = "${parts[0]}-${ItemUtils.intToPetTier(parseInt(parts[1]))}"
-                    }
-                    if (it.value.asJsonObject.get("itemid").asString == "minecraft:enchanted_book") {
-                        newKey = "ENCHANTMENT_${it.key.replace(";", "_")}"
-                    }
-                }
+                val newKey = ItemUtils.convertNeuItemToSBT(it.key, it.value.asJsonObject)
+                // Add custom ID to item properties
+                it.value.asJsonObject.addProperty("sbtID", newKey)
+
                 // Add rarity to item properties
                 if (it.value.asJsonObject.has("lore")) {
                     val lore = it.value.asJsonObject.get("lore").asJsonArray

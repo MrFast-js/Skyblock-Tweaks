@@ -476,4 +476,13 @@ object GeneralConfig : Config() {
         parentName = "Show item pickup log"
     )
     var itemPickupLogItemPrices = true
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Kat Flipper Overlay",
+        description = "Shows profitable pets to flip when in the Kat Pet Sitter Menu",
+        category = "General",
+        subcategory = "Kat Overlay"
+    )
+    var katFlipperOverlay = false
 }

@@ -28,6 +28,30 @@ object ItemUtils {
         return nbt.getString("uuid")
     }
 
+    // Convert NEU ID system to Skyblock-Tweaks ID system
+    // MEGALODON;3 -> MEGALODON-EPIC
+    // ULTIMATE_WISE;2 -> ENCHANTMENT_ULTIMATE_WISE_2
+    fun convertNeuItemToSBT(neuId: String, neuData: JsonObject): String {
+        var newId = neuId
+        if (newId.contains(";")) {
+            if(neuData.asJsonObject.get("displayname").asString.contains("[Lvl")) {
+                newId = convertNeuPetID(neuId)
+                println("Converted pet id: $newId")
+            }
+            if (neuData.asJsonObject.get("itemid").asString == "minecraft:enchanted_book") {
+                newId = "ENCHANTMENT_${newId.replace(";", "_")}"
+            }
+        }
+        return newId
+    }
+
+    // MEGALODON;3 -> MEGALODON-EPIC
+    fun convertNeuPetID(neuId: String): String {
+        val parts = neuId.split(";")
+
+        return "${parts[0]}-${intToPetTier(Integer.parseInt(parts[1]))}"
+    }
+
     fun ItemStack.getSkyblockId(): String? {
         val nbt = this.getExtraAttributes() ?: return null
 
@@ -106,29 +130,29 @@ object ItemUtils {
                 output.add("E:${key.replace("ultimate_", "")}$value")
             }
         }
-        if(recomb) {
+        if (recomb) {
             output.add("R")
         }
-        if(reforge.isNotEmpty()) {
+        if (reforge.isNotEmpty()) {
             output.add("Re:${reforge}")
         }
-        if(hpb > 0) {
+        if (hpb > 0) {
             output.add("${hpb}HP")
         }
-        if(masterStars > 0) {
+        if (masterStars > 0) {
             output.add("${masterStars}S")
-        } else if(stars > 0) {
+        } else if (stars > 0) {
             output.add("${stars}S")
         }
-        if(scrolls != null) {
+        if (scrolls != null) {
             val total = mutableListOf<String>()
-            for(i in 0 until scrolls.tagCount()) {
+            for (i in 0 until scrolls.tagCount()) {
                 val scroll = scrolls.getStringTagAt(i).substring(0, 3)
                 total.add(scroll)
             }
-            if(total.isNotEmpty()) output.add("SC:${total.joinToString(",")}")
+            if (total.isNotEmpty()) output.add("SC:${total.joinToString(",")}")
         }
-        if(attributes.isNotEmpty()) {
+        if (attributes.isNotEmpty()) {
             output.add("AT:$attributes")
         }
 
@@ -244,11 +268,25 @@ object ItemUtils {
         return null
     }
 
-    fun getItemBasePrice(id: String): Double {
+    fun getItemBasePrice(id: String, sell:Boolean=true): Double {
         val itemInfo = ItemApi.getItemInfo(id) ?: return -1.0
 
-        if (itemInfo.has("bazaarSell")) {
+        if (sell && itemInfo.has("bazaarSell")) {
             return itemInfo.get("bazaarSell").asDouble
+        }
+        if (!sell && itemInfo.has("bazaarBuy")) {
+            return itemInfo.get("bazaarBuy").asDouble
+        }
+
+        if (itemInfo.has("lowestBin") && itemInfo.has("avgLowestBin")) {
+            if(itemInfo.get("lowestBin").asDouble < itemInfo.get("avgLowestBin").asDouble) {
+                return itemInfo.get("lowestBin").asDouble
+            } else {
+                return itemInfo.get("avgLowestBin").asDouble
+            }
+        }
+        if (itemInfo.has("lowestBin")) {
+            return itemInfo.get("lowestBin").asDouble
         }
         if (itemInfo.has("avgLowestBin")) {
             return itemInfo.get("avgLowestBin").asDouble
@@ -340,11 +378,11 @@ object ItemUtils {
                     if (aucPrice != null) {
                         suggestedListingPrice = Math.round((avgAucSoldPrice * 0.6 + aucPrice * 0.4) * 0.99)
                     }
-                } else if(avgBinSoldPrice != -1L && avgActiveBINPrice != -1L) {
+                } else if (avgBinSoldPrice != -1L && avgActiveBINPrice != -1L) {
                     suggestedListingPrice = Math.round((avgBinSoldPrice * 0.6 + avgActiveBINPrice * 0.4) * 0.99)
                 } else {
                     // Backup
-                    if(abin != null && lbin != null) {
+                    if (abin != null && lbin != null) {
                         suggestedListingPrice = Math.round((lbin * 0.6 + abin * 0.4) * 0.99)
                     }
                 }
@@ -392,11 +430,11 @@ object ItemUtils {
     }
 
     private fun getPriceMatch(stack: ItemStack): Pair<Long, Double>? {
-        return getPriceMatch(stack.getDataString(),stack.getSkyblockId()!!)
+        return getPriceMatch(stack.getDataString(), stack.getSkyblockId()!!)
     }
 
     private fun getPriceMatch(dataString: String, id: String): Pair<Long, Double>? {
-        if(dataString == "" || !ItemApi.liveAuctionData.has(id)) return null
+        if (dataString == "" || !ItemApi.liveAuctionData.has(id)) return null
         val itemData = ItemApi.liveAuctionData.get(id).asJsonObject
 
         return ItemPriceDescription.findBestMatch(itemData.asJsonObject, dataString, id)

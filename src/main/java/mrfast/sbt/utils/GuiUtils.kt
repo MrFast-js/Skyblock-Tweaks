@@ -218,25 +218,27 @@ object GuiUtils {
         GlStateManager.disableBlend()
     }
     var elementClicked = false
-    class Element(
-        var x: Float,
-        var y: Float,
-        var text: String,
-        var hoverText: List<String>?,
-        var onClick: Runnable? = null,
-        var drawBackground: Boolean = false,
-        var backgroundColor: Color = Color.GRAY
+
+
+    open class Element(
+        open var x: Float,
+        open var y: Float,
+        open var text: String,
+        open var hoverText: List<String>?,
+        open var onClick: Runnable? = null,
+        open var drawBackground: Boolean = false,
+        open var backgroundColor: Color = Color.GRAY
     ) {
-        var width = 0
-        var height = Utils.mc.fontRendererObj.FONT_HEIGHT
+        open var width = 0
+        open var height = Utils.mc.fontRendererObj.FONT_HEIGHT
 
         init {
             width = text.getStringWidth()
         }
 
-        fun draw(mouseX: Int, mouseY: Int, originX: Int = 0, originY: Int = 0) {
-            val actualX = x + originX
-            val actualY = y + originY
+        open fun draw(mouseX: Int, mouseY: Int, originX: Int = 0, originY: Int = 0) {
+            val actualMouseX = x + originX
+            val actualMouseY = y + originY
 
             if (drawBackground) {
                 OutlinedRoundedRectangle.drawOutlinedRoundedRectangle(
@@ -254,7 +256,7 @@ object GuiUtils {
 
             drawText(text, x, y, TextStyle.DROP_SHADOW)
 
-            if (mouseX > actualX && mouseY > actualY && mouseX < actualX + width && mouseY < actualY + height) {
+            if (mouseX > actualMouseX && mouseY > actualMouseY && mouseX < actualMouseX + width && mouseY < actualMouseY + height) {
                 if (hoverText != null) {
                     GlStateManager.pushMatrix()
                     GlStateManager.pushAttrib()
@@ -281,6 +283,27 @@ object GuiUtils {
                 elementClicked = false
             }
         }
+    }
+
+    class ItemStackElement(
+        var stack: ItemStack,
+        override var x: Float,
+        override var y: Float,
+        override var width: Int = 16,
+        override var height: Int = 16
+    ) : Element(x, y, "", null, null) {
+        override fun draw(mouseX: Int, mouseY: Int, originX: Int, originY: Int) {
+            GlStateManager.pushMatrix()
+            renderItemStackOnScreen(stack, x, y, width.toFloat(), height.toFloat())
+            GlStateManager.popMatrix()
+        }
+    }
+
+    fun getLowestY(lines: List<Element>): Float {
+        val lowestElement = lines.sortedByDescending { it.y }[0]
+        var lowestY = lowestElement.y + lowestElement.height
+        if (lowestElement.drawBackground) lowestY += 5
+        return lowestY
     }
 
     private val blurShader = GaussianBlur(radius = DeveloperConfig.valueTest.toFloat())

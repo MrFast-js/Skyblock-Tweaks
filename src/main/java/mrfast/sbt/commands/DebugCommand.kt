@@ -5,6 +5,7 @@ import com.mojang.realmsclient.gui.ChatFormatting
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.apis.ItemApi
 import mrfast.sbt.apis.PlayerStats
+import mrfast.sbt.features.kat.KatFlipperOverlay
 import mrfast.sbt.managers.ConfigManager
 import mrfast.sbt.managers.LocationManager
 import mrfast.sbt.utils.*
@@ -119,6 +120,10 @@ class DebugCommand : CommandBase() {
             "folder" -> {
                 val folder = ConfigManager.modDirectoryPath
                 openFile(folder, false)
+            }
+
+            "test" -> {
+                KatFlipperOverlay.findKatFlips()
             }
 
             "log" -> {

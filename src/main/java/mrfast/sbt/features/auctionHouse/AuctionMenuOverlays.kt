@@ -272,7 +272,7 @@ object AuctionMenuOverlays {
                 2f,
                 0f,
                 width.toFloat(),
-                getLowestY(lines),
+                GuiUtils. getLowestY(lines),
                 4f,
                 Color(18, 18, 18),
                 GuiUtils.rainbowColor.get().constraint,
@@ -402,7 +402,7 @@ object AuctionMenuOverlays {
                 lines.add(
                     Element(
                         5f,
-                        getLowestY(lines) + 2f,
+                        GuiUtils.getLowestY(lines) + 2f,
                         "§c§lONLY 5x NPC VALUE!",
                         listOf(
                             "§7This item is a common rarity item",
@@ -420,7 +420,7 @@ object AuctionMenuOverlays {
                 lines.add(
                     Element(
                         7f,
-                        getLowestY(lines) + 4f,
+                        GuiUtils.getLowestY(lines) + 4f,
                         "§9Party Bidder",
                         listOf(
                             "§e/party ${lastViewedAuction!!.otherBidder}",
@@ -440,7 +440,7 @@ object AuctionMenuOverlays {
             lines.add(
                 Element(
                     7f,
-                    getLowestY(lines) + 3f,
+                    GuiUtils.getLowestY(lines) + 3f,
                     "§6Sellers AH",
                     listOf(
                         "§e/ah ${lastViewedAuction!!.seller}",
@@ -459,7 +459,7 @@ object AuctionMenuOverlays {
             lines.add(
                 Element(
                     7f,
-                    getLowestY(lines) + 3f,
+                    GuiUtils.getLowestY(lines) + 3f,
                     "§cBlacklist Item",
                     listOf(
                         "§cBlacklists ${lastViewedAuction!!.stack?.getSkyblockId()} from",
@@ -510,7 +510,7 @@ object AuctionMenuOverlays {
                 2f,
                 0f,
                 width.toFloat(),
-                getLowestY(lines) + 2f,
+                GuiUtils.getLowestY(lines) + 2f,
                 4f,
                 Color(18, 18, 18),
                 GuiUtils.rainbowColor.get().constraint,
@@ -528,13 +528,6 @@ object AuctionMenuOverlays {
             return (event.gui as GuiContainer).chestName()
                 .contains("Auction View") && AuctionHouseConfig.auctionViewOverlay
         }
-    }
-
-    fun getLowestY(lines: List<Element>): Float {
-        val lowestElement = lines.sortedByDescending { it.y }[0]
-        var lowestY = lowestElement.y + lowestElement.height
-        if (lowestElement.drawBackground) lowestY += 5
-        return lowestY
     }
 
     fun getPrices(pricesArray: JsonArray): List<String> {

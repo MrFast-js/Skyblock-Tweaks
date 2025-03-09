@@ -94,10 +94,10 @@ object Utils {
             }
         }
 
-        return "${if (days > 0) "${days}d " else ""}${if (hours > 0) "${hours}h " else ""}${if (minutes > 0) "${minutes}m " else ""}${remainingSeconds}s"
+        return "${if (days > 0) "${days}d " else ""}${if (hours > 0) "${hours}h " else ""}${if (minutes > 0) "${minutes}m " else ""}${if(remainingSeconds>0) "${remainingSeconds}s" else ""}"
     }
 
-    val COORD_REGEX = """(?:x:\s*(-?\d+)[,\s]*y:\s*(-?\d+)[,\s]*z:\s*(-?\d+))|(-?\d+)\s+(-?\d+)\s+(-?\d+)""".toRegex()
+    private val COORD_REGEX = """(?:x:\s*(-?\d+)[,\s]*y:\s*(-?\d+)[,\s]*z:\s*(-?\d+))|(-?\d+)\s+(-?\d+)\s+(-?\d+)""".toRegex()
 
     fun String.containsCoordinates(): Boolean {
         return COORD_REGEX.containsMatchIn(this)
