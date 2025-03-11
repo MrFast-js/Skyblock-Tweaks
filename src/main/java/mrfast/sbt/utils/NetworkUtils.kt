@@ -252,7 +252,7 @@ object NetworkUtils {
     private var NeuMobs = JsonObject()
     private var NeuConstants = JsonObject()
 
-    fun downloadAndProcessRepo() {
+    fun downloadAndProcessRepo(force: Boolean = false) {
         val etagFile = ConfigManager.modDirectoryPath.resolve("repo/NEUAPI-ETAG.txt")
 
         // Ensure the ETag file exists, create if not
@@ -267,12 +267,17 @@ object NetworkUtils {
         val previousEtag = String(Files.readAllBytes(etagFile.toPath()), Charsets.UTF_8)
 
         // Get current ETag from server
-        val currentEtag = client.execute(HttpHead(zipUrl).apply {
-            previousEtag.takeIf { it.isNotEmpty() }?.let { setHeader("If-None-Match", it) }
-        }).takeIf { it.statusLine.statusCode != 304 }?.getFirstHeader("ETag")?.value
+        val request = HttpHead(zipUrl).apply {
+            if (previousEtag.isNotEmpty()) {
+                setHeader("If-None-Match", previousEtag)
+            }
+        }
+
+        val response = client.execute(request)
+        val matchesLastETag = response.statusLine.statusCode == 304
 
         // If ETag is different, download and process the ZIP file
-        if (currentEtag != previousEtag) {
+        if (!matchesLastETag || force) {
             client.execute(HttpGet(zipUrl))
                 .takeIf { it.statusLine.statusCode == 200 }?.entity?.content?.use { zipStream ->
                     ZipInputStream(zipStream).use { zip ->
@@ -300,6 +305,8 @@ object NetworkUtils {
                         }
                     }
                 }
+
+            val currentEtag = response.getFirstHeader("ETag")?.value
             // Save the new ETag to file
             currentEtag?.let {
                 Files.write(etagFile.toPath(), it.toByteArray(StandardCharsets.UTF_8))
@@ -308,10 +315,15 @@ object NetworkUtils {
             DataManager.saveDataToFile(ConfigManager.modDirectoryPath.resolve("repo/NeuMobs.json"), NeuMobs)
             DataManager.saveDataToFile(ConfigManager.modDirectoryPath.resolve("repo/NeuConstants.json"), NeuConstants)
         } else {
-            println("Debug: ETag matches. No need to download. Loading from file...")
+            if(CustomizationConfig.developerMode) println("Debug: ETag matches. No need to download. Loading from file...")
             NeuItems = DataManager.loadDataFromFile(ConfigManager.modDirectoryPath.resolve("repo/NeuItems.json"))
             NeuMobs = DataManager.loadDataFromFile(ConfigManager.modDirectoryPath.resolve("repo/NeuMobs.json"))
             NeuConstants = DataManager.loadDataFromFile(ConfigManager.modDirectoryPath.resolve("repo/NeuConstants.json"))
+
+            if(NeuItems.entrySet().size == 0 || NeuMobs.entrySet().size == 0 || NeuConstants.entrySet().size == 0) {
+                println("Failed to load NEU API data from file. Redownloading...")
+                downloadAndProcessRepo(true)
+            }
         }
     }
 }
