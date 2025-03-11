@@ -51,54 +51,37 @@ object MiningConfig : Config() {
         name = "Gemstone Grinder Overlay",
         description = "Enables an overlay for the Gemstone Grinder GUI, displaying useful information about gemstone slots, including costs and other details.",
         category = "Mining",
-        subcategory = "Misc."
+        subcategory = "Overlays"
     )
     var gemstoneOverlay = true
 
-//    @ConfigProperty(
-//        type = ConfigType.TOGGLE,
-//        name = "Automaton Loot Tracker",
-//        description = "Tracks the loot from Automatons. Starts after an Automaton is killed",
-//        category = "Mining",
-//        subcategory = "Trackers"
-//    )
-//    var AutomatonTracker = false
-//
-//    @ConfigProperty(
-//        type = ConfigType.TOGGLE,
-//        name = "Gemstone Tracker",
-//        description = "Tracks the stats from mining gemstones like Coins per hour",
-//        category = "Mining",
-//        subcategory = "Trackers"
-//    )
-//    var gemstoneTracker = false
-//
-//    @ConfigProperty(
-//        type = ConfigType.TOGGLE,
-//        name = "Commissions Tracker",
-//        description = "Tracks your progress on commissions using real numbers instead of percentages",
-//        category = "Mining",
-//        subcategory = "Trackers"
-//    )
-//    var CommisionsTracker = true
-//
-//    @ConfigProperty(
-//        type = ConfigType.TOGGLE,
-//        name = "Highlight Placed Cobblestone",
-//        description = "Highlights the cobblestone you place in crystal hollows",
-//        category = "Mining",
-//        subcategory = "Crystal Hollows",
-//        isParent = true
-//    )
-//    var highlightCobblestone = false
-//
-//    @ConfigProperty(
-//        type = ConfigType.COLOR,
-//        name = "Cobblestone Color",
-//        description = "",
-//        category = "Mining",
-//        subcategory = "Crystal Hollows",
-//        parentName = "Highlight Placed Cobblestone"
-//    )
-//    var highlightCobblestoneColor = Color.cyan
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Forge Flipper Overlay",
+        description = "Shows profitable forge crafts to flip when in the Forge Menus",
+        category = "Mining",
+        subcategory = "Overlays",
+        isParent = true
+    )
+    var forgeFlipperOverlay = true
+
+    @ConfigProperty(
+        type = ConfigType.NUMBER,
+        name = "Max Price (Millions)",
+        description = "Hides Flips that require a cost above ",
+        category = "Mining",
+        subcategory = "Overlays",
+        parentName = "Forge Flipper Overlay"
+    )
+    var forgeFlipperMaxPrice = 0
+
+    @ConfigProperty(
+        type = ConfigType.NUMBER,
+        name = "Max HOTM Level",
+        description = "Hides Flips that require a HOTM level above this value",
+        category = "Mining",
+        subcategory = "Overlays",
+        parentName = "Forge Flipper Overlay"
+    )
+    var forgeFlipperMaxHotm = 10
 }

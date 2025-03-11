@@ -4,7 +4,7 @@ import gg.essential.elementa.dsl.constraint
 import gg.essential.universal.UMatrixStack
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.apis.ItemApi
-import mrfast.sbt.config.categories.GeneralConfig
+import mrfast.sbt.config.categories.MiningConfig
 import mrfast.sbt.customevents.GuiContainerBackgroundDrawnEvent
 import mrfast.sbt.guis.components.OutlinedRoundedRectangle
 import mrfast.sbt.managers.LocationManager
@@ -12,16 +12,26 @@ import mrfast.sbt.managers.OverlayManager
 import mrfast.sbt.utils.GuiUtils
 import mrfast.sbt.utils.GuiUtils.chestName
 import mrfast.sbt.utils.ItemUtils
+import mrfast.sbt.utils.Utils
 import mrfast.sbt.utils.Utils.abbreviateNumber
+import mrfast.sbt.utils.Utils.clean
+import mrfast.sbt.utils.Utils.getInventory
 import mrfast.sbt.utils.Utils.getRegexGroups
 import mrfast.sbt.utils.Utils.getStringWidth
 import mrfast.sbt.utils.Utils.toFormattedDuration
+import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.init.Items
+import net.minecraft.item.ItemStack
 import net.minecraftforge.fml.common.eventhandler.Event
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Mouse
 import java.awt.Color
 import kotlin.math.floor
+import kotlin.math.max
 
 @SkyblockTweaks.EventComponent
 object ForgeFlipperOverlay {
@@ -42,6 +52,37 @@ object ForgeFlipperOverlay {
         var hotmRequired = 0
     }
 
+    private var itemsInMenu = mutableListOf<String>()
+    private val forgeMenuNames = listOf(
+        "Refining",
+        "Gear",
+        "Perfect Gemstones",
+        "Forging",
+        "Reforge Stones",
+        "Pets",
+        "Tools",
+        "Drill Parts",
+        "Other"
+    )
+
+    @SubscribeEvent
+    fun onGuiDraw(event: ClientTickEvent) {
+        if (event.phase == TickEvent.Phase.START) return
+        if (!MiningConfig.forgeFlipperOverlay || LocationManager.currentIsland != "Dwarven Mines") return
+
+        val gui = Utils.mc.currentScreen
+        if (gui !is GuiChest) return
+
+        itemsInMenu.clear()
+        val inventory = gui.getInventory()
+        for (i in 0..inventory.sizeInventory) {
+            val stack = inventory.getStackInSlot(i)
+            if (stack != null) {
+                itemsInMenu.add(stack.displayName.clean())
+            }
+        }
+    }
+
     fun findForgeFlips() {
         statusMessage = "Getting Skyblock Forge Recipes.."
         ItemApi.getSkyblockItems().entrySet().forEach {
@@ -58,11 +99,12 @@ object ForgeFlipperOverlay {
             forgeFlip.output = recipe.get("overrideOutputId").asString
             forgeFlip.secondsDuration = recipe.get("duration").asInt
 
-            if(it.value.asJsonObject.has("crafttext")) {
+            if (it.value.asJsonObject.has("crafttext")) {
                 val craftText = it.value.asJsonObject.get("crafttext").asString
-                if(craftText.matches("""Requires: HotM (.*)""".toRegex())) {
-                    val hotmLevel = craftText.getRegexGroups("""Requires: HotM (.*)""".toRegex())?.get(1)?.value?.toInt()
-                    if(hotmLevel != null) {
+                if (craftText.matches("""Requires: HotM (.*)""".toRegex())) {
+                    val hotmLevel =
+                        craftText.getRegexGroups("""Requires: HotM (.*)""".toRegex())?.get(1)?.value?.toInt()
+                    if (hotmLevel != null) {
                         forgeFlip.hotmRequired = hotmLevel
                     }
                 }
@@ -96,14 +138,14 @@ object ForgeFlipperOverlay {
             if (forgeFlip.totalCost < outputValue) {
                 forgeFlip.profit = (outputValue - forgeFlip.totalCost).toInt()
             }
-            // Hide if profit is less than 100k
-            if (forgeFlip.profit < 100_000) return@forEach
+            if(forgeFlip.profit <= 0) return@forEach
 
             val minutes = forgeFlip.secondsDuration.toDouble() / 60.0
             val hours = minutes / 60.0
             forgeFlip.coinsPerHour = forgeFlip.profit / hours
 
-            forgeFlips[forgeFlip.output] = forgeFlip
+            val displayName = it.value.asJsonObject.get("displayname").asString.clean()
+            forgeFlips[displayName] = forgeFlip
             statusMessage = "Done"
         }
     }
@@ -123,10 +165,13 @@ object ForgeFlipperOverlay {
         // 0 = most coins/hr
         // 1 = most profit
         private var sortingType = 0
-        private var hotmMax = 0
+        private var hotmMax = MiningConfig.forgeFlipperMaxHotm
         private var scrollOffset = 0
+        private var maxPriceLong = 10_000_000L
 
         override fun draw(mouseX: Int, mouseY: Int, event: Event) {
+            // Cant store config as a long so we store it as a int and convert it to a long when needed
+            maxPriceLong = MiningConfig.forgeFlipperMaxPrice * 1_000_000L
             val lines = mutableListOf(
                 GuiUtils.Element(
                     5f, 5f, "§e§lForge Flips", null, null
@@ -139,17 +184,50 @@ object ForgeFlipperOverlay {
                         scrollOffset = 0
                     },
                     drawBackground = true,
-                ),
+                )
+            )
+            // Base the X position off the previous element width included
+            lines.add(
                 GuiUtils.Element(
-                    130f, 5f, "§dHOTM $hotmMax",
-                    listOf("§cHides Flips that require a HOTM level above this"),
+                    lines[1].x + lines[1].width + 7f, 5f, "§dHOTM $hotmMax",
+                    listOf("§cHides Flips that require a HOTM level above this value"),
                     {
-                        hotmMax = (hotmMax + 1) % 11
+                        hotmMax = (hotmMax % 10) + 1
+                        MiningConfig.forgeFlipperMaxHotm = hotmMax
+
+                        SkyblockTweaks.config.saveConfig()
+
+                        // Reset scroll offset
+                        scrollOffset = 0
                     },
                     drawBackground = true,
                 )
             )
-            if(forgeFlips.isEmpty()) {
+            // Base the X position off the previous element width included
+            lines.add(
+                GuiUtils.Element(
+                    lines[2].x + lines[2].width + 7f,
+                    5f,
+                    "§6${if (MiningConfig.forgeFlipperMaxPrice == 0) "Any" else maxPriceLong.abbreviateNumber()}",
+                    listOf("§cHides Flips that require a cost above this value"),
+                    {
+                        // Double the limit each click
+                        MiningConfig.forgeFlipperMaxPrice *= 2
+
+                        // Reset back to 10m if no limit
+                        if (MiningConfig.forgeFlipperMaxPrice == 0) MiningConfig.forgeFlipperMaxPrice = 10
+                        // Set limit to no limit if over 1b
+                        if (MiningConfig.forgeFlipperMaxPrice > 1000) MiningConfig.forgeFlipperMaxPrice = 0
+
+                        SkyblockTweaks.config.saveConfig()
+                        // Reset scroll offset
+                        scrollOffset = 0
+                    },
+                    drawBackground = true,
+                )
+            )
+
+            if (forgeFlips.isEmpty()) {
                 statusMessage = "§cFailed to get Forge Flips.."
                 lines.add(
                     GuiUtils.Element(
@@ -158,20 +236,31 @@ object ForgeFlipperOverlay {
                 )
             }
 
-            if(forgeFlips.isNotEmpty()) {
+            if (forgeFlips.isNotEmpty()) {
                 var sorted = forgeFlips.entries.sortedByDescending {
                     if (sortingType == 0) it.value.coinsPerHour else it.value.profit.toDouble()
                 }
                 sorted = sorted.filter { it.value.hotmRequired <= hotmMax }
-
+                if (maxPriceLong != 0L) {
+                    sorted = sorted.filter { it.value.totalCost.toLong() <= maxPriceLong }
+                }
+                val guiName = (event as GuiContainerBackgroundDrawnEvent).gui!!.chestName()
+                if (forgeMenuNames.contains(guiName)) {
+                    sorted = sorted.filter { it.key in itemsInMenu }
+                }
                 // Scrolling Logic
                 val scrollAmount = Mouse.getDWheel()
                 if (scrollAmount != 0) {
                     scrollOffset += -floor(scrollAmount / 120.0).toInt()
-                    scrollOffset = scrollOffset.coerceIn(0, forgeFlips.size - (maxFlipsShown + 1))
+
+                    scrollOffset = scrollOffset.coerceIn(0, max(sorted.size - maxFlipsShown,0))
                 }
-                if (sorted.size > maxFlipsShown + scrollOffset) sorted =
-                    sorted.subList(scrollOffset, scrollOffset + maxFlipsShown)
+
+                if (sorted.isNotEmpty()) {
+                    val endIndex = (scrollOffset + maxFlipsShown).coerceAtMost(sorted.size) // Prevent out-of-bounds error
+                    val startIndex = scrollOffset
+                    sorted = sorted.subList(startIndex, endIndex)
+                }
 
                 val holdingShift = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)
                 var first = true
@@ -206,6 +295,7 @@ object ForgeFlipperOverlay {
 
                     val yOffset = if (first) 4f else 2f
                     val y = GuiUtils.getLowestY(lines) + yOffset
+                    val itemStack = ItemApi.createItemStack(it.value.output) ?: ItemStack(Items.apple)
                     lines.addAll(
                         listOf(
                             GuiUtils.Element(
@@ -216,7 +306,7 @@ object ForgeFlipperOverlay {
                                 null
                             ),
                             GuiUtils.ItemStackElement(
-                                ItemApi.createItemStack(it.key)!!,
+                                itemStack,
                                 3f,
                                 y - 1f,
                                 12,
@@ -255,12 +345,12 @@ object ForgeFlipperOverlay {
             GlStateManager.translate(0f, 0f, -52f)
         }
 
-        private val menuNames = listOf("The Forge", "Select Process", "Select Upgrade","Refining","Gear","Perfect Gemstones","Forging","Reforge Stones", "Pets", "Tools", "Drill Parts","Other")
-
         override fun isActive(event: Event): Boolean {
-            if (event !is GuiContainerBackgroundDrawnEvent || event.gui == null || !GeneralConfig.katFlipperOverlay || LocationManager.currentIsland!="Dwarven Mines") return false
+            if (event !is GuiContainerBackgroundDrawnEvent || event.gui == null || !MiningConfig.forgeFlipperOverlay || LocationManager.currentIsland != "Dwarven Mines") return false
 
-            if (menuNames.any { event.gui!!.chestName().contains(it) }) {
+            if (forgeMenuNames.any {
+                    event.gui!!.chestName().contains(it)
+                } || event.gui!!.chestName() == "The Forge" || event.gui!!.chestName().contains("Select Process")) {
                 if (forgeFlips.isEmpty()) {
                     findForgeFlips()
                 }
