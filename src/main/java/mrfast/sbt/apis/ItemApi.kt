@@ -7,6 +7,7 @@ import mrfast.sbt.config.categories.DeveloperConfig
 import mrfast.sbt.managers.ConfigManager
 import mrfast.sbt.managers.DataManager
 import mrfast.sbt.managers.DataManager.loadDataFromFile
+import mrfast.sbt.utils.ChatUtils
 import mrfast.sbt.utils.ItemUtils
 import mrfast.sbt.utils.ItemUtils.getSkyblockId
 import mrfast.sbt.utils.NetworkUtils
@@ -32,7 +33,6 @@ object ItemApi {
     init {
         if(itemDataCache.entrySet().size > 0) {
             skyblockItems = itemDataCache
-            loadedNEURepo = true
         }
         if(liveAuctionDataCache.entrySet().size > 0) liveAuctionData = liveAuctionDataCache
 
@@ -45,12 +45,12 @@ object ItemApi {
         }, 0, 1000 * 60 * 15)
     }
 
-    private fun loadNeuRepo(logging: Boolean) {
+    private fun loadNeuRepo(logging: Boolean, force: Boolean) {
         skyblockItems = JsonObject()
         try {
             if (logging) println("Starting to download Skyblock Items from NEU Repo")
 
-            NetworkUtils.downloadAndProcessRepo()
+            NetworkUtils.downloadAndProcessRepo(force)
             NetworkUtils.NeuItems.entrySet().forEach {
                 val newKey = ItemUtils.convertNeuItemToSBT(it.key, it.value.asJsonObject)
                 // Add custom ID to item properties
@@ -62,7 +62,6 @@ object ItemApi {
                     val rarity = ItemUtils.extractRarity(lore[lore.size() - 1].asString)
                     it.value.asJsonObject.addProperty("rarity", rarity)
                 }
-
                 skyblockItems.add(newKey, it.value)
             }
 
@@ -77,6 +76,7 @@ object ItemApi {
     /*
      * Responsible for getting item data from NEU Repo and SBT API,
      * if fails, it has a backup of the last known data.
+     * If force is true, it will clear the cache and get all data, from NEU Repo and SBT API
      */
     fun updateSkyblockItemData(logging: Boolean, force: Boolean = false) {
         if (force) {
@@ -86,7 +86,7 @@ object ItemApi {
         }
 
         Thread {
-            if (!loadedNEURepo) loadNeuRepo(logging)
+            if (!loadedNEURepo) loadNeuRepo(logging, force)
 
             try {
                 // Wait until player is in world, for some reason this can fail
@@ -182,6 +182,7 @@ object ItemApi {
 
     private val itemStackCache = mutableMapOf<String, ItemStack>()
     fun createItemStack(itemId: String): ItemStack? {
+        if (itemId.isEmpty()) return null
         if (itemStackCache.contains(itemId)) return itemStackCache[itemId]
 
         // Use coin talisman as texture for skyblock_coin
@@ -250,10 +251,23 @@ object ItemApi {
             return itemStack
         }
 
-        // Assuming skyblockItems is a map containing NBT data as strings
-        val itemJson = skyblockItems[itemId]?.asJsonObject ?: return null
-        val nbtString = itemJson["nbttag"]?.asString ?: return null
-        val mcItemId = itemJson["itemid"]?.asString ?: return null
+        val itemJson = skyblockItems[itemId]?.asJsonObject
+        if(itemJson == null) {
+            ChatUtils.sendClientMessage("§cFailed to get item data for §e$itemId§c, try §7/sbtd reload")
+            return null
+        }
+
+        val nbtString = itemJson["nbttag"]?.asString
+        if(nbtString == null) {
+            ChatUtils.sendClientMessage("§cFailed to get NBT for item §e$itemId§c, try §7/sbtd reload")
+            return null
+        }
+
+        val mcItemId = itemJson["itemid"]?.asString
+        if(mcItemId == null) {
+            ChatUtils.sendClientMessage("§cFailed to get item ID for item §e$itemId§c, try /sbtd reload")
+            return null
+        }
 
         // Parse NBT string
         val nbtCompound = try {

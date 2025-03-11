@@ -105,7 +105,7 @@ object DungeonConfig : Config() {
     @ConfigProperty(
         type = ConfigType.TOGGLE,
         name = "Highlight Trash",
-        description = "Draws a red box around items that just fill up your inventory.",
+        description = "Draws a red box around items that just fill up your inventory. §cChange trash items with /sbt trash",
         category = "Miscellaneous",
         subcategory = "Items",
         isParent = true

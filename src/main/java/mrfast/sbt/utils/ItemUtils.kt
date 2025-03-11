@@ -36,7 +36,6 @@ object ItemUtils {
         if (newId.contains(";")) {
             if(neuData.asJsonObject.get("displayname").asString.contains("[Lvl")) {
                 newId = convertNeuPetID(neuId)
-                println("Converted pet id: $newId")
             }
             if (neuData.asJsonObject.get("itemid").asString == "minecraft:enchanted_book") {
                 newId = "ENCHANTMENT_${newId.replace(";", "_")}"
