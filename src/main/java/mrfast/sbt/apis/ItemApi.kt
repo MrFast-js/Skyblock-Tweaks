@@ -90,11 +90,13 @@ object ItemApi {
 
             try {
                 // Wait until player is in world, for some reason this can fail
-                while (Utils.mc.theWorld == null || Utils.mc.theWorld?.playerEntities?.stream() == null) {
+                val nearby = Utils.mc.theWorld.playerEntities.size
+                while (nearby == 0) {
+                    println("Waiting for player to join world 2..")
                     Thread.sleep(5_000)
                 }
             } catch (e: Exception) {
-                if(logging) println("Waiting for player to join world..")
+                println("Waiting for player to join world..")
 
                 Thread.sleep(10_000)
                 updateSkyblockItemData(logging, force)
@@ -171,11 +173,16 @@ object ItemApi {
         }
     }
 
+    private val itemNameIDCache = mutableMapOf<String, String>()
     fun getItemIdFromName(displayName: String, ignoreFormatting: Boolean? = false): String? {
+        if(itemNameIDCache.containsKey(displayName.clean())) return itemNameIDCache[displayName.clean()]
+
         return skyblockItems.entrySet().find { entry ->
             val itemName = entry.value?.asJsonObject?.get("displayname")?.asString ?: return@find false
             val cleanedItemName = if (ignoreFormatting == true) itemName.clean() else itemName
             val cleanedDisplayName = if (ignoreFormatting == true) displayName.clean() else displayName
+
+            if(cleanedItemName == cleanedDisplayName) itemNameIDCache[cleanedDisplayName] = entry.key
             cleanedItemName == cleanedDisplayName
         }?.key
     }

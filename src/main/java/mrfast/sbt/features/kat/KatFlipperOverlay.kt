@@ -6,6 +6,7 @@ import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.apis.ItemApi
 import mrfast.sbt.config.categories.GeneralConfig
 import mrfast.sbt.customevents.GuiContainerBackgroundDrawnEvent
+import mrfast.sbt.features.mining.dwarvenmines.ForgeFlipperOverlay
 import mrfast.sbt.guis.components.OutlinedRoundedRectangle
 import mrfast.sbt.managers.OverlayManager
 import mrfast.sbt.utils.GuiUtils
@@ -20,6 +21,7 @@ import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Mouse
 import java.awt.Color
 import kotlin.math.floor
+import kotlin.math.max
 
 @SkyblockTweaks.EventComponent
 object KatFlipperOverlay {
@@ -173,10 +175,15 @@ object KatFlipperOverlay {
                 val scrollAmount = Mouse.getDWheel()
                 if (scrollAmount != 0) {
                     scrollOffset += -floor(scrollAmount / 120.0).toInt()
-                    scrollOffset = scrollOffset.coerceIn(0, katFlips.size - (maxFlipsShown + 1))
+
+                    scrollOffset = scrollOffset.coerceIn(0, max(sorted.size - ForgeFlipperOverlay.maxFlipsShown,0))
                 }
-                if (sorted.size > maxFlipsShown + scrollOffset) sorted =
-                    sorted.subList(scrollOffset, scrollOffset + maxFlipsShown)
+
+                if (sorted.isNotEmpty()) {
+                    val endIndex = (scrollOffset + maxFlipsShown).coerceAtMost(sorted.size) // Prevent out-of-bounds error
+                    val startIndex = scrollOffset
+                    sorted = sorted.subList(startIndex, endIndex)
+                }
 
                 val holdingShift = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)
                 var first = true

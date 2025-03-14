@@ -5,7 +5,6 @@ import com.mojang.realmsclient.gui.ChatFormatting
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.apis.ItemApi
 import mrfast.sbt.apis.PlayerStats
-import mrfast.sbt.features.kat.KatFlipperOverlay
 import mrfast.sbt.managers.ConfigManager
 import mrfast.sbt.managers.LocationManager
 import mrfast.sbt.utils.*
@@ -20,7 +19,6 @@ import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.BlockPos
 import java.awt.Desktop
 import java.io.File
-import java.io.IOException
 import java.util.*
 
 @SkyblockTweaks.CommandComponent
@@ -96,7 +94,7 @@ class DebugCommand : CommandBase() {
                 Thread {
                     ChatUtils.sendClientMessage("§7Reconnecting to SBT Websocket..", prefix = true)
                     SocketUtils.setupSocket()
-                    while(!SocketUtils.socketConnected) Thread.sleep(300)
+                    while (!SocketUtils.socketConnected) Thread.sleep(300)
                     ChatUtils.sendClientMessage("§aConnected to SBT Websocket!", prefix = true)
                     Utils.playSound("random.orb", 0.5)
 
@@ -123,7 +121,7 @@ class DebugCommand : CommandBase() {
             }
 
             "test" -> {
-                KatFlipperOverlay.findKatFlips()
+
             }
 
             "log" -> {
@@ -231,17 +229,18 @@ class DebugCommand : CommandBase() {
     }
 
     private fun openFile(file: File, copyContents: Boolean) {
-        if (copyContents) {
-            Utils.copyToClipboard(file.readText())
-            ChatUtils.sendClientMessage("§aCopied ${file.name} to clipboard!")
-            return
-        }
-        if (Desktop.isDesktopSupported()) {
-            try {
-                Desktop.getDesktop().open(file)
-            } catch (e: IOException) {
-                e.printStackTrace() // Handle the exception according to your needs
+        try {
+            if (copyContents) {
+                Utils.copyToClipboard(file.readText())
+                ChatUtils.sendClientMessage("§aCopied ${file.name} to clipboard!")
+                return
             }
+            if (Desktop.isDesktopSupported()) {
+                Desktop.getDesktop().open(file)
+
+            }
+        } catch (e: Exception) {
+            e.printStackTrace() // Handle the exception according to your needs
         }
     }
 
@@ -327,6 +326,7 @@ class DebugCommand : CommandBase() {
                 "read", "write" -> getListOfStringsMatchingLastWord(args, listOf("<location>"))
                 else -> emptyList()
             }
+
             else -> emptyList()
         }
     }

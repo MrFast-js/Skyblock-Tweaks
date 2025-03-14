@@ -51,12 +51,42 @@ object ItemUtils {
         return "${parts[0]}-${intToPetTier(Integer.parseInt(parts[1]))}"
     }
 
+    private val enchantCache = mutableMapOf<String, String?>()
+    private fun getEnchantFromName(name: String): String? {
+        val cleanedName = name.clean()
+
+        if(enchantCache.containsKey(cleanedName)) {
+            return enchantCache[cleanedName]
+        }
+
+        ItemApi.getSkyblockItems().entrySet().forEach { (id, itemJSON) ->
+            val itemId = itemJSON.asJsonObject?.get("itemid")?.asString ?: return@forEach
+            if (itemId != "minecraft:enchanted_book") return@forEach
+
+            val lore = itemJSON.asJsonObject.getAsJsonArray("lore") ?: return@forEach
+            if (lore.size() > 0 && lore[0].asString.clean() == cleanedName) {
+                enchantCache[cleanedName] = id
+                return id
+            }
+        }
+
+        enchantCache[cleanedName] = null
+        return null
+    }
+
+    private val skyblockIDcache = mutableMapOf<ItemStack, String?>()
     fun ItemStack.getSkyblockId(): String? {
-        val nbt = this.getExtraAttributes() ?: return null
+        if(skyblockIDcache.containsKey(this)) {
+            return skyblockIDcache[this]
+        }
+        val nbt = this.getExtraAttributes()
 
-        if (!nbt.hasKey("id")) return null
+        if (nbt == null) {
+            skyblockIDcache[this] = getEnchantFromName(this.displayName) ?: ItemApi.getItemIdFromName(this.displayName)
+            return skyblockIDcache[this]
+        }
 
-        val id = nbt.getString("id")
+        val id = nbt.getString("id")?: return null
 
         if (id == "PET" && nbt.hasKey("petInfo")) {
             val petInfoNbt = nbt.getString("petInfo") ?: return null
@@ -64,13 +94,15 @@ object ItemUtils {
             if (!petInfoJson.isJsonObject) return null
             val petInfo = petInfoJson.asJsonObject
             val tier = petInfo.get("tier").asString
-            return "${petInfo.get("type").asString}-$tier"
+            skyblockIDcache[this] = "${petInfo.get("type").asString}-$tier"
+            return skyblockIDcache[this]
         }
 
         if (id == "RUNE" && nbt.hasKey("runes")) {
             val runeType = nbt.getCompoundTag("runes")?.keySet?.firstOrNull()
             if (runeType != null) {
-                return "${runeType}_RUNE-${nbt.getCompoundTag("runes").getInteger(runeType)}"
+                skyblockIDcache[this] = "${runeType}_RUNE-${nbt.getCompoundTag("runes").getInteger(runeType)}"
+                return skyblockIDcache[this]
             }
         }
 
@@ -84,14 +116,14 @@ object ItemUtils {
             if (enchants.isNotEmpty()) {
                 val enchName = enchants.keys.first()
                 val enchLvl = enchants[enchName]
-                return "ENCHANTMENT_${enchants.keys.first().uppercase()}_$enchLvl"
+                skyblockIDcache[this] = "ENCHANTMENT_${enchName.uppercase()}_$enchLvl"
+                return skyblockIDcache[this]
             } else {
                 return id
             }
         }
 
         return id
-
     }
 
     fun intToPetTier(tier: Int): String {

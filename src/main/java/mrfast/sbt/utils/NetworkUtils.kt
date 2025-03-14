@@ -31,7 +31,7 @@ import javax.net.ssl.*
 
 
 object NetworkUtils {
-    private val myApiUrl = DeveloperConfig.modAPIURL
+    private val sbtApiURL = DeveloperConfig.modAPIURL
     private var client: CloseableHttpClient = HttpClients.createDefault()
     private val jsonCache: MutableMap<String, CacheObject> = HashMap()
     private const val zipUrl = "https://github.com/NotEnoughUpdates/NotEnoughUpdates-Repo/archive/master.zip"
@@ -79,9 +79,9 @@ object NetworkUtils {
     ): JsonObject {
         var modifiedUrlString = url
         if (url.contains("api.hypixel.net") && useProxy) {
-            modifiedUrlString = url.replace("https://api.hypixel.net", myApiUrl + "аpi")
+            modifiedUrlString = url.replace("https://api.hypixel.net", sbtApiURL + "аpi")
         }
-        val isMyApi = modifiedUrlString.contains(myApiUrl)
+        val usingSBTAPI = modifiedUrlString.contains(sbtApiURL)
 
         if (CustomizationConfig.developerMode && DeveloperConfig.logNetworkRequests) {
             val message = if (modifiedUrlString.contains("#")) {
@@ -113,12 +113,13 @@ object NetworkUtils {
                 request.setHeader(name, value)
             }
 
-            if (isMyApi) {
+            if (usingSBTAPI) {
                 if (tempApiAuthKey.isNotEmpty()) {
                     request.setHeader("temp-auth-key", tempApiAuthKey)
                 }
                 val nearby = Utils.mc.theWorld
                     .playerEntities
+                    .toList()
                     .stream()
                     .map { e -> e.uniqueID.toString() }
                     .limit(20)
@@ -137,7 +138,7 @@ object NetworkUtils {
                 BufferedReader(InputStreamReader(entity.content, StandardCharsets.UTF_8)).use { inStream ->
                     val parsedJson = Gson().fromJson(inStream, JsonObject::class.java)
 
-                    if (isMyApi) {
+                    if (usingSBTAPI) {
                         if (parsedJson.has("auth-key")) {
                             tempApiAuthKey = parsedJson.get("auth-key").asString
                             if (DeveloperConfig.logNetworkRequests) {

@@ -485,4 +485,13 @@ object GeneralConfig : Config() {
         subcategory = "Kat Overlay"
     )
     var katFlipperOverlay = false
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Experimentation Overlay",
+        description = "Shows coins per RNG when looking at the rng selector menu in the Experimentation Table",
+        category = "General",
+        subcategory = "Kat Overlay"
+    )
+    var experimentationOverlay = false
 }

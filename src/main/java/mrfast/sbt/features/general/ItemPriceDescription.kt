@@ -5,10 +5,13 @@ import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.apis.ItemApi
 import mrfast.sbt.config.categories.CustomizationConfig
 import mrfast.sbt.config.categories.MiscellaneousConfig
+import mrfast.sbt.utils.GuiUtils.chestName
 import mrfast.sbt.utils.ItemUtils.getDataString
 import mrfast.sbt.utils.ItemUtils.getSkyblockId
+import mrfast.sbt.utils.Utils
 import mrfast.sbt.utils.Utils.abbreviateNumber
 import mrfast.sbt.utils.Utils.formatNumber
+import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraftforge.event.entity.player.ItemTooltipEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import kotlin.math.abs
@@ -21,6 +24,7 @@ object ItemPriceDescription {
         if (!MiscellaneousConfig.showItemPricingData) return
 
         val stack = event.itemStack
+        val menuName = (Utils.mc.currentScreen as? GuiChest)?.chestName() ?: ""
         val pricingData = ItemApi.getItemInfo(stack) ?: return
 
         pricingData.takeIf { it.has("activeBin") || it.has("activeAuc") }?.let {
@@ -52,12 +56,20 @@ object ItemPriceDescription {
         }
 
         pricingData.takeIf { it.has("bazaarBuy") || it.has("bazaarSell") }?.let {
-            val bazaarBuy =
-                it.takeIf { it.has("bazaarBuy") }?.get("bazaarBuy")?.asLong?.times(stack.stackSize)?.formatNumber()
-                    ?: "§4Unknown"
-            val bazaarSell =
-                it.takeIf { it.has("bazaarSell") }?.get("bazaarSell")?.asLong?.times(stack.stackSize)?.formatNumber()
-                    ?: "§4Unknown"
+            val multiplier = if (!menuName.contains("Experimentation")) stack.stackSize else 1
+
+            val bazaarBuy = it.takeIf { it.has("bazaarBuy") }
+                ?.get("bazaarBuy")
+                ?.asLong
+                ?.times(multiplier)
+                ?.formatNumber() ?: "§4Unknown"
+
+            val bazaarSell = it.takeIf { it.has("bazaarSell") }
+                ?.get("bazaarSell")
+                ?.asLong
+                ?.times(multiplier)
+                ?.formatNumber() ?: "§4Unknown"
+
             event.toolTip.add("§3Bazaar: §a$bazaarBuy Buy §7| §b$bazaarSell Sell")
         }
 
