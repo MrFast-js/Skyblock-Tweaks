@@ -1,8 +1,10 @@
 package mrfast.sbt.utils
 
 import com.google.gson.JsonObject
+import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.apis.ItemApi
 import mrfast.sbt.config.categories.AuctionHouseConfig
+import mrfast.sbt.customevents.WorldLoadEvent
 import mrfast.sbt.features.general.ItemPriceDescription
 import mrfast.sbt.utils.Utils.clean
 import net.minecraft.init.Items
@@ -10,13 +12,19 @@ import net.minecraft.item.ItemStack
 import net.minecraft.nbt.CompressedStreamTools
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraftforge.common.util.Constants
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.apache.commons.codec.binary.Base64InputStream
 import java.io.ByteArrayInputStream
 import java.io.IOException
 import java.nio.charset.StandardCharsets
 import java.util.*
 
+@SkyblockTweaks.EventComponent
 object ItemUtils {
+    @SubscribeEvent
+    fun onWorldChange(event: WorldLoadEvent) {
+        skyblockIDcache.clear()
+    }
 
     fun getHeldItem(): ItemStack? {
         return Utils.mc.thePlayer.heldItem

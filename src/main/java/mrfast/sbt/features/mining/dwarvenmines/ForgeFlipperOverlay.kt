@@ -100,6 +100,8 @@ object ForgeFlipperOverlay {
             if(forgeFlip.output.contains(";")) forgeFlip.output = ItemUtils.convertNeuPetID(forgeFlip.output).replace("{LVL}","1")
 
             forgeFlip.secondsDuration = recipe.get("duration").asInt
+            // Stop flip from showing if the duration is 30 seconds, this makes coins/hr inaccurate
+            if(forgeFlip.secondsDuration == 30) return@forEach
 
             if (it.value.asJsonObject.has("crafttext")) {
                 val craftText = it.value.asJsonObject.get("crafttext").asString
