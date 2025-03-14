@@ -300,6 +300,8 @@ object ItemUtils {
     }
 
     fun getItemBasePrice(id: String, sell:Boolean=true): Double {
+        if(id == "SKYBLOCK_COIN") return 1.0
+
         val itemInfo = ItemApi.getItemInfo(id) ?: return -1.0
 
         if (sell && itemInfo.has("bazaarSell")) {

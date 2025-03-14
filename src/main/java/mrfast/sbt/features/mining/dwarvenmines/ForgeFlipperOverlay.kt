@@ -97,6 +97,8 @@ object ForgeFlipperOverlay {
 
             val forgeFlip = ForgeFlip()
             forgeFlip.output = recipe.get("overrideOutputId").asString
+            if(forgeFlip.output.contains(";")) forgeFlip.output = ItemUtils.convertNeuPetID(forgeFlip.output).replace("{LVL}","1")
+
             forgeFlip.secondsDuration = recipe.get("duration").asInt
 
             if (it.value.asJsonObject.has("crafttext")) {
@@ -112,17 +114,22 @@ object ForgeFlipperOverlay {
 
             var requiresSoulboundItem = false
             recipe.get("inputs").asJsonArray.forEach { item ->
-                val item = item.asString
-                val itemID = item.split(":")[0]
-                val count = item.split(":")[1].toDouble().toInt()
+                val itemString = item.asString
+                var itemID = itemString.split(":")[0]
+                if(itemID.contains(";")) itemID = ItemUtils.convertNeuPetID(itemID).replace("{LVL}","1")
 
-                if (ItemUtils.getItemBasePrice(itemID) != -1.0) {
+                val count = itemString.split(":")[1].toDouble().toInt()
+
+                val buyPrice = ItemUtils.getItemBasePrice(itemID, false)
+
+                if (buyPrice != -1.0) {
                     forgeFlip.requiredItems[itemID] = count
-                    forgeFlip.itemCost += (ItemUtils.getItemBasePrice(itemID, false) * count).toInt()
+                    forgeFlip.itemCost += (buyPrice * count).toInt()
                 } else {
                     requiresSoulboundItem = true
                 }
             }
+
             // Dont show the pet if its upgrade requires a soulbound item
             if (requiresSoulboundItem) return@forEach
 
@@ -144,7 +151,7 @@ object ForgeFlipperOverlay {
             val hours = minutes / 60.0
             forgeFlip.coinsPerHour = forgeFlip.profit / hours
 
-            val displayName = it.value.asJsonObject.get("displayname").asString.clean()
+            val displayName = it.value.asJsonObject.get("displayname").asString.clean().replace("{LVL}","1")
             forgeFlips[displayName] = forgeFlip
             statusMessage = "Done"
         }
@@ -168,6 +175,7 @@ object ForgeFlipperOverlay {
         private var hotmMax = MiningConfig.forgeFlipperMaxHotm
         private var scrollOffset = 0
         private var maxPriceLong = 10_000_000L
+        private var menuName = ""
 
         override fun draw(mouseX: Int, mouseY: Int, event: Event) {
             // Cant store config as a long so we store it as a int and convert it to a long when needed
@@ -259,14 +267,19 @@ object ForgeFlipperOverlay {
                 if (sorted.isNotEmpty()) {
                     val endIndex = (scrollOffset + maxFlipsShown).coerceAtMost(sorted.size) // Prevent out-of-bounds error
                     val startIndex = scrollOffset
-                    sorted = sorted.subList(startIndex, endIndex)
+                    try {
+                        sorted = sorted.subList(startIndex, endIndex)
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
                 }
 
                 val holdingShift = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)
                 var first = true
+
                 sorted.forEach {
                     val outputItem = ItemApi.getItemInfo(it.value.output)
-                    val outputName = outputItem?.get("displayname")?.asString
+                    val outputName = outputItem?.get("displayname")?.asString?.replace("{LVL}","1")
 
                     val hoverText = mutableListOf(
                         "$outputName",
@@ -278,7 +291,7 @@ object ForgeFlipperOverlay {
                     if (holdingShift) {
                         it.value.requiredItems.forEach { (itemID, count) ->
                             val item = ItemApi.getItemInfo(itemID)
-                            val itemName = item?.get("displayname")?.asString
+                            val itemName = if(itemID=="SKYBLOCK_COIN") "§6Coins" else item?.get("displayname")?.asString.toString()
                             val cost = (ItemUtils.getItemBasePrice(itemID, false) * count)
 
                             hoverText.add(" §8• $itemName §7x$count §f➡ §e${cost.abbreviateNumber()}")
@@ -347,6 +360,10 @@ object ForgeFlipperOverlay {
 
         override fun isActive(event: Event): Boolean {
             if (event !is GuiContainerBackgroundDrawnEvent || event.gui == null || !MiningConfig.forgeFlipperOverlay || LocationManager.currentIsland != "Dwarven Mines") return false
+
+            if(event.gui?.inventorySlots?.getSlot(4)?.stack?.displayName?.clean()?.trim()?.isNotEmpty() == true) return false
+            if(menuName != event.gui?.chestName()) scrollOffset = 0
+            menuName = event.gui?.chestName()!!
 
             if (forgeMenuNames.any {
                     event.gui!!.chestName().contains(it)

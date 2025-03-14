@@ -31,13 +31,13 @@ object ItemApi {
     private var liveAuctionDataCache = loadDataFromFile(liveAuctionDataPath)
 
     init {
-        if(itemDataCache.entrySet().size > 0) {
+        if (itemDataCache.entrySet().size > 0) {
             skyblockItems = itemDataCache
         }
-        if(liveAuctionDataCache.entrySet().size > 0) liveAuctionData = liveAuctionDataCache
+        if (liveAuctionDataCache.entrySet().size > 0) liveAuctionData = liveAuctionDataCache
 
         // Update Item Prices every 15 Minutes
-        if(CustomizationConfig.developerMode) println("Starting 15 Minute Interval for Item Data")
+        if (CustomizationConfig.developerMode) println("Starting 15 Minute Interval for Item Data")
         Timer().scheduleAtFixedRate(object : TimerTask() {
             override fun run() {
                 updateSkyblockItemData(false)
@@ -65,7 +65,7 @@ object ItemApi {
                 skyblockItems.add(newKey, it.value)
             }
 
-            if(skyblockItems.entrySet().size > 0) loadedNEURepo = true
+            if (skyblockItems.entrySet().size > 0) loadedNEURepo = true
 
             if (logging) println("Loaded Skyblock Items from NEU Repo!")
         } catch (e: Exception) {
@@ -91,9 +91,12 @@ object ItemApi {
             try {
                 // Wait until player is in world, for some reason this can fail
                 val nearby = Utils.mc.theWorld.playerEntities.size
-                while (nearby == 0) {
-                    println("Waiting for player to join world 2..")
+
+                if(nearby == 0) {
+                    println("Waiting for player to join world 2.. $nearby")
                     Thread.sleep(5_000)
+                    updateSkyblockItemData(logging, force)
+                    return@Thread
                 }
             } catch (e: Exception) {
                 println("Waiting for player to join world..")
@@ -175,14 +178,14 @@ object ItemApi {
 
     private val itemNameIDCache = mutableMapOf<String, String>()
     fun getItemIdFromName(displayName: String, ignoreFormatting: Boolean? = false): String? {
-        if(itemNameIDCache.containsKey(displayName.clean())) return itemNameIDCache[displayName.clean()]
+        if (itemNameIDCache.containsKey(displayName.clean())) return itemNameIDCache[displayName.clean()]
 
         return skyblockItems.entrySet().find { entry ->
             val itemName = entry.value?.asJsonObject?.get("displayname")?.asString ?: return@find false
             val cleanedItemName = if (ignoreFormatting == true) itemName.clean() else itemName
             val cleanedDisplayName = if (ignoreFormatting == true) displayName.clean() else displayName
 
-            if(cleanedItemName == cleanedDisplayName) itemNameIDCache[cleanedDisplayName] = entry.key
+            if (cleanedItemName == cleanedDisplayName) itemNameIDCache[cleanedDisplayName] = entry.key
             cleanedItemName == cleanedDisplayName
         }?.key
     }
@@ -259,19 +262,19 @@ object ItemApi {
         }
 
         val itemJson = skyblockItems[itemId]?.asJsonObject
-        if(itemJson == null) {
+        if (itemJson == null) {
             ChatUtils.sendClientMessage("§cFailed to get item data for §e$itemId§c, try §7/sbtd reload")
             return null
         }
 
         val nbtString = itemJson["nbttag"]?.asString
-        if(nbtString == null) {
+        if (nbtString == null) {
             ChatUtils.sendClientMessage("§cFailed to get NBT for item §e$itemId§c, try §7/sbtd reload")
             return null
         }
 
         val mcItemId = itemJson["itemid"]?.asString
-        if(mcItemId == null) {
+        if (mcItemId == null) {
             ChatUtils.sendClientMessage("§cFailed to get item ID for item §e$itemId§c, try /sbtd reload")
             return null
         }

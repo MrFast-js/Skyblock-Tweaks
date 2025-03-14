@@ -122,6 +122,7 @@ object ExperimentationProfitOverlay {
         }
 
         private var scrollOffset = 0
+        private var menuName = ""
 
         override fun draw(mouseX: Int, mouseY: Int, event: Event) {
             // Cant store config as a long so we store it as a int and convert it to a long when needed
@@ -225,6 +226,9 @@ object ExperimentationProfitOverlay {
 
         override fun isActive(event: Event): Boolean {
             if (event !is GuiContainerBackgroundDrawnEvent || event.gui == null || !GeneralConfig.experimentationOverlay || LocationManager.currentArea != "Your Island") return false
+
+            if(menuName != event.gui?.chestName()) scrollOffset = 0
+            menuName = event.gui?.chestName()!!
 
             if (event.gui!!.chestName().contains("Experimentation Table RNG")) {
                 return true
