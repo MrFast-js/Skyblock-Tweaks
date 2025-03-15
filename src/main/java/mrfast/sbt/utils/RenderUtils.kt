@@ -245,7 +245,8 @@ object RenderUtils {
         segments: Int,
         borderColor: Color,
         fillColor: Color,
-        partialTicks: Float
+        partialTicks: Float,
+        depthCheckBorder: Boolean? = false
     ) {
         val player = Utils.mc.thePlayer
         val interpolatedX = player.lastTickPosX + (player.posX - player.lastTickPosX) * partialTicks
@@ -280,7 +281,7 @@ object RenderUtils {
         }
         glEnd()
 
-        GlStateManager.disableDepth()
+        if(depthCheckBorder == false) GlStateManager.disableDepth()
 
         // Draw border (line loop)
         GlStateManager.color(
@@ -299,7 +300,7 @@ object RenderUtils {
         }
         glEnd()
 
-        GlStateManager.enableDepth()
+        if(depthCheckBorder == false) GlStateManager.enableDepth()
 
         // Restore OpenGL settings
         GlStateManager.depthFunc(GL11.GL_LEQUAL)

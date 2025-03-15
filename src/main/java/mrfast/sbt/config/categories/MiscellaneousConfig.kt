@@ -86,6 +86,16 @@ object MiscellaneousConfig : Config() {
     var fireFreezeVisual = true
 
     @ConfigProperty(
+        type = ConfigType.COLOR,
+        name = "Focused Highlight Color",
+        description = "Color of the highlight when focused",
+        category = "Miscellaneous",
+        subcategory = "Items",
+        parentName = "Fire Freeze Staff Visual"
+    )
+    var fireFreezeVisualColor = CustomColor(Color.RED)
+
+    @ConfigProperty(
         type = ConfigType.TOGGLE,
         name = "Show Item Pricing Data",
         description = "Data provided by the Skyblock Tweaks API! Shows Lowest BIN, Average BIN, Soonest Auction Price, Average Auction Price, Active Listings, Price Matching, Sales / Day",
@@ -95,14 +105,34 @@ object MiscellaneousConfig : Config() {
     var showItemPricingData = false
 
     @ConfigProperty(
-        type = ConfigType.COLOR,
-        name = "Focused Highlight Color",
-        description = "Color of the highlight when focused",
-        category = "Mining",
-        parentName = "Fire Freeze Staff Visual",
-        subcategory = "Render"
+        type = ConfigType.TOGGLE,
+        name = "Hotspot Circle Highlight",
+        description = "Highlights the area of the hotspot, aswell as when the bobber is in the radius",
+        category = "Miscellaneous",
+        subcategory = "Fishing",
+        isParent = true
     )
-    var fireFreezeVisualColor = CustomColor(Color.RED)
+    var hotspotCircleHighlight = true
+
+    @ConfigProperty(
+        type = ConfigType.COLOR,
+        name = "Bobber Out Color",
+        description = "",
+        category = "Miscellaneous",
+        subcategory = "Fishing",
+        parentName = "Hotspot Circle Highlight"
+    )
+    var hotspotBobberOutColor = CustomColor(Color.RED)
+
+    @ConfigProperty(
+        type = ConfigType.COLOR,
+        name = "Bobber In Color",
+        description = "",
+        category = "Miscellaneous",
+        subcategory = "Fishing",
+        parentName = "Hotspot Circle Highlight"
+    )
+    var hotspotBobberInColor = CustomColor(Color.GREEN)
 
 //    @ConfigProperty(
 //            type = ConfigType.TOGGLE,
