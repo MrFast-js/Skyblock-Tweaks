@@ -133,13 +133,4 @@ object MiscellaneousConfig : Config() {
         parentName = "Hotspot Circle Highlight"
     )
     var hotspotBobberInColor = CustomColor(Color.GREEN)
-
-//    @ConfigProperty(
-//            type = ConfigType.TOGGLE,
-//            name = "Show Estimated Value",
-//            description = "Shows the Estimated Value for various items in Skyblock. Calculates using things like enchants and stars",
-//            category = "Miscellaneous",
-//            subcategory = "Item Price Info"
-//    )
-//    var showEstimatedPrice = true
 }

@@ -20,18 +20,12 @@ object HotspotCircleHighlight {
     private val hotspotPositions = mutableListOf<Vec3>()
     private val particleRadiusMap = ConcurrentHashMap<String, Double>()
 
-    private var lastClear = 0L
     @SubscribeEvent
     fun onRender3d(event: RenderWorldLastEvent) {
-        if(!LocationManager.inSkyblock || !MiscellaneousConfig.hotspotCircleHighlight) return
+        if (!LocationManager.inSkyblock || !MiscellaneousConfig.hotspotCircleHighlight) return
 
         val player = Utils.mc.thePlayer ?: return
         val bobber = player.fishEntity
-
-        if(System.currentTimeMillis() - lastClear > 2000) {
-            particleRadiusMap.clear()
-            lastClear = System.currentTimeMillis()
-        }
 
         // Clear and refresh HOTSPOT locations
         hotspotPositions.clear()
@@ -39,12 +33,12 @@ object HotspotCircleHighlight {
             if (entity is EntityArmorStand && entity.customNameTag.clean() == "HOTSPOT") {
                 val hotspotPos = Vec3(entity.posX, entity.posY - 1.6, entity.posZ)
 
-                if(!hotspotPositions.contains(hotspotPos)) hotspotPositions.add(hotspotPos)
+                if (!hotspotPositions.contains(hotspotPos)) hotspotPositions.add(hotspotPos)
 
                 // Get the dynamically stored radius or fallback to default 3.0
                 var radius = 3.0;
 
-                if(particleRadiusMap.containsKey(hotspotPos.toString())) {
+                if (particleRadiusMap.containsKey(hotspotPos.toString())) {
                     radius = particleRadiusMap[hotspotPos.toString()]!!
                 }
 
@@ -78,7 +72,8 @@ object HotspotCircleHighlight {
             val pos = Vec3(packet.xCoordinate, packet.yCoordinate, packet.zCoordinate)
 
             // Ignore packets far from the player
-            if (packet.particleType != EnumParticleTypes.REDSTONE) return // Only process REDSTONE
+            val isColoredRight = packet.xOffset == 1.0f && packet.yOffset == 0.41176474f && packet.zOffset == 0.7058824f
+            if (packet.particleType != EnumParticleTypes.REDSTONE || !isColoredRight) return // Only process REDSTONE
 
             // Find closest HOTSPOT within 5 blocks
             val closestHotspot = hotspotPositions.minByOrNull { it.distanceTo(pos) } ?: return
@@ -90,6 +85,7 @@ object HotspotCircleHighlight {
             if (particleRadiusMap[closestHotspot.toString()] == null || distanceToHotspot < particleRadiusMap[closestHotspot.toString()]!!) {
                 particleRadiusMap[closestHotspot.toString()] = distanceToHotspot
             }
-        } catch (_: Exception) { }
+        } catch (_: Exception) {
+        }
     }
 }
