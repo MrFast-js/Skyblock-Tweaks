@@ -111,7 +111,11 @@ object DataManager {
 
     // Works with data names such as "subset1.list.option2" or even just "option2"
     fun saveProfileData(dataName: String, dataValue: Any) {
-        val currentProfileId = profileIds[Utils.mc.thePlayer.uniqueID.toString()] ?: return
+        val currentProfileId = profileIds[Utils.mc.thePlayer.uniqueID.toString()]
+        if(currentProfileId == null) {
+            ChatUtils.sendClientMessage("Profile ID not found, please try again.")
+            return
+        }
         var profileJson = dataJson.getAsJsonObject(currentProfileId)
         if (profileJson == null) {
             profileJson = JsonObject()
