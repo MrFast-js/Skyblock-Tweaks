@@ -12,6 +12,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 import java.util.*
 
 object Utils {
@@ -130,9 +131,16 @@ object Utils {
         return BlockPos(x, y, z)
     }
 
-    fun Long.toDateTimestamp(): String {
+    // System uses 12-hour: 3/20/25, 3:45 PM
+    // User uses 24-hour: 20.03.25, 15:45
+    fun Long.toDateTimestamp(onlyTime: Boolean = false): String {
         val dateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(this), ZoneId.systemDefault())
-        val formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy hh:mm a")
+        val formatter = if (onlyTime) {
+            DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)
+        } else {
+            DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)
+        }.withLocale(Locale.getDefault()) // Uses system locale settings
+
         return dateTime.format(formatter)
     }
 

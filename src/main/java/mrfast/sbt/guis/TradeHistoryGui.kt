@@ -362,7 +362,7 @@ class TradeHistoryGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
             height = 15.pixels
         } childOf group
 
-        val time = (trade.get("timestamp").asLong).toDateTimestamp().split(" ").subList(1, 3).joinToString(" ")
+        val time = (trade.get("timestamp").asLong).toDateTimestamp(true)
         UIText("§e$time").constrain {
             x = CenterConstraint()
             y = CenterConstraint()
