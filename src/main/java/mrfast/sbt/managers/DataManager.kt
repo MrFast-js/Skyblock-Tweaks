@@ -10,7 +10,7 @@ import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.io.File
-import java.io.FileWriter
+import java.io.FileOutputStream
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -137,12 +137,12 @@ object DataManager {
                 savePath.createNewFile()
             }
 
-            FileWriter(savePath.path, false).use { writer ->
+            FileOutputStream(savePath).bufferedWriter(Charsets.UTF_8).use { writer ->
                 val gson = GsonBuilder().setPrettyPrinting().create()
                 val jsonString = gson.toJson(newData)
-                val escapedJsonString = jsonString.replace("§", "\\u00A7") // Escape special characters
-                writer.write(escapedJsonString)
+                writer.write(jsonString)
             }
+
         } catch (e: IOException) {
             e.printStackTrace()
         }

@@ -8,9 +8,11 @@ import net.minecraft.util.BlockPos
 import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
 import java.time.Instant
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.util.*
 
 object Utils {
     val mc: Minecraft = Minecraft.getMinecraft()
@@ -155,5 +157,24 @@ object Utils {
 
     fun BlockPos.toString(): String {
         return "($x, $y, $z)"
+    }
+
+    // Returns the formatted date in the format "March 21st, 2024"
+    fun getFormattedDate(): String {
+        val today = LocalDate.now()
+        val day = today.dayOfMonth
+        val suffix = getDaySuffix(day)
+        val formatter = DateTimeFormatter.ofPattern("MMMM d'$suffix', yyyy", Locale.ENGLISH)
+        return today.format(formatter)
+    }
+
+    private fun getDaySuffix(day: Int): String {
+        return when {
+            day in 11..13 -> "th"
+            day % 10 == 1 -> "st"
+            day % 10 == 2 -> "nd"
+            day % 10 == 3 -> "rd"
+            else -> "th"
+        }
     }
 }
