@@ -5,6 +5,7 @@ import com.google.gson.JsonObject
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.customevents.GuiContainerBackgroundDrawnEvent
 import mrfast.sbt.customevents.ProfileLoadEvent
+import mrfast.sbt.customevents.SlotDrawnEvent
 import mrfast.sbt.utils.ChatUtils
 import mrfast.sbt.utils.GuiUtils.chestName
 import mrfast.sbt.utils.Utils
@@ -28,7 +29,6 @@ object TradeManager {
     fun onChatMessage(event: ClientChatReceivedEvent) {
         if (event.message.unformattedText.clean().startsWith("Trade completed with")) {
             interpretLastTradeMenu()
-            inTradeMenu = false
         }
     }
 
@@ -36,13 +36,17 @@ object TradeManager {
     private var tradingWith = ""
 
     @SubscribeEvent
-    fun onContainerDraw(event: GuiContainerBackgroundDrawnEvent) {
-        val tradeSlot = event.gui?.inventorySlots?.getSlot(4) ?: return
+    fun onContainerDraw(event: SlotDrawnEvent.Post) {
+        if(event.slot.slotNumber == 0) {
+            inTradeMenu = false
 
-        if (tradeSlot.stack?.displayName?.clean() != "⇦ Your stuff") return
-        inTradeMenu = true
-        lastTradeMenu = event.gui!!.inventorySlots
-        tradingWith = event.gui!!.chestName().split("You")[1].trim()
+            val tradeSlot = event.gui.inventorySlots?.getSlot(4) ?: return
+            if (tradeSlot.stack.displayName?.clean() != "⇦ Your stuff") return
+
+            inTradeMenu = true
+            lastTradeMenu = event.gui.inventorySlots
+            tradingWith = event.gui.chestName().split("You")[1].trim()
+        }
     }
 
     private val yourSlots = mutableListOf(0, 1, 2, 3,
