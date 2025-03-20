@@ -130,7 +130,7 @@ class DebugCommand : CommandBase() {
             }
 
             "data" -> {
-                val data = File(ConfigManager.modDirectoryPath, "profilesData.json")
+                val data = File(ConfigManager.modDirectoryPath, "data/profilesData.json")
                 openFile(data, copyToClipboard)
             }
 
