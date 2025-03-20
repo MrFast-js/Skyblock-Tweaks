@@ -93,14 +93,11 @@ object ItemApi {
                 val nearby = Utils.mc.theWorld.playerEntities.size
 
                 if(nearby == 0) {
-                    println("Waiting for player to join world 2.. $nearby")
                     Thread.sleep(5_000)
                     updateSkyblockItemData(logging, force)
                     return@Thread
                 }
             } catch (e: Exception) {
-                println("Waiting for player to join world..")
-
                 Thread.sleep(10_000)
                 updateSkyblockItemData(logging, force)
 

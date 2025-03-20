@@ -5,7 +5,6 @@ import com.google.gson.JsonObject
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.customevents.ProfileLoadEvent
 import mrfast.sbt.customevents.SlotDrawnEvent
-import mrfast.sbt.utils.ChatUtils
 import mrfast.sbt.utils.GuiUtils.chestName
 import mrfast.sbt.utils.Utils
 import mrfast.sbt.utils.Utils.clean
@@ -14,6 +13,7 @@ import net.minecraft.item.ItemStack
 import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
+// @TODO add a 'hint' that after a trade prompts you once that you can view all past trades with /tradelog
 @SkyblockTweaks.EventComponent
 object TradeManager {
     var tradeHistory = JsonObject()
@@ -59,11 +59,7 @@ object TradeManager {
                                             32, 33, 34, 35)
 
     private fun interpretLastTradeMenu() {
-        ChatUtils.sendClientMessage("Trade completed with $tradingWith")
-
         if (lastTradeMenu == null) return
-
-        ChatUtils.sendClientMessage("Step 1 ")
 
         val trade = JsonObject()
 
@@ -91,8 +87,6 @@ object TradeManager {
         trade.add("yourItems", yourItems)
         trade.addProperty("yourCoins", yourCoins)
 
-        ChatUtils.sendClientMessage("Step 2 "+yourCoins)
-
         val theirItems = JsonArray()
         var theirCoins = 0L
         theirSlots.forEach { slot ->
@@ -117,19 +111,13 @@ object TradeManager {
         trade.add("theirItems", theirItems)
         trade.addProperty("theirCoins", theirCoins)
 
-        ChatUtils.sendClientMessage("Step 3 "+theirCoins)
-
         trade.addProperty("timestamp", System.currentTimeMillis())
         trade.addProperty("username", tradingWith)
-
-        ChatUtils.sendClientMessage("Step 4 "+ tradingWith)
 
         val date = Utils.getFormattedDate()
         if (!tradeHistory.has(date)) tradeHistory.add(date, JsonArray())
 
-        ChatUtils.sendClientMessage("Step 5 "+ tradeHistory.entrySet().size)
         tradeHistory[date].asJsonArray.add(trade)
-        ChatUtils.sendClientMessage("Step 6 "+ tradeHistory.entrySet().size)
 
         DataManager.saveProfileData("tradeHistory", tradeHistory)
     }
