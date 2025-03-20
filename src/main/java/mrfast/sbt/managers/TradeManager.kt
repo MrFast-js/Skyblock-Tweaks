@@ -3,7 +3,6 @@ package mrfast.sbt.managers
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import mrfast.sbt.SkyblockTweaks
-import mrfast.sbt.customevents.GuiContainerBackgroundDrawnEvent
 import mrfast.sbt.customevents.ProfileLoadEvent
 import mrfast.sbt.customevents.SlotDrawnEvent
 import mrfast.sbt.utils.ChatUtils
@@ -41,7 +40,7 @@ object TradeManager {
             inTradeMenu = false
 
             val tradeSlot = event.gui.inventorySlots?.getSlot(4) ?: return
-            if (tradeSlot.stack.displayName?.clean() != "⇦ Your stuff") return
+            if (tradeSlot.stack?.displayName?.clean() != "⇦ Your stuff") return
 
             inTradeMenu = true
             lastTradeMenu = event.gui.inventorySlots
