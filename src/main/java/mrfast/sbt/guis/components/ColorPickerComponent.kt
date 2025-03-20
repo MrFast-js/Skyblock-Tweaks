@@ -104,7 +104,7 @@ class ColorPicker(var customColor: CustomColor) : UIContainer() {
     } effect OutlineEffect(Color.WHITE, 1f)
 
     private val huePickerLine = UIBlock().constrain {
-        x = SiblingConstraint(5f)
+        x = SiblingConstraintFixed(5f)
         width = 14.pixels
         height = 100.percent
         color = Color.GRAY.toConstraint()
@@ -117,7 +117,7 @@ class ColorPicker(var customColor: CustomColor) : UIContainer() {
     }
 
     private val alphaPickerLine = UIBlock().constrain {
-        x = SiblingConstraint(5f)
+        x = SiblingConstraintFixed(5f)
         width = 14.pixels
         height = 80.percent
         color = Color.GRAY.toConstraint()
@@ -130,7 +130,7 @@ class ColorPicker(var customColor: CustomColor) : UIContainer() {
     }
 
     private val chromaOptionBox = UIBlock(GuiUtils.rainbowColor).constrain {
-        x = SiblingConstraint(-12f, true)
+        x = SiblingConstraintFixed(-12f, true)
         y = 80.percent + 4.pixels
         width = 10.pixels
         height = 10.pixels

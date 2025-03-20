@@ -749,7 +749,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2, drawDefaultB
                         colorPicker.hide(true)
                     } else {
                         clearPopup()
-                        colorPicker.setY(SiblingConstraint(5f))
+                        colorPicker.setY(SiblingConstraintFixed(5f))
                         floatingColorPicker = colorPicker
                         colorPicker.setFloating(true)
                         colorPicker.unhide(false)

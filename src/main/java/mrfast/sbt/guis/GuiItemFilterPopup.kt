@@ -16,17 +16,17 @@ import gg.essential.elementa.state.constraint
 import gg.essential.universal.UMatrixStack
 import gg.essential.vigilance.gui.settings.SelectorComponent
 import mrfast.sbt.apis.ItemApi
-import mrfast.sbt.managers.ConfigManager
 import mrfast.sbt.config.categories.CustomizationConfig
+import mrfast.sbt.config.categories.DeveloperConfig
 import mrfast.sbt.guis.components.ItemComponent
 import mrfast.sbt.guis.components.OutlinedRoundedRectangle
 import mrfast.sbt.guis.components.SiblingConstraintFixed
 import mrfast.sbt.guis.components.TextInputComponent
+import mrfast.sbt.managers.ConfigManager
 import mrfast.sbt.managers.DataManager
 import mrfast.sbt.utils.ChatUtils
 import mrfast.sbt.utils.GuiUtils
 import mrfast.sbt.utils.ItemUtils.getSkyblockId
-import mrfast.sbt.utils.Utils
 import net.minecraft.client.Minecraft
 import net.minecraft.init.Items
 import net.minecraft.item.ItemStack
@@ -143,7 +143,7 @@ class GuiItemFilterPopup(
                 y = CenterConstraint()
             } childOf window
 
-        Inspector(background) childOf window
+        if(DeveloperConfig.showInspector && CustomizationConfig.developerMode) Inspector(background) childOf window
 
         UIText("§7$title", true).constrain {
             x = CenterConstraint()
@@ -189,7 +189,7 @@ class GuiItemFilterPopup(
         }
 
         val importButton = UIBlock(Color(0x2A2A2A)).constrain {
-            x = SiblingConstraint(4f, true)
+            x = SiblingConstraintFixed(4f, true)
             y = 6.pixels
             width = 18.pixels
             height = 18.pixels
@@ -267,7 +267,7 @@ class GuiItemFilterPopup(
     private fun createAddFilterButton(parent: UIComponent) {
         val addFilterButton = UIBlock(Color(0x2A2A2A)).constrain {
             x = CenterConstraint()
-            y = SiblingConstraint(4f)
+            y = SiblingConstraintFixed(4f)
             width = 60.percent
             height = 18.pixels
         } childOf parent
@@ -302,7 +302,7 @@ class GuiItemFilterPopup(
     private fun createItemFilterComponent(parent: UIComponent, filterItem: FilteredItem) {
         val backgroundBlock = UIBlock(Color(0x1E1E1E)).constrain {
             x = 0.pixels
-            y = SiblingConstraint(4f)
+            y = SiblingConstraintFixed(4f)
             width = 100.percent
             height = 25.pixels
         } childOf parent
@@ -316,7 +316,7 @@ class GuiItemFilterPopup(
 
         val textInput = TextInputComponent(filterItem.textInput).constrain {
             width = 25.percent
-            x = SiblingConstraint(4f)
+            x = SiblingConstraintFixed(4f)
             y = CenterConstraint()
         } childOf backgroundBlock
 
@@ -333,7 +333,7 @@ class GuiItemFilterPopup(
             InputType.DISPLAY_NAME -> 1
         }
         val inputTypeDropdown = SelectorComponent(initialIndex, listOf("Item ID", "Display Name")).constrain {
-            x = SiblingConstraint(10f)
+            x = SiblingConstraintFixed(10f)
             y = CenterConstraint()
             width = ChildBasedSizeConstraint()
             height = 17.pixels
@@ -379,7 +379,7 @@ class GuiItemFilterPopup(
         }
 
         val buttonContainer = UIBlock(Color(0, 0, 0, 0)).constrain {
-            x = SiblingConstraint(6f, true)
+            x = SiblingConstraintFixed(6f, true)
             y = CenterConstraint()
             width = 38.percent
             height = 100.percent
@@ -420,7 +420,7 @@ class GuiItemFilterPopup(
         val button = UIBlock(Color.DARK_GRAY).constrain {
             width = 33.percent
             height = 16.pixels
-            x = SiblingConstraint(4f, true)
+            x = SiblingConstraintFixed(4f, true)
             y = CenterConstraint()
         } childOf parent effect OutlineEffect(CustomizationConfig.defaultCategoryColor.get(), 1f)
 

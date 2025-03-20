@@ -7,7 +7,7 @@ import gg.essential.elementa.constraints.SizeConstraint
 import gg.essential.elementa.constraints.resolution.ConstraintVisitor
 
 /*
-Modified size constraint that gets the lowest height of everything combines
+Modified size constraint that gets the lowest height of everything combined
  */
 class LPosChildSizeConstraint(private val excludedItems: MutableList<UIComponent> = mutableListOf()) : SizeConstraint {
     override var cachedValue = 0f
