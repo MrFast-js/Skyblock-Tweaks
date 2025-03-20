@@ -8,10 +8,10 @@ import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.config.categories.CustomizationConfig
 import mrfast.sbt.config.categories.DeveloperConfig
 import mrfast.sbt.config.categories.MiscellaneousConfig
-import mrfast.sbt.guis.components.OutlinedRoundedRectangle
 import mrfast.sbt.customevents.GuiContainerBackgroundDrawnEvent
 import mrfast.sbt.customevents.ProfileLoadEvent
 import mrfast.sbt.customevents.SlotClickedEvent
+import mrfast.sbt.guis.components.OutlinedRoundedRectangle
 import mrfast.sbt.managers.DataManager
 import mrfast.sbt.managers.LocationManager
 import mrfast.sbt.managers.OverlayManager
@@ -41,6 +41,7 @@ import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.Event
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.awt.Color
+import kotlin.math.floor
 
 @SkyblockTweaks.EventComponent
 object MinionMenuOverlay {
@@ -112,6 +113,9 @@ object MinionMenuOverlay {
                 }
             }
             fuelDuration = fuelRunsOut
+        } else {
+            fuelDurationDate = -1L
+            fuelDuration = "§cNone"
         }
 
         if (minions.has(closestMinion?.position.toString())) {
@@ -119,7 +123,14 @@ object MinionMenuOverlay {
             val lastCollectedAt = minionObj["lastCollectedAt"].asLong
             val timeDifference = System.currentTimeMillis() - lastCollectedAt
             val hoursDifference = timeDifference / 1000.0 / 3600.0
-            openedMinionCoinsPerHour = (openedMinionValue / hoursDifference)
+            val coinsPerHour = (openedMinionValue / hoursDifference)
+
+            if (floor(coinsPerHour) == 0.0) {
+                openedMinionCoinsPerHour = minionObj.get("lastCoinsPerHour").asDouble
+            } else {
+                openedMinionCoinsPerHour = (openedMinionValue / hoursDifference)
+                minionObj.addProperty("lastCoinsPerHour", openedMinionCoinsPerHour)
+            }
         }
     }
 
@@ -130,16 +141,25 @@ object MinionMenuOverlay {
         val chestName = event.gui.chestName()
         if (chestName.matches(MINION_REGEX) && event.slot.hasStack && closestMinion != null) {
             val nameOfItem = event.slot.stack.displayName.cleanColor()
-            if (nameOfItem.startsWith("Collect All") || minionSlots.contains(event.slot.slotNumber)) {
-                Utils.setTimeout({
+            var collectedEveryItem = true
+            // Wait 400ms to account for the item being removed by hypixel, not just clicked
+            Utils.setTimeout({
+                // Check if there is any items still in the menu
+                minionSlots.forEach {
+                    if (event.gui.inventorySlots.getSlot(it).hasStack && event.gui.inventorySlots.getSlot(it).stack.getSkyblockId() != null) {
+                        collectedEveryItem = false
+                    }
+                }
+
+                if (nameOfItem.startsWith("Collect All") || collectedEveryItem) {
                     if (minions.has(closestMinion!!.position.toString())) {
                         minions.get(closestMinion!!.position.toString()).getAsJsonObject()
                             .addProperty("lastCollectedAt", System.currentTimeMillis())
 
                         DataManager.saveProfileData("minions", minions)
                     }
-                }, 400)
-            }
+                }
+            }, 300)
         }
     }
 
@@ -162,9 +182,8 @@ object MinionMenuOverlay {
                     RenderUtils.drawSpecialBB(e.position, Color.GREEN, event.partialTicks)
                 }
 
-                if (MiscellaneousConfig.lastCollectedAboveMinion && minions.has(e.position.toString()) && Utils.mc.thePlayer.getDistanceToEntity(
-                        e
-                    ) < 8
+                if (MiscellaneousConfig.lastCollectedAboveMinion &&
+                    minions.has(e.position.toString()) && Utils.mc.thePlayer.getDistanceToEntity(e) < 8
                 ) {
                     val minion = minions[e.position.toString()].asJsonObject
                     val timeElapsed = (System.currentTimeMillis() - minion["lastCollectedAt"].asLong)
