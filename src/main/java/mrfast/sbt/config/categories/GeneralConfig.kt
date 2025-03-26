@@ -482,7 +482,7 @@ object GeneralConfig : Config() {
         name = "Kat Flipper Overlay",
         description = "Shows profitable pets to flip when in the Kat Pet Sitter Menu",
         category = "General",
-        subcategory = "Kat Overlay"
+        subcategory = "Overlays"
     )
     var katFlipperOverlay = false
 
@@ -491,7 +491,7 @@ object GeneralConfig : Config() {
         name = "Experimentation Overlay",
         description = "Shows coins per RNG when looking at the rng selector menu in the Experimentation Table",
         category = "General",
-        subcategory = "Kat Overlay"
+        subcategory = "Overlays"
     )
     var experimentationOverlay = false
 }
