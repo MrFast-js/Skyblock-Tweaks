@@ -216,7 +216,6 @@ object MinionMenuOverlay {
                 // If more than 30% of the items are still in the menu, don't trigger collection
                 if (itemCollectedWhileInMinion / itemCollectedWhileInMinion > 0.3) {
                     triggerCollection = true
-                    ChatUtils.sendClientMessage("§cYou have collected than 30% of the items still in the menu, triggering collection.")
                 }
 
                 if (nameOfItem.startsWith("Collect All") || triggerCollection) {
