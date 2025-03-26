@@ -5,7 +5,6 @@ import gg.essential.universal.UMatrixStack
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.apis.ItemApi
 import mrfast.sbt.config.categories.GeneralConfig
-import mrfast.sbt.config.categories.MiningConfig
 import mrfast.sbt.customevents.GuiContainerBackgroundDrawnEvent
 import mrfast.sbt.guis.components.OutlinedRoundedRectangle
 import mrfast.sbt.managers.LocationManager
@@ -53,20 +52,20 @@ object ExperimentationProfitOverlay {
 
     @SubscribeEvent
     fun onGuiDraw(event: TickEvent.ClientTickEvent) {
-        if (event.phase == TickEvent.Phase.START) return
-        if(Utils.mc.currentScreen == null) {
+        if (event.phase == TickEvent.Phase.START || !GeneralConfig.experimentationOverlay || LocationManager.currentArea != "Your Island") return
+
+        if (Utils.mc.currentScreen == null) {
             itemsInMenu.clear()
             return
         }
-        if (!GeneralConfig.experimentationOverlay || LocationManager.currentArea != "Your Island") return
 
         val gui = Utils.mc.currentScreen
-        if (gui !is GuiChest) return
+        if (gui !is GuiChest || !gui.chestName().contains("Experimentation Table RNG")) return
 
         val inventory = gui.getInventory()
         for (i in 0..inventory.sizeInventory) {
             val stack = inventory.getStackInSlot(i)
-            if(stack == null || stack.displayName.clean().trim().isEmpty()) continue
+            if (stack == null || stack.displayName.clean().trim().isEmpty()) continue
 
             if (!itemsInMenu.contains(stack)) {
                 itemsInMenu.add(stack)
@@ -94,7 +93,9 @@ object ExperimentationProfitOverlay {
                     }
                 }
                 if (line.trim().matches(SELECTED_XP_REGEX)) {
-                    val rngRequired = line.trim().getRegexGroups(SELECTED_XP_REGEX)?.get("required")?.value?.replace(",", "")?.replace("k","000")?.toInt()
+                    val rngRequired =
+                        line.trim().getRegexGroups(SELECTED_XP_REGEX)?.get("required")?.value?.replace(",", "")
+                            ?.replace("k", "000")?.toInt()
                     if (rngRequired != null) {
                         enchantingItem.rngRequired = rngRequired
                     }
@@ -227,14 +228,10 @@ object ExperimentationProfitOverlay {
         override fun isActive(event: Event): Boolean {
             if (event !is GuiContainerBackgroundDrawnEvent || event.gui == null || !GeneralConfig.experimentationOverlay || LocationManager.currentArea != "Your Island") return false
 
-            if(menuName != event.gui?.chestName()) scrollOffset = 0
+            if (menuName != event.gui?.chestName()) scrollOffset = 0
             menuName = event.gui?.chestName()!!
 
-            if (event.gui!!.chestName().contains("Experimentation Table RNG")) {
-                return true
-            }
-
-            return false
+            return event.gui!!.chestName().contains("Experimentation Table RNG")
         }
     }
 }
