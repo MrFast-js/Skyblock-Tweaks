@@ -15,6 +15,7 @@ import mrfast.sbt.guis.components.OutlinedRoundedRectangle
 import mrfast.sbt.managers.DataManager
 import mrfast.sbt.managers.LocationManager
 import mrfast.sbt.managers.OverlayManager
+import mrfast.sbt.utils.ChatUtils
 import mrfast.sbt.utils.GuiUtils
 import mrfast.sbt.utils.GuiUtils.chestName
 import mrfast.sbt.utils.ItemUtils.getItemBasePrice
@@ -42,6 +43,7 @@ import net.minecraftforge.fml.common.eventhandler.Event
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.awt.Color
 import kotlin.math.floor
+
 
 @SkyblockTweaks.EventComponent
 object MinionMenuOverlay {
@@ -77,23 +79,69 @@ object MinionMenuOverlay {
         }
     }
 
+    private var itemsInMinionWhenOpened = -1
+
     @SubscribeEvent
     fun onContainerDrawn(event: GuiContainerBackgroundDrawnEvent) {
         if (!MiscellaneousConfig.minionOverlay || event.gui !is GuiChest) return
-        if (!(event.gui as GuiContainer).chestName().matches(MINION_REGEX)) return
+        if (!(event.gui as GuiContainer).chestName().matches(MINION_REGEX)) {
+            itemCollectedWhileInMinion = 0
+            itemsInMinionWhenOpened = -1
+            return
+        }
+        if (itemsInMinionWhenOpened == -1) {
+            itemsInMinionWhenOpened = 0
+            minionSlots.forEach {
+                val slot = (event.gui as GuiChest).inventorySlots.getSlot(it)
+                if (slot.hasStack) {
+                    if (slot.stack.getSkyblockId() != null) {
+                        itemsInMinionWhenOpened++
+                    }
+                }
+            }
+        }
 
         openedMinionTitle = (event.gui as GuiContainer).chestName().cleanColor()
 
-        var minionHeldValue = 0.0
+        var minionFinalValue = 0.0 // The value in the minion after discarding items that were in the menu when last collected
+        var minionRealHeldValue = 0.0 // The actual value in the minion without discarding items
+
+        var itemsRemaining = JsonObject()
+
+        if (minions.get(closestMinion!!.position.toString()).getAsJsonObject().has("itemsRemaining")) {
+            itemsRemaining =
+                minions.get(closestMinion!!.position.toString()).getAsJsonObject().get("itemsRemaining").asJsonObject
+        }
+        val itemsDiscarded = JsonObject()
+        for (entry in itemsRemaining.entrySet()) itemsDiscarded.add(entry.key, entry.value)
+
         minionSlots.forEach {
             val slot = (event.gui as GuiChest).inventorySlots.getSlot(it)
             if (slot.hasStack) {
                 if (slot.stack.getSkyblockId() != null) {
-                    minionHeldValue += slot.stack.getItemBasePrice() * slot.stack.stackSize
+                    val id = slot.stack.getSkyblockId()
+                    var countToPass = slot.stack.stackSize
+
+                    minionRealHeldValue += slot.stack.getItemBasePrice() * countToPass
+
+                    if (itemsRemaining.has(id) && itemsDiscarded.has(id) && itemsDiscarded.get(id).asInt > 0) {
+                        if (itemsDiscarded.get(id).asInt - slot.stack.stackSize < 0) {
+                            countToPass = slot.stack.stackSize - itemsDiscarded.get(id).asInt
+                            itemsDiscarded.addProperty(id, 0)
+                        } else {
+                            itemsDiscarded.addProperty(id, itemsDiscarded.get(id).asInt - slot.stack.stackSize)
+                            return@forEach
+                        }
+                    }
+
+                    // The accurate held value after discarding items that were in the menu when last collected
+                    minionFinalValue += slot.stack.getItemBasePrice() * countToPass
                 }
             }
         }
-        openedMinionValue = minionHeldValue
+
+        openedMinionValue = minionRealHeldValue
+
         val fuelStack = (event.gui as GuiChest).inventorySlots.getSlot(19).stack ?: return
         if (fuelStack.getSkyblockId() != null) {
             var fuelRunsOut = "Unlimited"
@@ -123,16 +171,20 @@ object MinionMenuOverlay {
             val lastCollectedAt = minionObj["lastCollectedAt"].asLong
             val timeDifference = System.currentTimeMillis() - lastCollectedAt
             val hoursDifference = timeDifference / 1000.0 / 3600.0
-            val coinsPerHour = (openedMinionValue / hoursDifference)
+            val coinsPerHour = (minionFinalValue / hoursDifference)
 
-            if (floor(coinsPerHour) == 0.0) {
+            if (floor(coinsPerHour) == 0.0 || minionFinalValue == 0.0 || waitingForLastCollected) {
                 openedMinionCoinsPerHour = minionObj.get("lastCoinsPerHour").asDouble
-            } else {
-                openedMinionCoinsPerHour = (openedMinionValue / hoursDifference)
-                minionObj.addProperty("lastCoinsPerHour", openedMinionCoinsPerHour)
+                return
             }
+
+            openedMinionCoinsPerHour = coinsPerHour
+            minionObj.addProperty("lastCoinsPerHour", openedMinionCoinsPerHour)
         }
     }
+
+    private var itemCollectedWhileInMinion = 0
+    private var waitingForLastCollected = false
 
     @SubscribeEvent
     fun onSlotClick(event: SlotClickedEvent) {
@@ -141,21 +193,37 @@ object MinionMenuOverlay {
         val chestName = event.gui.chestName()
         if (chestName.matches(MINION_REGEX) && event.slot.hasStack && closestMinion != null) {
             val nameOfItem = event.slot.stack.displayName.cleanColor()
-            var collectedEveryItem = true
+            var triggerCollection = false
+            waitingForLastCollected = true
             // Wait 400ms to account for the item being removed by hypixel, not just clicked
             Utils.setTimeout({
                 // Check if there is any items still in the menu
+                val items = JsonObject()
+
                 minionSlots.forEach {
                     if (event.gui.inventorySlots.getSlot(it).hasStack && event.gui.inventorySlots.getSlot(it).stack.getSkyblockId() != null) {
-                        collectedEveryItem = false
+                        itemCollectedWhileInMinion++
+                        val id = event.gui.inventorySlots.getSlot(it).stack.getSkyblockId()
+                        val count = event.gui.inventorySlots.getSlot(it).stack.stackSize
+
+                        if (items.has(id)) {
+                            items.addProperty(id, items.get(id).asInt + count)
+                        } else {
+                            items.addProperty(id, count)
+                        }
                     }
                 }
+                // If more than 30% of the items are still in the menu, don't trigger collection
+                if (itemCollectedWhileInMinion / itemCollectedWhileInMinion > 0.3) {
+                    triggerCollection = true
+                    ChatUtils.sendClientMessage("§cYou have collected than 30% of the items still in the menu, triggering collection.")
+                }
 
-                if (nameOfItem.startsWith("Collect All") || collectedEveryItem) {
+                if (nameOfItem.startsWith("Collect All") || triggerCollection) {
                     if (minions.has(closestMinion!!.position.toString())) {
-                        minions.get(closestMinion!!.position.toString()).getAsJsonObject()
-                            .addProperty("lastCollectedAt", System.currentTimeMillis())
-
+                        minions.get(closestMinion!!.position.toString()).getAsJsonObject().addProperty("lastCollectedAt", System.currentTimeMillis())
+                        minions.get(closestMinion!!.position.toString()).getAsJsonObject().add("itemsRemaining", items)
+                        waitingForLastCollected = false
                         DataManager.saveProfileData("minions", minions)
                     }
                 }
