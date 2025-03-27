@@ -157,6 +157,9 @@ object AuctionFlipper {
         if (!AuctionHouseConfig.auctionFlipper || Utils.mc.theWorld == null || !LocationManager.inSkyblock) return
 
         if (event.type == "event" && event.message == "AuctionUpdate") {
+            if(CustomizationConfig.developerMode) {
+                ChatUtils.sendClientMessage("event: ${event.type} message: ${event.message}")
+            }
             scanAuctionHouse()
         }
     }
@@ -182,6 +185,9 @@ object AuctionFlipper {
                         useProxy = false,
                         caching = false
                     )
+
+                    if(!auctionHousePageJson.has("success")) return@launch
+
                     if (auctionHousePageJson.get("success").asBoolean) {
                         handleAuctionPage(auctionHousePageJson)
                     }
