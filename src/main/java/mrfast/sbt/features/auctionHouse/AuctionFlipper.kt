@@ -345,9 +345,13 @@ object AuctionFlipper {
 
         if (AuctionHouseConfig.AF_commonFilter) {
             ItemApi.getItemInfo(auctionFlip.itemID!!)?.let {
-                if (it.has("rarity") && it.get("rarity").asString == "COMMON") {
-                    filterOutWithReason("Common Item Filter")
-                    return
+                if (it.has("rarity")) {
+                    if(!it.get("rarity").isJsonNull) {
+                        if(it.get("rarity").asString == "COMMON") {
+                            filterOutWithReason("Common Item Filter")
+                            return
+                        }
+                    }
                 }
             }
         }
