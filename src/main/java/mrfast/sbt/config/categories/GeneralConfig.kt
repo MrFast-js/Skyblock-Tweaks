@@ -161,7 +161,7 @@ object GeneralConfig : Config() {
         subcategory = "Stat Displays",
         parentName = "Mana Bar"
     )
-    var manaBarBarColor = Color.BLACK
+    var manaBarBarColor = CustomColor(Color.BLACK)
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
