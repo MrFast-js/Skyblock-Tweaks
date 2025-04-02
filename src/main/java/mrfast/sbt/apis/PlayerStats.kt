@@ -19,7 +19,7 @@ import kotlin.math.max
 
 @SkyblockTweaks.EventComponent
 object PlayerStats {
-    private var HEALTH_REGEX = """§c(?<currentHealth>[\d,]+)\/(?<maxHealth>[\d,]+)❤""".toRegex()
+    private var HEALTH_REGEX = """(§.)(?<currentHealth>[\d,]+)\/(?<maxHealth>[\d,]+)❤""".toRegex()
     var health = 0
     var maxHealth = 0
     var absorption = 0
