@@ -2,6 +2,7 @@ package mrfast.sbt.managers
 
 import com.google.gson.*
 import mrfast.sbt.SkyblockTweaks
+import mrfast.sbt.config.categories.CustomizationConfig
 import mrfast.sbt.customevents.ProfileLoadEvent
 import mrfast.sbt.utils.ChatUtils
 import mrfast.sbt.utils.Utils
@@ -113,7 +114,8 @@ object DataManager {
     fun saveProfileData(dataName: String, dataValue: Any) {
         val currentProfileId = profileIds[Utils.mc.thePlayer.uniqueID.toString()]
         if(currentProfileId == null) {
-            ChatUtils.sendClientMessage("Profile ID not found, please try again.")
+            if(CustomizationConfig.developerMode) ChatUtils.sendClientMessage("Profile ID not found, please try again.")
+            sendProfileIdCommand()
             return
         }
         var profileJson = dataJson.getAsJsonObject(currentProfileId)

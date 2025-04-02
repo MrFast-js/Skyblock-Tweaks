@@ -108,10 +108,13 @@ object MinionMenuOverlay {
 
         var itemsRemaining = JsonObject()
 
-        if (minions.get(closestMinion!!.position.toString()).getAsJsonObject().has("itemsRemaining")) {
-            itemsRemaining =
-                minions.get(closestMinion!!.position.toString()).getAsJsonObject().get("itemsRemaining").asJsonObject
+        if(minions.has(closestMinion!!.position.toString())) {
+            val obj = minions.get(closestMinion!!.position.toString()).getAsJsonObject()
+            if(obj.has("itemsRemaining")) {
+                itemsRemaining = obj.get("itemsRemaining").asJsonObject
+            }
         }
+
         val itemsDiscarded = JsonObject()
         for (entry in itemsRemaining.entrySet()) itemsDiscarded.add(entry.key, entry.value)
 
