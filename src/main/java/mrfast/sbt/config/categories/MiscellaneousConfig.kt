@@ -98,11 +98,72 @@ object MiscellaneousConfig : Config() {
     @ConfigProperty(
         type = ConfigType.TOGGLE,
         name = "Show Item Pricing Data",
-        description = "Data provided by the Skyblock Tweaks API! Shows Lowest BIN, Average BIN, Soonest Auction Price, Average Auction Price, Active Listings, Price Matching, Sales / Day",
+        description = "Data provided by the Skyblock Tweaks API! Customize the data shown in options.",
         category = "Miscellaneous",
-        subcategory = "Items"
+        subcategory = "Items",
+        isParent = true
     )
     var showItemPricingData = false
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Show Active Auction & BIN Volume",
+        description = "Shows as §3Active: §a123 BIN §7| §b456 AUC",
+        category = "Miscellaneous",
+        subcategory = "Items",
+        parentName = "Show Item Pricing Data"
+    )
+    var showActiveAuctionStat = true
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Show Sales / Day for Auctions and BINs",
+        description = "Shows as §3Sales/day: §a123 BIN §7| §b456 AUC",
+        category = "Miscellaneous",
+        subcategory = "Items",
+        parentName = "Show Item Pricing Data"
+    )
+    var showSalesStat = true
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Show Average and Lowest BIN",
+        description = "Shows as §3BIN: §7AVG §e123,456 §8| §7LOW §e123,456",
+        category = "Miscellaneous",
+        subcategory = "Items",
+        parentName = "Show Item Pricing Data"
+    )
+    var showBinPricingStat = true
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Show Avg. Auction & Ending Soon Price",
+        description = "Shows as §3AUC: §7AVG §e123,456 §8| §7SOON §e123,456",
+        category = "Miscellaneous",
+        subcategory = "Items",
+        parentName = "Show Item Pricing Data"
+    )
+    var showAuctionPricingStat = true
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Show Bazaar Buy and Sell Price",
+        description = "Shows as §3Bazaar: §a1,234 Buy §7| §b2,345 Sell",
+        category = "Miscellaneous",
+        subcategory = "Items",
+        parentName = "Show Item Pricing Data"
+    )
+    var showBazaarStat = true
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Show Price Matching",
+        description = "Shows as §a§lMATCHED PRICE: §712,345,678 §8100%§r, \n§rFinds the cheapest closest matching item on BIN",
+        category = "Miscellaneous",
+        subcategory = "Items",
+        parentName = "Show Item Pricing Data"
+    )
+    var showPriceMatchingStat = true
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,

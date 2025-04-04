@@ -36,7 +36,7 @@
 </details>
 
 <details>
-  <summary><strong>Item Pricing Info</strong></summary>
+  <summary><strong>Item Pricing Info + Price Matching</strong></summary>
   <p>Data provided by the Skyblock Tweaks API! Shows Lowest BIN, Average BIN, Soonest Auction Price, Average Auction Price, Active Listings, Price Matching, Sales / Day</p>
   <img src="https://i.imgur.com/gGQMjxC.png" alt="Dungeon Party Join">
 </details>
@@ -120,6 +120,7 @@
 <div align="center"><img src='https://i.imgur.com/0KOjr5l.png'/></div>
 
 ### Commands
+- **/sbt** (*Opens Skyblock Tweaks Config*)
 - **/pft** (*Opens SBT Profit Tracker for all items*)
 - **/path** (*Create custom recorded paths to save and replay*)
 - **/jd** \<2\> || **/joindungeon** \<M4\> (*Join a dungeon floor from anywhere*)
