@@ -15,7 +15,6 @@ import mrfast.sbt.guis.components.OutlinedRoundedRectangle
 import mrfast.sbt.managers.DataManager
 import mrfast.sbt.managers.LocationManager
 import mrfast.sbt.managers.OverlayManager
-import mrfast.sbt.utils.ChatUtils
 import mrfast.sbt.utils.GuiUtils
 import mrfast.sbt.utils.GuiUtils.chestName
 import mrfast.sbt.utils.ItemUtils.getItemBasePrice
@@ -23,6 +22,7 @@ import mrfast.sbt.utils.ItemUtils.getLore
 import mrfast.sbt.utils.ItemUtils.getSkyblockId
 import mrfast.sbt.utils.RenderUtils
 import mrfast.sbt.utils.Utils
+import mrfast.sbt.utils.Utils.clean
 import mrfast.sbt.utils.Utils.cleanColor
 import mrfast.sbt.utils.Utils.formatNumber
 import mrfast.sbt.utils.Utils.getRegexGroups
@@ -103,14 +103,15 @@ object MinionMenuOverlay {
 
         openedMinionTitle = (event.gui as GuiContainer).chestName().cleanColor()
 
-        var minionFinalValue = 0.0 // The value in the minion after discarding items that were in the menu when last collected
+        var minionFinalValue =
+            0.0 // The value in the minion after discarding items that were in the menu when last collected
         var minionRealHeldValue = 0.0 // The actual value in the minion without discarding items
 
         var itemsRemaining = JsonObject()
 
-        if(minions.has(closestMinion!!.position.toString())) {
+        if (minions.has(closestMinion!!.position.toString())) {
             val obj = minions.get(closestMinion!!.position.toString()).getAsJsonObject()
-            if(obj.has("itemsRemaining")) {
+            if (obj.has("itemsRemaining")) {
                 itemsRemaining = obj.get("itemsRemaining").asJsonObject
             }
         }
@@ -177,7 +178,11 @@ object MinionMenuOverlay {
             val coinsPerHour = (minionFinalValue / hoursDifference)
 
             if (floor(coinsPerHour) == 0.0 || minionFinalValue == 0.0 || waitingForLastCollected) {
-                openedMinionCoinsPerHour = minionObj.get("lastCoinsPerHour").asDouble
+                if (minionObj.has("lastCoinsPerHour")) {
+                    openedMinionCoinsPerHour = minionObj.get("lastCoinsPerHour").asDouble
+                } else {
+                    openedMinionCoinsPerHour = -1.0
+                }
                 return
             }
 
@@ -194,7 +199,7 @@ object MinionMenuOverlay {
         if (!MiscellaneousConfig.minionOverlay) return
 
         val chestName = event.gui.chestName()
-        if (chestName.matches(MINION_REGEX) && event.slot.hasStack && closestMinion != null) {
+        if (chestName.matches(MINION_REGEX) && event.slot.hasStack && closestMinion != null && (minionSlots.contains(event.slot.slotNumber) || event.slot.stack?.displayName?.clean()?.startsWith("Collect All") == true)) {
             val nameOfItem = event.slot.stack.displayName.cleanColor()
             var triggerCollection = false
             waitingForLastCollected = true
@@ -223,7 +228,8 @@ object MinionMenuOverlay {
 
                 if (nameOfItem.startsWith("Collect All") || triggerCollection) {
                     if (minions.has(closestMinion!!.position.toString())) {
-                        minions.get(closestMinion!!.position.toString()).getAsJsonObject().addProperty("lastCollectedAt", System.currentTimeMillis())
+                        minions.get(closestMinion!!.position.toString()).getAsJsonObject()
+                            .addProperty("lastCollectedAt", System.currentTimeMillis())
                         minions.get(closestMinion!!.position.toString()).getAsJsonObject().add("itemsRemaining", items)
                         waitingForLastCollected = false
                         DataManager.saveProfileData("minions", minions)
