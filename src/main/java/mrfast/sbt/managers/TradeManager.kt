@@ -12,6 +12,7 @@ import net.minecraft.inventory.Container
 import net.minecraft.item.ItemStack
 import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 
 // @TODO add a 'hint' that after a trade prompts you once that you can view all past trades with /tradelog
 @SkyblockTweaks.EventComponent
@@ -32,11 +33,12 @@ object TradeManager {
     }
 
     private var lastTradeMenu: Container? = null
+    private var tradingWithSub = ""
     private var tradingWith = ""
 
     @SubscribeEvent
     fun onContainerDraw(event: SlotDrawnEvent.Post) {
-        if(event.slot.slotNumber == 0) {
+        if (event.slot.slotNumber == 0) {
             inTradeMenu = false
 
             val tradeSlot = event.gui.inventorySlots?.getSlot(4) ?: return
@@ -44,19 +46,37 @@ object TradeManager {
 
             inTradeMenu = true
             lastTradeMenu = event.gui.inventorySlots
-            tradingWith = event.gui.chestName().split("You")[1].trim()
+            tradingWithSub = event.gui.chestName().split("You")[1].trim()
         }
     }
 
-    private val yourSlots = mutableListOf(0, 1, 2, 3,
-                                            9, 10, 11, 12,
-                                            18, 19, 20, 21,
-                                            27, 28, 29, 30)
+    @SubscribeEvent
+    fun onClientTick(event: ClientTickEvent) {
+        if (TickManager.tickCount % 20 != 0 || Utils.mc.theWorld == null) return
 
-    private val theirSlots = mutableListOf(5, 6, 7, 8,
-                                            14, 15, 16, 17,
-                                            23, 24, 25, 26,
-                                            32, 33, 34, 35)
+        if (tradingWithSub.isNotEmpty()) {
+            val matchingPlayer = Utils.mc.theWorld.playerEntities.find {
+                it.name.contains(tradingWithSub)
+            }
+            if (matchingPlayer != null) {
+                tradingWith = matchingPlayer.name
+            }
+        }
+    }
+
+    private val yourSlots = mutableListOf(
+        0, 1, 2, 3,
+        9, 10, 11, 12,
+        18, 19, 20, 21,
+        27, 28, 29, 30
+    )
+
+    private val theirSlots = mutableListOf(
+        5, 6, 7, 8,
+        14, 15, 16, 17,
+        23, 24, 25, 26,
+        32, 33, 34, 35
+    )
 
     private fun interpretLastTradeMenu() {
         if (lastTradeMenu == null) return
@@ -120,6 +140,7 @@ object TradeManager {
         tradeHistory[date].asJsonArray.add(trade)
 
         DataManager.saveProfileData("tradeHistory", tradeHistory)
+        tradingWith = ""
     }
 
 
