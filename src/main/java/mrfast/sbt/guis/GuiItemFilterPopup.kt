@@ -22,6 +22,7 @@ import mrfast.sbt.guis.components.ItemComponent
 import mrfast.sbt.guis.components.OutlinedRoundedRectangle
 import mrfast.sbt.guis.components.SiblingConstraintFixed
 import mrfast.sbt.guis.components.TextInputComponent
+import mrfast.sbt.guis.components.CustomUIText
 import mrfast.sbt.managers.ConfigManager
 import mrfast.sbt.managers.DataManager
 import mrfast.sbt.utils.ChatUtils
@@ -145,7 +146,7 @@ class GuiItemFilterPopup(
 
         if(DeveloperConfig.showInspector && CustomizationConfig.developerMode) Inspector(background) childOf window
 
-        UIText("§7$title", true).constrain {
+        CustomUIText("§7$title", true).constrain {
             x = CenterConstraint()
             y = 6.pixels
             textScale = 2.pixels
@@ -162,7 +163,7 @@ class GuiItemFilterPopup(
             GuiUtils.closeGui()
         }
 
-        UIText("⬅", true).constrain {
+        CustomUIText("⬅", true).constrain {
             x = CenterConstraint()
             y = 2.pixels
             textScale = 1.6.pixels
@@ -175,7 +176,7 @@ class GuiItemFilterPopup(
             height = 18.pixels
         } childOf background effect OutlineEffect(CustomizationConfig.defaultCategoryColor.get(), 1f)
 
-        UIText("➥", true).constrain {
+        CustomUIText("➥", true).constrain {
             x = CenterConstraint()
             y = CenterConstraint()
             color = Color(0x4DBDD2).constraint
@@ -195,7 +196,7 @@ class GuiItemFilterPopup(
             height = 18.pixels
         } childOf background effect OutlineEffect(CustomizationConfig.defaultCategoryColor.get(), 1f)
 
-        UIText("§a✚", true).constrain {
+        CustomUIText("§a✚", true).constrain {
             x = CenterConstraint()
             y = CenterConstraint()
         } childOf importButton
@@ -293,7 +294,7 @@ class GuiItemFilterPopup(
             }
         }
 
-        UIText("§7Add Filter", true).constrain {
+        CustomUIText("§7Add Filter", true).constrain {
             x = CenterConstraint()
             y = CenterConstraint()
         } childOf addFilterButton
@@ -355,7 +356,7 @@ class GuiItemFilterPopup(
             height = 18.pixels
         } childOf backgroundBlock effect OutlineEffect(CustomizationConfig.defaultCategoryColor.get(), 1f)
 
-        UIText("§c✖", true).constrain {
+        CustomUIText("§c✖", true).constrain {
             x = CenterConstraint()
             y = CenterConstraint()
         } childOf deleteFilterButton
@@ -435,7 +436,7 @@ class GuiItemFilterPopup(
             }
         }
 
-        UIText(buttonText).constrain {
+        CustomUIText(buttonText).constrain {
             x = CenterConstraint()
             y = CenterConstraint()
         } childOf button

@@ -8,7 +8,7 @@ import gg.essential.elementa.WindowScreen
 import gg.essential.elementa.components.ScrollComponent
 import gg.essential.elementa.components.UIBlock
 import gg.essential.elementa.components.UIRoundedRectangle
-import gg.essential.elementa.components.UIText
+import mrfast.sbt.guis.components.CustomUIText
 import gg.essential.elementa.components.input.UITextInput
 import gg.essential.elementa.components.inspector.Inspector
 import gg.essential.elementa.constraints.CenterConstraint
@@ -109,7 +109,7 @@ class TradeHistoryGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
 
         if (DeveloperConfig.showInspector && CustomizationConfig.developerMode) Inspector(background) childOf window
 
-        UIText("§7Trade Log History", true).constrain {
+        CustomUIText("§7Trade Log History", true).constrain {
             x = CenterConstraint()
             y = 6.pixels
             textScale = 2.pixels
@@ -198,20 +198,13 @@ class TradeHistoryGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
 
             if (first) first = false
 
-            val date = UIText("§7${it.key}").constrain {
+            val date = CustomUIText("§7${it.key}").constrain {
                 x = CenterConstraint()
                 y = 0.pixels
                 textScale = 1.4.pixels
             } childOf group
 
             getCombinedChanges(date, it.key)
-
-//            val line = UIBlock(CustomizationConfig.guiLineColors.get().constraint).constrain {
-//                x = CenterConstraint()
-//                y = SiblingConstraintFixed(1f)
-//                width = 95.percent
-//                height = 2.pixels
-//            } childOf group
 
             val tradeScrollContainer =
                 ScrollComponent("No Trades", horizontalScrollEnabled = true, verticalScrollEnabled = false).constrain {
@@ -363,7 +356,7 @@ class TradeHistoryGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
         } childOf group
 
         val time = (trade.get("timestamp").asLong).toDateTimestamp(true)
-        UIText("§e$time").constrain {
+        CustomUIText("§e$time").constrain {
             x = CenterConstraint()
             y = CenterConstraint()
             textScale = 1.pixels
@@ -404,7 +397,7 @@ class TradeHistoryGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
             height = 20.pixels
         } childOf leftBlock
 
-        UIText("You").constrain {
+        CustomUIText("You").constrain {
             x = CenterConstraint()
             y = CenterConstraint()
             textScale = 1.pixels
@@ -435,7 +428,7 @@ class TradeHistoryGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
             itemIcon.addTooltip(lore.toSet(), item)
         }
 
-        UIText("§6${trade.get("yourCoins").asLong.abbreviateNumber()} Coins").constrain {
+        CustomUIText("§6${trade.get("yourCoins").asLong.abbreviateNumber()} Coins").constrain {
             x = CenterConstraint()
             y = 100.percent - 12.pixels
             textScale = 1.pixels
@@ -457,7 +450,7 @@ class TradeHistoryGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
 
         val traderName = trade.get("username").asString
 
-        UIText(traderName).constrain {
+        CustomUIText(traderName).constrain {
             x = CenterConstraint()
             y = CenterConstraint()
             textScale = 1.pixels
@@ -488,7 +481,7 @@ class TradeHistoryGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
             itemIcon.addTooltip(lore.toSet(), item)
         }
 
-        UIText("§6${trade.get("theirCoins").asLong.abbreviateNumber()} Coins").constrain {
+        CustomUIText("§6${trade.get("theirCoins").asLong.abbreviateNumber()} Coins").constrain {
             x = CenterConstraint()
             y = 100.percent - 12.pixels
             textScale = 1.pixels

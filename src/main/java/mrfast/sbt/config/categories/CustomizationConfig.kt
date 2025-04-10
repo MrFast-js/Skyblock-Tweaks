@@ -84,6 +84,16 @@ object CustomizationConfig : Config() {
     var selectedTheme = "Dark + Cyan"
 
     @ConfigProperty(
+        type = ConfigType.DROPDOWN,
+        name = "Font Type",
+        description = "Woah text shapes",
+        category = "§2§rCustomization",
+        subcategory = "Theme",
+        dropdownOptions = ["Default", "Smooth"]
+    )
+    var selectedFont = "Smooth"
+
+    @ConfigProperty(
         type = ConfigType.LABEL,
         name = "Custom Menu Colors",
         description = "Allows changing of almost every color in this gui!",

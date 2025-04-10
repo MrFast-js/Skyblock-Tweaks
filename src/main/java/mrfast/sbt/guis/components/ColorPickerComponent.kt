@@ -3,10 +3,8 @@ package mrfast.sbt.guis.components
 import gg.essential.elementa.UIComponent
 import gg.essential.elementa.components.UIBlock
 import gg.essential.elementa.components.UIContainer
-import gg.essential.elementa.components.UIText
 import gg.essential.elementa.constraints.CenterConstraint
 import gg.essential.elementa.constraints.RelativeConstraint
-import gg.essential.elementa.constraints.SiblingConstraint
 import gg.essential.elementa.dsl.*
 import gg.essential.elementa.effects.OutlineEffect
 import gg.essential.elementa.state.constraint
@@ -110,7 +108,7 @@ class ColorPicker(var customColor: CustomColor) : UIContainer() {
         color = Color.GRAY.toConstraint()
     } childOf this
 
-    private val hueIndicator = UIText("◄").constrain {
+    private val hueIndicator = CustomUIText("◄").constrain {
         x = (-4).pixels(alignOpposite = true)
         y = RelativeConstraint(currentHue) - 5.pixels
         color = Color.WHITE.toConstraint()
@@ -123,7 +121,7 @@ class ColorPicker(var customColor: CustomColor) : UIContainer() {
         color = Color.GRAY.toConstraint()
     } childOf this
 
-    private val alphaIndicator = UIText("◄").constrain {
+    private val alphaIndicator = CustomUIText("◄").constrain {
         x = (-4).pixels(alignOpposite = true)
         y = RelativeConstraint(1f - currentAlpha) - 5.pixels
         color = Color.WHITE.toConstraint()

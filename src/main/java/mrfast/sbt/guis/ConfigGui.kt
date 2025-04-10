@@ -20,6 +20,8 @@ import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.config.categories.CustomizationConfig
 import mrfast.sbt.config.categories.DeveloperConfig.showInspector
 import mrfast.sbt.guis.components.*
+import mrfast.sbt.guis.components.CustomUIText
+import mrfast.sbt.guis.components.UIWrappedText
 import mrfast.sbt.managers.ConfigManager
 import mrfast.sbt.managers.ConfigType
 import mrfast.sbt.managers.VersionManager
@@ -59,7 +61,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2, drawDefaultB
     private var headerBackgroundColorState = BasicState(CustomizationConfig.headerBackgroundColor)
     private var featureBorderColorState = BasicState(CustomizationConfig.featureBorderColor)
 
-    private var updateSymbol = BasicState(UIText())
+    private var updateSymbol = BasicState(CustomUIText())
     private var showUpdateButton = VersionManager.neededUpdate.versionName.isNotEmpty()
     private var selectedCategory = "General"
     private var selectedCategoryComponent: UIComponent? = null
@@ -163,7 +165,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2, drawDefaultB
                     y = CenterConstraint()
                 } childOf header
 
-            val socketStatusNew = UIText("∞", false).constrain {
+            val socketStatusNew = CustomUIText("∞", false).constrain {
                 x = CenterConstraint() + 1.pixels
                 y = CenterConstraint()
                 color = statusColor.constraint
@@ -195,7 +197,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2, drawDefaultB
                 y = CenterConstraint()
                 color = mainBackgroundColorState.get().colorState.constraint
             } childOf header
-        val editGuiLocationsSymbol = UIText("✎").constrain {
+        val editGuiLocationsSymbol = CustomUIText("✎").constrain {
             x = CenterConstraint();y = CenterConstraint();color = Color(0xFFFF55).constraint
         } childOf editGuiLocationsButton
         editGuiLocationsSymbol.setTextScale(2.pixels)
@@ -203,13 +205,13 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2, drawDefaultB
         editGuiLocationsButton.addTooltip(setOf("§eEdit Gui Locations"))
 
         // Add some text to the panel
-        val modTitle = UIText("§eSkyblock §9Tweaks", false).constrain {
+        val modTitle = CustomUIText("§eSkyblock §9Tweaks", false).constrain {
             x = CenterConstraint()
             y = CenterConstraint()
         } childOf header
         modTitle.setTextScale(2.5.pixels)
 
-        val modVersion = UIText("§7${SkyblockTweaks.MOD_VERSION}").constrain {
+        val modVersion = CustomUIText("§7${SkyblockTweaks.MOD_VERSION}").constrain {
             x = SiblingConstraintFixed(4f)
             y = SiblingConstraintFixed(4f) - 10f.pixels()
         } childOf header
@@ -250,7 +252,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2, drawDefaultB
                     y = CenterConstraint()
                 } childOf header
 
-            val updateSymbolNew = UIText("⬆").constrain {
+            val updateSymbolNew = CustomUIText("⬆").constrain {
                 x = CenterConstraint()
                 y = CenterConstraint()
             } childOf updateButton
@@ -346,7 +348,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2, drawDefaultB
             // Stop developer tab from showing if not in developer mode
             if (category.name == "§eDeveloper" && !CustomizationConfig.developerMode) continue
 
-            val categoryComponent = UIText(category.name).constrain {
+            val categoryComponent = CustomUIText(category.name).constrain {
                 x = CenterConstraint()
                 y = actualY
                 height = 8.pixels
@@ -478,7 +480,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2, drawDefaultB
                     y = actualY
                 }
 
-                val subcategoryTitle = UIText(subcategory.name).constrain {
+                val subcategoryTitle = CustomUIText(subcategory.name).constrain {
                     x = CenterConstraint()
                     y = 0.pixels
                     textScale = 1.8.pixels
@@ -605,7 +607,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2, drawDefaultB
             height = ChildBasedSizeConstraint(2f)
         } childOf featureBackground
 
-        val featureTitle = UIText(feature.name).constrain {
+        val featureTitle = CustomUIText(feature.name).constrain {
             x = 3.pixels
             y = 3.pixels
             textScale = 1.5.pixels
@@ -647,7 +649,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2, drawDefaultB
             color = Color.RED.constraint
         } childOf parentFeatureBackground
 
-        val optionName = UIText(feature.name).constrain {
+        val optionName = CustomUIText(feature.name).constrain {
             x = 2.pixels
             y = 2.pixels
             textScale = 1.5.pixels
@@ -857,7 +859,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2, drawDefaultB
                 if (keycode != -1) {
                     currentKey = Keyboard.getKeyName(keycode)
                 }
-                val buttonText = UIText(currentKey).constrain {
+                val buttonText = CustomUIText(currentKey).constrain {
                     x = CenterConstraint()
                     y = CenterConstraint()
                 } childOf button
@@ -936,7 +938,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2, drawDefaultB
                     }
                 }
 
-                val buttonText = UIText(feature.placeholder).constrain {
+                val buttonText = CustomUIText(feature.placeholder).constrain {
                     x = CenterConstraint()
                     y = CenterConstraint()
                 } childOf button

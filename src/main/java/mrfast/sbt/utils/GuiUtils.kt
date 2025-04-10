@@ -3,10 +3,12 @@ package mrfast.sbt.utils
 import gg.essential.elementa.dsl.constraint
 import gg.essential.elementa.state.BasicState
 import gg.essential.universal.UMatrixStack
+import mrfast.sbt.config.categories.CustomizationConfig
 import mrfast.sbt.config.categories.DeveloperConfig
 import mrfast.sbt.guis.components.OutlinedRoundedRectangle
 import mrfast.sbt.guis.components.shader.GaussianBlur
 import mrfast.sbt.guis.components.shader.ShaderManager
+import mrfast.sbt.managers.FontManager
 import mrfast.sbt.utils.Utils.cleanColor
 import mrfast.sbt.utils.Utils.getStringWidth
 import net.minecraft.client.Minecraft
@@ -66,7 +68,9 @@ object GuiUtils {
         scale: Float = 1.0f
     ) {
         val shadowText: String = text.cleanColor()
-        val fontRenderer = Minecraft.getMinecraft().fontRendererObj
+        var fontRenderer = Utils.mc.fontRendererObj
+
+        if(CustomizationConfig.selectedFont == "Smooth") fontRenderer = FontManager.getSmoothFontRenderer()
 
         // Calculate the centered x position if needed
         val startX = if (centered) {
@@ -77,23 +81,30 @@ object GuiUtils {
         }
 
         GlStateManager.pushMatrix() // Push matrix for transformations
-        GlStateManager.translate(0f, 0f, 200f)
+        GlStateManager.translate(0f, 1f, 200f)
 
         // Apply scaling transformation
         GlStateManager.scale(scale, scale, 1f)
 
         if (style == TextStyle.BLACK_OUTLINE) {
-            fontRenderer.drawString(shadowText, startX / scale + 2, y / scale + 1, 0x000000, false)
-            fontRenderer.drawString(shadowText, startX / scale, y / scale + 1, 0x000000, false)
-            fontRenderer.drawString(shadowText, startX / scale + 1, y / scale + 2, 0x000000, false)
-            fontRenderer.drawString(shadowText, startX / scale + 1, y / scale, 0x000000, false)
+            val outlineWidth = 0.75f // Width of the outline
+            fontRenderer.drawString(shadowText, startX / scale + outlineWidth, y / scale + outlineWidth, 0x000000, false) // Bottom Right
+            fontRenderer.drawString(shadowText, startX / scale - outlineWidth, y / scale - outlineWidth, 0x000000, false) // Top Left
+            fontRenderer.drawString(shadowText, startX / scale - outlineWidth, y / scale + outlineWidth, 0x000000, false) // Bottom Left
+            fontRenderer.drawString(shadowText, startX / scale + outlineWidth, y / scale - outlineWidth, 0x000000, false) // Top Right
+
+
+            fontRenderer.drawString(shadowText, startX / scale, y / scale + outlineWidth, 0x000000, false) // Bottom
+            fontRenderer.drawString(shadowText, startX / scale, y / scale - outlineWidth * 1.5f, 0x000000, false) // Top
+            fontRenderer.drawString(shadowText, startX / scale + outlineWidth, y / scale, 0x000000, false) // Right
+            fontRenderer.drawString(shadowText, startX / scale - outlineWidth, y / scale, 0x000000, false) // Left
         }
 
         // Main Text
         fontRenderer.drawString(
             text,
-            startX / scale + 1,
-            y / scale + 1,
+            startX / scale,
+            y / scale,
             coreColor.rgb,
             style == TextStyle.DROP_SHADOW
         )
