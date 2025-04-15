@@ -147,6 +147,16 @@ object MiscellaneousConfig : Config() {
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
+        name = "Show Price Paid for items",
+        description = "Shows as §3Price Paid: §d§l123,456",
+        category = "Miscellaneous",
+        subcategory = "Items",
+        parentName = "Show Item Pricing Data"
+    )
+    var showPricePaidStat = true
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
         name = "Show Bazaar Buy and Sell Price",
         description = "Shows as §3Bazaar: §a1,234 Buy §7| §b2,345 Sell",
         category = "Miscellaneous",

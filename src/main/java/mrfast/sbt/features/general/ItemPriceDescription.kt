@@ -5,8 +5,10 @@ import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.apis.ItemApi
 import mrfast.sbt.config.categories.CustomizationConfig
 import mrfast.sbt.config.categories.MiscellaneousConfig
+import mrfast.sbt.managers.PaidPriceManager
 import mrfast.sbt.utils.GuiUtils.chestName
 import mrfast.sbt.utils.ItemUtils.getDataString
+import mrfast.sbt.utils.ItemUtils.getItemUUID
 import mrfast.sbt.utils.ItemUtils.getSkyblockId
 import mrfast.sbt.utils.Utils
 import mrfast.sbt.utils.Utils.abbreviateNumber
@@ -60,6 +62,16 @@ object ItemPriceDescription {
                 val avgAucPrice = it.get("avgAucPrice").asLong.formatNumber()
                 val aucPrice = it.get("aucPrice").asLong.formatNumber()
                 event.toolTip.add("§3AUC: §7AVG §e$avgAucPrice §8| §7SOON §e$aucPrice")
+            }
+        }
+
+        if(MiscellaneousConfig.showPricePaidStat) {
+            if (stack.getItemUUID() != null) {
+                val pricePaid = PaidPriceManager.getPricePaid(stack.getItemUUID()!!)
+                if (pricePaid != null) {
+                    val pricePaidFormatted = pricePaid.formatNumber()
+                    event.toolTip.add("§3Price Paid: §d§l$pricePaidFormatted")
+                }
             }
         }
 

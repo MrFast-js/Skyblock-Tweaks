@@ -7,6 +7,7 @@ import mrfast.sbt.apis.ItemApi
 import mrfast.sbt.apis.PlayerStats
 import mrfast.sbt.managers.ConfigManager
 import mrfast.sbt.managers.LocationManager
+import mrfast.sbt.managers.PaidPriceManager
 import mrfast.sbt.utils.*
 import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.command.CommandBase
@@ -31,6 +32,7 @@ class DebugCommand : CommandBase() {
             Pair("item", "Get held item data"),
             Pair("sidebar", "Get data from Hypixel sidebar"),
             Pair("tab", "Get data from Hypixel tab-list"),
+            Pair("pricepaid", "Get data about the Paid Price Map"),
             Pair("location", "Get SBT location data"),
             Pair("stats", "Get SBT player stats"),
             Pair("log §7<-copy>?", "Open or copy latest.log"),
@@ -56,12 +58,7 @@ class DebugCommand : CommandBase() {
             return
         }
         var dist = 5
-        try {
-            if (args.size > 1) {
-                dist = args[1].replace("[^0-9]".toRegex(), "").toInt()
-            }
-        } catch (ignored: Exception) {
-        }
+        try { if (args.size > 1) { dist = args[1].replace("[^0-9]".toRegex(), "").toInt() } } catch (ignored: Exception) { }
         var copyToClipboard = false
         if (args.size > 1) {
             if (args[1] == "-copy") copyToClipboard = true
@@ -77,7 +74,7 @@ class DebugCommand : CommandBase() {
                             "§cDungeons: '${LocationManager.inDungeons}'\n" +
                             "§eMaster Mode: '${LocationManager.inMasterMode}'\n" +
                             "§aDungeon Floor: '${LocationManager.dungeonFloor}'\n" +
-                            "§dSkyblock: '${LocationManager.inSkyblock}'"
+                            "§dSkyblock: '${LocationManager.inSkyblock}'", prefix = true, shortPrefix = true
                 )
             }
 
@@ -86,24 +83,24 @@ class DebugCommand : CommandBase() {
                     "§cHealth: ${PlayerStats.health} | Max: ${PlayerStats.health} | §6Absorb: ${PlayerStats.absorption}\n" +
                             "§9Mana: ${PlayerStats.mana} | Max: ${PlayerStats.maxMana} | §3Overflow: ${PlayerStats.overflowMana}\n" +
                             "§dRift Time: ${PlayerStats.riftTimeSeconds} | Max: ${PlayerStats.maxRiftTime}\n" +
-                            "§aDefense: ${PlayerStats.defense} | Effective: ${PlayerStats.effectiveHealth} | Effective Max: ${PlayerStats.maxEffectiveHealth}"
+                            "§aDefense: ${PlayerStats.defense} | Effective: ${PlayerStats.effectiveHealth} | Effective Max: ${PlayerStats.maxEffectiveHealth}", prefix = true, shortPrefix = true
                 )
             }
 
             "refresh", "reload" -> {
                 Thread {
-                    ChatUtils.sendClientMessage("§7Reconnecting to SBT Websocket..", prefix = true)
+                    ChatUtils.sendClientMessage("§7Reconnecting to SBT Websocket..", prefix = true, shortPrefix = true)
                     SocketUtils.setupSocket()
                     while (!SocketUtils.socketConnected) Thread.sleep(300)
-                    ChatUtils.sendClientMessage("§aConnected to SBT Websocket!", prefix = true)
+                    ChatUtils.sendClientMessage("§aConnected to SBT Websocket!", prefix = true, shortPrefix = true)
                     Utils.playSound("random.orb", 0.5)
 
                     Thread.sleep(300)
 
-                    ChatUtils.sendClientMessage("§7Reloading Skyblock Item Data..", prefix = true)
+                    ChatUtils.sendClientMessage("§7Reloading Skyblock Item Data..", prefix = true, shortPrefix = true)
                     ItemApi.updateSkyblockItemData(logging = true, force = true)
                     while (ItemApi.getSkyblockItems().entrySet().isEmpty()) Thread.sleep(300)
-                    ChatUtils.sendClientMessage("§aLoaded Skyblock Item Data! §7(${ItemApi.getSkyblockItems().entrySet().size} items)", prefix = true)
+                    ChatUtils.sendClientMessage("§aLoaded Skyblock Item Data! §7(${ItemApi.getSkyblockItems().entrySet().size} items)", prefix = true, shortPrefix = true)
                     Utils.playSound("random.orb", 0.1)
                 }.start()
             }
@@ -122,6 +119,18 @@ class DebugCommand : CommandBase() {
 
             "test" -> {
 
+            }
+
+            "pricepaid","pp" -> {
+                if(args.size > 1) {
+                    if(args[1] == "clear") {
+                        PaidPriceManager.clearPricePaid()
+                        ChatUtils.sendClientMessage("§aCleared price paid data!", prefix = true, shortPrefix = true)
+                        return
+                    }
+                } else {
+                    ChatUtils.sendClientMessage("§aThere is ${PaidPriceManager.pricePaidItemCount()} items in the price paid data!", prefix = true, shortPrefix = true)
+                }
             }
 
             "log" -> {
@@ -152,13 +161,13 @@ class DebugCommand : CommandBase() {
     private fun invalidUsage() {
         ChatUtils.sendClientMessage("§cInvalid Usage!")
         subcommands.forEach {
-            ChatUtils.sendClientMessage(" §b• /sbtdebug §3${it.first} §f➡ §7${it.second}")
+            ChatUtils.sendClientMessage(" §b• /sbtdebug §3${it.first} §f➡ §7${it.second}", prefix = true, shortPrefix = true)
         }
     }
 
     private fun reflect(args: Array<String>) {
         if (args.size < 2) {
-            ChatUtils.sendClientMessage("§cInvalid Usage! §e/sbtdebug write/read <loc> <value>")
+            ChatUtils.sendClientMessage("§cInvalid Usage! §e/sbtdebug write/read <loc> <value>", prefix = true, shortPrefix = true)
             return
         }
         val location = args[1].split(".").dropLast(1).joinToString(".")
@@ -202,7 +211,7 @@ class DebugCommand : CommandBase() {
         for (line in lines) {
             output.append(line).append("\n")
         }
-        ChatUtils.sendClientMessage("§aCopied sidebar to clipboard!")
+        ChatUtils.sendClientMessage("§aCopied sidebar to clipboard!", prefix = true, shortPrefix = true)
         Utils.copyToClipboard(output.toString())
     }
 
@@ -214,17 +223,17 @@ class DebugCommand : CommandBase() {
             output.append(count).append(": ").append(playerName)
                 .append("\n")
         }
-        ChatUtils.sendClientMessage("§aCopied tablist to clipboard!")
+        ChatUtils.sendClientMessage("§aCopied tablist to clipboard!", prefix = true, shortPrefix = true)
         Utils.copyToClipboard(output.toString())
     }
 
     private fun getItemData() {
         val heldItem = ItemUtils.getHeldItem()
         if (heldItem != null) {
-            ChatUtils.sendClientMessage("§aCopied item nbt data to clipboard!")
+            ChatUtils.sendClientMessage("§aCopied item nbt data to clipboard!", prefix = true, shortPrefix = true)
             Utils.copyToClipboard(DevUtils.prettyPrintNBTtoString(heldItem.serializeNBT()))
         } else {
-            ChatUtils.sendClientMessage("§cYou must be holding an item!")
+            ChatUtils.sendClientMessage("§cYou must be holding an item!", prefix = true, shortPrefix = true)
         }
     }
 
@@ -232,7 +241,7 @@ class DebugCommand : CommandBase() {
         try {
             if (copyContents) {
                 Utils.copyToClipboard(file.readText())
-                ChatUtils.sendClientMessage("§aCopied ${file.name} to clipboard!")
+                ChatUtils.sendClientMessage("§aCopied ${file.name} to clipboard!", prefix = true, shortPrefix = true)
                 return
             }
             if (Desktop.isDesktopSupported()) {
@@ -253,7 +262,7 @@ class DebugCommand : CommandBase() {
         if (tileEntities) {
             stringBuilder.append(copyTileEntities(player, distance))
         }
-        ChatUtils.sendClientMessage("${ChatFormatting.GREEN}Copied nearby entity data to clipboard!")
+        ChatUtils.sendClientMessage("${ChatFormatting.GREEN}Copied nearby entity data to clipboard!", prefix = true, shortPrefix = true)
         Utils.copyToClipboard(stringBuilder.toString())
     }
 
