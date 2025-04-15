@@ -62,7 +62,6 @@ object PaidPriceManager {
                     val costString = it.getRegexGroups(aucBidCostRegex)?.get(1)?.value!!
                     lastViewedPrice = costString.replace(",", "").toLongOrNull() ?: 0L
                     lastViewedItem = uuid
-                    ChatUtils.sendClientMessage("§7§3Last viewed price: §e$lastViewedPrice, Item: §d$lastViewedItem")
                 }
             }
         }
@@ -86,9 +85,6 @@ object PaidPriceManager {
     }
 
     private fun saveItemPricePaid(uuid: String, price: Long) {
-        if(CustomizationConfig.developerMode) {
-            ChatUtils.sendClientMessage("§7§3Saved price paid for §d$uuid: §e$price")
-        }
         pricePaid.addProperty(uuid, price)
         DataManager.saveData("pricePaidMap", pricePaid)
     }
