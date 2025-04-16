@@ -234,7 +234,7 @@ object GuiUtils {
     open class Element(
         open var x: Float,
         open var y: Float,
-        open var text: String,
+        var text: String,
         open var hoverText: List<String>?,
         open var onClick: Runnable? = null,
         open var drawBackground: Boolean = false,
@@ -301,8 +301,9 @@ object GuiUtils {
         override var x: Float,
         override var y: Float,
         override var width: Int = 16,
-        override var height: Int = 16
-    ) : Element(x, y, "", null, null) {
+        override var height: Int = 16,
+        override var hoverText: List<String>?= null
+    ) : Element(x, y, "", hoverText, null) {
         override fun draw(mouseX: Int, mouseY: Int, originX: Int, originY: Int) {
             GlStateManager.pushMatrix()
             renderItemStackOnScreen(stack, x, y, width.toFloat(), height.toFloat())

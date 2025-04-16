@@ -18,7 +18,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 @SkyblockTweaks.EventComponent
 object TradeManager {
     var tradeHistory = JsonObject()
-    private var inTradeMenu = false
+    var inTradeMenu = false
 
     @SubscribeEvent
     fun onProfileSwap(event: ProfileLoadEvent) {
@@ -29,6 +29,7 @@ object TradeManager {
     fun onChatMessage(event: ClientChatReceivedEvent) {
         if (event.message.unformattedText.clean().startsWith("Trade completed with")) {
             interpretLastTradeMenu()
+            inTradeMenu = false
         }
     }
 
@@ -36,8 +37,9 @@ object TradeManager {
     private var tradingWithSub = ""
     private var tradingWith = ""
 
+    // Use slot draw event instead of gui draw event in order to be compatible with NEU custom trade menu
     @SubscribeEvent
-    fun onContainerDraw(event: SlotDrawnEvent.Post) {
+    fun onPostSlotDrawn(event: SlotDrawnEvent.Post) {
         if (event.slot.slotNumber == 0) {
             inTradeMenu = false
 
@@ -53,6 +55,8 @@ object TradeManager {
     @SubscribeEvent
     fun onClientTick(event: ClientTickEvent) {
         if (TickManager.tickCount % 20 != 0 || Utils.mc.theWorld == null) return
+
+        if(Utils.mc.currentScreen == null) inTradeMenu = false
 
         if (tradingWithSub.isNotEmpty()) {
             val matchingPlayer = Utils.mc.theWorld.playerEntities.find {
@@ -71,7 +75,7 @@ object TradeManager {
         27, 28, 29, 30
     )
 
-    private val theirSlots = mutableListOf(
+    val theirSlotIDs = mutableListOf(
         5, 6, 7, 8,
         14, 15, 16, 17,
         23, 24, 25, 26,
@@ -109,7 +113,7 @@ object TradeManager {
 
         val theirItems = JsonArray()
         var theirCoins = 0L
-        theirSlots.forEach { slot ->
+        theirSlotIDs.forEach { slot ->
             val stack = lastTradeMenu!!.getSlot(slot).stack
             if (stack != null) {
                 if (stack.displayName.clean().endsWith("coins")) {

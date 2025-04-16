@@ -488,6 +488,26 @@ object GeneralConfig : Config() {
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
+        name = "Lowballing Overlay",
+        description = "Shows a customizable overlay in the trade menu showing the amount to offer for an item",
+        category = "General",
+        subcategory = "Overlays",
+        isParent = true
+    )
+    var lowballingOverlay = false
+
+    @ConfigProperty(
+        type = ConfigType.NUMBER,
+        name = "Lowballing Overlay Offer Percentage %",
+        description = "The percentage of the item value you are offering",
+        category = "General",
+        subcategory = "Overlays",
+        parentName = "Lowballing Overlay"
+    )
+    var lowballingOverlayOfferPercentage = 60
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
         name = "Experimentation Overlay",
         description = "Shows coins per RNG when looking at the rng selector menu in the Experimentation Table",
         category = "General",
