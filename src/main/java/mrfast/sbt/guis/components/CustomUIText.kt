@@ -18,15 +18,18 @@ import mrfast.sbt.utils.GuiUtils
  */
 open class CustomUIText(
     text: State<String>,
-    shadow: State<Boolean> = BasicState(true)
+    shadow: State<Boolean> = BasicState(true),
+    scale: Float = 1f
 ) : UIComponent() {
     @JvmOverloads constructor(
         text: String = "",
-        shadow: Boolean = true
-    ) : this(BasicState(text), BasicState(shadow))
+        shadow: Boolean = true,
+        scale: Float = 1f
+    ) : this(BasicState(text), BasicState(shadow), scale)
 
     private val textState: MappedState<String, String> = text.map { it } // extra map so we can easily rebind it
     private val shadowState: MappedState<Boolean, Boolean> = shadow.map { it }
+    private val scale2 = scale
     private val textScaleState = asState { getTextScale() }
     /** Guess on whether we should be trying to center or top-align this component. See [BELOW_LINE_HEIGHT]. */
     private val verticallyCenteredState = asState { y is CenterConstraint }
@@ -55,11 +58,11 @@ open class CustomUIText(
     fun setText(text: String) = apply { textState.set(text) }
 
     override fun getWidth(): Float {
-        return super.getWidth() * getTextScale()
+        return super.getWidth() * scale2
     }
 
     override fun getHeight(): Float {
-        return super.getHeight() * getTextScale()
+        return super.getHeight() * scale2
     }
 
     override fun draw(matrixStack: UMatrixStack) {
@@ -69,9 +72,9 @@ open class CustomUIText(
 
         beforeDrawCompat(matrixStack)
 
-        val scale = getWidth() / textWidthState.get()
+//        val scale = getWidth() / textWidthState.get()
         val x = getLeft()
-        val y = getTop() + (if (verticallyCenteredState.get()) fontProviderState.get().getBelowLineHeight() * scale else 0f)
+        val y = getTop() + (if (verticallyCenteredState.get()) fontProviderState.get().getBelowLineHeight() * scale2 else 0f)
         val color = getColor()
 
         // We aren't visible, don't draw
@@ -87,7 +90,7 @@ open class CustomUIText(
             GuiUtils.TextStyle.DROP_SHADOW,
             color,
             centered = false,
-            scale = scale,
+            scale = scale2,
         )
 
         super.draw(matrixStack)

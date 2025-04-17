@@ -29,7 +29,7 @@ object AuctionHouseConfig : Config() {
         category = "§1§rAuction House",
         subcategory = "Auction Flipper"
     )
-    var usePriceMatch = false
+    var usePriceMatch = true
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,

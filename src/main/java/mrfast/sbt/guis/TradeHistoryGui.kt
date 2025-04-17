@@ -446,19 +446,19 @@ class TradeHistoryGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
             itemIcon.addTooltip(lore.toSet(), item)
         }
         yourWorth += trade.get("yourCoins").asLong
-
+        val yourCoinText = "§6${trade.get("yourCoins").asLong.abbreviateNumber()} Coins${
+            if (yourWorth != trade.get("yourCoins").asLong) {
+                " §8§o≈${yourWorth.abbreviateNumber()}"
+            } else {
+                ""
+            }
+        }"
         CustomUIText(
-            "§6${trade.get("yourCoins").asLong.abbreviateNumber()} Coins${
-                if (yourWorth != trade.get("yourCoins").asLong) {
-                    " §8§o≈${yourWorth.abbreviateNumber()}"
-                } else {
-                    ""
-                }
-            }"
+            yourCoinText,
+            scale = if(yourCoinText.length > 18) 0.9f else 1f
         ).constrain {
             x = CenterConstraint()
             y = 100.percent - 12.pixels
-            textScale = 1.pixels
         } childOf leftBlock
 
         val rightBlock = UIBlock(Color(0, 0, 0, 0)).constrain {
@@ -524,18 +524,19 @@ class TradeHistoryGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
             itemIcon.addTooltip(lore.toSet(), item)
         }
 
+        val theirCoinText = "§6${trade.get("theirCoins").asLong.abbreviateNumber()} Coins${
+            if (theirWorth != trade.get("theirCoins").asLong) {
+                " §8§o≈${theirWorth.abbreviateNumber()}"
+            } else {
+                ""
+            }
+        }"
         CustomUIText(
-            "§6${trade.get("theirCoins").asLong.abbreviateNumber()} Coins${
-                if (theirWorth != trade.get("theirCoins").asLong) {
-                    " §8§o≈${theirWorth.abbreviateNumber()}"
-                } else {
-                    ""
-                }
-            }"
+            theirCoinText
         ).constrain {
             x = CenterConstraint()
             y = 100.percent - 12.pixels
-            textScale = 1.pixels
+            textScale = if(theirCoinText.length > 16) 0.8.pixels else 1.pixels
         } childOf rightBlock
 
         if (theirWorth > yourWorth) {
