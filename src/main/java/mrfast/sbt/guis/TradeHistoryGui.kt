@@ -8,7 +8,6 @@ import gg.essential.elementa.WindowScreen
 import gg.essential.elementa.components.ScrollComponent
 import gg.essential.elementa.components.UIBlock
 import gg.essential.elementa.components.UIRoundedRectangle
-import mrfast.sbt.guis.components.CustomUIText
 import gg.essential.elementa.components.input.UITextInput
 import gg.essential.elementa.components.inspector.Inspector
 import gg.essential.elementa.constraints.CenterConstraint
@@ -20,12 +19,15 @@ import gg.essential.elementa.state.constraint
 import gg.essential.universal.UMatrixStack
 import mrfast.sbt.config.categories.CustomizationConfig
 import mrfast.sbt.config.categories.DeveloperConfig
+import mrfast.sbt.guis.components.CustomUIText
 import mrfast.sbt.guis.components.ItemComponent
 import mrfast.sbt.guis.components.OutlinedRoundedRectangle
 import mrfast.sbt.guis.components.SiblingConstraintFixed
 import mrfast.sbt.managers.TradeManager
 import mrfast.sbt.utils.GuiUtils
+import mrfast.sbt.utils.ItemUtils
 import mrfast.sbt.utils.ItemUtils.getLore
+import mrfast.sbt.utils.ItemUtils.getSkyblockId
 import mrfast.sbt.utils.Utils
 import mrfast.sbt.utils.Utils.abbreviateNumber
 import mrfast.sbt.utils.Utils.clean
@@ -356,7 +358,7 @@ class TradeHistoryGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
         } childOf group
 
         val time = (trade.get("timestamp").asLong).toDateTimestamp(true)
-        CustomUIText("§e$time").constrain {
+        val timeText = CustomUIText("§e$time").constrain {
             x = CenterConstraint()
             y = CenterConstraint()
             textScale = 1.pixels
@@ -404,6 +406,7 @@ class TradeHistoryGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
         } childOf youBlock
 
         val yourItems = trade.getAsJsonArray("yourItems")
+        var yourWorth = 0L
         for ((index, jsonElement) in yourItems.withIndex()) {
             val newX = index % 4
             val newY = index / 4
@@ -423,12 +426,36 @@ class TradeHistoryGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
             } childOf leftBlock
 
             val lore = item.getLore()
+
+            val suggestedListing = ItemUtils.getSuggestListingPrice(item)
+            if (suggestedListing != null) {
+                val price = suggestedListing.get("price").asDouble
+                if(price == 0.0) {
+                    if (item.getSkyblockId() != null) {
+                        val basePrice = ItemUtils.getItemBasePrice(item.getSkyblockId()!!) * (jsonElement.asJsonObject.get("count").asInt)
+
+                        yourWorth += basePrice.toLong()
+                    }
+                } else {
+                    yourWorth += price.toLong()
+                }
+            }
+
             lore.add(0, item.displayName)
 
             itemIcon.addTooltip(lore.toSet(), item)
         }
+        yourWorth += trade.get("yourCoins").asLong
 
-        CustomUIText("§6${trade.get("yourCoins").asLong.abbreviateNumber()} Coins").constrain {
+        CustomUIText(
+            "§6${trade.get("yourCoins").asLong.abbreviateNumber()} Coins${
+                if (yourWorth != trade.get("yourCoins").asLong) {
+                    " §8§o≈${yourWorth.abbreviateNumber()}"
+                } else {
+                    ""
+                }
+            }"
+        ).constrain {
             x = CenterConstraint()
             y = 100.percent - 12.pixels
             textScale = 1.pixels
@@ -457,6 +484,7 @@ class TradeHistoryGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
         } childOf usernameBlock
 
         val theirItems = trade.getAsJsonArray("theirItems")
+        var theirWorth = 0L
         for ((index, jsonElement) in theirItems.withIndex()) {
             val newX = index % 4
             val newY = index / 4
@@ -476,15 +504,44 @@ class TradeHistoryGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
             } childOf rightBlock
 
             val lore = item.getLore()
+
+            val suggestedListing = ItemUtils.getSuggestListingPrice(item)
+            if (suggestedListing != null) {
+                val price = suggestedListing.get("price").asDouble
+                if(price == 0.0) {
+                    if (item.getSkyblockId() != null) {
+                        val basePrice = ItemUtils.getItemBasePrice(item.getSkyblockId()!!) * (jsonElement.asJsonObject.get("count").asInt)
+
+                        theirWorth += basePrice.toLong()
+                    }
+                } else {
+                    theirWorth += price.toLong()
+                }
+            }
+
             lore.add(0, item.displayName)
 
             itemIcon.addTooltip(lore.toSet(), item)
         }
 
-        CustomUIText("§6${trade.get("theirCoins").asLong.abbreviateNumber()} Coins").constrain {
+        CustomUIText(
+            "§6${trade.get("theirCoins").asLong.abbreviateNumber()} Coins${
+                if (theirWorth != trade.get("theirCoins").asLong) {
+                    " §8§o≈${theirWorth.abbreviateNumber()}"
+                } else {
+                    ""
+                }
+            }"
+        ).constrain {
             x = CenterConstraint()
             y = 100.percent - 12.pixels
             textScale = 1.pixels
         } childOf rightBlock
+
+        if (theirWorth > yourWorth) {
+            timeText.setText("§e$time §a+${(theirWorth-yourWorth).abbreviateNumber()}")
+        } else {
+            timeText.setText("§e$time §c-${(yourWorth-theirWorth).abbreviateNumber()}")
+        }
     }
 }

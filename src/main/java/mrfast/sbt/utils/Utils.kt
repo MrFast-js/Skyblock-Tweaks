@@ -73,10 +73,22 @@ object Utils {
     fun Number.abbreviateNumber(): String {
         val num = this.toDouble()
         return when {
-            num <= -1_000_000_000_000 || num >= 1_000_000_000_000 -> String.format("%.1fT", num / 1_000_000_000_000)
-            num <= -1_000_000_000 || num >= 1_000_000_000 -> String.format("%.1fB", num / 1_000_000_000)
-            num <= -1_000_000 || num >= 1_000_000 -> String.format("%.1fM", num / 1_000_000)
-            num <= -1_000 || num >= 1_000 -> String.format("%.1fk", num / 1_000)
+            num <= -1_000_000_000_000 || num >= 1_000_000_000_000 -> {
+                val value = num / 1_000_000_000_000
+                if (value % 1.0 == 0.0) "${value.toInt()}T" else String.format("%.1fT", value)
+            }
+            num <= -1_000_000_000 || num >= 1_000_000_000 -> {
+                val value = num / 1_000_000_000
+                if (value % 1.0 == 0.0) "${value.toInt()}B" else String.format("%.1fB", value)
+            }
+            num <= -1_000_000 || num >= 1_000_000 -> {
+                val value = num / 1_000_000
+                if (value % 1.0 == 0.0) "${value.toInt()}M" else String.format("%.1fM", value)
+            }
+            num <= -1_000 || num >= 1_000 -> {
+                val value = num / 1_000
+                if (value % 1.0 == 0.0) "${value.toInt()}k" else String.format("%.1fk", value)
+            }
             else -> String.format("%.0f", num)
         }
     }
