@@ -111,10 +111,9 @@ class TradeHistoryGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
 
         if (DeveloperConfig.showInspector && CustomizationConfig.developerMode) Inspector(background) childOf window
 
-        CustomUIText("§7Trade Log History", true).constrain {
+        CustomUIText("§7Trade Log History", true, scale = 2f).constrain {
             x = CenterConstraint()
             y = 6.pixels
-            textScale = 2.pixels
         } childOf header
 
         val searchBar = OutlinedRoundedRectangle(CustomizationConfig.guiLineColors.get().constraint, 1f, 3f).constrain {
@@ -200,10 +199,9 @@ class TradeHistoryGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
 
             if (first) first = false
 
-            val date = CustomUIText("§7${it.key}").constrain {
+            val date = CustomUIText("§7${it.key}", scale = 1.4f).constrain {
                 x = CenterConstraint()
                 y = 0.pixels
-                textScale = 1.4.pixels
             } childOf group
 
             getCombinedChanges(date, it.key)
@@ -361,7 +359,6 @@ class TradeHistoryGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
         val timeText = CustomUIText("§e$time").constrain {
             x = CenterConstraint()
             y = CenterConstraint()
-            textScale = 1.pixels
         } childOf timeBlock
 
         val horizontalLine1 = UIBlock(CustomizationConfig.guiLineColors.get().constraint).constrain {
@@ -402,7 +399,6 @@ class TradeHistoryGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
         CustomUIText("You").constrain {
             x = CenterConstraint()
             y = CenterConstraint()
-            textScale = 1.pixels
         } childOf youBlock
 
         val yourItems = trade.getAsJsonArray("yourItems")
@@ -480,7 +476,6 @@ class TradeHistoryGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
         CustomUIText(traderName).constrain {
             x = CenterConstraint()
             y = CenterConstraint()
-            textScale = 1.pixels
         } childOf usernameBlock
 
         val theirItems = trade.getAsJsonArray("theirItems")
@@ -532,11 +527,11 @@ class TradeHistoryGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
             }
         }"
         CustomUIText(
-            theirCoinText
+            theirCoinText,
+            scale = if(theirCoinText.length > 18) 0.9f else 1f
         ).constrain {
             x = CenterConstraint()
             y = 100.percent - 12.pixels
-            textScale = if(theirCoinText.length > 16) 0.8.pixels else 1.pixels
         } childOf rightBlock
 
         if (theirWorth > yourWorth) {

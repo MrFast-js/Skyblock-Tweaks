@@ -165,11 +165,10 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2, drawDefaultB
                     y = CenterConstraint()
                 } childOf header
 
-            val socketStatusNew = CustomUIText("∞", false).constrain {
+            val socketStatusNew = CustomUIText("∞", false, scale = 1.6f).constrain {
                 x = CenterConstraint() + 1.pixels
                 y = CenterConstraint()
                 color = statusColor.constraint
-                textScale = 1.6.pixels
             } childOf socketStatusButton
 
 
@@ -197,26 +196,22 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2, drawDefaultB
                 y = CenterConstraint()
                 color = mainBackgroundColorState.get().colorState.constraint
             } childOf header
-        val editGuiLocationsSymbol = CustomUIText("✎").constrain {
+        val editGuiLocationsSymbol = CustomUIText("✎", scale = 2f).constrain {
             x = CenterConstraint();y = CenterConstraint();color = Color(0xFFFF55).constraint
         } childOf editGuiLocationsButton
-        editGuiLocationsSymbol.setTextScale(2.pixels)
         editGuiLocationsButton.onMouseClick { GuiUtil.open(GuiEditor()) }
         editGuiLocationsButton.addTooltip(setOf("§eEdit Gui Locations"))
 
         // Add some text to the panel
-        val modTitle = CustomUIText("§eSkyblock §9Tweaks", false).constrain {
+        val modTitle = CustomUIText("§eSkyblock §9Tweaks", false, scale = 2.5f).constrain {
             x = CenterConstraint()
             y = CenterConstraint()
         } childOf header
-        modTitle.setTextScale(2.5.pixels)
 
-        val modVersion = CustomUIText("§7${SkyblockTweaks.MOD_VERSION}").constrain {
-            x = SiblingConstraintFixed(4f)
+        val modVersion = CustomUIText("§7${SkyblockTweaks.MOD_VERSION}", scale = 0.75f).constrain {
+            x = SiblingConstraintFixed(1f)
             y = SiblingConstraintFixed(4f) - 10f.pixels()
         } childOf header
-
-        modVersion.setTextScale(0.75.pixels)
 
         val searchBar = OutlinedRoundedRectangle(guiLineColorsState.get().colorState.constraint, 1f, 3f).constrain {
             color = mainBackgroundColorState.get().colorState.constraint
@@ -252,11 +247,10 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2, drawDefaultB
                     y = CenterConstraint()
                 } childOf header
 
-            val updateSymbolNew = CustomUIText("⬆").constrain {
+            val updateSymbolNew = CustomUIText("⬆", scale = 2f).constrain {
                 x = CenterConstraint()
                 y = CenterConstraint()
             } childOf updateButton
-            updateSymbolNew.setTextScale(2.pixels)
 
             animateUpdateButton()
             updateSymbol.set(updateSymbolNew)
@@ -348,7 +342,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2, drawDefaultB
             // Stop developer tab from showing if not in developer mode
             if (category.name == "§eDeveloper" && !CustomizationConfig.developerMode) continue
 
-            val categoryComponent = CustomUIText(category.name).constrain {
+            val categoryComponent = CustomUIText(category.name, scale = 1.6f).constrain {
                 x = CenterConstraint()
                 y = actualY
                 height = 8.pixels
@@ -359,7 +353,6 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2, drawDefaultB
                 updateSelectedCategoryColor(categoryComponent, category.name)
                 updateSelectedFeatures(featureList)
             }
-            categoryComponent.setTextScale(1.6.pixels)
 
             categoryComponent.onMouseEnter {
                 // Don't do hover colors if already colored
@@ -480,10 +473,9 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2, drawDefaultB
                     y = actualY
                 }
 
-                val subcategoryTitle = CustomUIText(subcategory.name).constrain {
+                val subcategoryTitle = CustomUIText(subcategory.name, scale = 1.8f).constrain {
                     x = CenterConstraint()
                     y = 0.pixels
-                    textScale = 1.8.pixels
                 } childOf subcategoryComponent
 
                 val comparator = compareByDescending<String> { it }
@@ -607,10 +599,9 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2, drawDefaultB
             height = ChildBasedSizeConstraint(2f)
         } childOf featureBackground
 
-        val featureTitle = CustomUIText(feature.name).constrain {
+        val featureTitle = CustomUIText(feature.name, scale = 1.5f).constrain {
             x = 3.pixels
             y = 3.pixels
-            textScale = 1.5.pixels
         } childOf secondContainer
 
         if (feature.description != "") {
@@ -649,10 +640,9 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2, drawDefaultB
             color = Color.RED.constraint
         } childOf parentFeatureBackground
 
-        val optionName = CustomUIText(feature.name).constrain {
+        val optionName = CustomUIText(feature.name, scale = 1.5f).constrain {
             x = 2.pixels
             y = 2.pixels
-            textScale = 1.5.pixels
         } childOf featureContainer
 
         if (feature.description.isNotEmpty()) {
@@ -661,7 +651,6 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2, drawDefaultB
                 y = SiblingConstraintFixed(2f)
                 width = 80.percent - 2.pixels
                 color = Color.GRAY.constraint
-                textScale = 1.pixels
             } childOf featureContainer
         } else {
             optionName.setY(CenterConstraint())

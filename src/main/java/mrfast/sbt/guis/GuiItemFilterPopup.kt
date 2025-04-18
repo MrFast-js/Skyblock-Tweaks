@@ -146,10 +146,9 @@ class GuiItemFilterPopup(
 
         if(DeveloperConfig.showInspector && CustomizationConfig.developerMode) Inspector(background) childOf window
 
-        CustomUIText("§7$title", true).constrain {
+        CustomUIText("§7$title", true, scale = 2f).constrain {
             x = CenterConstraint()
             y = 6.pixels
-            textScale = 2.pixels
         } childOf background
 
         val backButton = UIBlock(Color(0x2A2A2A)).constrain {
@@ -163,10 +162,9 @@ class GuiItemFilterPopup(
             GuiUtils.closeGui()
         }
 
-        CustomUIText("⬅", true).constrain {
+        CustomUIText("⬅", true, scale = 1.6f).constrain {
             x = CenterConstraint()
             y = 2.pixels
-            textScale = 1.6.pixels
         } childOf backButton
 
         val shareButton = UIBlock(Color(0x2A2A2A)).constrain {
