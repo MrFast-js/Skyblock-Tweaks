@@ -141,7 +141,7 @@ object CustomizationConfig : Config() {
         subcategory = "Theme",
         parentName = "Custom Menu Colors"
     )
-    var windowBorderColor = CustomColor(0x00ffff)
+    var windowBorderColor = CustomColor(Color.GRAY)
 
     @ConfigProperty(
         type = ConfigType.COLOR,
@@ -151,7 +151,7 @@ object CustomizationConfig : Config() {
         subcategory = "Theme",
         parentName = "Custom Menu Colors"
     )
-    var featureBackgroundColor = CustomColor(34, 34, 34)
+    var featureBackgroundColor = CustomColor(0x1c1c1c)
 
     @ConfigProperty(
         type = ConfigType.COLOR,
@@ -161,7 +161,7 @@ object CustomizationConfig : Config() {
         subcategory = "Theme",
         parentName = "Custom Menu Colors"
     )
-    var headerBackgroundColor= CustomColor(34, 34, 34)
+    var headerBackgroundColor= CustomColor(0x0f0f0f)
 
     @ConfigProperty(
         type = ConfigType.COLOR,
@@ -171,7 +171,7 @@ object CustomizationConfig : Config() {
         subcategory = "Theme",
         parentName = "Custom Menu Colors"
     )
-    var mainBackgroundColor = CustomColor(22, 22, 22)
+    var mainBackgroundColor = CustomColor(0x090909)
 
     @ConfigProperty(
         type = ConfigType.COLOR,
@@ -181,7 +181,7 @@ object CustomizationConfig : Config() {
         subcategory = "Theme",
         parentName = "Custom Menu Colors"
     )
-    var sidebarBackgroundColor = CustomColor(28, 28, 28)
+    var sidebarBackgroundColor = CustomColor(0x0f0f0f)
 
     @ConfigProperty(
         type = ConfigType.COLOR,
@@ -201,7 +201,7 @@ object CustomizationConfig : Config() {
         subcategory = "Theme",
         parentName = "Custom Menu Colors"
     )
-    var defaultCategoryColor = CustomColor(0x5f5f5f)
+    var defaultCategoryColor = CustomColor(0xb2b2b2)
 
     @ConfigProperty(
         type = ConfigType.COLOR,
