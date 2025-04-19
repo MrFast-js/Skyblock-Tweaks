@@ -541,6 +541,7 @@ class TradeHistoryGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
             )
         )
 
+        yourCoinText.scale2 = if (yourCoinText.getWidth() + input.getWidth() > 85) 0.9f else 1f
         input.setWidth((input.text.getStringWidth() + 5).pixels)
         bottomContainer.setWidth(PixelConstraint(yourCoinText.getWidth() + input.getWidth()))
     }
