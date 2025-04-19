@@ -13,8 +13,8 @@ import gg.essential.universal.UMatrixStack
 import mrfast.sbt.utils.GuiUtils
 
 /**
- * Simple text component that draws its given `text` at the scale determined by
- * this component's width & height constraints.
+ * Taken from Elementa's UIText component, but with some changes to custom font rendering
+ * https://github.com/EssentialGG/Elementa/blob/master/src/main/kotlin/gg/essential/elementa/components/UIText.kt
  */
 open class CustomUIText(
     text: State<String>,
@@ -29,7 +29,7 @@ open class CustomUIText(
 
     private val textState: MappedState<String, String> = text.map { it } // extra map so we can easily rebind it
     private val shadowState: MappedState<Boolean, Boolean> = shadow.map { it }
-    private val scale2 = scale
+    var scale2 = scale
     private val textScaleState = asState { getTextScale() }
     /** Guess on whether we should be trying to center or top-align this component. See [BELOW_LINE_HEIGHT]. */
     private val verticallyCenteredState = asState { y is CenterConstraint }
@@ -72,7 +72,6 @@ open class CustomUIText(
 
         beforeDrawCompat(matrixStack)
 
-//        val scale = getWidth() / textWidthState.get()
         val x = getLeft()
         val y = getTop() + (if (verticallyCenteredState.get()) fontProviderState.get().getBelowLineHeight() * scale2 else 0f)
         val color = getColor()
