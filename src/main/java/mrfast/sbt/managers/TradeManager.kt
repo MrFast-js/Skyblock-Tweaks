@@ -94,13 +94,13 @@ object TradeManager {
             if (stack != null) {
                 if (stack.displayName.clean().endsWith("coins")) {
                     val name = stack.displayName.clean()
-                    val coins = name
-                        .replace("k", "000")
-                        .replace("M", "000000")
-                        .replace("B", "000000000")
-                        .replace(" coins", "")
-                        .trim()
-                        .toLong()
+                    val coins = when {
+                        name.endsWith("k coins", true) -> name.dropLast(7).toDouble() * 1_000
+                        name.endsWith("M coins", true) -> name.dropLast(7).toDouble() * 1_000_000
+                        name.endsWith("B coins", true) -> name.dropLast(7).toDouble() * 1_000_000_000
+                        else -> name.replace(" coins", "").toDouble()
+                    }.toLong()
+
                     yourCoins += coins
                 } else {
                     val json = createItemJson(stack)
