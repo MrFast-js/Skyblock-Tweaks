@@ -29,7 +29,7 @@ object ItemPriceDescription {
         val menuName = (Utils.mc.currentScreen as? GuiChest)?.chestName() ?: ""
         val pricingData = ItemApi.getItemInfo(stack) ?: return
 
-        if(MiscellaneousConfig.showActiveAuctionStat) {
+        if (MiscellaneousConfig.showActiveAuctionStat) {
             pricingData.takeIf { it.has("activeBin") || it.has("activeAuc") }?.let {
                 val activeBinNum = if (it.has("activeBin")) it.get("activeBin").asInt else -1
                 val activeAucNum = if (it.has("activeAuc")) it.get("activeAuc").asInt else -1
@@ -39,7 +39,7 @@ object ItemPriceDescription {
             }
         }
 
-        if(MiscellaneousConfig.showSalesStat) {
+        if (MiscellaneousConfig.showSalesStat) {
             pricingData.takeIf { it.has("binSold") || it.has("aucSold") }?.let {
                 val soldBinNum = if (it.has("binSold")) it.get("binSold").asInt else -1
                 val soldAucNum = if (it.has("aucSold")) it.get("aucSold").asInt else -1
@@ -49,7 +49,7 @@ object ItemPriceDescription {
             }
         }
 
-        if(MiscellaneousConfig.showBinPricingStat) {
+        if (MiscellaneousConfig.showBinPricingStat) {
             pricingData.takeIf { it.has("avgLowestBin") && it.has("lowestBin") }?.let {
                 val avgLowestBin = it.get("avgLowestBin").asLong.formatNumber()
                 val lowestBin = it.get("lowestBin").asLong.formatNumber()
@@ -57,7 +57,7 @@ object ItemPriceDescription {
             }
         }
 
-        if(MiscellaneousConfig.showAuctionPricingStat) {
+        if (MiscellaneousConfig.showAuctionPricingStat) {
             pricingData.takeIf { it.has("avgAucPrice") && it.has("aucPrice") }?.let {
                 val avgAucPrice = it.get("avgAucPrice").asLong.formatNumber()
                 val aucPrice = it.get("aucPrice").asLong.formatNumber()
@@ -65,7 +65,7 @@ object ItemPriceDescription {
             }
         }
 
-        if(MiscellaneousConfig.showPricePaidStat) {
+        if (MiscellaneousConfig.showPricePaidStat) {
             if (stack.getItemUUID() != null) {
                 val pricePaid = PaidPriceManager.getPricePaid(stack.getItemUUID()!!)
                 if (pricePaid != null) {
@@ -75,7 +75,7 @@ object ItemPriceDescription {
             }
         }
 
-        if(MiscellaneousConfig.showBazaarStat) {
+        if (MiscellaneousConfig.showBazaarStat) {
             pricingData.takeIf { it.has("bazaarBuy") || it.has("bazaarSell") }?.let {
                 val multiplier = if (!menuName.contains("Experimentation")) stack.stackSize else 1
 
@@ -98,19 +98,18 @@ object ItemPriceDescription {
         val dataString = stack.getDataString()
         val id = stack.getSkyblockId()
 
-        if(CustomizationConfig.developerMode) event.toolTip.add("§8SBTID: ${id ?: "§4Unknown"}")
+        if (CustomizationConfig.developerMode) event.toolTip.add("§8SBTID: ${id ?: "§4Unknown"}")
 
-        if(MiscellaneousConfig.showPriceMatchingStat) {
+        if (MiscellaneousConfig.showPriceMatchingStat) {
             if (dataString != "" && ItemApi.liveAuctionData.has(id)) {
                 if (CustomizationConfig.developerMode) event.toolTip.add("§3Data String: §7$dataString")
-                val itemData = ItemApi.liveAuctionData.get(id).asJsonObject
+                val itemArray = ItemApi.liveAuctionData.get(id).asJsonObject
 
-                val best = findBestMatch(itemData, dataString, id!!) ?: return
+                val best = findBestMatch(itemArray, dataString, id!!) ?: return
                 val priceMatch = best.first
                 val percentMatch = best.second
 
                 event.toolTip.add("§a§lMATCHED PRICE: §7${priceMatch.formatNumber()} §8${percentMatch.abbreviateNumber()}%")
-//            event.toolTip.add("§a§lBest: §e${bestMatch}")
             }
         }
     }
@@ -118,11 +117,12 @@ object ItemPriceDescription {
     private val weights = mapOf(
         "RecombMatch" to 5.0,
         "DefaultEnchantMatch" to 4.0,
+        "AttributeMatch" to 15.0,
         "HotPotatoMatchFull" to 3.0
     )
 
-    private var debugBestMatch = ""
-    fun findBestMatch(itemsJson: JsonObject, targetAttributes: String, itemId: String): Pair<Long, Double>? {
+    private var debugBestMatch = "AT:BL2,BR1"
+    fun findBestMatch(itemArray: JsonObject, targetAttributes: String, itemId: String): Pair<Long, Double>? {
         var bestItem: String? = null
         var bestScore = Double.MIN_VALUE
         var bestPercent = 0.0
@@ -131,8 +131,8 @@ object ItemPriceDescription {
 
         val maxScore = getMatchScore(targetAttributesList, targetAttributesList)
 
-        // Evaluate each item in the itemsJson
-        for (itemEntry in itemsJson.entrySet()) {
+        // Evaluate each data string in the itemArray
+        for (itemEntry in itemArray.entrySet()) {
             val itemAttributes = splitString(itemEntry.key) // Split attributes of the current item
             val matchScore = getMatchScore(itemAttributes, targetAttributesList)
 
@@ -147,11 +147,13 @@ object ItemPriceDescription {
             if (matchScore >= bestScore) {
                 val itemData = ItemApi.liveAuctionData.get(itemId).asJsonObject
 
-                val bestPrice = itemData?.get(bestItem)?.asLong ?: 0
-                val thisPrice = itemData?.get(itemEntry.key)?.asLong ?: 0
+                val bestData = itemData?.get(bestItem)?.asJsonObject
+                val bestPrice = bestData?.get("price")?.asLong ?: 0
+                val thisData = itemData?.get(itemEntry.key)?.asJsonObject
+                val thisPrice = thisData?.get("price")?.asLong ?: 0
 
                 // If the match score is equal, compare the prices, otherwise, update the best match
-                if (bestItem == null || matchScore == bestScore && thisPrice < bestPrice || matchScore > bestScore) {
+                if (bestItem == null || (matchScore == bestScore && thisPrice < bestPrice) || matchScore > bestScore) {
                     bestScore = matchScore
                     bestPercent = matchPercentage
                     bestItem = itemEntry.key
@@ -159,120 +161,153 @@ object ItemPriceDescription {
             }
         }
 
-        debugBestMatch = bestItem ?: ""
 
-        if(bestPercent==0.0 || bestItem==null) return null
-        return ((itemsJson.get(bestItem).asLong) to bestPercent)
+        if (bestPercent == 0.0 || bestItem == null) return null
+        val itemData = itemArray.get(bestItem).asJsonObject
+        val price = itemData.get("price").asLong
+
+        return (price to bestPercent)
     }
 
-    private fun getMatchScore(itemAttributes: List<String>, targetAttributes: List<String>): Double {
+    private fun getMatchScore(itemStats: List<String>, targetStats: List<String>): Double {
         var totalMatchScore = 0.0
         var out = ""
-        val itemID = itemAttributes.joinToString("+")
+        val dataString = itemStats.joinToString("+")
 
-        for (attribute in itemAttributes) {
+        for (stat in itemStats) {
             when {
+                stat.startsWith("AT:") -> {
+                    // At this point, we are working in the attribute section of the current item
+                    var totalWeight = 0.0
+
+                    val targetAttributes = targetStats.find { it.startsWith("AT:") }!!.substring(3)
+                        .split(",") // Look for the target attributes
+                    val itemAttributes = stat.substring(3).split(",")
+
+                    // Exact match of type of attributes
+                    val weightPerAttribute = weights["AttributeMatch"]!! / itemAttributes.size
+
+                    // Going through each attribute of the item
+                    for (attributeString in itemAttributes) {
+                        val attributeName = attributeString.substring(0, 2) // Extract name, eg. AT:BL
+                        val itemLevel = attributeString.last().digitToIntOrNull() ?: 0 // Extract level of the attribute
+
+                        // Find the same attribute on the target
+                        val targetAttribute = targetAttributes.find { it.startsWith(attributeName) }
+                        val targetLevel = targetAttribute?.last()?.digitToIntOrNull() ?: 0 // Extract target level
+
+                        if (targetAttribute == null) continue
+
+                        if (itemLevel == targetLevel) {
+                            totalWeight += weightPerAttribute
+                        } else {
+                            // if has attribute but not matching level
+                            var weight = weightPerAttribute
+
+                            // sameTypeLevel = 5, itemLevel = 7
+                            if (itemLevel > targetLevel) {
+                                // Having a higher level attribute than the target
+                                for (lvl in itemLevel downTo targetLevel) {
+                                    weight *= 0.95
+                                }
+                            } else {
+                                // Having a higher level attribute than the target
+                                for (lvl in itemLevel until targetLevel) {
+                                    weight *= 0.75
+                                }
+                            }
+
+                            totalWeight += weight
+                        }
+                    }
+                    totalMatchScore += totalWeight
+
+                }
+
                 // Enchantments: Format E:<name><level>, e.g., E:soul_eater5
-                attribute.startsWith("E:") -> {
-                    val enchantName = attribute.substring(2, attribute.length - 1) // Extract name
-                    val itemLevel = attribute.last().digitToIntOrNull() ?: 0 // Extract level as Int
+                stat.startsWith("E:") -> {
+                    val enchantName = stat.substring(2, stat.length - 1) // Extract name
+                    val itemLevel = stat.last().digitToIntOrNull() ?: 0 // Extract level as Int
 
                     // Find a matching enchantment in the target
-                    val targetEnchant = targetAttributes.find { it.startsWith("E:$enchantName") }
+                    val targetEnchant = targetStats.find { it.startsWith("E:$enchantName") }
                     val targetLevel = targetEnchant?.last()?.digitToIntOrNull() ?: 0 // Extract target enchantment level
 
                     if (targetEnchant != null) {
                         if (itemLevel == targetLevel) {
                             val weight = getEnchantWeight(enchantName, itemLevel, targetLevel)
                             totalMatchScore += weight
-                            if (debugBestMatch == itemID) out += "Ench ($enchantName | $itemLevel | $targetLevel | $weight)"
+//                            if (debugBestMatch == itemID) out += "Ench ($enchantName | $itemLevel | $targetLevel | $weight)"
                         } else {
                             // If has enchant but not matching level
                             val weight = getEnchantWeight(enchantName, itemLevel, targetLevel)
                             totalMatchScore += weight
-                            if (debugBestMatch == itemID) out += "Ench-Step ($enchantName | $itemLevel | $targetLevel | $weight)"
-                            if (debugBestMatch == itemID) out += "Ench-Step2 (${
-                                getEnchantWeight(
-                                    enchantName,
-                                    targetLevel,
-                                    targetLevel
-                                )
-                            })"
+//                            if (debugBestMatch == itemID) out += "Ench-Step ($enchantName | $itemLevel | $targetLevel | $weight)"
+//                            if (debugBestMatch == itemID) out += "Ench-Step2 (${
+//                                getEnchantWeight(
+//                                    enchantName,
+//                                    targetLevel,
+//                                    targetLevel
+//                                )
+//                            })"
                         }
                     } else {
                         // If no enchantment match in the target, apply a penalty
                         val penalty = -1.0 // Apply a penalty for missing enchantment in the target
                         totalMatchScore += penalty
-                        if (debugBestMatch == itemID) out += "Ench-Pen ($enchantName | $itemLevel | $targetLevel | $penalty)"
+//                        if (debugBestMatch == itemID) out += "Ench-Pen ($enchantName | $itemLevel | $targetLevel | $penalty)"
                     }
                 }
 
-                // Reforges: Format Re:<name>, e.g., Re:precise
-//                attribute.startsWith("Re:") -> {
-//                    val reforgeName = attribute.substringAfter("Re:")
-//                    val targetReforge = targetAttributes.find { it.startsWith("Re:$reforgeName") }
-//
-//                    if (targetReforge != null) {
-//                        val weight = weights["ReforgeMatch"]!! ?: 0.0
-//                        totalMatchScore += weight
-//                        if (debugBestMatch == itemID) out += "Reforge ($reforgeName | $targetReforge | $weight)"
-//                    } else {
-//                        // If no match in target for reforge, apply penalty
-//                        val weight = -weights["ReforgeMatch"]!! ?: 0.0
-//                        totalMatchScore += weight
-//                        if (debugBestMatch == itemID) out += "Missing Reforge ($reforgeName | $targetReforge | $weight)"
-//                    }
-//                }
-
                 // Recomb: Format R
-                attribute == "R" -> {
-                    val targetRecomb = targetAttributes.find { it == "R" }
+                stat == "R" -> {
+                    val targetRecomb = targetStats.find { it == "R" }
                     if (targetRecomb != null) {
                         val weight = weights["RecombMatch"]!! ?: 0.0
                         totalMatchScore += weight
-                        if (debugBestMatch == itemID) out += "Recomb ($weight)"
+                        if (debugBestMatch == dataString) out += "Recomb ($weight)"
                     } else {
                         // If no match in target for recomb, apply penalty
                         val weight = -weights["RecombMatch"]!! ?: 0.0
                         totalMatchScore += weight
-                        if (debugBestMatch == itemID) out += "Missing Recomb ($weight)"
+                        if (debugBestMatch == dataString) out += "Missing Recomb ($weight)"
                     }
                 }
 
                 // Stars: Format <number>S, e.g., 5S
-                attribute.endsWith("S") -> {
-                    val itemStars = attribute.removeSuffix("S").toIntOrNull() ?: 0
+                stat.endsWith("S") -> {
+                    val itemStars = stat.removeSuffix("S").toIntOrNull() ?: 0
                     val targetStars =
-                        targetAttributes.filter { it.endsWith("S") }.sumOf { it.removeSuffix("S").toIntOrNull() ?: 0 }
+                        targetStats.filter { it.endsWith("S") }.sumOf { it.removeSuffix("S").toIntOrNull() ?: 0 }
 
                     val starWeights = arrayOf(0.0, 1.0, 2.1, 3.3, 4.6, 6.0, 8.0, 11.0, 14.5, 18.5, 23.5)
                     if (itemStars == targetStars && itemStars in starWeights.indices) {
                         val weight = starWeights[itemStars]
                         totalMatchScore += weight
-                        if (debugBestMatch == itemID) out += "Stars ($itemStars | $targetStars | $weight)"
+                        if (debugBestMatch == dataString) out += "Stars ($itemStars | $targetStars | $weight)"
                     } else {
                         // Penalize if itemStars exceed targetStars
                         val weight = -((itemStars - targetStars) * 0.5)
                         totalMatchScore += weight
-                        if (debugBestMatch == itemID) out += "Stars ($itemStars | $targetStars | $weight)"
+                        if (debugBestMatch == dataString) out += "Stars ($itemStars | $targetStars | $weight)"
                     }
                 }
 
                 // Hot Potato Books: Format <number>HP, e.g., 10HP
-                attribute.endsWith("HP") -> {
-                    val itemHP = attribute.removeSuffix("HP").toIntOrNull() ?: 0
+                stat.endsWith("HP") -> {
+                    val itemHP = stat.removeSuffix("HP").toIntOrNull() ?: 0
                     val targetHP =
-                        targetAttributes.filter { it.endsWith("HP") }.sumOf { it.removeSuffix("HP").toIntOrNull() ?: 0 }
+                        targetStats.filter { it.endsWith("HP") }.sumOf { it.removeSuffix("HP").toIntOrNull() ?: 0 }
 
                     // If target doesn't have HP, treat it as 0 and penalize if item has HP
                     totalMatchScore += if (targetHP == 0) {
                         val weight = (-itemHP.toDouble() / 15.0) * 3.0 // Penalize for having HP if target is missing it
-                        if (debugBestMatch == itemID) out += "NOHP ($itemHP | $targetHP | $weight)"
+                        if (debugBestMatch == dataString) out += "NOHP ($itemHP | $targetHP | $weight)"
                         weight
                     } else {
                         // If target has HP, reward or penalize accordingly
                         val weight = ((15 - abs(itemHP - targetHP)) / 15.0) * 3.0
-                        if (debugBestMatch == itemID) out += "HP ($itemHP | $targetHP | $weight)"
+                        if (debugBestMatch == dataString) out += "HP ($itemHP | $targetHP | $weight)"
                         weight
                     }
                 }

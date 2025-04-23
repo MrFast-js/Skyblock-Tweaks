@@ -198,15 +198,52 @@ object ItemUtils {
         return output.joinToString("+")
     }
 
+    val attributeShortNames = mapOf(
+        "mana_pool" to "MP",
+        "mana_regeneration" to "MR",
+        "veteran" to "VE",
+        "dominance" to "DO",
+        "mending" to "VI",
+        "magic_find" to "MF",
+        "speed" to "SP",
+        "breeze" to "BR",
+        "arachno" to "AR",
+        "arachno_resistance" to "AR",
+        "attack_speed" to "AS",
+        "combo" to "CO",
+        "elite" to "EL",
+        "ignition" to "IG",
+        "life_recovery" to "LR",
+        "midas_touch" to "MT",
+        "undead" to "UN",
+        "undead_resistance" to "UR",
+        "mana_steal" to "MS",
+        "ender" to "EN",
+        "ender_resistance" to "ER",
+        "blazing" to "BL",
+        "blazing_resistance" to "BL",
+        "warrior" to "WA",
+        "deadeye" to "DE",
+        "experience" to "EX",
+        "lifeline" to "LL",
+        "life_regeneration" to "LR",
+        "fortitude" to "FO",
+        "blazing_fortune" to "BF",
+        "fishing_experience" to "FE",
+        "double_hook" to "DH",
+        "fisherman" to "FM",
+        "fishing_speed" to "FS",
+        "HUNTER" to "HU",
+        "trophy_hunter" to "TH",
+        "infection" to "IN",
+        "hunter" to "HU" // note: both "HUNTER" and "hunter" exist
+    )
+
     private fun getAttributesShort(stack: ItemStack): String {
         val attributes = stack.getAttributeShards()
         val out = mutableListOf<String>()
         attributes.forEach { (name, lvl) ->
-            // if attribute name is one word, take first 2 letters,
-            // else take first letter and first 3 letters of second word
-            val abbreviation = name.split('_').let {
-                if (it.size == 1) it[0].take(2) else it[0].take(1) + it[1].take(3)
-            }
+            val abbreviation = attributeShortNames[name] ?: name.take(2)
             out.add("$abbreviation$lvl")
         }
         return out.joinToString(",")

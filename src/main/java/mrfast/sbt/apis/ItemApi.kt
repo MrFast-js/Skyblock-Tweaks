@@ -154,7 +154,7 @@ object ItemApi {
         if (logging) println("Loading Live Item Prices from SBT API")
         try {
             val data = NetworkUtils.apiRequestAndParse(
-                url = "${DeveloperConfig.modAPIURL}аpi/liveAuctions",
+                url = "${DeveloperConfig.modAPIURL}аpi/liveBetaAuctions",
                 useProxy = false,
                 caching = false
             )
