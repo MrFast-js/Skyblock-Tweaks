@@ -240,7 +240,7 @@ object ItemUtils {
     )
 
     private fun getAttributesShort(stack: ItemStack): String {
-        val attributes = stack.getAttributeShards()
+        val attributes = stack.getAttributes()
         val out = mutableListOf<String>()
         attributes.forEach { (name, lvl) ->
             val abbreviation = attributeShortNames[name] ?: name.take(2)
@@ -269,7 +269,7 @@ object ItemUtils {
         return enchantsOut
     }
 
-    fun ItemStack.getAttributeShards(): MutableMap<String, Int> {
+    fun ItemStack.getAttributes(): MutableMap<String, Int> {
         val attributes = this.getExtraAttributes() ?: return mutableMapOf()
         val attributeMap = attributes.getCompoundTag("attributes")
         val attributeOut = mutableMapOf<String, Int>()
