@@ -13,6 +13,7 @@ import mrfast.sbt.utils.Utils.toTitleCase
 import net.minecraft.command.CommandBase
 import net.minecraft.command.ICommandSender
 import net.minecraft.event.ClickEvent
+import net.minecraft.event.HoverEvent
 import net.minecraft.util.ChatComponentText
 
 @SkyblockTweaks.CommandComponent
@@ -75,23 +76,43 @@ class AttributeUpgradeCommand : CommandBase() {
                 return
             }
 
-
             ChatUtils.sendClientMessage("§eUpgrading §c§l$attributeNameFormatted $currentTier §e➡ §a§l$attributeNameFormatted $targetTier", shortPrefix = true)
             var totalPrice = 0L
 
             val attributeTiersNeeded = mutableMapOf<Int,Int>()
-            for(i in currentTier until targetTier) {
-                if(i == 0) continue
-                attributeTiersNeeded[i] = 1
+            for(i in 1 until targetTier) {
+                if(i < currentTier) attributeTiersNeeded[i] = 0
+                else attributeTiersNeeded[i] = 1
             }
 
-            for(i in (targetTier-1) downTo currentTier) {
+            val heldAttributeType = getAttributeType(heldItem.getSkyblockId()!!)
+
+            for(i in (targetTier-1) downTo 1) {
+                if(attributeTiersNeeded[i] == 0) {
+                    continue
+                }
                 // Find the cheapest auctions for the attribute
                 var matching = mutableListOf<JsonObject>()
 
-                ItemApi.liveAuctionData.get(heldItem.getSkyblockId()).asJsonObject.entrySet().forEach {
-                    if(it.key.contains("$attributeShortName$i")) {
-                        matching.add(it.value.asJsonObject)
+                ItemApi.liveAuctionData.entrySet().forEach {
+                    // Item
+                    val itemID = it.key
+                    val obj = it.value.asJsonObject
+
+                    if(getAttributeType(itemID) != heldAttributeType && itemID != "ATTRIBUTE_SHARD") {
+                        return@forEach
+                    }
+
+                    // Pricing data for the item
+                    obj.entrySet().forEach { entry ->
+                        val attribute = entry.key
+                        val attributeValue = entry.value.asJsonObject
+
+                        if(attribute.contains("$attributeShortName$i")) {
+                            attributeValue.addProperty("itemID", itemID)
+
+                            matching.add(attributeValue)
+                        }
                     }
                 }
 
@@ -104,11 +125,12 @@ class AttributeUpgradeCommand : CommandBase() {
                     ChatUtils.sendClientMessage("§8Unable to find ${attributeTiersNeeded[i]}x $attributeNameFormatted $i, Getting ${2*attributeTiersNeeded[i]!!}x $attributeNameFormatted ${i-1}", shortPrefix = true)
 
                     attributeTiersNeeded[i-1] = attributeTiersNeeded[i-1]!! + 2*attributeTiersNeeded[i]!!
+                    println("ATTRIBUTE TIER: $attributeTiersNeeded")
                     continue
                 }
 
-                // Sort the auctions by price, 0 being cheapest
-                matching.sortBy { it.asJsonObject.get("price").asLong }
+                // Sort the auctions by price
+                matching.sortBy { it.get("price").asLong }
 
                 // Check if we have enough auctions for the attribute, if not, add to the next lowest tier
                 if(attributeTiersNeeded[i]!! > matching.size) {
@@ -120,11 +142,12 @@ class AttributeUpgradeCommand : CommandBase() {
                         return
                     }
 
+                    attributeTiersNeeded[i] = matching.size
+
                     // Add the difference to the next tier below
                     attributeTiersNeeded[i-1] = attributeTiersNeeded[i-1]!! + 2*difference
 
-                    ChatUtils.sendClientMessage("§cUnable to find $attributeNameFormatted $i", shortPrefix = true)
-                    continue
+                    ChatUtils.sendClientMessage("§8Unable to find ${difference}x $attributeNameFormatted $i, Getting ${attributeTiersNeeded[i-1]!! + 2*difference}x $attributeNameFormatted ${i-1}", shortPrefix = true)
                 }
 
                 // Cut the list to the amount we need
@@ -133,9 +156,14 @@ class AttributeUpgradeCommand : CommandBase() {
                 for(matchingAuction in matching) {
                     val price = matchingAuction.get("price").asLong
                     val cheapestId = matchingAuction.get("auc_id").asString
-                    val itemDisplayName = ItemApi.getItemInfo(heldItem.getSkyblockId()!!)?.asJsonObject?.get("displayname")?.asString
+                    val itemID = matchingAuction.get("itemID").asString
+                    val itemDisplayName = ItemApi.getItemInfo(itemID)?.asJsonObject?.get("displayname")?.asString?: "§fAttribute Shard"
+
                     val message = ChatComponentText("$itemDisplayName §d| §b${attributeNameFormatted} $i §d| §a${price.abbreviateNumber()}")
                     message.chatStyle.chatClickEvent = ClickEvent(ClickEvent.Action.RUN_COMMAND, "/viewauction $cheapestId")
+
+                    message.chatStyle.setChatHoverEvent(HoverEvent(HoverEvent.Action.SHOW_TEXT, ChatComponentText("§eClick to view auction")))
+
                     ChatUtils.sendClientMessage(message, shortPrefix = true)
 
                     totalPrice += price
@@ -144,6 +172,35 @@ class AttributeUpgradeCommand : CommandBase() {
 
             ChatUtils.sendClientMessage("§a§lTotal Price: ${totalPrice.abbreviateNumber()}", shortPrefix = true)
         }
+    }
+
+    private fun getAttributeType(itemID: String): String? {
+        when (itemID) {
+            "MAGMA_ROD" -> return "MagmaRod"
+            "TAURUS_HELMET" -> return "FishingHelmet"
+            "FLAMING_CHESTPLATE" -> return "FishingChestplate"
+            "MOOGMA_LEGGINGS" -> return "FishingLeggings"
+            "SLUG_BOOTS" -> return "FishingBoots"
+            "MOLTEN_BELT" -> return "MoltenBelt"
+            "MOLTEN_BRACELET" -> return "MoltenBracelet"
+            "MOLTEN_NECKLACE" -> return "MoltenNecklace"
+            "MOLTEN_CLOAK" -> return "MoltenCloak"
+            "LAVA_SHELL_NECKLACE" -> return "LavaShellNecklace"
+            "SCOURGE_CLOAK" -> return "ScourgeCloak"
+            "ATTRIBUTE_SHARD" -> return "Shard"
+            "MAGMA_NECKLACE" -> return "MagmaNecklace"
+            "BLAZE_BELT" -> return "BlazeBelt"
+            "GLOWSTONE_GAUNTLET" -> return "GlowstoneGauntlet"
+            "GHAST_CLOAK" -> return "GhastCloak"
+            "IMPLOSION_BELT" -> return "ImplosionBelt"
+            "GAUNTLET_OF_CONTAGION" -> return "GauntletOfContagion"
+        }
+        if (!itemID.contains("CRIMSON") && !itemID.contains("AURORA") && !itemID.contains("TERROR") && !itemID.contains("FERVOR") && !itemID.contains("HOLLOW")) return null
+        if (itemID.contains("HELMET")) return "Helmet"
+        if (itemID.contains("CHESTPLATE")) return "Chestplate"
+        if (itemID.contains("LEGGINGS")) return "Leggings"
+        if (itemID.contains("BOOTS")) return "Boots"
+        return null
     }
 
     override fun canCommandSenderUseCommand(sender: ICommandSender?): Boolean {
