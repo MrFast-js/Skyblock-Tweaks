@@ -9,12 +9,14 @@ import mrfast.sbt.utils.ItemUtils
 import mrfast.sbt.utils.ItemUtils.getAttributes
 import mrfast.sbt.utils.ItemUtils.getSkyblockId
 import mrfast.sbt.utils.Utils.abbreviateNumber
+import mrfast.sbt.utils.Utils.formatNumber
 import mrfast.sbt.utils.Utils.toTitleCase
 import net.minecraft.command.CommandBase
 import net.minecraft.command.ICommandSender
 import net.minecraft.event.ClickEvent
 import net.minecraft.event.HoverEvent
 import net.minecraft.util.ChatComponentText
+import kotlin.math.pow
 
 @SkyblockTweaks.CommandComponent
 class AttributeUpgradeCommand : CommandBase() {
@@ -36,7 +38,8 @@ class AttributeUpgradeCommand : CommandBase() {
 
             // Player did attribute abbreviation
             if (ItemUtils.attributeShortNames.containsValue(attributeToUpgrade)) {
-                attributeToUpgrade = ItemUtils.attributeShortNames.entries.firstOrNull { it.value == attributeToUpgrade }?.key!!
+                attributeToUpgrade =
+                    ItemUtils.attributeShortNames.entries.firstOrNull { it.value == attributeToUpgrade }?.key!!
             }
 
             // Ignore if attribute is not found
@@ -50,7 +53,7 @@ class AttributeUpgradeCommand : CommandBase() {
             // Check if the attribute is valid
             val targetTier = args[1].toIntOrNull()
 
-            if(targetTier == null) {
+            if (targetTier == null) {
                 ChatUtils.sendClientMessage("§cInvalid tier! Must be a number.", shortPrefix = true)
                 return
             }
@@ -62,116 +65,203 @@ class AttributeUpgradeCommand : CommandBase() {
             }
 
             val heldItemAttributes = ItemUtils.getHeldItem()?.getAttributes()
-            val attributeNameFormatted = (attributeToUpgrade).replace("_"," ").toTitleCase()
+            val attributeNameFormatted = (attributeToUpgrade).replace("_", " ").toTitleCase()
 
             if (heldItemAttributes == null || !heldItemAttributes.containsKey(attributeToUpgrade)) {
-                ChatUtils.sendClientMessage("§cYou must be holding an item with the attribute §e$attributeNameFormatted§c!", shortPrefix = true)
+                ChatUtils.sendClientMessage(
+                    "§cYou must be holding an item with the attribute §e$attributeNameFormatted§c!",
+                    shortPrefix = true
+                )
                 return
             }
 
             val currentTier = heldItemAttributes[attributeToUpgrade]!!
 
             if (currentTier >= targetTier) {
-                ChatUtils.sendClientMessage("§cYou must be holding an item with a lower tier of the attribute §e$attributeNameFormatted§c!", shortPrefix = true)
+                ChatUtils.sendClientMessage(
+                    "§cYou must be holding an item with a lower tier of the attribute §e$attributeNameFormatted§c!",
+                    shortPrefix = true
+                )
                 return
             }
 
-            ChatUtils.sendClientMessage("§eUpgrading §c§l$attributeNameFormatted $currentTier §e➡ §a§l$attributeNameFormatted $targetTier", shortPrefix = true)
-            var totalPrice = 0L
-
-            val attributeTiersNeeded = mutableMapOf<Int,Int>()
-            for(i in 1 until targetTier) {
-                if(i < currentTier) attributeTiersNeeded[i] = 0
-                else attributeTiersNeeded[i] = 1
-            }
-
+            ChatUtils.sendClientMessage(
+                "§eUpgrading §c§l$attributeNameFormatted $currentTier §e➡ §a§l$attributeNameFormatted $targetTier...",
+                shortPrefix = true
+            )
             val heldAttributeType = getAttributeType(heldItem.getSkyblockId()!!)
+            val itemMap = mutableMapOf<Int, MutableList<JsonObject>>()
 
-            for(i in (targetTier-1) downTo 1) {
-                if(attributeTiersNeeded[i] == 0) {
-                    continue
-                }
-                // Find the cheapest auctions for the attribute
-                var matching = mutableListOf<JsonObject>()
-
+            for (i in 10 downTo 1) {
                 ItemApi.liveAuctionData.entrySet().forEach {
-                    // Item
                     val itemID = it.key
                     val obj = it.value.asJsonObject
 
-                    if(getAttributeType(itemID) != heldAttributeType && itemID != "ATTRIBUTE_SHARD") {
+                    if (getAttributeType(itemID) != heldAttributeType && itemID != "ATTRIBUTE_SHARD") {
                         return@forEach
                     }
 
                     // Pricing data for the item
                     obj.entrySet().forEach { entry ->
-                        val attribute = entry.key
+                        val attribute = entry.key // AT:LL4,MF5
                         val attributeValue = entry.value.asJsonObject
 
-                        if(attribute.contains("$attributeShortName$i")) {
+                        if (attribute.contains("$attributeShortName$i")) {
                             attributeValue.addProperty("itemID", itemID)
 
-                            matching.add(attributeValue)
+                            if (itemMap[i] == null) itemMap[i] = mutableListOf()
+
+                            itemMap[i]!!.add(attributeValue)
                         }
                     }
                 }
+            }
 
-                // Check if we have any auctions for the attribute, if not add two per required, to the next tier
-                if (matching.isEmpty()) {
-                    if(attributeTiersNeeded[i-1] == null) {
-                        ChatUtils.sendClientMessage("§c§lNot enough auctions for $attributeNameFormatted $targetTier", shortPrefix = true)
-                        return
-                    }
-                    ChatUtils.sendClientMessage("§8Unable to find ${attributeTiersNeeded[i]}x $attributeNameFormatted $i, Getting ${2*attributeTiersNeeded[i]!!}x $attributeNameFormatted ${i-1}", shortPrefix = true)
+            val vectorMap = mutableMapOf<Int, MutableList<VectorObject>>()
 
-                    attributeTiersNeeded[i-1] = attributeTiersNeeded[i-1]!! + 2*attributeTiersNeeded[i]!!
-                    println("ATTRIBUTE TIER: $attributeTiersNeeded")
-                    continue
-                }
+            itemMap.forEach {
+                val tier = it.key
+                val items = it.value
 
-                // Sort the auctions by price
-                matching.sortBy { it.get("price").asLong }
+                items.forEach { json ->
+                    if (vectorMap[tier] == null) vectorMap[tier] = mutableListOf()
 
-                // Check if we have enough auctions for the attribute, if not, add to the next lowest tier
-                if(attributeTiersNeeded[i]!! > matching.size) {
-                    val difference = attributeTiersNeeded[i]!! - matching.size
-
-                    // If we have gone down to current tier, call it quits
-                    if(attributeTiersNeeded[i-1] == null) {
-                        ChatUtils.sendClientMessage("§c§lNot enough auctions for $attributeNameFormatted $targetTier", shortPrefix = true)
-                        return
-                    }
-
-                    attributeTiersNeeded[i] = matching.size
-
-                    // Add the difference to the next tier below
-                    attributeTiersNeeded[i-1] = attributeTiersNeeded[i-1]!! + 2*difference
-
-                    ChatUtils.sendClientMessage("§8Unable to find ${difference}x $attributeNameFormatted $i, Getting ${attributeTiersNeeded[i-1]!! + 2*difference}x $attributeNameFormatted ${i-1}", shortPrefix = true)
-                }
-
-                // Cut the list to the amount we need
-                matching = matching.subList(0, attributeTiersNeeded[i]!!)
-
-                for(matchingAuction in matching) {
-                    val price = matchingAuction.get("price").asLong
-                    val cheapestId = matchingAuction.get("auc_id").asString
-                    val itemID = matchingAuction.get("itemID").asString
-                    val itemDisplayName = ItemApi.getItemInfo(itemID)?.asJsonObject?.get("displayname")?.asString?: "§fAttribute Shard"
-
-                    val message = ChatComponentText("$itemDisplayName §d| §b${attributeNameFormatted} $i §d| §a${price.abbreviateNumber()}")
-                    message.chatStyle.chatClickEvent = ClickEvent(ClickEvent.Action.RUN_COMMAND, "/viewauction $cheapestId")
-
-                    message.chatStyle.setChatHoverEvent(HoverEvent(HoverEvent.Action.SHOW_TEXT, ChatComponentText("§eClick to view auction")))
-
-                    ChatUtils.sendClientMessage(message, shortPrefix = true)
-
-                    totalPrice += price
+                    val vector = VectorObject(
+                        json.get("auc_id").asString,
+                        json.get("price").asLong,
+                        tier
+                    )
+                    vector.itemID = json.get("itemID").asString
+                    vectorMap[tier]!!.add(vector)
                 }
             }
 
-            ChatUtils.sendClientMessage("§a§lTotal Price: ${totalPrice.abbreviateNumber()}", shortPrefix = true)
+            val sortedList = vectorMap.values.flatten().sortedByDescending { it.value }
+            val lowBound = (2.0).pow(targetTier - 1) - (2.0).pow(currentTier - 1) // Low bound is most efficient weighted path
+
+            Thread {
+                val perfectPath1 = findMostEfficientPathDP(sortedList, lowBound) // Using the held items current tier
+                val perfectPath2 = findMostEfficientPathDP(sortedList, (2.0).pow(targetTier - 1)) // 'Skipping' the best starting tier
+
+                val perfectPath = when {
+                    perfectPath1 != null && perfectPath2 != null ->
+                        if (perfectPath1.sumOf { it.price } < perfectPath2.sumOf { it.price }) perfectPath1 else perfectPath2
+                    perfectPath1 != null -> perfectPath1
+                    perfectPath2 != null -> perfectPath2
+                    else -> null
+                }
+
+//                for (element in sortedList) {
+//                    val newVector = addVector(element, lastVector)
+//                    lastVector = newVector
+//                    perfectPath.add(element)
+//
+//                    val a = findMostEfficientPathDP(
+//                        perfectPath,
+//                        lowBound
+//                    )
+//
+//                    if (a != null) {
+//                        perfectPath.removeIf { !a.contains(it) }
+//                    }
+//
+//                    if (lastVector.weight == lowBound) {
+//                        break
+//                    }
+//                }
+                if (perfectPath == null) {
+                    ChatUtils.sendClientMessage("§cUnable to find a path for the given tier! Not enough auctions!", shortPrefix = true)
+                    return@Thread
+                }
+
+                perfectPath.forEach {
+                    val price = it.price
+                    val tier = it.tier
+                    val auctionID = it.aucID
+
+                    if (auctionID != null) {
+                        val itemDisplayName = ItemApi.getItemInfo(it.itemID!!)?.get("displayname")?.asString?:"§fAttribute Shard"
+                        val message =
+                            ChatComponentText("$itemDisplayName §d| §b${attributeNameFormatted} $tier §d| §a${price.abbreviateNumber()}")
+                        message.chatStyle.chatClickEvent =
+                            ClickEvent(ClickEvent.Action.RUN_COMMAND, "/viewauction $auctionID")
+
+                        message.chatStyle.setChatHoverEvent(
+                            HoverEvent(
+                                HoverEvent.Action.SHOW_TEXT,
+                                ChatComponentText("§eClick to view auction")
+                            )
+                        )
+                        ChatUtils.sendClientMessage(message, shortPrefix = true)
+                    }
+                }
+                ChatUtils.sendClientMessage(
+                    "§a§lTotal Price: ${(perfectPath.sumOf { it.price }).abbreviateNumber()}",
+                    shortPrefix = true
+                )
+            }.start()
         }
+    }
+
+
+    private fun findMostEfficientPathDP(
+        numbers: List<VectorObject>,
+        targetWeight: Double,
+        precision: Int = 100
+    ): List<VectorObject>? {
+        val scale = precision.toInt()
+        val intTarget = (targetWeight * scale).toInt()
+
+        val dp = Array(intTarget + 1) { Long.MAX_VALUE to emptyList<VectorObject>() }
+        dp[0] = 0L to emptyList()
+
+        for (obj in numbers) {
+            val w = (obj.weight * scale).toInt()
+            val p = obj.price
+
+            for (i in intTarget downTo w) {
+                val (prevCost, prevPath) = dp[i - w]
+                if (prevCost != Long.MAX_VALUE && prevCost + p < dp[i].first) {
+                    dp[i] = prevCost + p to prevPath + obj
+                }
+            }
+        }
+
+        // Scan for the best valid result (weight ≤ target, minimal price)
+        for (i in intTarget downTo 0) {
+            val (cost, path) = dp[i]
+            if (cost != Long.MAX_VALUE) {
+                return path
+            }
+        }
+
+        // If no valid path found
+        return null
+    }
+
+    private fun addVector(v1: VectorObject, v2: VectorObject?): VectorObject {
+        val newVector = VectorObject(
+            aucID = null,
+            price = v1.price + (v2?.price ?: 0),
+            tier = 0
+        )
+        newVector.weight = v1.weight + (v2?.weight ?: 0.0)
+
+        newVector.a = v1
+        newVector.b = v2
+        return newVector
+    }
+
+    class VectorObject(
+        var aucID: String?,
+        var price: Long,
+        var tier: Int
+    ) {
+        var itemID: String? = null
+        var weight = (2.0).pow(tier - 1)
+        val value = (weight / price) * 10_000_000
+        var a: VectorObject? = null
+        var b: VectorObject? = null
     }
 
     private fun getAttributeType(itemID: String): String? {
@@ -195,7 +285,10 @@ class AttributeUpgradeCommand : CommandBase() {
             "IMPLOSION_BELT" -> return "ImplosionBelt"
             "GAUNTLET_OF_CONTAGION" -> return "GauntletOfContagion"
         }
-        if (!itemID.contains("CRIMSON") && !itemID.contains("AURORA") && !itemID.contains("TERROR") && !itemID.contains("FERVOR") && !itemID.contains("HOLLOW")) return null
+        if (!itemID.contains("CRIMSON") && !itemID.contains("AURORA") && !itemID.contains("TERROR") && !itemID.contains(
+                "FERVOR"
+            ) && !itemID.contains("HOLLOW")
+        ) return null
         if (itemID.contains("HELMET")) return "Helmet"
         if (itemID.contains("CHESTPLATE")) return "Chestplate"
         if (itemID.contains("LEGGINGS")) return "Leggings"
