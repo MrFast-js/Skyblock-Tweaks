@@ -345,9 +345,13 @@ class AttributeUpgradeCommand : CommandBase() {
             "SCOURGE_CLOAK" -> return "ScourgeCloak"
             "ATTRIBUTE_SHARD" -> return "Shard"
             "MAGMA_NECKLACE" -> return "MagmaNecklace"
+            "VANQUISHED_MAGMA_NECKLACE" -> return "VanquishedMagmaNecklace"
             "BLAZE_BELT" -> return "BlazeBelt"
+            "VANQUISHED_BLAZE_BELT" -> return "VanquishedBlazeBelt"
             "GLOWSTONE_GAUNTLET" -> return "GlowstoneGauntlet"
+            "VANQUISHED_GLOWSTONE_GAUNTLET" -> return "VanquishedGlowstoneGauntlet"
             "GHAST_CLOAK" -> return "GhastCloak"
+            "VANQUISHED_GHAST_CLOAK" -> return "VanquishedGhastCloak"
             "IMPLOSION_BELT" -> return "ImplosionBelt"
             "GAUNTLET_OF_CONTAGION" -> return "GauntletOfContagion"
         }

@@ -7,10 +7,12 @@ import gg.essential.elementa.UIComponent
 import gg.essential.elementa.WindowScreen
 import gg.essential.elementa.components.ScrollComponent
 import gg.essential.elementa.components.UIBlock
+import gg.essential.elementa.components.UIImage
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.elementa.components.input.UITextInput
 import gg.essential.elementa.components.inspector.Inspector
 import gg.essential.elementa.constraints.*
+import gg.essential.elementa.constraints.animation.Animations
 import gg.essential.elementa.dsl.*
 import gg.essential.elementa.effects.ScissorEffect
 import gg.essential.elementa.state.constraint
@@ -49,10 +51,6 @@ class TradeHistoryGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
     private var stackElements: MutableMap<UIComponent, ItemStack?> = mutableMapOf()
     private var searchQuery = ""
     private var tradeHistory = TradeManager.tradeHistory
-
-    override fun onScreenClose() {
-        super.onScreenClose()
-    }
 
     private fun UIComponent.addTooltip(set: Set<String>, stack: ItemStack? = null) {
         tooltipElements[this] = set
@@ -192,6 +190,8 @@ class TradeHistoryGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
             if (!dateShouldShow(it.key)) return@forEach
 
             val tradesArray = it.value.asJsonArray
+            if(tradesArray.size() == 0) return@forEach
+
             val group = UIBlock(Color(0, 0, 0, 0)).constrain {
                 x = CenterConstraint()
                 y = if (first) 2.pixels else SiblingConstraintFixed(4f)
@@ -364,6 +364,55 @@ class TradeHistoryGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
             x = CenterConstraint()
             y = CenterConstraint()
         } childOf timeBlock
+
+        val unhovered = Color(200, 200, 200)
+        val hovered = Color(255, 255, 255)
+
+        val deleteTradeImg = UIImage.ofResource("/assets/skyblocktweaks/gui/delete.png").constrain {
+            width = 10.pixels
+            height = 11.pixels
+            y = 1.pixels(true)
+            x = PixelConstraint(3f, true)
+            color = unhovered.constraint
+        } childOf timeBlock
+
+        deleteTradeImg.onMouseEnterRunnable {
+            deleteTradeImg.animate {
+                setColorAnimation(Animations.OUT_EXP, 0.5f, hovered.constraint)
+            }
+        }
+        deleteTradeImg.onMouseLeaveRunnable {
+            deleteTradeImg.animate {
+                setColorAnimation(Animations.OUT_EXP, 0.5f, unhovered.constraint)
+            }
+        }
+        var foundTrade = false
+        var targetDate = ""
+
+        deleteTradeImg.onMouseClick {
+            tradeHistory.entrySet().forEach { it1 ->
+                if(foundTrade) return@forEach
+
+                it1.value.asJsonArray.forEach { it2 ->
+                    if(foundTrade) return@forEach
+
+                    if (it2.asJsonObject.get("timestamp").asLong == trade.get("timestamp").asLong) {
+                        foundTrade = true
+                        targetDate = it1.key
+                        parent.removeChild(group)
+                    }
+                }
+            }
+
+            tradeHistory[targetDate].asJsonArray.removeAll { it.equals(trade) }
+            DataManager.saveProfileData("tradeHistory", tradeHistory)
+        }
+        deleteTradeImg.addTooltip(
+            setOf(
+                "§c§lDelete Trade",
+                "§7Click to delete this trade from the history.",
+            )
+        )
 
         val horizontalLine1 = UIBlock(CustomizationConfig.guiLineColors.get().constraint).constrain {
             x = 2.pixels
@@ -548,7 +597,7 @@ class TradeHistoryGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
         bottomContainer.setWidth(PixelConstraint(yourCoinText.getWidth() + input.getWidth()))
     }
 
-    fun createTheirSide(
+    private fun createTheirSide(
         traderName: String,
         trade: JsonObject,
         time: String,
@@ -645,7 +694,7 @@ class TradeHistoryGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
         theirCoinText.scale2 = if (theirCoinText.getWidth() + input.getWidth() > 85) 0.9f else 1f
     }
 
-    fun createInventoryAndGetWorth(theirItems: JsonArray, block: UIComponent?): Long {
+    private fun createInventoryAndGetWorth(theirItems: JsonArray, block: UIComponent?): Long {
         var itemWorth = 0L
         for ((index, jsonElement) in theirItems.withIndex()) {
             val newX = index % 4
