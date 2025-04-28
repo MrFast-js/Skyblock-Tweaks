@@ -36,13 +36,13 @@ object ItemApi {
         }
         if (liveAuctionDataCache.entrySet().size > 0) liveAuctionData = liveAuctionDataCache
 
-        // Update Item Prices every 15 Minutes
-        if (CustomizationConfig.developerMode) println("Starting 15 Minute Interval for Item Data")
+        // Update Item Prices every 10 Minutes
+        if (CustomizationConfig.developerMode) println("Starting 8 Minute Interval for Item Data")
         Timer().scheduleAtFixedRate(object : TimerTask() {
             override fun run() {
                 updateSkyblockItemData(false)
             }
-        }, 0, 1000 * 60 * 15)
+        }, 0, 1000 * 60 * 10)
     }
 
     private fun loadNeuRepo(logging: Boolean, force: Boolean) {

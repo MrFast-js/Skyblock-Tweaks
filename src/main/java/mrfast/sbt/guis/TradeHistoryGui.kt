@@ -27,6 +27,7 @@ import mrfast.sbt.utils.ItemUtils.getSkyblockId
 import mrfast.sbt.utils.Utils
 import mrfast.sbt.utils.Utils.abbreviateNumber
 import mrfast.sbt.utils.Utils.clean
+import mrfast.sbt.utils.Utils.formatNumber
 import mrfast.sbt.utils.Utils.getStringWidth
 import mrfast.sbt.utils.Utils.toDateTimestamp
 import net.minecraft.client.Minecraft
@@ -534,6 +535,7 @@ class TradeHistoryGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
 
         input.addTooltip(
             setOf(
+                "§6§l${yourWorth.formatNumber()} Coin",
                 "§e§lClick to edit estimated value",
                 "§7Press §a§lENTER §7to save",
                 "§7Press §c§lESCAPE §7to cancel",
@@ -630,6 +632,7 @@ class TradeHistoryGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
 
         input.addTooltip(
             setOf(
+                "§6§l${theirWorth.formatNumber()} Coins",
                 "§e§lClick to edit estimated value",
                 "§7Press §a§lENTER §7to save",
                 "§7Press §c§lESCAPE §7to cancel",
@@ -699,7 +702,7 @@ class TradeHistoryGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
         val lowercase = inputText.trim().lowercase()
 
         // Match something like "205.5k", "5.e1k", "100k", "5.k1", etc.
-        val match = Regex("""([0-9]*\.?[0-9]+)[^a-zA-Z]*([km]?)""").find(lowercase)
+        val match = Regex("""([0-9]*\.?[0-9]+)[^a-zA-Z]*([kmbt]?)""").find(lowercase)
 
         if (match != null) {
             val (numberStr, suffix) = match.destructured
@@ -708,6 +711,8 @@ class TradeHistoryGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
             return when (suffix) {
                 "k" -> (number * 1_000).toLong()
                 "m" -> (number * 1_000_000).toLong()
+                "b" -> (number * 1_000_000_000).toLong()
+                "t" -> (number * 1_000_000_000_000).toLong()
                 else -> number.toLong()
             }
         }

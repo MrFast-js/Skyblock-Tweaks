@@ -220,7 +220,7 @@ object ItemUtils {
         "mana_steal" to "MS",
         "ender" to "EN",
         "ender_resistance" to "ER",
-        "blazing" to "BL",
+        "blazing" to "BZ",
         "blazing_resistance" to "BL",
         "warrior" to "WA",
         "deadeye" to "DE",

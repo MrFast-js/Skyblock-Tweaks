@@ -9,7 +9,6 @@ import mrfast.sbt.utils.ItemUtils
 import mrfast.sbt.utils.ItemUtils.getAttributes
 import mrfast.sbt.utils.ItemUtils.getSkyblockId
 import mrfast.sbt.utils.Utils.abbreviateNumber
-import mrfast.sbt.utils.Utils.formatNumber
 import mrfast.sbt.utils.Utils.toTitleCase
 import net.minecraft.command.CommandBase
 import net.minecraft.command.ICommandSender
@@ -33,11 +32,19 @@ class AttributeUpgradeCommand : CommandBase() {
     }
 
     override fun processCommand(sender: ICommandSender, args: Array<out String>) {
+        if (args.isEmpty()) {
+            handleNoArguments()
+            return
+        }
+        if (args.size == 1) {
+            handleOneArguments(args)
+            return
+        }
         if (args.size == 2) {
             var attributeToUpgrade = args[0]
 
             // Player did attribute abbreviation
-            if (ItemUtils.attributeShortNames.containsValue(attributeToUpgrade)) {
+            if (ItemUtils.attributeShortNames.containsValue(attributeToUpgrade.uppercase())) {
                 attributeToUpgrade =
                     ItemUtils.attributeShortNames.entries.firstOrNull { it.value == attributeToUpgrade }?.key!!
             }
@@ -137,40 +144,28 @@ class AttributeUpgradeCommand : CommandBase() {
             }
 
             val sortedList = vectorMap.values.flatten().sortedByDescending { it.value }
-            val lowBound = (2.0).pow(targetTier - 1) - (2.0).pow(currentTier - 1) // Low bound is most efficient weighted path
+            val lowBound =
+                (2.0).pow(targetTier - 1) - (2.0).pow(currentTier - 1) // Low bound is most efficient weighted path
 
             Thread {
                 val perfectPath1 = findMostEfficientPathDP(sortedList, lowBound) // Using the held items current tier
-                val perfectPath2 = findMostEfficientPathDP(sortedList, (2.0).pow(targetTier - 1)) // 'Skipping' the best starting tier
+                val perfectPath2 =
+                    findMostEfficientPathDP(sortedList, (2.0).pow(targetTier - 1)) // 'Skipping' the best starting tier
 
                 val perfectPath = when {
                     perfectPath1 != null && perfectPath2 != null ->
                         if (perfectPath1.sumOf { it.price } < perfectPath2.sumOf { it.price }) perfectPath1 else perfectPath2
+
                     perfectPath1 != null -> perfectPath1
                     perfectPath2 != null -> perfectPath2
                     else -> null
                 }
 
-//                for (element in sortedList) {
-//                    val newVector = addVector(element, lastVector)
-//                    lastVector = newVector
-//                    perfectPath.add(element)
-//
-//                    val a = findMostEfficientPathDP(
-//                        perfectPath,
-//                        lowBound
-//                    )
-//
-//                    if (a != null) {
-//                        perfectPath.removeIf { !a.contains(it) }
-//                    }
-//
-//                    if (lastVector.weight == lowBound) {
-//                        break
-//                    }
-//                }
                 if (perfectPath == null) {
-                    ChatUtils.sendClientMessage("§cUnable to find a path for the given tier! Not enough auctions!", shortPrefix = true)
+                    ChatUtils.sendClientMessage(
+                        "§cUnable to find a path for the given tier! Not enough auctions!",
+                        shortPrefix = true
+                    )
                     return@Thread
                 }
 
@@ -180,7 +175,8 @@ class AttributeUpgradeCommand : CommandBase() {
                     val auctionID = it.aucID
 
                     if (auctionID != null) {
-                        val itemDisplayName = ItemApi.getItemInfo(it.itemID!!)?.get("displayname")?.asString?:"§fAttribute Shard"
+                        val itemDisplayName =
+                            ItemApi.getItemInfo(it.itemID!!)?.get("displayname")?.asString ?: "§fAttribute Shard"
                         val message =
                             ChatComponentText("$itemDisplayName §d| §b${attributeNameFormatted} $tier §d| §a${price.abbreviateNumber()}")
                         message.chatStyle.chatClickEvent =
@@ -203,7 +199,90 @@ class AttributeUpgradeCommand : CommandBase() {
         }
     }
 
+    private fun handleOneArguments(args: Array<out String>) {
+        val heldItemAttributes = ItemUtils.getHeldItem()?.getAttributes()
+        var attributeToUpgrade = args[0]
 
+        // Player did attribute abbreviation
+        if (ItemUtils.attributeShortNames.containsValue(attributeToUpgrade.uppercase())) {
+            attributeToUpgrade =
+                ItemUtils.attributeShortNames.entries.firstOrNull { it.value == attributeToUpgrade }?.key!!
+        }
+
+        // Ignore if attribute is not found
+        if (!ItemUtils.attributeShortNames.containsKey(attributeToUpgrade)) {
+            ChatUtils.sendClientMessage("§cUnable to find attribute: §e$attributeToUpgrade", shortPrefix = true)
+            return
+        }
+
+        val message = ChatComponentText("")
+        val attributeNameFormatted = (attributeToUpgrade).replace("_", " ").toTitleCase()
+        val attributeShortName = ItemUtils.attributeShortNames[attributeToUpgrade]!!
+
+        if (heldItemAttributes == null || !heldItemAttributes.containsKey(attributeToUpgrade)) {
+            ChatUtils.sendClientMessage(
+                "§cYou must be holding an item with the attribute §e$attributeNameFormatted§c!",
+                shortPrefix = true
+            )
+            return
+        }
+
+        ChatUtils.sendClientMessage("§eWhat level would you like to upgrade it to?", shortPrefix = true)
+
+        for (tier in (heldItemAttributes[attributeToUpgrade]!! + 1)..10) {
+            val part = ChatComponentText("§6§l[$tier]")
+            part.chatStyle.chatClickEvent = ClickEvent(ClickEvent.Action.RUN_COMMAND, "/au $attributeShortName $tier")
+
+            part.chatStyle.setChatHoverEvent(
+                HoverEvent(
+                    HoverEvent.Action.SHOW_TEXT,
+                    ChatComponentText("§eClick to select")
+                )
+            )
+
+            message.appendSibling(part)
+            message.appendText(" ")
+        }
+
+        ChatUtils.sendClientMessage(message, shortPrefix = true)
+    }
+
+    private fun handleNoArguments() {
+        val heldItemAttributes = ItemUtils.getHeldItem()?.getAttributes()
+        val message = ChatComponentText("")
+        if (heldItemAttributes == null) {
+            ChatUtils.sendClientMessage(
+                "§cYou must be holding an item with attributes to use this command!",
+                shortPrefix = true
+            )
+            return
+        }
+
+        ChatUtils.sendClientMessage("§eWhich attribute would you like to upgrade?", shortPrefix = true)
+
+        for (attribute in heldItemAttributes.keys) {
+            val attributeNameFormatted = (attribute).replace("_", " ").toTitleCase()
+            val attributeShortName = ItemUtils.attributeShortNames[attribute]!!
+
+            val part = ChatComponentText("§a§l[$attributeNameFormatted ${heldItemAttributes[attribute]}]")
+            part.chatStyle.chatClickEvent = ClickEvent(ClickEvent.Action.RUN_COMMAND, "/au $attributeShortName")
+
+            part.chatStyle.setChatHoverEvent(
+                HoverEvent(
+                    HoverEvent.Action.SHOW_TEXT,
+                    ChatComponentText("§eClick to select")
+                )
+            )
+
+            message.appendSibling(part)
+            message.appendText(" ")
+        }
+
+        ChatUtils.sendClientMessage(message, shortPrefix = true)
+    }
+
+
+    // Top Down Solution, https://www.geeksforgeeks.org/0-1-knapsack-problem-dp-10/
     private fun findMostEfficientPathDP(
         numbers: List<VectorObject>,
         targetWeight: Double,
@@ -237,19 +316,6 @@ class AttributeUpgradeCommand : CommandBase() {
 
         // If no valid path found
         return null
-    }
-
-    private fun addVector(v1: VectorObject, v2: VectorObject?): VectorObject {
-        val newVector = VectorObject(
-            aucID = null,
-            price = v1.price + (v2?.price ?: 0),
-            tier = 0
-        )
-        newVector.weight = v1.weight + (v2?.weight ?: 0.0)
-
-        newVector.a = v1
-        newVector.b = v2
-        return newVector
     }
 
     class VectorObject(
