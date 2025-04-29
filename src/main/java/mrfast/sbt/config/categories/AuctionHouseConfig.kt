@@ -293,12 +293,22 @@ object AuctionHouseConfig : Config() {
     @ConfigProperty(
         type = ConfigType.TEXT,
         name = "Customize Notification",
-        description = "Use §a{bidder}§r, §a{item}§r, and §a{amount}\n§r in your text to insert their values.",
+        description = "Use §a{bidder}§r, §a{item}§r, §a{amount}§r in your text to insert \n§rtheir values. Use §b&[0-9]§r for colors.",
         category = "§1§rAuction House",
         subcategory = "Chat",
         parentName = "Custom Outbid Notifications"
     )
-    var customOutbidNotificationsText = "&c&l[OUTBID] &f{item} &eby &6{amount} coins &e&lCLICK!"
+    var customOutbidNotificationsText = "&c&l[OUTBID] &r{item} &7- &r{bidder} &eby &6{amount} coins"
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Abbreviate Amount",
+        description = "Converts the amount to a more readable format, such as §a1.5M §rinstead of §a1,500,000",
+        category = "§1§rAuction House",
+        subcategory = "Chat",
+        parentName = "Custom Outbid Notifications"
+    )
+    var customOutbidNotificationsAbbreviation = true
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,

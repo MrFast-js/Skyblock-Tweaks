@@ -16,7 +16,7 @@ class TextInputComponent(
     boxWidth: Int = 154,
     fancy: Boolean = true,
     textColor: Color = Color(0xBBBBBB),
-    maxLength: Int = 20,
+    maxLength: Int = 100,
     dynamicWidth: Boolean = false,
 ) : UIBlock() {
     var text = ""

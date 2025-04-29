@@ -7,6 +7,8 @@ import mrfast.sbt.customevents.PacketEvent
 import mrfast.sbt.managers.TickManager
 import mrfast.sbt.utils.ChatUtils
 import mrfast.sbt.utils.Utils
+import mrfast.sbt.utils.Utils.abbreviateNumber
+import mrfast.sbt.utils.Utils.clean
 import net.minecraft.network.play.client.C01PacketChatMessage
 import net.minecraft.util.ChatComponentText
 import net.minecraftforge.client.event.ClientChatReceivedEvent
@@ -68,14 +70,16 @@ object AuctionNotifications {
         val matchResult = outbidRegex.find(event.message.formattedText)
         if (matchResult != null) {
             val (user, amount, itemName) = matchResult.destructured
+            val amountNumber = amount.clean().replace(",","").toLong()
 
             if (AuctionHouseConfig.customOutbidNotifications) {
                 event.isCanceled = true
                 val customNotification = AuctionHouseConfig.customOutbidNotificationsText
                     .replace("{bidder}", user)
-                    .replace("{amount}", amount)
+                    .replace("{amount}", if(AuctionHouseConfig.customOutbidNotificationsAbbreviation) (amountNumber.abbreviateNumber()) else amount)
                     .replace("{item}", itemName)
                     .replace("&", "§")
+
                 val chatComponentText = ChatComponentText(customNotification)
                 chatComponentText.chatStyle.chatClickEvent = event.message.chatStyle.chatClickEvent
 
