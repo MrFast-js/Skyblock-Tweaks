@@ -174,14 +174,20 @@ object ItemPriceDescription {
         var out = ""
         val dataString = itemStats.joinToString("+")
 
+        val hasAttributes = itemStats.any { it.startsWith("AT:") }
+        val hasEnchants = itemStats.any { it.startsWith("E:") }
+        val hasRecomb = itemStats.any { it == "R" }
+        val hasStars = itemStats.any { it.endsWith("S") }
+        val hasHotPotato = itemStats.any { it.endsWith("HP") }
+
         for (stat in itemStats) {
             when {
-                stat.startsWith("AT:") -> {
+                // Attributes: Format AT:<name><level>, e.g., AT:BL2,BR1
+                stat.startsWith("AT:") && hasAttributes -> {
                     // At this point, we are working in the attribute section of the current item
                     var totalWeight = 0.0
 
-                    val targetAttributes = targetStats.find { it.startsWith("AT:") }!!.substring(3)
-                        .split(",") // Look for the target attributes
+                    val targetAttributes = targetStats.find { it.startsWith("AT:") }?.substring(3)?.split(",") ?: continue // Look for the target attributes
                     val itemAttributes = stat.substring(3).split(",")
 
                     // Exact match of type of attributes
@@ -225,7 +231,7 @@ object ItemPriceDescription {
                 }
 
                 // Enchantments: Format E:<name><level>, e.g., E:soul_eater5
-                stat.startsWith("E:") -> {
+                stat.startsWith("E:") && hasEnchants-> {
                     val enchantName = stat.substring(2, stat.length - 1) // Extract name
                     val itemLevel = stat.last().digitToIntOrNull() ?: 0 // Extract level as Int
 
@@ -237,30 +243,20 @@ object ItemPriceDescription {
                         if (itemLevel == targetLevel) {
                             val weight = getEnchantWeight(enchantName, itemLevel, targetLevel)
                             totalMatchScore += weight
-//                            if (debugBestMatch == itemID) out += "Ench ($enchantName | $itemLevel | $targetLevel | $weight)"
                         } else {
                             // If has enchant but not matching level
                             val weight = getEnchantWeight(enchantName, itemLevel, targetLevel)
                             totalMatchScore += weight
-//                            if (debugBestMatch == itemID) out += "Ench-Step ($enchantName | $itemLevel | $targetLevel | $weight)"
-//                            if (debugBestMatch == itemID) out += "Ench-Step2 (${
-//                                getEnchantWeight(
-//                                    enchantName,
-//                                    targetLevel,
-//                                    targetLevel
-//                                )
-//                            })"
                         }
                     } else {
                         // If no enchantment match in the target, apply a penalty
                         val penalty = -1.0 // Apply a penalty for missing enchantment in the target
                         totalMatchScore += penalty
-//                        if (debugBestMatch == itemID) out += "Ench-Pen ($enchantName | $itemLevel | $targetLevel | $penalty)"
                     }
                 }
 
                 // Recomb: Format R
-                stat == "R" -> {
+                stat == "R" && hasRecomb -> {
                     val targetRecomb = targetStats.find { it == "R" }
                     if (targetRecomb != null) {
                         val weight = weights["RecombMatch"]!! ?: 0.0
@@ -275,7 +271,7 @@ object ItemPriceDescription {
                 }
 
                 // Stars: Format <number>S, e.g., 5S
-                stat.endsWith("S") -> {
+                stat.endsWith("S") && hasStars -> {
                     val itemStars = stat.removeSuffix("S").toIntOrNull() ?: 0
                     val targetStars =
                         targetStats.filter { it.endsWith("S") }.sumOf { it.removeSuffix("S").toIntOrNull() ?: 0 }
@@ -294,7 +290,7 @@ object ItemPriceDescription {
                 }
 
                 // Hot Potato Books: Format <number>HP, e.g., 10HP
-                stat.endsWith("HP") -> {
+                stat.endsWith("HP") && hasHotPotato -> {
                     val itemHP = stat.removeSuffix("HP").toIntOrNull() ?: 0
                     val targetHP =
                         targetStats.filter { it.endsWith("HP") }.sumOf { it.removeSuffix("HP").toIntOrNull() ?: 0 }

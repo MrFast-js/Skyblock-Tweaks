@@ -415,14 +415,18 @@ object AuctionMenuOverlays {
                 )
             }
 
+            val iconY = GuiUtils.getLowestY(lines) + 4f
+            var icons = 0
+
             // Add special button to party the other bidder if they are being annoying
             if (lastViewedAuction!!.otherBidder != null && lastViewedAuction!!.otherBidder != Utils.mc.thePlayer.name) {
                 lines.add(
-                    Element(
-                        7f,
-                        GuiUtils.getLowestY(lines) + 4f,
-                        "§9Party Bidder",
+                    GuiUtils.IconElement(
+                        "§9✚",
+                        7f + icons*20f,
+                        iconY,
                         listOf(
+                            "§9Party Bidder",
                             "§e/party ${lastViewedAuction!!.otherBidder}",
                             "§7Allows for a chance to negotiate",
                             "§7if a player wont stop bidding"
@@ -431,18 +435,20 @@ object AuctionMenuOverlays {
                             Utils.mc.thePlayer.closeScreen()
                             ChatUtils.sendPlayerMessage("/party ${lastViewedAuction!!.otherBidder}")
                         },
-                        drawBackground = true,
-                        backgroundColor = Color(85, 85, 255)
+                        backgroundColor = Color(85, 85, 255),
+                        width = 10
                     )
                 )
+                icons++
             }
 
             lines.add(
-                Element(
-                    7f,
-                    GuiUtils.getLowestY(lines) + 3f,
-                    "§6Sellers AH",
+                GuiUtils.IconElement(
+                    "§6⧫",
+                    7f + icons*20f,
+                    iconY,
                     listOf(
+                        "§6Sellers AH",
                         "§e/ah ${lastViewedAuction!!.seller}",
                         "§7Check if more profitable auctions",
                         "§7are being sold by the same seller"
@@ -451,19 +457,22 @@ object AuctionMenuOverlays {
                         Utils.mc.thePlayer.closeScreen()
                         ChatUtils.sendPlayerMessage("/ah ${lastViewedAuction!!.seller}")
                     },
-                    drawBackground = true,
-                    backgroundColor = Color(255, 170, 0)
+                    backgroundColor = Color(255, 170, 0),
+                    width = 10
                 )
             )
+            icons++
+
 
             lines.add(
-                Element(
-                    7f,
-                    GuiUtils.getLowestY(lines) + 3f,
-                    "§cBlacklist Item",
+                GuiUtils.IconElement(
+                    "§c⚠",
+                    7f + icons*20f,
+                    iconY,
                     listOf(
-                        "§cBlacklists ${lastViewedAuction!!.stack?.getSkyblockId()} from",
-                        "§cappearing in Auction Flipper."
+                        "§cBlacklist Item",
+                        "§7Blacklists ${lastViewedAuction!!.stack?.getSkyblockId()} from",
+                        "§7appearing in Auction Flipper."
                     ),
                     {
                         val blacklistFilePath = ConfigManager.modDirectoryPath.resolve("data/itemBlacklist.json")
@@ -474,7 +483,7 @@ object AuctionMenuOverlays {
 
                         if(filters.any { it.textInput == lastViewedAuction!!.stack?.getSkyblockId() }) {
                             ChatUtils.sendClientMessage("§cItem is already blacklisted. §7/sbt blacklist", prefix = true)
-                            return@Element
+                            return@IconElement
                         }
 
                         filters.add(
@@ -493,10 +502,38 @@ object AuctionMenuOverlays {
                         ChatUtils.sendClientMessage("§cAdded ${lastViewedAuction!!.stack?.getSkyblockId()} to blacklist.", prefix = true)
                         ChatUtils.sendClientMessage("§7You can remove this item in /sbt blacklist", prefix = true)
                     },
-                    drawBackground = true,
-                    backgroundColor = Color(255, 85, 85)
+                    backgroundColor = Color(255, 85, 85),
+                    width = 10
                 )
             )
+            icons++
+
+            if(AuctionNotifications.capturedAuctionID()) {
+                lines.add(
+                    GuiUtils.IconElement(
+                        "§c✖",
+                        7f + icons * 20f,
+                        iconY,
+                        listOf(
+                            "§cIgnore Auction",
+                            "§7Stops this auction from",
+                            "§7giving notifications.",
+                        ),
+                        {
+                            // Close the menu
+                            GuiUtils.closeGui()
+                            AuctionNotifications.ignoreCurrentAuction()
+                            ChatUtils.sendClientMessage(
+                                "§cIgnored Auction, you will no longer get notifications",
+                                prefix = true
+                            )
+                        },
+                        backgroundColor = Color(205, 55, 55),
+                        width = 10
+                    )
+                )
+                icons++
+            }
 
             val width =
                 (lines.sortedBy { it.text.getStringWidth() }[lines.size - 1].text.getStringWidth() + 15).coerceIn(

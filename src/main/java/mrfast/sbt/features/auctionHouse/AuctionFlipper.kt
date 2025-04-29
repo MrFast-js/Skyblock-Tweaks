@@ -178,6 +178,7 @@ object AuctionFlipper {
         ChatUtils.sendClientMessage("", false)
 
         runBlocking {
+            // At 50 pages, this will take ~10 seconds to scan
             for (page in 0..maxPagesToScan) {
                 launch(Dispatchers.IO) {
                     val auctionHousePageJson = NetworkUtils.apiRequestAndParse(
@@ -192,9 +193,11 @@ object AuctionFlipper {
                         handleAuctionPage(auctionHousePageJson)
                     }
                 }
+
+                delay(200L)
             }
 
-            delay(9000)
+            delay(2000)
             if (CustomizationConfig.developerMode) getFilterSummary()
             ChatUtils.sendClientMessage("", false)
             val text =
@@ -317,6 +320,7 @@ object AuctionFlipper {
     private val filterDebugCounts = mutableMapOf<String, Int>()
 
     private fun filterAndSendFlip(auctionFlip: AuctionFlip) {
+        if(Utils.mc.thePlayer == null) return
         // Filter out auctions that your already the top bid on
         if (auctionFlip.bidderUUID?.equals(Utils.mc.thePlayer.uniqueID.toString().replace("-", "")) == true) {
             filterOutWithReason("Already top bidder")

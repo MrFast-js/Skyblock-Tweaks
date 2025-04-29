@@ -9,6 +9,7 @@ import mrfast.sbt.guis.components.OutlinedRoundedRectangle
 import mrfast.sbt.guis.components.shader.GaussianBlur
 import mrfast.sbt.guis.components.shader.ShaderManager
 import mrfast.sbt.managers.FontManager
+import mrfast.sbt.utils.Utils.clean
 import mrfast.sbt.utils.Utils.cleanColor
 import mrfast.sbt.utils.Utils.getStringWidth
 import net.minecraft.client.Minecraft
@@ -70,7 +71,7 @@ object GuiUtils {
         val shadowText: String = text.cleanColor()
         var fontRenderer = Utils.mc.fontRendererObj
 
-        if(CustomizationConfig.selectedFont == "Smooth") fontRenderer = FontManager.getSmoothFontRenderer()
+        if (CustomizationConfig.selectedFont == "Smooth") fontRenderer = FontManager.getSmoothFontRenderer()
 
         // Calculate the centered x position if needed
         val startX = if (centered) {
@@ -88,10 +89,34 @@ object GuiUtils {
 
         if (style == TextStyle.BLACK_OUTLINE) {
             val outlineWidth = 0.75f // Width of the outline
-            fontRenderer.drawString(shadowText, startX / scale + outlineWidth, y / scale + outlineWidth, 0x000000, false) // Bottom Right
-            fontRenderer.drawString(shadowText, startX / scale - outlineWidth, y / scale - outlineWidth, 0x000000, false) // Top Left
-            fontRenderer.drawString(shadowText, startX / scale - outlineWidth, y / scale + outlineWidth, 0x000000, false) // Bottom Left
-            fontRenderer.drawString(shadowText, startX / scale + outlineWidth, y / scale - outlineWidth, 0x000000, false) // Top Right
+            fontRenderer.drawString(
+                shadowText,
+                startX / scale + outlineWidth,
+                y / scale + outlineWidth,
+                0x000000,
+                false
+            ) // Bottom Right
+            fontRenderer.drawString(
+                shadowText,
+                startX / scale - outlineWidth,
+                y / scale - outlineWidth,
+                0x000000,
+                false
+            ) // Top Left
+            fontRenderer.drawString(
+                shadowText,
+                startX / scale - outlineWidth,
+                y / scale + outlineWidth,
+                0x000000,
+                false
+            ) // Bottom Left
+            fontRenderer.drawString(
+                shadowText,
+                startX / scale + outlineWidth,
+                y / scale - outlineWidth,
+                0x000000,
+                false
+            ) // Top Right
 
 
             fontRenderer.drawString(shadowText, startX / scale, y / scale + outlineWidth, 0x000000, false) // Bottom
@@ -228,6 +253,7 @@ object GuiUtils {
         GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST)
         GlStateManager.disableBlend()
     }
+
     var elementClicked = false
 
 
@@ -238,14 +264,10 @@ object GuiUtils {
         open var hoverText: List<String>?,
         open var onClick: Runnable? = null,
         open var drawBackground: Boolean = false,
-        open var backgroundColor: Color = Color.GRAY
+        open var backgroundColor: Color = Color.GRAY,
+        open var width: Int = text.getStringWidth()
     ) {
-        open var width = 0
         open var height = Utils.mc.fontRendererObj.FONT_HEIGHT
-
-        init {
-            width = text.getStringWidth()
-        }
 
         open fun draw(mouseX: Int, mouseY: Int, originX: Int = 0, originY: Int = 0) {
             val actualMouseX = x + originX
@@ -283,16 +305,47 @@ object GuiUtils {
                     GlStateManager.popMatrix()
                     GlStateManager.popAttrib()
                 }
-                if(onClick != null) {
-                    if(Mouse.isButtonDown(0) && !elementClicked) {
+                if (onClick != null) {
+                    if (Mouse.isButtonDown(0) && !elementClicked) {
                         elementClicked = true
                         onClick!!.run()
                     }
                 }
             }
-            if(!Mouse.isButtonDown(0)) {
+            if (!Mouse.isButtonDown(0)) {
                 elementClicked = false
             }
+        }
+    }
+
+    class IconElement(
+        private var icon: String,
+        override var x: Float,
+        override var y: Float,
+        override var hoverText: List<String>? = null,
+        override var onClick: Runnable? = null,
+        override var backgroundColor: Color,
+        override var width: Int = 20,
+    ) : Element(x, y, "", hoverText, onClick, true, backgroundColor, width) {
+        override fun draw(mouseX: Int, mouseY: Int, originX: Int, originY: Int) {
+            super.draw(mouseX, mouseY, originX, originY)
+
+            val cleanIcon = icon.clean() // Removes color codes like §6
+            val textWidth = cleanIcon.getStringWidth()
+            val textHeight = 9 // Default font height in Minecraft 1.8.9 is ~9 pixels
+
+            // Centering math
+            val drawX = x + (width - textWidth) / 2f
+            val drawY = y + (height - textHeight) / 2f
+
+            drawText(
+                icon,
+                drawX + 1,
+                drawY,
+                TextStyle.DROP_SHADOW,
+                Color(0xFFFFFF),
+                false
+            )
         }
     }
 
@@ -302,7 +355,7 @@ object GuiUtils {
         override var y: Float,
         override var width: Int = 16,
         override var height: Int = 16,
-        override var hoverText: List<String>?= null
+        override var hoverText: List<String>? = null
     ) : Element(x, y, "", hoverText, null) {
         override fun draw(mouseX: Int, mouseY: Int, originX: Int, originY: Int) {
             GlStateManager.pushMatrix()
