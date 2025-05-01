@@ -141,7 +141,7 @@ object CustomizationConfig : Config() {
         subcategory = "Theme",
         parentName = "Custom Menu Colors"
     )
-    var windowBorderColor = CustomColor(Color.GRAY)
+    var windowBorderColor = CustomColor(0x00ffff)
 
     @ConfigProperty(
         type = ConfigType.COLOR,

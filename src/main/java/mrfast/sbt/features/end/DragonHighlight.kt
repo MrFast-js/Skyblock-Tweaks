@@ -10,7 +10,7 @@ import net.minecraft.entity.boss.EntityDragon
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 @SkyblockTweaks.EventComponent
-object AdvancedDragonHitbox {
+object DragonHighlight {
     @SubscribeEvent
     fun onRenderPart(event: RenderEntityModelEvent) {
         if (!LocationManager.inSkyblock || Utils.mc.theWorld == null || !RenderingConfig.highlightDragon) return

@@ -121,7 +121,7 @@ object ItemPriceDescription {
         "HotPotatoMatchFull" to 3.0
     )
 
-    private var debugBestMatch = "AT:BL2,BR1"
+    private var debugBestMatch = ""
     fun findBestMatch(itemArray: JsonObject, targetAttributes: String, itemId: String): Pair<Long, Double>? {
         var bestItem: String? = null
         var bestScore = Double.MIN_VALUE
@@ -160,7 +160,6 @@ object ItemPriceDescription {
                 }
             }
         }
-
 
         if (bestPercent == 0.0 || bestItem == null) return null
         val itemData = itemArray.get(bestItem).asJsonObject

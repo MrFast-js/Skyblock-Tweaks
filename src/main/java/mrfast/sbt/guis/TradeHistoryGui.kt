@@ -41,6 +41,7 @@ import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.entity.player.ItemTooltipEvent
 import org.lwjgl.input.Keyboard
 import java.awt.Color
+import kotlin.math.absoluteValue
 
 /*
  * @TODO
@@ -87,9 +88,8 @@ class TradeHistoryGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
     private val mainBorderRadius = 6f
     private var body: ScrollComponent? = null
 
-    init {
-        // Create a background panel
-        val background = OutlinedRoundedRectangle(
+    private fun createBackground(): OutlinedRoundedRectangle {
+        return OutlinedRoundedRectangle(
             CustomizationConfig.windowBorderColor.get().constraint,
             2f,
             mainBorderRadius
@@ -100,7 +100,9 @@ class TradeHistoryGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
             x = CenterConstraint()
             y = CenterConstraint()
         } childOf window
+    }
 
+    private fun createHeader(background: UIComponent): UIComponent {
         val header = UIRoundedRectangle(mainBorderRadius - 1).constrain {
             width = 100.percent - 4.pixels
             height = min(30.pixels, 10.percent)
@@ -108,8 +110,6 @@ class TradeHistoryGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
             y = 2.pixels()
             color = CustomizationConfig.headerBackgroundColor.get().constraint
         } childOf background effect ScissorEffect()
-
-        if (DeveloperConfig.showInspector && CustomizationConfig.developerMode) Inspector(background) childOf window
 
         CustomUIText("§7Trade Log History", true, scale = 2f).constrain {
             x = CenterConstraint()
@@ -140,6 +140,20 @@ class TradeHistoryGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
             }
         }
 
+        searchBarInput.onKeyType { _, keycode ->
+            if (keycode == Keyboard.KEY_ESCAPE) {
+                GuiUtils.closeGui()
+                return@onKeyType
+            }
+            searchQuery = searchBarInput.getText()
+            body!!.clearChildren()
+            loadTradeDates(body!!)
+        }
+
+        return header
+    }
+
+    private fun createContentArea(background: UIComponent) {
         val block = UIRoundedRectangle(4f).constrain {
             color = CustomizationConfig.headerBackgroundColor.colorState.constraint
             x = CenterConstraint()
@@ -168,18 +182,18 @@ class TradeHistoryGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
         } childOf block
 
         body!!.setVerticalScrollBarComponent(scrollbar, true)
+    }
+
+    init {
+        val background = createBackground()
+
+        createHeader(background)
+
+        if (DeveloperConfig.showInspector && CustomizationConfig.developerMode) Inspector(background) childOf window
+
+        createContentArea(background)
 
         loadTradeDates(body!!)
-
-        searchBarInput.onKeyType { _, keycode ->
-            if (keycode == Keyboard.KEY_ESCAPE) {
-                GuiUtils.closeGui()
-                return@onKeyType
-            }
-            searchQuery = searchBarInput.getText()
-            body!!.clearChildren()
-            loadTradeDates(body!!)
-        }
     }
 
     private fun loadTradeDates(body: ScrollComponent) {
@@ -241,55 +255,39 @@ class TradeHistoryGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
     private fun getCombinedChanges(dateComponent: UIComponent, date: String) {
         var currentCoins = 0L
         val itemCounts = mutableMapOf<JsonObject, Long>()
+        val hoverText = mutableListOf<String>().apply {
+            add("§e§l$date Trade Summary")
 
-        tradeHistory[date].asJsonArray.forEach {
-            val trade = it.asJsonObject
-            currentCoins -= trade.get("yourCoins").asLong
-            currentCoins += trade.get("theirCoins").asLong
+            // Iterate through trade history to calculate coin changes and item counts
+            tradeHistory[date].asJsonArray.forEach { trade ->
+                val tradeObj = trade.asJsonObject
+                currentCoins += tradeObj.get("theirCoins").asLong - tradeObj.get("yourCoins").asLong
 
-            trade.get("yourItems").asJsonArray.forEach {
-                val item = it.asJsonObject
-                itemCounts[item] = itemCounts.getOrDefault(item, 0) - 1
+                // Process item counts for both "yourItems" and "theirItems"
+                tradeObj.get("yourItems").asJsonArray.forEach { item ->
+                    val itemObj = item.asJsonObject
+                    itemCounts[itemObj] = itemCounts.getOrDefault(itemObj, 0) - 1
+                }
+                tradeObj.get("theirItems").asJsonArray.forEach { item ->
+                    val itemObj = item.asJsonObject
+                    itemCounts[itemObj] = itemCounts.getOrDefault(itemObj, 0) + 1
+                }
             }
 
-            trade.get("theirItems").asJsonArray.forEach {
-                val item = it.asJsonObject
-                itemCounts[item] = itemCounts.getOrDefault(item, 0) + 1
-            }
-        }
+            // Add coin change info to hoverText
+            add("§7Coin Change: ${if (currentCoins == 0L) "§6" else if (currentCoins > 0L) "§6" else "§c"}${currentCoins.abbreviateNumber()}")
 
-        val gainedItems = JsonArray()
-        val lostItems = JsonArray()
+            // Process item changes
+            if (itemCounts.isNotEmpty()) {
+                add("§7Item Changes: ")
+                itemCounts.forEach { (item, count) ->
+                    val itemStack = ItemStack(Item.getByNameOrId(item.get("id").asString), item.get("count").asInt).apply {
+                        tagCompound = JsonToNBT.getTagFromJson(item.get("nbt").asString)
+                    }
+                    val displayText = " ${if (count > 0) "§a+" else "§c-"} ${itemStack.displayName.clean()} x${itemStack.stackSize}"
 
-        itemCounts.forEach { (item, count) ->
-            when {
-                count > 0 -> repeat(count.toInt()) { gainedItems.add(item) }
-                count < 0 -> repeat(-count.toInt()) { lostItems.add(item) }
-            }
-        }
-
-        val hoverText = mutableListOf<String>()
-        hoverText.add("§e§l$date Trade Summary")
-        hoverText.add("§7Coin Change: ${if (currentCoins == 0L) "§6" else if (currentCoins > 0L) "§6" else "§c"}${currentCoins.abbreviateNumber()}")
-        if (gainedItems.size() + lostItems.size() != 0) {
-            hoverText.add("§7Item Changes: ")
-            gainedItems.forEach {
-                val item = ItemStack(
-                    Item.getByNameOrId(it.asJsonObject.get("id").asString),
-                    it.asJsonObject.get("count").asInt
-                )
-                val nbt = it.asJsonObject.get("nbt").asString
-                item.tagCompound = JsonToNBT.getTagFromJson(nbt)
-                hoverText.add(" §a+ ${item.displayName.clean()} x${item.stackSize}")
-            }
-            lostItems.forEach {
-                val item = ItemStack(
-                    Item.getByNameOrId(it.asJsonObject.get("id").asString),
-                    it.asJsonObject.get("count").asInt
-                )
-                val nbt = it.asJsonObject.get("nbt").asString
-                item.tagCompound = JsonToNBT.getTagFromJson(nbt)
-                hoverText.add(" §c- ${item.displayName.clean()} x${item.stackSize}")
+                    repeat(count.absoluteValue.toInt()) { add(displayText) }
+                }
             }
         }
 
@@ -467,23 +465,8 @@ class TradeHistoryGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
         val yourItemWorth = getItemWorth("yourItems", trade)
         val theirItemWorth = getItemWorth("theirItems", trade)
 
-        createYourSide(
-            trade,
-            time,
-            timeText,
-            leftBlock,
-            youBlock,
-            theirItemWorth
-        )
-        createTheirSide(
-            traderName,
-            trade,
-            time,
-            timeText,
-            rightBlock,
-            usernameBlock,
-            yourItemWorth
-        )
+        createTradeSide("your", yourItemWorth, trade, timeText, time, leftBlock, youBlock, traderName)
+        createTradeSide("their", theirItemWorth, trade, timeText, time, rightBlock, usernameBlock, traderName)
 
         if (trade.has("yourCustomValue") || trade.has("theirCustomValue")) {
             var yourWorth = yourItemWorth
@@ -503,147 +486,51 @@ class TradeHistoryGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
         return worth
     }
 
-    private fun createYourSide(trade: JsonObject,
-                               time: String,
-                               timeText: CustomUIText,
-                               leftBlock: UIComponent,
-                               youBlock: UIComponent,
-                               theirWorthRaw: Long) {
-        var theirWorth = theirWorthRaw
-        CustomUIText("You").constrain {
-            x = CenterConstraint()
-            y = CenterConstraint()
-        } childOf youBlock
+    private fun createTradeSide(side: String, // either "your" or "their"
+                                rawWorth: Long,
+                                trade: JsonObject,
+                                timeText: CustomUIText,
+                                time: String,
+                                block: UIBlock,
+                                usernameBlock: UIBlock,
+                                traderName: String
+    ): Long {
+        val isYourSide = side == "your"
+        var otherWorth = if (isYourSide) trade.get("theirCustomValue")?.asLong ?: rawWorth else trade.get("yourCustomValue")?.asLong ?: rawWorth
 
-        val yourItems = trade.getAsJsonArray("yourItems")
-        var yourItemWorth = createInventoryAndGetWorth(yourItems, leftBlock)
-        yourItemWorth += trade.get("yourCoins").asLong
-        var yourWorth = yourItemWorth
-
-        // Check if the trade has a custom value set
-        if (trade.has("yourCustomValue")) {
-            if (trade.get("yourCustomValue").asLong != 0L) {
-                yourWorth = trade.get("yourCustomValue").asLong
-            }
-        }
-
-        val yourCoinString = "§6${trade.get("yourCoins").asLong.abbreviateNumber()} Coins §8§o≈"
-
-        val bottomContainer = UIBlock(Color(0, 0, 0, 0)).constrain {
-            x = CenterConstraint()
-            y = 100.percent - 12.pixels
-            width = 0.pixels
-            height = 12.pixels
-        } childOf leftBlock
-
-        val yourCoinText = CustomUIText(
-            yourCoinString
-        ).constrain {
-            x = 0.pixels
-            y = 100.percent - 12.pixels
-        } childOf bottomContainer
-
-        updateTimeText(timeText, time, theirWorth, yourWorth)
-
-        val input = TextInputComponent(
-            yourWorth.abbreviateNumber(),
-            "Est. Val",
-            45,
-            fancy = false,
-            Color(0x555555),
-            6,
-            dynamicWidth = true
-        ).constrain {
-            x = SiblingConstraintFixed(0f)
-            y = 100.percent - 12.pixels
-        } childOf bottomContainer
-
-        input.onEnterPressed {
-            yourWorth = handleInput(input.text)
-            if (yourWorth == 0L) {
-                yourWorth = yourItemWorth
-            }
-            input.setTextValue(yourWorth.abbreviateNumber())
-            input.setWidth((input.text.getStringWidth() + 3).pixels)
-
-            if (trade.has("theirCustomValue")) {
-                if (trade.get("theirCustomValue").asLong != 0L) {
-                    theirWorth = trade.get("theirCustomValue").asLong
-                }
-            }
-
-            updateTimeText(timeText, time, theirWorth, yourWorth)
-
-            trade.addProperty("yourCustomValue", yourWorth)
-            DataManager.saveProfileData("tradeHistory", tradeHistory)
-            input.loseFocus()
-            input.releaseWindowFocus()
-            bottomContainer.setWidth(PixelConstraint(yourCoinText.getWidth() + input.getWidth()))
-            yourCoinText.scale2 = if (yourCoinText.getWidth() + input.getWidth() > 85) 0.9f else 1f
-        }
-
-        input.addTooltip(
-            setOf(
-                "§6§l${yourWorth.formatNumber()} Coin",
-                "§e§lClick to edit estimated value",
-                "§7Press §a§lENTER §7to save",
-                "§7Press §c§lESCAPE §7to cancel",
-                "§7Delete §c§lall §7to reset",
-            )
-        )
-
-        yourCoinText.scale2 = if (yourCoinText.getWidth() + input.getWidth() > 85) 0.9f else 1f
-        input.setWidth((input.text.getStringWidth() + 5).pixels)
-        bottomContainer.setWidth(PixelConstraint(yourCoinText.getWidth() + input.getWidth()))
-    }
-
-    private fun createTheirSide(
-        traderName: String,
-        trade: JsonObject,
-        time: String,
-        timeText: CustomUIText,
-        rightBlock: UIComponent,
-        usernameBlock: UIComponent,
-        yourWorthRaw: Long
-    ) {
-        var yourWorth = yourWorthRaw
-        CustomUIText(traderName).constrain {
+        val label = CustomUIText(if (isYourSide) "You" else traderName).constrain {
             x = CenterConstraint()
             y = CenterConstraint()
         } childOf usernameBlock
 
-        val theirItems = trade.getAsJsonArray("theirItems")
-        var theirItemWorth = createInventoryAndGetWorth(theirItems, rightBlock)
-        theirItemWorth += trade.get("theirCoins").asLong
-        var theirWorth = theirItemWorth
+        val items = trade.getAsJsonArray("${side}Items")
+        var itemWorth = createInventoryAndGetWorth(items, block)
+        itemWorth += trade.get("${side}Coins").asLong
+        var sideWorth = itemWorth
 
-        // Check if the trade has a custom value set
-        if (trade.has("theirCustomValue")) {
-            if (trade.get("theirCustomValue").asLong != 0L) {
-                theirWorth = trade.get("theirCustomValue").asLong
-            }
+        val customValueKey = "${side}CustomValue"
+        if (trade.has(customValueKey) && trade.get(customValueKey).asLong != 0L) {
+            sideWorth = trade.get(customValueKey).asLong
         }
 
-        val theirCoinString = "§6${trade.get("theirCoins").asLong.abbreviateNumber()} Coins §8§o≈"
+        val coinString = "§6${trade.get("${side}Coins").asLong.abbreviateNumber()} Coins §8§o≈"
 
         val bottomContainer = UIBlock(Color(0, 0, 0, 0)).constrain {
             x = CenterConstraint()
             y = 100.percent - 12.pixels
             width = 0.pixels
             height = 12.pixels
-        } childOf rightBlock
+        } childOf block
 
-        val theirCoinText = CustomUIText(
-            theirCoinString
-        ).constrain {
+        val coinText = CustomUIText(coinString).constrain {
             x = 0.pixels
             y = 100.percent - 12.pixels
         } childOf bottomContainer
 
-        updateTimeText(timeText, time, theirWorth, yourWorth)
+        updateTimeText(timeText, time, if (isYourSide) otherWorth else sideWorth, if (isYourSide) sideWorth else otherWorth)
 
         val input = TextInputComponent(
-            theirWorth.abbreviateNumber(),
+            sideWorth.abbreviateNumber(),
             "Est. Val",
             45,
             fancy = false,
@@ -656,32 +543,31 @@ class TradeHistoryGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
         } childOf bottomContainer
 
         input.onEnterPressed {
-            theirWorth = handleInput(input.text)
-            if (theirWorth == 0L) {
-                theirWorth = theirItemWorth
-            }
+            sideWorth = handleInput(input.text)
+            if (sideWorth == 0L) sideWorth = itemWorth
 
-            input.setTextValue(theirWorth.abbreviateNumber())
+            input.setTextValue(sideWorth.abbreviateNumber())
             input.setWidth((input.text.getStringWidth() + 3).pixels)
 
-            if (trade.has("yourCustomValue")) {
-                if (trade.get("yourCustomValue").asLong != 0L) {
-                    yourWorth = trade.get("yourCustomValue").asLong
-                }
+            // Update otherWorth from opposing custom value if exists
+            val opposingKey = if (isYourSide) "theirCustomValue" else "yourCustomValue"
+            if (trade.has(opposingKey) && trade.get(opposingKey).asLong != 0L) {
+                otherWorth = trade.get(opposingKey).asLong
             }
 
-            updateTimeText(timeText, time, theirWorth, yourWorth)
-            trade.addProperty("theirCustomValue", theirWorth)
+            updateTimeText(timeText, time, if (isYourSide) otherWorth else sideWorth, if (isYourSide) sideWorth else otherWorth)
+
+            trade.addProperty(customValueKey, sideWorth)
             DataManager.saveProfileData("tradeHistory", tradeHistory)
             input.loseFocus()
             input.releaseWindowFocus()
-            bottomContainer.setWidth(PixelConstraint(theirCoinText.getWidth() + input.getWidth()))
-            theirCoinText.scale2 = if (theirCoinText.getWidth() + input.getWidth() > 85) 0.9f else 1f
+            bottomContainer.setWidth(PixelConstraint(coinText.getWidth() + input.getWidth()))
+            coinText.scale2 = if (coinText.getWidth() + input.getWidth() > 85) 0.9f else 1f
         }
 
         input.addTooltip(
             setOf(
-                "§6§l${theirWorth.formatNumber()} Coins",
+                "§6§l${sideWorth.formatNumber()} Coins",
                 "§e§lClick to edit estimated value",
                 "§7Press §a§lENTER §7to save",
                 "§7Press §c§lESCAPE §7to cancel",
@@ -690,53 +576,49 @@ class TradeHistoryGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
         )
 
         input.setWidth((input.text.getStringWidth() + 5).pixels)
-        bottomContainer.setWidth(PixelConstraint(theirCoinText.getWidth() + input.getWidth()))
-        theirCoinText.scale2 = if (theirCoinText.getWidth() + input.getWidth() > 85) 0.9f else 1f
+        bottomContainer.setWidth(PixelConstraint(coinText.getWidth() + input.getWidth()))
+        coinText.scale2 = if (coinText.getWidth() + input.getWidth() > 85) 0.9f else 1f
+
+        return sideWorth
     }
 
-    private fun createInventoryAndGetWorth(theirItems: JsonArray, block: UIComponent?): Long {
-        var itemWorth = 0L
-        for ((index, jsonElement) in theirItems.withIndex()) {
-            val newX = index % 4
-            val newY = index / 4
-            val item = ItemStack(
-                Item.getByNameOrId(jsonElement.asJsonObject.get("id").asString),
-                jsonElement.asJsonObject.get("count").asInt
-            )
-            val nbt = jsonElement.asJsonObject.get("nbt").asString
-            item.tagCompound = JsonToNBT.getTagFromJson(nbt)
-            item.itemDamage = jsonElement.asJsonObject.get("damage").asInt
+    // Create a 4x4 grid of items
+    private fun createInventoryAndGetWorth(items: JsonArray, block: UIComponent?): Long {
+        var totalWorth = 0L
 
-            val lore = item.getLore()
+        items.forEachIndexed { index, jsonElement ->
+            val obj = jsonElement.asJsonObject
+            val count = obj["count"].asInt
+            val itemId = obj["id"].asString
+            val damage = obj["damage"].asInt
+            val nbt = obj["nbt"].asString
+
+            val item = ItemStack(Item.getByNameOrId(itemId), count).apply {
+                tagCompound = JsonToNBT.getTagFromJson(nbt)
+                itemDamage = damage
+            }
+
+            val lore = item.getLore().apply { add(0, item.displayName) }.toSet()
 
             val suggestedListing = ItemUtils.getSuggestListingPrice(item)
-            if (suggestedListing != null) {
-                val price = suggestedListing.get("price").asDouble
-                if (price == 0.0) {
-                    if (item.getSkyblockId() != null) {
-                        val basePrice =
-                            ItemUtils.getItemBasePrice(item.getSkyblockId()!!) * (jsonElement.asJsonObject.get("count").asInt)
+            val price = suggestedListing?.get("price")?.asDouble ?: 0.0
+            var itemValue = price.toLong()
 
-                        itemWorth += basePrice.toLong()
-                    }
-                } else {
-                    itemWorth += price.toLong()
-                }
-            }
+            if (price == 0.0 && item.getSkyblockId() != null) itemValue = (ItemUtils.getItemBasePrice(item.getSkyblockId()!!) * count).toLong()
 
-            lore.add(0, item.displayName)
+            totalWorth += itemValue
 
-            if(block!=null) {
-                val itemIcon = ItemComponent(item, 20f).constrain {
-                    x = (newX * 22).pixels + 8.pixels
-                    y = (newY * 22).pixels + 22.pixels
-                    height = 20.pixels
+            if (block != null) {
+                (ItemComponent(item, 20f).constrain {
+                    x = (index % 4 * 22 + 8).pixels
+                    y = (index / 4 * 22 + 22).pixels
                     width = 20.pixels
-                } childOf block
-                itemIcon.addTooltip(lore.toSet(), item)
+                    height = 20.pixels
+                } childOf block).addTooltip(lore, item)
             }
         }
-        return itemWorth
+
+        return totalWorth
     }
 
     private fun updateTimeText(timeText: CustomUIText, time: String, theirWorth: Long, yourWorth: Long) {
