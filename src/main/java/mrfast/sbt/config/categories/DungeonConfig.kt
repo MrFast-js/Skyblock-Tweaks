@@ -60,7 +60,7 @@ object DungeonConfig : Config() {
         category = "§1§rDungeons",
         subcategory = "Spawn Timers"
     )
-    var fireFreezeTimer = true
+    var fireFreezeTimer = false
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
