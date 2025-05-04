@@ -4,9 +4,9 @@ import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.config.categories.DeveloperConfig
 import mrfast.sbt.config.categories.GeneralConfig
 import mrfast.sbt.customevents.WorldLoadEvent
-import mrfast.sbt.features.end.ZealotSpawnLocations
 import mrfast.sbt.managers.LocationManager
 import mrfast.sbt.managers.TickManager
+import mrfast.sbt.utils.ChatUtils
 import mrfast.sbt.utils.Utils
 import mrfast.sbt.utils.Utils.getRegexGroups
 import mrfast.sbt.utils.Utils.matches
@@ -27,6 +27,7 @@ object PlayerStats {
     private var MANA_REGEX = """§b(?<currentMana>[\d,]+)\/(?<maxMana>[\d,]+)✎( Mana)?""".toRegex()
     private var OVERFLOW_REGEX = """§3(?<overflowMana>[\d,]+)ʬ""".toRegex()
     var mana = 0
+    var estimatedManaRegenRate = 0
     var maxMana = 0
     var overflowMana = 0
 
@@ -54,14 +55,22 @@ object PlayerStats {
         currentRoomMaxSecrets = 0
     }
 
+    private var useManaEstimation = false
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
         if (event.phase != TickEvent.Phase.START || !LocationManager.inSkyblock || Utils.mc.thePlayer == null) return
-        if(TickManager.tickCount % 10 != 0) return
+        if(TickManager.tickCount % 10 != 0) return // Runs every 10 ticks (twice a second)
 
         if (LocationManager.currentIsland == "The Rift") {
             health = Utils.mc.thePlayer.health.toInt()
             maxHealth = Utils.mc.thePlayer.maxHealth.toInt()
+        }
+
+        if(useManaEstimation) {
+            mana += (maxMana * 0.012).toInt()
+            if (mana > maxMana) {
+                mana = maxMana
+            }
         }
     }
 
@@ -140,6 +149,10 @@ object PlayerStats {
             val groups = actionBar.getRegexGroups(MANA_REGEX) ?: return
             mana = groups["currentMana"]!!.value.toInt()
             maxMana = groups["maxMana"]!!.value.toInt()
+            useManaEstimation = false
+        } else {
+            ChatUtils.sendClientMessage("Mana not found in action bar, using estimation")
+            useManaEstimation = true
         }
 
         if (actionBar.matches(OVERFLOW_REGEX)) {

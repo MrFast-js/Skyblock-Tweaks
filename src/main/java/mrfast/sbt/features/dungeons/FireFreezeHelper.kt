@@ -14,6 +14,9 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 
 // Shows when to use fire freeze on F2,F3,M2,M3 in order to freeze boss perfectly
+/*
+ @TODO: Only show when having a fire freeze in inventory
+ */
 @SkyblockTweaks.EventComponent
 object FireFreezeHelper {
     private val textScale = 2.0

@@ -5,12 +5,14 @@ import com.google.gson.stream.MalformedJsonException
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.apis.ItemApi
 import mrfast.sbt.config.categories.CustomizationConfig
+import mrfast.sbt.customevents.PacketEvent
 import mrfast.sbt.utils.ItemUtils.getExtraAttributes
 import mrfast.sbt.utils.ItemUtils.getSkyblockId
 import net.minecraft.nbt.NBTTagByteArray
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.nbt.NBTTagList
 import net.minecraft.nbt.NBTTagString
+import net.minecraft.network.play.server.S29PacketSoundEffect
 import net.minecraftforge.event.entity.player.ItemTooltipEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.input.Keyboard
@@ -110,6 +112,24 @@ object DevUtils {
                 copyingTooltip = false
             }, 500)
             Utils.copyToClipboard(event.toolTip.joinToString("\n"))
+        }
+    }
+
+    fun getRecentSounds(): List<SoundPacket> {
+        return mostRecentSounds
+    }
+
+    private val mostRecentSounds = mutableListOf<SoundPacket>()
+    class SoundPacket(val name: String, val pitch: Float, val volume: Float, val time: Long = System.currentTimeMillis())
+
+    @SubscribeEvent
+    fun onSoundPacket(event: PacketEvent.Received) {
+        if (event.packet is S29PacketSoundEffect) {
+            val packet = event.packet
+            mostRecentSounds.add(SoundPacket(packet.soundName, packet.pitch, packet.volume))
+            if (mostRecentSounds.size > 20) {
+                mostRecentSounds.removeAt(0)
+            }
         }
     }
 }

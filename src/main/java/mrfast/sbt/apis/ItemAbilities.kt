@@ -2,17 +2,20 @@ package mrfast.sbt.apis
 
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.config.categories.DeveloperConfig.showItemAbilities
+import mrfast.sbt.customevents.PacketEvent
 import mrfast.sbt.customevents.UseItemAbilityEvent
 import mrfast.sbt.customevents.WorldLoadEvent
-import mrfast.sbt.features.auctionHouse.AuctionFlipper
-import mrfast.sbt.features.end.ZealotSpawnLocations
 import mrfast.sbt.managers.LocationManager
 import mrfast.sbt.managers.TickManager
-import mrfast.sbt.utils.*
+import mrfast.sbt.utils.ChatUtils
+import mrfast.sbt.utils.ItemUtils
 import mrfast.sbt.utils.ItemUtils.getLore
 import mrfast.sbt.utils.ItemUtils.getSkyblockId
+import mrfast.sbt.utils.ScoreboardUtils
+import mrfast.sbt.utils.Utils
 import mrfast.sbt.utils.Utils.clean
 import net.minecraft.item.ItemStack
+import net.minecraft.network.play.server.S29PacketSoundEffect
 import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.client.event.MouseEvent
 import net.minecraftforge.common.MinecraftForge
@@ -32,19 +35,22 @@ object ItemAbilities {
     // currently stored and updated cooldowns
     private var activeCooldowns = HashMap<String, Double>()
     private var justUsedAbility: ItemAbility? = null
+    private var stopLastEvent = false
+
     private fun sendItemAbilityEvent(ability: ItemAbility?, event: Event) {
-        if (ability != null) {
-            if (MinecraftForge.EVENT_BUS.post(UseItemAbilityEvent(ability))) {
-                // cancel the item use ability
-                event.setCanceled(true)
-                return
+            if (ability != null) {
+                if(ability.manaCost > PlayerStats.mana) {
+                    return
+                }
+                MinecraftForge.EVENT_BUS.post(UseItemAbilityEvent(ability))
+
+                if (showItemAbilities) {
+                    ChatUtils.sendClientMessage("§7${ability.itemId} §8${ability.abilityName}")
+                }
+
+                justUsedAbility = ability
+                activeCooldowns[ability.abilityName] = ability.cooldownSeconds
             }
-            if (showItemAbilities) {
-                ChatUtils.sendClientMessage(ability.itemId + " " + ability.abilityName)
-            }
-            justUsedAbility = ability
-            activeCooldowns[ability.abilityName] = ability.cooldownSeconds
-        }
     }
 
     class CooldownItem {
@@ -57,6 +63,7 @@ object ItemAbilities {
     class ItemAbility(var itemId: String) {
         var cooldownSeconds = 0.0
         var currentCount = 0.0
+        var manaCost = 0
         var usedAt = System.currentTimeMillis()
         var abilityName = "Unknown"
         var type: String? = null
@@ -115,6 +122,7 @@ object ItemAbilities {
                     clean.split(": ".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[1].split("  ".toRegex())
                         .dropLastWhile { it.isEmpty() }
                         .toTypedArray()[0]
+
                 val ability = ItemAbility(skyblockId)
                 ability.abilityName = nextAbilityName
 
@@ -141,6 +149,21 @@ object ItemAbilities {
                 }
                 if (cdItem.sneakLeftClick != null) {
                     cdItem.sneakLeftClick!!.cooldownSeconds = nextCooldownSeconds.toDouble()
+                }
+            }
+            if(clean.contains("Mana Cost: ")) {
+                val manaCost = clean.replace("[^0-9]".toRegex(), "").toInt()
+                if (cdItem.rightClick != null) {
+                    cdItem.rightClick!!.manaCost = manaCost
+                }
+                if (cdItem.leftClick != null) {
+                    cdItem.leftClick!!.manaCost = manaCost
+                }
+                if (cdItem.sneakRightClick != null) {
+                    cdItem.sneakRightClick!!.manaCost = manaCost
+                }
+                if (cdItem.sneakLeftClick != null) {
+                    cdItem.sneakLeftClick!!.manaCost = manaCost
                 }
             }
         }
@@ -234,6 +257,17 @@ object ItemAbilities {
                 val currentCooldown = clean.replace("[^0-9]".toRegex(), "").toInt()
                 ability.currentCount = (ability.cooldownSeconds - currentCooldown)
                 activeCooldowns[ability.abilityName] = currentCooldown.toDouble()
+            }
+        }
+    }
+
+
+    @SubscribeEvent
+    fun onSoundPacket(event: PacketEvent.Received) {
+        if (event.packet is S29PacketSoundEffect) {
+            val packet = event.packet
+            if (packet.soundName == "mob.endermen.portal" && justUsedAbility != null && packet.pitch == 0.0f) {
+                stopLastEvent = true
             }
         }
     }

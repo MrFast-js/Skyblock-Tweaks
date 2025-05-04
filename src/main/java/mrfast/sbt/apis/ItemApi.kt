@@ -37,7 +37,7 @@ object ItemApi {
         if (liveAuctionDataCache.entrySet().size > 0) liveAuctionData = liveAuctionDataCache
 
         // Update Item Prices every 10 Minutes
-        if (CustomizationConfig.developerMode) println("Starting 8 Minute Interval for Item Data")
+        if (CustomizationConfig.developerMode) println("Starting 10 Minute Interval for Item Data")
         Timer().scheduleAtFixedRate(object : TimerTask() {
             override fun run() {
                 updateSkyblockItemData(false)
