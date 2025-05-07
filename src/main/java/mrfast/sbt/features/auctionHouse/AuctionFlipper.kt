@@ -4,10 +4,8 @@ import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.mojang.realmsclient.gui.ChatFormatting
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
+import kotlinx.coroutines.sync.Semaphore
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.apis.ItemApi
 import mrfast.sbt.config.categories.AuctionHouseConfig
@@ -164,7 +162,7 @@ object AuctionFlipper {
         }
     }
 
-    private var maxPagesToScan = 50
+    private var maxPagesToScan = 60
 
     // Scans each page of auction house for potential flips
     // Each Page = 1000 Auctions
@@ -178,27 +176,39 @@ object AuctionFlipper {
         ChatUtils.sendClientMessage("", false)
 
         runBlocking {
-            // At 50 pages, this will take ~10 seconds to scan
-            for (page in 0..maxPagesToScan) {
-                launch(Dispatchers.IO) {
-                    val auctionHousePageJson = NetworkUtils.apiRequestAndParse(
-                        "https://api.hypixel.net/skyblock/auctions?page=${page}",
-                        useProxy = false,
-                        caching = false
-                    )
+            val semaphore = Semaphore(3) // Max 5 pages concurrently
 
-                    if(!auctionHousePageJson.has("success")) return@launch
-
-                    if (auctionHousePageJson.get("success").asBoolean) {
-                        handleAuctionPage(auctionHousePageJson)
+            val batchSize = 3 // Adjust based on your system's capacity
+            for (i in 0 until maxPagesToScan step batchSize) {
+                val currentBatch = (i until minOf(i + batchSize, maxPagesToScan)).map { page ->
+                    launch(Dispatchers.IO) {
+                        semaphore.acquire()
+                        try {
+                            val auctionHousePageJson = NetworkUtils.apiRequestAndParse(
+                                "https://api.hypixel.net/skyblock/auctions?page=${page}",
+                                useProxy = false,
+                                caching = false
+                            )
+                            if (auctionHousePageJson.get("success")?.asBoolean == true) {
+                                handleAuctionPage(auctionHousePageJson)
+                            }
+                            if(auctionHousePageJson.get("totalPages") != null) {
+                                maxPagesToScan = auctionHousePageJson.get("totalPages").asInt
+                            }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        } finally {
+                            semaphore.release()
+                        }
                     }
                 }
 
-                delay(200L)
+                currentBatch.joinAll() // Wait for this batch to finish before continuing
+
+                // Optional: Add delay after processing each batch
+                delay(500)  // Delay to reduce pressure
             }
 
-            delay(2000)
-            if (CustomizationConfig.developerMode) getFilterSummary()
             ChatUtils.sendClientMessage("", false)
             val text =
                 ChatComponentText("§eSB§9T§6 >> §7Scanned §9${checkedAuctions.formatNumber()}§7 auctions! §3${auctionsNotified.formatNumber()}§7 matched your filter. (hover)")
@@ -209,7 +219,6 @@ object AuctionFlipper {
         }
     }
 
-    //
     private fun handleAuctionPage(page: JsonObject) {
         val auctions = page.getAsJsonArray("auctions")
         for (auction in auctions) {
@@ -218,6 +227,7 @@ object AuctionFlipper {
     }
 
     private var checkedAuctions = 0
+    private var itemStackCache = mutableMapOf<String, ItemStack>()
     private fun handleAuction(auction: JsonObject) {
         checkedAuctions++
 
@@ -239,7 +249,21 @@ object AuctionFlipper {
         }
 
         val itemBytes = auction.get("item_bytes").asString
-        val itemStack = ItemUtils.decodeBase64Item(itemBytes)
+        val itemStack: ItemStack?
+
+        if(itemStackCache.containsKey(itemBytes)) {
+            itemStack = itemStackCache[itemBytes]
+        } else {
+            val stack = ItemUtils.decodeBase64Item(itemBytes)
+            if (stack != null) {
+                itemStack = stack
+                itemStackCache[itemBytes] = stack
+            } else {
+                filterOutWithReason("Could Not Decode Item")
+                return
+            }
+        }
+
         if (itemStack == null) {
             filterOutWithReason("Could Not Resolve Item")
             return
@@ -267,7 +291,7 @@ object AuctionFlipper {
     // Will find a 'base price' for the item, found by using average bin ideally, with the lowest bin as a backup
     private fun calcAuctionProfit(auctionFlip: AuctionFlip, pricingData: JsonObject) {
         val suggestedListingPrice = ItemUtils.getSuggestListingPrice(auctionFlip.itemStack!!)!!
-        var priceToSellFor = suggestedListingPrice.get("price").asLong
+        val priceToSellFor = suggestedListingPrice.get("price").asLong
 
         if (auctionFlip.price < priceToSellFor) {
             // Already take out 8% accounting for your upcoming bid
