@@ -151,7 +151,6 @@ object PlayerStats {
             maxMana = groups["maxMana"]!!.value.toInt()
             useManaEstimation = false
         } else {
-            ChatUtils.sendClientMessage("Mana not found in action bar, using estimation")
             useManaEstimation = true
         }
 
