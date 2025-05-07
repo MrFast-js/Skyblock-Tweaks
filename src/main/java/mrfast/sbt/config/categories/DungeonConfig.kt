@@ -60,7 +60,7 @@ object DungeonConfig : Config() {
         category = "§1§rDungeons",
         subcategory = "Spawn Timers"
     )
-    var fireFreezeTimer = false
+    var fireFreezeTimer = true
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
@@ -101,6 +101,16 @@ object DungeonConfig : Config() {
         parentName = "Highlight Correct Livid"
     )
     var highlightCorrectLividColor = CustomColor(0x00FFFF)
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Draw Line To Livid",
+        description = "Draws a line from your crosshair to the correct livid",
+        category = "§1§rDungeons",
+        subcategory = "Highlights",
+        parentName = "Highlight Correct Livid"
+    )
+    var highlightCorrectLividLine = true
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,

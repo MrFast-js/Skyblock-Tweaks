@@ -1,11 +1,10 @@
 package mrfast.sbt.features.dungeons
 
 import mrfast.sbt.SkyblockTweaks
-import mrfast.sbt.apis.ItemAbilities
 import mrfast.sbt.config.categories.DungeonConfig.highlightCorrectLivid
 import mrfast.sbt.config.categories.DungeonConfig.highlightCorrectLividColor
+import mrfast.sbt.config.categories.DungeonConfig.highlightCorrectLividLine
 import mrfast.sbt.customevents.RenderEntityModelEvent
-import mrfast.sbt.features.end.ZealotSpawnLocations
 import mrfast.sbt.managers.LocationManager
 import mrfast.sbt.managers.TickManager
 import mrfast.sbt.utils.OutlineUtils
@@ -70,7 +69,7 @@ object HighlightCorrectLivid {
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        if (!LocationManager.inDungeons || LocationManager.dungeonFloor != 5 || !highlightCorrectLivid) return
+        if (!LocationManager.inDungeons || LocationManager.dungeonFloor != 5 || !highlightCorrectLivid || !highlightCorrectLividLine) return
 
         if (lividEntity != null && lividEntity!!.isEntityAlive && Utils.mc.thePlayer.canEntityBeSeen(lividEntity)) {
             val skullPos = lividEntity!!.positionVector.add(Vec3(0.0, lividEntity!!.eyeHeight.toDouble(), 0.0))
