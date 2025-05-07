@@ -16,8 +16,8 @@ object RiftTimeBar {
 
     class RiftBarGui : GuiManager.Element() {
         init {
-            this.relativeX = 0.458
-            this.relativeY = 0.806
+            this.relativeX = 0.4297
+            this.relativeY = 0.875
             this.elementName = "Rift Time Bar"
             this.addToList()
             this.height = 10

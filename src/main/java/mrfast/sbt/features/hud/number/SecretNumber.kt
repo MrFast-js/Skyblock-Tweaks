@@ -50,7 +50,7 @@ object SecretNumber {
         }
 
         override fun drawExample() {
-            val secretCount = listOf("§7Secrets", "§a1§7/§c9")
+            val secretCount = listOf("§7Secrets", "§c1§7/§c9")
             val style = when (GeneralConfig.secretNumberTextStyle) {
                 "Shadowed" -> GuiUtils.TextStyle.DROP_SHADOW
                 "Outlined" -> GuiUtils.TextStyle.BLACK_OUTLINE

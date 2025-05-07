@@ -9,19 +9,17 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 @SkyblockTweaks.EventComponent
 object OverlayManager {
-    var containerOverlays = mutableListOf<Overlay>()
-    var signOverlays = mutableListOf<Overlay>()
+    private var containerOverlays = mutableListOf<Overlay>()
+    private var signOverlays = mutableListOf<Overlay>()
 
     @SubscribeEvent
     fun onContainerDrawn(event: GuiContainerBackgroundDrawnEvent) {
-        for (overlay in containerOverlays) {
-            if (!overlay.isActive(event)) continue
-
-            if (!overlay.leftAlign) {
-                GlStateManager.translate(180f + overlay.x, overlay.y, 0.0)
-                overlay.draw(event.mouseX, event.mouseY, event)
+        containerOverlays.filter { it.isActive(event) }.forEach {
+            if (!it.leftAlign) {
+                GlStateManager.translate(180f + it.x, it.y, 0.0)
+                it.draw(event.mouseX, event.mouseY, event)
                 GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f)
-                GlStateManager.translate(-(180f + overlay.x), -overlay.y, 0.0)
+                GlStateManager.translate(-(180f + it.x), -it.y, 0.0)
             }
         }
     }

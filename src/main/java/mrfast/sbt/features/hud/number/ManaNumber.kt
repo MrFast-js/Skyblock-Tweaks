@@ -18,8 +18,8 @@ object ManaNumber {
 
     class ManaNumberGui : GuiManager.Element() {
         init {
-            this.relativeX = 0.371875
-            this.relativeY = 0.842593
+            this.relativeX = 0.513
+            this.relativeY = 0.933
             this.elementName = "Mana Number"
             this.addToList()
             this.height = Utils.mc.fontRendererObj.FONT_HEIGHT

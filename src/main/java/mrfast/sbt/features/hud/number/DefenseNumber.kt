@@ -18,8 +18,8 @@ object DefenseNumber {
 
     class DefenseNumberGui : GuiManager.Element() {
         init {
-            this.relativeX = 0.371875
-            this.relativeY = 0.842593
+            this.relativeX = 0.575
+            this.relativeY = 0.971
             this.elementName = "Defense Number"
             this.addToList()
             this.height = Utils.mc.fontRendererObj.FONT_HEIGHT

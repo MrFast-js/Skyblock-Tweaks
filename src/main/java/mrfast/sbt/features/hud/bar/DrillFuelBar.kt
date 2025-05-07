@@ -20,12 +20,13 @@ object DrillFuelBar {
 
     class DrillFuelBarGui : GuiManager.Element() {
         init {
-            this.relativeX = 0.459375
-            this.relativeY = 0.852778
+            this.relativeX = 0.468
+            this.relativeY = 0.819
             this.elementName = "Drill Fuel Bar"
             this.addToList()
             this.height = 10
             this.width = 80
+            this.needsExample = true
         }
 
         override fun draw() {
@@ -38,6 +39,11 @@ object DrillFuelBar {
                 UMatrixStack(), 2f, 2f,
                 (78f * healthFillPerc).toFloat(), 8f, 3f, drillFuelBarColor.get()
             )
+        }
+
+        override fun drawExample() {
+            UIRoundedRectangle.drawRoundedRectangle(UMatrixStack(), 0f, 0f, 80f, 10f, 5f, drillFuelBarBarColor.get())
+            UIRoundedRectangle.drawRoundedRectangle(UMatrixStack(), 2f, 2f, 78f, 8f, 3f, drillFuelBarColor.get())
         }
 
         override fun isActive(): Boolean {

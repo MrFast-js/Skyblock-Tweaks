@@ -19,16 +19,23 @@ object DrillFuelNumber {
 
     class DrillFuelNumberGui : GuiManager.Element() {
         init {
-            this.relativeX = 0.459375
-            this.relativeY = 0.852778
+            this.relativeX = 0.454
+            this.relativeY = 0.805
             this.elementName = "Drill Fuel Number"
             this.addToList()
             this.height = Utils.mc.fontRendererObj.FONT_HEIGHT
             this.width = Utils.mc.fontRendererObj.getStringWidth("20000/20000 Drill Fuel")
+            this.needsExample = true
         }
 
         override fun draw() {
             val display = "${PlayerStats.drillFuel.formatNumber()}/${PlayerStats.maxDrillFuel.formatNumber()} Drill Fuel"
+            val centerX = this.width / 2f
+            GuiUtils.drawText(display, centerX, 0f, GuiUtils.TextStyle.BLACK_OUTLINE, drillFuelDisplayColor.get(), centered = true)
+        }
+
+        override fun drawExample() {
+            val display = "2,000/2,000 Drill Fuel"
             val centerX = this.width / 2f
             GuiUtils.drawText(display, centerX, 0f, GuiUtils.TextStyle.BLACK_OUTLINE, drillFuelDisplayColor.get(), centered = true)
         }

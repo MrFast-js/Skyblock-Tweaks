@@ -1,4 +1,4 @@
-package mrfast.sbt.features.general
+package mrfast.sbt.features.hud
 
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.config.categories.GeneralConfig

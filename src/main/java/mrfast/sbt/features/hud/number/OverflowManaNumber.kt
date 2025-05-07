@@ -18,8 +18,8 @@ object OverflowManaNumber {
 
     class OverflowManaNumberGui : GuiManager.Element() {
         init {
-            this.relativeX = 0.371875
-            this.relativeY = 0.842593
+            this.relativeX = 0.5773
+            this.relativeY = 0.9236
             this.elementName = "Overflow Mana Number"
             this.addToList()
             this.height = Utils.mc.fontRendererObj.FONT_HEIGHT

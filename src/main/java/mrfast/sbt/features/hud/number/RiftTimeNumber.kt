@@ -18,8 +18,8 @@ object RiftTimeNumber {
 
     class RiftTimeGui : GuiManager.Element() {
         init {
-            this.relativeX = 0.430
-            this.relativeY = 0.897
+            this.relativeX = 0.4344
+            this.relativeY = 0.8597
             this.elementName = "Rift Time"
             this.addToList()
             this.height = Utils.mc.fontRendererObj.FONT_HEIGHT

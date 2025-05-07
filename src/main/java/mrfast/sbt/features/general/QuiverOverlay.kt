@@ -58,8 +58,8 @@ object QuiverOverlay {
 
     class QuiverOverlay : GuiManager.Element() {
         init {
-            this.relativeX = 0.371875
-            this.relativeY = 0.842593
+            this.relativeX = 0.455
+            this.relativeY = 0.747
             this.elementName = "Quiver Overlay"
             this.addToList()
             this.height = 16

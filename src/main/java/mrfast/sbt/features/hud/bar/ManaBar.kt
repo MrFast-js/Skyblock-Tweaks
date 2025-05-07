@@ -20,8 +20,8 @@ object ManaBar {
 
     class ManaBarGui : GuiManager.Element() {
         init {
-            this.relativeX = 0.371875
-            this.relativeY = 0.842593
+            this.relativeX = 0.50781
+            this.relativeY = 0.94027
             this.elementName = "Mana Bar"
             this.addToList()
             this.height = 10

@@ -19,8 +19,8 @@ object HealthBar {
 
     class HealthBarGui : GuiManager.Element() {
         init {
-            this.relativeX = 0.371875
-            this.relativeY = 0.842593
+            this.relativeX = 0.436
+            this.relativeY = 0.917
             this.elementName = "Health Bar"
             this.addToList()
             this.height = 10

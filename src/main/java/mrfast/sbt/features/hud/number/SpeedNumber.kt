@@ -17,8 +17,8 @@ object SpeedNumber {
 
     class SpeedNumberGui : GuiManager.Element() {
         init {
-            this.relativeX = 0.37
-            this.relativeY = 0.97
+            this.relativeX = 0.40
+            this.relativeY = 0.98
             this.elementName = "Speed Number"
             this.addToList()
             this.height = Utils.mc.fontRendererObj.FONT_HEIGHT
