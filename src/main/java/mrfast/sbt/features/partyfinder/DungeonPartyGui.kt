@@ -4,6 +4,7 @@ import com.google.gson.JsonObject
 import gg.essential.elementa.ElementaVersion
 import gg.essential.elementa.WindowScreen
 import gg.essential.universal.UMatrixStack
+import kotlinx.coroutines.runBlocking
 import mrfast.sbt.apis.ItemApi
 import mrfast.sbt.managers.LocationManager
 import mrfast.sbt.managers.PartyManager
@@ -149,13 +150,13 @@ class DungeonPartyGui : WindowScreen(ElementaVersion.V2) {
     }
 
     private fun getApiData(username: String) {
-        Thread {
-            val playerUuid = NetworkUtils.getUUID(username) ?: return@Thread
-            val profileInfo = NetworkUtils.getActiveProfile(playerUuid) ?: return@Thread
+        runBlocking {
+            val playerUuid = NetworkUtils.getUUID(username) ?: return@runBlocking
+            val profileInfo = NetworkUtils.getActiveProfile(playerUuid) ?: return@runBlocking
             val playerProfileInfo = profileInfo.asJsonObject["members"].asJsonObject[playerUuid].asJsonObject
             partyMemberProfileIds[username] = profileInfo.get("profile_id").asString
             partyMemberApiData[username] = playerProfileInfo
-        }.start()
+        }
     }
 
     private fun resetData() {
@@ -353,14 +354,14 @@ class DungeonPartyGui : WindowScreen(ElementaVersion.V2) {
     private fun drawPet() {
         if (!skycryptMemberData.containsKey(selectedPlayer) && !gettingData) {
             gettingData = true
-            Thread {
+            runBlocking {
                 val skycryptProfiles =
                     NetworkUtils.apiRequestAndParse("https://sky.shiiyu.moe/api/v2/profile/$selectedPlayer")
-                        .getAsJsonObject("profiles") ?: return@Thread
+                        .getAsJsonObject("profiles") ?: return@runBlocking
                 val data = skycryptProfiles[partyMemberProfileIds[selectedPlayer]].asJsonObject["data"].asJsonObject
-                    ?: return@Thread
+                    ?: return@runBlocking
                 skycryptMemberData[selectedPlayer] = data
-            }.start()
+            }
         }
         // Pet Data - In order to get lore accurate pet, use skycrypt API
         val data = skycryptMemberData[selectedPlayer] ?: return

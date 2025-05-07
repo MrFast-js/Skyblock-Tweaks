@@ -179,7 +179,7 @@ object DataManager {
         return getProfileData(dataName) ?: obj
     }
 
-    fun getProfileData(dataName: String): Any? {
+    private fun getProfileData(dataName: String): Any? {
         val currentProfileId = profileIds[Utils.mc.thePlayer.uniqueID.toString()]
 
         var profileJson = dataJson.getAsJsonObject(currentProfileId) ?: return null

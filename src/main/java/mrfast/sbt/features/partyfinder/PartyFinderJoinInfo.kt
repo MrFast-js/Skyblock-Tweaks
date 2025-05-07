@@ -1,5 +1,6 @@
 package mrfast.sbt.features.partyfinder
 
+import kotlinx.coroutines.runBlocking
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.config.categories.DungeonConfig
 import mrfast.sbt.utils.ChatUtils
@@ -37,9 +38,9 @@ object PartyFinderJoinInfo {
     }
 
     private fun sendPlayerInfo(playerName: String) {
-        Thread {
-            val playerUuid = NetworkUtils.getUUID(playerName) ?: return@Thread
-            val profileInfo = NetworkUtils.getActiveProfile(playerUuid) ?: return@Thread
+        runBlocking {
+            val playerUuid = NetworkUtils.getUUID(playerName) ?: return@runBlocking
+            val profileInfo = NetworkUtils.getActiveProfile(playerUuid) ?: return@runBlocking
             val playerProfileInfo = profileInfo.asJsonObject["members"].asJsonObject[playerUuid].asJsonObject
             val hypixelPlayerData =
                 NetworkUtils.apiRequestAndParse("https://api.hypixel.net/player?uuid=$playerUuid#PartyFinderJoinMsg")
@@ -194,6 +195,6 @@ object PartyFinderJoinInfo {
             ChatUtils.sendClientMessage(
                 output
             )
-        }.start()
+        }
     }
 }

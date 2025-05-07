@@ -63,10 +63,20 @@ object AuctionMenuOverlays {
         var ended = false
     }
 
+    val menus = listOf(
+        "Your Bids",
+        "Create BIN Auction",
+        "Create Auction",
+        "Manage Auctions",
+        "Auction View",
+        "BIN Auction View"
+    )
     @SubscribeEvent
     fun onContainerDrawn(event: GuiContainerBackgroundDrawnEvent) {
         if (event.gui !is GuiChest) return
         val containerName = (event.gui as GuiContainer).chestName()
+
+        if (containerName !in menus) return
 
         if (containerName == "Your Bids") {
             val newBiddedAuctions = mutableListOf<Auction>()
@@ -199,7 +209,7 @@ object AuctionMenuOverlays {
             if (line.clean().matches("""Status: Ended!""".toRegex())) {
                 auction.ended = true
             }
-            if (line.clean().matches("""(?:Starting bid|Top bid|Buy it now): (.*) coins""".toRegex())) {
+            if (line.clean().matches("""(?:Starting bid|Top bid|Buy it now|Sold for): (.*) coins""".toRegex())) {
                 auction.price = line.clean().replace("\\D+".toRegex(), "").toLong()
             }
             if (line.clean().matches("""Seller: (.*)""".toRegex())) {

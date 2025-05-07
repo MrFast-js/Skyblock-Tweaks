@@ -23,16 +23,16 @@ import kotlin.math.round
 
 @SkyblockTweaks.EventComponent
 object CrimsonIsleMap {
-    val mapTexture = ResourceLocation("skyblocktweaks", "map/crimsonIslesMap.png")
-    val playerIcon = ResourceLocation("skyblocktweaks", "map/playerIcon.png")
-    val waypointIcon = ResourceLocation("skyblocktweaks", "map/mapPoint.png")
+    private val mapTexture = ResourceLocation("skyblocktweaks", "map/crimsonIslesMap.png")
+    private val playerIcon = ResourceLocation("skyblocktweaks", "map/playerIcon.png")
+    private val waypointIcon = ResourceLocation("skyblocktweaks", "map/mapPoint.png")
 
-    var lastPlayerX = 0.0
-    var lastPlayerZ = 0.0
-    var lastPlayerR = 0.0
+    private var lastPlayerX = 0.0
+    private var lastPlayerZ = 0.0
+    private var lastPlayerR = 0.0
 
     @SubscribeEvent
-    fun onChat(event: ClientChatReceivedEvent) {
+    private fun onChat(event: ClientChatReceivedEvent) {
         if (!LocationManager.inSkyblock || LocationManager.currentIsland != "Crimson Isle" || !CrimsonConfig.crimsonIslesMap) return
 
         val message = event.message.unformattedText.clean()
@@ -51,7 +51,7 @@ object CrimsonIsleMap {
         Map()
     }
 
-    class Map : GuiManager.Element() {
+    private class Map : GuiManager.Element() {
         init {
             this.relativeX = 0.0
             this.relativeY = 0.0

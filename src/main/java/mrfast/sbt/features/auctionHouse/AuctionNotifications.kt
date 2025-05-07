@@ -47,9 +47,6 @@ object AuctionNotifications {
             if (message.startsWith("/viewauction")) {
                 val auctionID = message.split(" ")[1].replace("-","")
                 lastOpenedAuctionID = auctionID
-                if (CustomizationConfig.developerMode) {
-                    ChatUtils.sendClientMessage("§7Captured auction ID: $auctionID", false)
-                }
             }
         }
     }

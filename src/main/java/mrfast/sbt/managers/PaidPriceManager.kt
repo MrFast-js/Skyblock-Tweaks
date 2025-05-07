@@ -3,10 +3,12 @@ package mrfast.sbt.managers
 import com.google.gson.JsonObject
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.customevents.SlotClickedEvent
+import mrfast.sbt.utils.GuiUtils.chestName
 import mrfast.sbt.utils.ItemUtils.getItemUUID
 import mrfast.sbt.utils.ItemUtils.getLore
 import mrfast.sbt.utils.Utils.getRegexGroups
 import mrfast.sbt.utils.Utils.matches
+import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 @SkyblockTweaks.EventComponent
@@ -24,6 +26,8 @@ object PaidPriceManager {
 
     @SubscribeEvent
     fun onSlotClick(event: SlotClickedEvent) {
+        if(event.gui !is GuiChest || !event.gui.chestName().startsWith("Confirm")) return
+
         if (event.slot.slotNumber == 11 && event.slot.hasStack) {
             if (!event.gui.inventorySlots.getSlot(13).hasStack) return
 

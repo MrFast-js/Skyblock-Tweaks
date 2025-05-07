@@ -13,7 +13,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 
 @SkyblockTweaks.EventComponent
-object FireFreezeTimer {
+object FireFreezeVisual {
     private var activatedPos: Vec3? = null
     private var activatedAt = 0L
 

@@ -1,6 +1,7 @@
 package mrfast.sbt.apis
 
 import com.google.gson.JsonObject
+import kotlinx.coroutines.runBlocking
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.config.categories.CustomizationConfig
 import mrfast.sbt.config.categories.DeveloperConfig
@@ -85,8 +86,8 @@ object ItemApi {
             loadedNEURepo = false
         }
 
-        Thread {
-            if (!loadedNEURepo) loadNeuRepo(logging, force)
+        runBlocking {
+        if (!loadedNEURepo) loadNeuRepo(logging, force)
 
             try {
                 // Wait until player is in world, for some reason this can fail
@@ -95,13 +96,12 @@ object ItemApi {
                 if(nearby == 0) {
                     Thread.sleep(5_000)
                     updateSkyblockItemData(logging, force)
-                    return@Thread
+                    return@runBlocking
                 }
             } catch (e: Exception) {
                 Thread.sleep(10_000)
                 updateSkyblockItemData(logging, force)
-
-                return@Thread
+                return@runBlocking
             }
 
             loadPricingData(logging)
@@ -109,10 +109,10 @@ object ItemApi {
 
             DataManager.saveDataToFile(itemDataPath, skyblockItems)
             DataManager.saveDataToFile(liveAuctionDataPath, liveAuctionData)
-        }.start()
+        }
     }
 
-    private fun loadPricingData(logging: Boolean) {
+    private suspend fun loadPricingData(logging: Boolean) {
         if (logging) println("Loading Lowest Item Prices from SBT API")
 
         try {
@@ -150,7 +150,7 @@ object ItemApi {
         }
     }
 
-    private fun loadLiveAuctionData(logging: Boolean) {
+    private suspend fun loadLiveAuctionData(logging: Boolean) {
         if (logging) println("Loading Live Item Prices from SBT API")
         try {
             val data = NetworkUtils.apiRequestAndParse(

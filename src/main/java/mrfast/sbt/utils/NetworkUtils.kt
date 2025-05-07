@@ -3,18 +3,18 @@ package mrfast.sbt.utils
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import moe.nea.libautoupdate.UpdateUtils
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.config.categories.CustomizationConfig
 import mrfast.sbt.config.categories.DeveloperConfig
 import mrfast.sbt.managers.ConfigManager
 import mrfast.sbt.managers.DataManager
-import net.minecraft.util.ChatComponentText
-import org.apache.http.HttpEntity
-import org.apache.http.HttpVersion
+import okhttp3.OkHttpClient
+import okhttp3.Request
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.client.methods.HttpHead
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory
 import org.apache.http.impl.client.CloseableHttpClient
 import org.apache.http.impl.client.HttpClients
 import java.io.BufferedReader
@@ -24,6 +24,7 @@ import java.net.URL
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.security.KeyStore
+import java.util.concurrent.TimeUnit
 import java.util.stream.Collectors
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
@@ -36,6 +37,12 @@ object NetworkUtils {
     private val jsonCache: MutableMap<String, CacheObject> = HashMap()
     private const val zipUrl = "https://github.com/NotEnoughUpdates/NotEnoughUpdates-Repo/archive/master.zip"
     var tempApiAuthKey = ""
+
+    var okHttpClient = OkHttpClient.Builder()
+        .callTimeout(10, TimeUnit.SECONDS)
+        .connectTimeout(5, TimeUnit.SECONDS)
+        .readTimeout(10, TimeUnit.SECONDS)
+        .build()
 
     // Follow these directions
     // https://moddev.nea.moe/https/#false-hope
@@ -56,11 +63,14 @@ object NetworkUtils {
             val ctx = SSLContext.getInstance("TLS");
             ctx!!.init(kmf.keyManagers, tmf.trustManagers, null);
 
-            // Build the HttpClient with the custom SSL socket factory
-            val sslSocketFactory = SSLConnectionSocketFactory(ctx)
-            client = HttpClients.custom()
-                .setSSLSocketFactory(sslSocketFactory)
-                .setUserAgent("Skyblock-Tweaks")
+            val sslSocketFactory = ctx.socketFactory
+            val trustManager = tmf.trustManagers[0] as X509TrustManager
+
+            okHttpClient = OkHttpClient.Builder()
+                .callTimeout(10, TimeUnit.SECONDS)
+                .connectTimeout(5, TimeUnit.SECONDS)
+                .readTimeout(10, TimeUnit.SECONDS)
+                .sslSocketFactory(sslSocketFactory, trustManager)
                 .build()
 
             UpdateUtils.patchConnection {
@@ -73,10 +83,13 @@ object NetworkUtils {
     }
 
     data class CacheObject(val url: String, val response: JsonObject, val createdAt: Long = System.currentTimeMillis())
+    private val gson = Gson()
 
-    fun apiRequestAndParse(
-        url: String, headers: List<String> = listOf(), caching: Boolean = true, useProxy: Boolean = true
+    suspend fun apiRequestAndParse(
+        url: String, headers: MutableMap<String, String> = mutableMapOf(), caching: Boolean = true, useProxy: Boolean = true
     ): JsonObject {
+        headers["user-agent"] = "Skyblock-Tweaks"
+
         var modifiedUrlString = url
         if (url.contains("api.hypixel.net") && useProxy) {
             modifiedUrlString = url.replace("https://api.hypixel.net", sbtApiURL + "аpi")
@@ -104,76 +117,82 @@ object NetworkUtils {
 
         val player = Utils.mc.thePlayer
 
-        try {
-            val request = HttpGet(URL(modifiedUrlString).toURI())
-            request.protocolVersion = HttpVersion.HTTP_1_1
-
-            for (header in headers) {
-                val (name, value) = header.split("=")
-                request.setHeader(name, value)
+        if (usingSBTAPI) {
+            if (tempApiAuthKey.isNotEmpty()) {
+                headers["temp-auth-key"] = tempApiAuthKey
             }
+            val nearby = Utils.mc.theWorld
+                .playerEntities
+                .toList()
+                .stream()
+                .map { e -> e.uniqueID.toString() }
+                .limit(20)
+                .collect(Collectors.toList())
 
-            if (usingSBTAPI) {
-                if (tempApiAuthKey.isNotEmpty()) {
-                    request.setHeader("temp-auth-key", tempApiAuthKey)
-                }
-                val nearby = Utils.mc.theWorld
-                    .playerEntities
-                    .toList()
-                    .stream()
-                    .map { e -> e.uniqueID.toString() }
-                    .limit(20)
-                    .collect(Collectors.toList())
-
-                request.setHeader("x-players", nearby.toString())
-                request.setHeader("x-request-author", Utils.mc.thePlayer.toString())
-                request.setHeader("x-version", SkyblockTweaks.MOD_VERSION)
-            }
-
-
-            client.execute(request).use { response ->
-                val entity: HttpEntity = response.entity
-                val statusCode = response.statusLine.statusCode
-
-                BufferedReader(InputStreamReader(entity.content, StandardCharsets.UTF_8)).use { inStream ->
-                    val parsedJson = Gson().fromJson(inStream, JsonObject::class.java)
-
-                    if (usingSBTAPI) {
-                        if (parsedJson.has("auth-key")) {
-                            tempApiAuthKey = parsedJson.get("auth-key").asString
-                            if (DeveloperConfig.logNetworkRequests) {
-                                println("GOT SBT AUTH KEY $tempApiAuthKey")
-                            }
-                            return apiRequestAndParse(modifiedUrlString, headers, caching, useProxy)
-                        }
-                        if (statusCode != 200) {
-                            if (DeveloperConfig.showServerErrors && player != null) {
-                                ChatUtils.sendClientMessage(
-                                    "§cServer Error: ${parsedJson.get("cause").asString} §e§o${parsedJson.get("err_code")} $modifiedUrlString",
-                                    true
-                                )
-                            }
-                            return JsonObject()
-                        }
-                    }
-                    val cache = CacheObject(modifiedUrlString, parsedJson)
-                    jsonCache[modifiedUrlString] = cache
-
-                    return parsedJson
-                }
-            }
-        } catch (ex: SSLHandshakeException) {
-            ex.printStackTrace()
-            if (DeveloperConfig.showServerErrors && player != null) {
-                player.addChatMessage(ChatComponentText("§cSSL Handshake Exception! §cThis API request has been blocked by your network! §e§o$modifiedUrlString"))
-            }
-        } catch (ex: Exception) {
-            if (DeveloperConfig.showServerErrors && player != null) {
-                player.addChatMessage(ChatComponentText("§cEncountered Exception when connecting to §e§o$modifiedUrlString"))
-            }
-            ex.printStackTrace()
+            headers["x-players"] = nearby.toString()
+            headers["x-request-author"] = Utils.mc.thePlayer.toString()
+            headers["x-version"] = SkyblockTweaks.MOD_VERSION
         }
-        return JsonObject()
+
+
+        val requestBuilder = Request.Builder().url(modifiedUrlString)
+        headers.forEach { (key, value) -> requestBuilder.addHeader(key, value) }
+
+        val request = requestBuilder.build()
+
+        return withContext(Dispatchers.IO) {
+            val call = okHttpClient.newCall(request)
+            val response = call.execute()
+
+            response.use {
+                val responseBody = response.body.string()
+                val json = gson.fromJson(responseBody, JsonObject::class.java)
+
+                if (usingSBTAPI) {
+                    if (json.has("auth-key")) {
+                        tempApiAuthKey = json.get("auth-key").asString
+                        if (DeveloperConfig.logNetworkRequests) {
+                            println("GOT SBT AUTH KEY $tempApiAuthKey")
+                        }
+                        return@withContext apiRequestAndParse(modifiedUrlString, headers, caching, useProxy)
+                    }
+                    if (it.code != 200) {
+                        if (DeveloperConfig.showServerErrors && player != null) {
+                            ChatUtils.sendClientMessage(
+                                "§cServer Error: ${json.get("cause").asString} §e§o${json.get("err_code")} $modifiedUrlString",
+                                true
+                            )
+                        }
+                        return@withContext JsonObject()
+                    }
+                }
+
+                if(caching) {
+                    val cache = CacheObject(modifiedUrlString, json)
+                    jsonCache[modifiedUrlString] = cache
+                }
+
+                return@withContext json
+            }
+        }
+
+//        try {
+//            val request = HttpGet(URL(modifiedUrlString).toURI())
+//            request.protocolVersion = HttpVersion.HTTP_1_1
+//
+//
+//
+//        } catch (ex: SSLHandshakeException) {
+//            ex.printStackTrace()
+//            if (DeveloperConfig.showServerErrors && player != null) {
+//                player.addChatMessage(ChatComponentText("§cSSL Handshake Exception! §cThis API request has been blocked by your network! §e§o$modifiedUrlString"))
+//            }
+//        } catch (ex: Exception) {
+//            if (DeveloperConfig.showServerErrors && player != null) {
+//                player.addChatMessage(ChatComponentText("§cEncountered Exception when connecting to §e§o$modifiedUrlString"))
+//            }
+//            ex.printStackTrace()
+//        }
     }
 
     // Currently untested
@@ -211,7 +230,7 @@ object NetworkUtils {
 
     private var latestProfileCache = HashMap<String, JsonObject>()
 
-    fun getActiveProfile(playerUUID: String): JsonObject? {
+    suspend fun getActiveProfile(playerUUID: String): JsonObject? {
         if (latestProfileCache.containsKey(playerUUID)) return latestProfileCache[playerUUID]
 
         val apiUrl = "https://api.hypixel.net/skyblock/profiles?uuid=$playerUUID"
@@ -227,7 +246,7 @@ object NetworkUtils {
 
     private val nameCache = mutableMapOf<String, String>()
 
-    fun getUUID(username: String, formatted: Boolean = false): String? {
+    suspend fun getUUID(username: String, formatted: Boolean = false): String? {
         nameCache.entries.find { it.value.equals(username, ignoreCase = true) }?.let {
             return if (formatted) formatUUID(it.key) else it.key
         }

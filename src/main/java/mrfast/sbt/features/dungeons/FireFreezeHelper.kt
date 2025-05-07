@@ -6,11 +6,14 @@ import mrfast.sbt.config.categories.DungeonConfig
 import mrfast.sbt.config.categories.GeneralConfig
 import mrfast.sbt.utils.GuiUtils
 import mrfast.sbt.managers.LocationManager
+import mrfast.sbt.managers.TickManager
+import mrfast.sbt.utils.ItemUtils.getSkyblockId
 import mrfast.sbt.utils.Utils
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent
 
 
 // Shows when to use fire freeze on F2,F3,M2,M3 in order to freeze boss perfectly
@@ -26,6 +29,25 @@ object FireFreezeHelper {
     )
     private var shouldFireFreeze = false
     private var currentDisplayText = ""
+    private var playerHasFireFreeze = false
+
+    @SubscribeEvent
+    fun onTick(event: TickEvent.ClientTickEvent) {
+        if (!LocationManager.inDungeons || !DungeonConfig.fireFreezeTimer || event.phase != TickEvent.Phase.START) return
+
+        if (TickManager.tickCount % 20 != 0) return
+
+        if (Utils.mc.thePlayer == null || Utils.mc.theWorld == null) return
+
+        var foundFireFreeze = false
+        Utils.mc.thePlayer.inventoryContainer.inventoryItemStacks.forEach { itemStack ->
+            if (itemStack != null && itemStack.getSkyblockId() == "FIRE_FREEZE_STAFF") {
+                foundFireFreeze = true
+            }
+        }
+
+        playerHasFireFreeze = foundFireFreeze
+    }
 
     @SubscribeEvent(receiveCanceled = true)
     fun onChatMessage(event: ClientChatReceivedEvent) {
@@ -98,7 +120,7 @@ object FireFreezeHelper {
         }
 
         override fun isVisible(): Boolean {
-            return true
+            return playerHasFireFreeze && currentDisplayText.isNotEmpty()
         }
     }
 }

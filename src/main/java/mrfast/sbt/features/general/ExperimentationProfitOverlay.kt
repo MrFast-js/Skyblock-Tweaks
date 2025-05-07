@@ -51,7 +51,7 @@ object ExperimentationProfitOverlay {
     private val SELECTED_XP_REGEX = """(?<current>[\d,]+)\/(?<required>[\d,k]+)""".toRegex()
 
     @SubscribeEvent
-    fun onGuiDraw(event: TickEvent.ClientTickEvent) {
+    fun onTick(event: TickEvent.ClientTickEvent) {
         if (event.phase == TickEvent.Phase.START || !GeneralConfig.experimentationOverlay || LocationManager.currentArea != "Your Island") return
 
         if (Utils.mc.currentScreen == null) {

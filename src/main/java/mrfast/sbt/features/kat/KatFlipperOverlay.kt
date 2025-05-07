@@ -44,7 +44,7 @@ object KatFlipperOverlay {
         var coinsPerHour = 0.0
     }
 
-    fun findKatFlips() {
+    private fun findKatFlips() {
         statusMessage = "Getting Skyblock Pet Recipes.."
         ItemApi.getSkyblockItems().entrySet().forEach {
             statusMessage = "Checking ${it.key}.."

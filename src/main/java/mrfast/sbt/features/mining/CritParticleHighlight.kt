@@ -27,7 +27,7 @@ object CritParticleHighlight {
 
     @SubscribeEvent
     fun onReceivePacket(event: PacketEvent.Received) {
-        if (event.packet !is S2APacketParticles || !MiningConfig.CritParticleHighlight) return
+        if (event.packet !is S2APacketParticles || !MiningConfig.CritParticleHighlight && LocationManager.inSkyblock) return
 
         val packet = event.packet
         val type = packet.particleType
