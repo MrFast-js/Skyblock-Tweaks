@@ -89,10 +89,8 @@ abstract class ConfigManager {
                         feature.dropdownOptions = configAnnotation.dropdownOptions
                     }
 
-                    val category =
-                        categories.getOrPut(configAnnotation.category) { Category(configAnnotation.category) }
-                    val subcategory =
-                        category.subcategories.getOrPut(configAnnotation.subcategory) { Subcategory(configAnnotation.subcategory) }
+                    val category = categories.getOrPut(configAnnotation.category) { Category(configAnnotation.category) }
+                    val subcategory = category.subcategories.getOrPut(configAnnotation.subcategory) { Subcategory(configAnnotation.subcategory) }
 
                     subcategory.features[fieldName] = feature
                     feature.subcategory = subcategory

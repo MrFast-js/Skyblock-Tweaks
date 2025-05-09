@@ -17,6 +17,7 @@ open class Config : ConfigManager() {
         CrimsonConfig,
         SlayerConfig,
         //OverlaysConfig,
+        HiddenConfig,
         RiftConfig,
         RenderingConfig,
         CustomizationConfig,

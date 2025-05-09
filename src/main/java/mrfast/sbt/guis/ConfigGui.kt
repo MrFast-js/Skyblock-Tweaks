@@ -18,6 +18,7 @@ import gg.essential.universal.UMatrixStack
 import gg.essential.vigilance.gui.settings.SelectorComponent
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.config.categories.CustomizationConfig
+import mrfast.sbt.config.categories.DeveloperConfig
 import mrfast.sbt.config.categories.DeveloperConfig.showInspector
 import mrfast.sbt.guis.components.*
 import mrfast.sbt.guis.components.CustomUIText
@@ -341,6 +342,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2, drawDefaultB
 
             // Stop developer tab from showing if not in developer mode
             if (category.name == "§eDeveloper" && !CustomizationConfig.developerMode) continue
+            if (category.name == "§3Hidden" && !DeveloperConfig.showHiddenConfig) continue
 
             val categoryComponent = CustomUIText(category.name, scale = 1.6f).constrain {
                 x = CenterConstraint()

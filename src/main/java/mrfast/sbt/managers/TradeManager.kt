@@ -3,8 +3,10 @@ package mrfast.sbt.managers
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import mrfast.sbt.SkyblockTweaks
+import mrfast.sbt.config.categories.HiddenConfig
 import mrfast.sbt.customevents.ProfileLoadEvent
 import mrfast.sbt.customevents.SlotDrawnEvent
+import mrfast.sbt.utils.ChatUtils
 import mrfast.sbt.utils.GuiUtils.chestName
 import mrfast.sbt.utils.Utils
 import mrfast.sbt.utils.Utils.clean
@@ -14,7 +16,6 @@ import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 
-// @TODO add a 'hint' that after a trade prompts you once that you can view all past trades with /tradelog
 @SkyblockTweaks.EventComponent
 object TradeManager {
     var tradeHistory = JsonObject()
@@ -30,6 +31,17 @@ object TradeManager {
         if (event.message.unformattedText.clean().startsWith("Trade completed with")) {
             interpretLastTradeMenu()
             inTradeMenu = false
+
+            if(!HiddenConfig.sentTradeHistoryPrompt) {
+                Utils.setTimeout(
+                    {
+                        ChatUtils.sendClientMessage("§e§lTip! §7You can check your past trades anytime with §b/tradelogs or /tl", shortPrefix = true)
+                        Utils.playSound("random.orb", 0.5)
+                        HiddenConfig.sentTradeHistoryPrompt = true
+                        SkyblockTweaks.config.saveConfig()
+                    }, 1000
+                )
+            }
         }
     }
 

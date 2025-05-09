@@ -17,7 +17,6 @@ import net.minecraftforge.fml.common.FMLCommonHandler
 
 @SkyblockTweaks.CommandComponent
 class SBTCommand : CommandBase() {
-    private var arguments = mutableListOf("edit", "update", "blacklist", "trash", "help")
 
     override fun getCommandName(): String = "skyblocktweaks"
 
@@ -68,6 +67,8 @@ class SBTCommand : CommandBase() {
                                 " §b• /sbt §3blacklist | trash §f➡ §7Opens item filter menus\n" +
                                 " §b• /path §f➡ §7Create custom recorded paths to save and replay!\n" +
                                 " §b• /pft §f➡ §7Opens profit tracker, tracking every item gained/loss\n" +
+                                " §b• /th §f➡ §7Opens trade history, which logs every trade\n" +
+                                " §b• /au §f➡ §7Attribute Upgrade Path Command\n" +
                                 " §b• /sbtdebug §f➡ §7Debugging commands"
                     )
                 }

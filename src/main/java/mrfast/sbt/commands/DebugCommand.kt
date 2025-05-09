@@ -5,6 +5,7 @@ import com.mojang.realmsclient.gui.ChatFormatting
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.apis.ItemApi
 import mrfast.sbt.apis.PlayerStats
+import mrfast.sbt.config.categories.CustomizationConfig
 import mrfast.sbt.managers.ConfigManager
 import mrfast.sbt.managers.LocationManager
 import mrfast.sbt.managers.PaidPriceManager
@@ -29,6 +30,7 @@ class DebugCommand : CommandBase() {
     private var subcommands: List<Pair<String, String>> =
         mutableListOf(
             Pair("mobs", "Get nearby mob data"),
+            Pair("dev", "Toggle developer mode"),
             Pair("tiles", "Get nearby tile entities"),
             Pair("entities", "Get all nearby entities"),
             Pair("item", "Get held item data"),
@@ -67,6 +69,15 @@ class DebugCommand : CommandBase() {
         }
 
         when (args[0]) {
+            "dev" -> {
+                if(CustomizationConfig.developerMode) {
+                    CustomizationConfig.developerMode = false
+                    ChatUtils.sendClientMessage("§cDeveloper mode disabled!", shortPrefix = true)
+                } else {
+                    CustomizationConfig.developerMode = true
+                    ChatUtils.sendClientMessage("§aDeveloper mode enabled!", shortPrefix = true)
+                }
+            }
             "sounds" -> {
                 val soundList = DevUtils.getRecentSounds()
                 val soundListString = StringBuilder()

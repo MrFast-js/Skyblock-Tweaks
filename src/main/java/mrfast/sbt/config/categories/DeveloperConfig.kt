@@ -90,6 +90,15 @@ object DeveloperConfig : Config() {
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
+        name = "Show Hidden Config Options",
+        description = "Shows options that are hidden in the config gui",
+        category = "§eDeveloper",
+        subcategory = "Settings"
+    )
+    var showHiddenConfig = false
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
         name = "Show Inspector in Guis",
         category = "§eDeveloper",
         subcategory = "Settings"

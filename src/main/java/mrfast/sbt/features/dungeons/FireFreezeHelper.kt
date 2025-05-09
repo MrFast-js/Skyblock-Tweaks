@@ -17,12 +17,9 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 
 
 // Shows when to use fire freeze on F2,F3,M2,M3 in order to freeze boss perfectly
-/*
- @TODO: Only show when having a fire freeze in inventory
- */
 @SkyblockTweaks.EventComponent
 object FireFreezeHelper {
-    private val textScale = 2.0
+    private const val textScale = 2.0
     private val triggersAndTimings = mapOf(
         "[BOSS] The Professor: Oh? You found my Guardians' one weakness?" to 8, // Floor 3
         "[BOSS] Scarf: Those toys are not strong enough I see." to 9 // Floor 2

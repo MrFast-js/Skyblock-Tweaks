@@ -86,7 +86,7 @@ dependencies {
     shadowImpl("io.socket:engine.io-client:2.1.0:")
     shadowImpl("moe.nea:libautoupdate:1.3.1")
     shadowImpl("org.reflections:reflections:0.10.2")
-    shadowImpl("com.squareup.okhttp3:okhttp:5.0.0-alpha.14")
+    implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.14")
 
     // If you don't want mixins, remove these lines
     shadowImpl("org.spongepowered:mixin:0.7.11-SNAPSHOT") {

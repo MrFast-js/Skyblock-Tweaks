@@ -1,18 +1,17 @@
 package mrfast.sbt.commands
 
-import gg.essential.api.utils.GuiUtil
-import mrfast.sbt.features.profitTracking.ProfitTrackerGui
-import net.minecraft.command.CommandBase
-import net.minecraft.command.ICommandSender
 import com.google.common.collect.Lists
+import gg.essential.api.utils.GuiUtil
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.guis.TradeHistoryGui
+import net.minecraft.command.CommandBase
+import net.minecraft.command.ICommandSender
 
 @SkyblockTweaks.CommandComponent
 class TradeHistoryCommand : CommandBase() {
     override fun getCommandName(): String = "tradehistory"
 
-    override fun getCommandAliases(): List<String> = Lists.newArrayList("tradelogs","th","tl")
+    override fun getCommandAliases(): List<String> = Lists.newArrayList("tradelogs", "tradelog", "th", "tl")
 
     override fun getCommandUsage(sender: ICommandSender?): String = "/tradehistory"
 
