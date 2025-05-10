@@ -57,7 +57,7 @@ object AuctionNotifications {
 
         if(event.message.chatStyle != null && event.message.chatStyle.chatClickEvent != null && ignoredAuctionIDs.isNotEmpty()) {
             ignoredAuctionIDs.forEach {
-                if (event.message.chatStyle.chatClickEvent.value.contains(it)) {
+                if (event.message.chatStyle.chatClickEvent.value.replace("-","").contains(it)) {
                     event.isCanceled = true
                 }
             }

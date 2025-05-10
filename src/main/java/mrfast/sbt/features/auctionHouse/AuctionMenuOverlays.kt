@@ -53,8 +53,9 @@ object AuctionMenuOverlays {
     open class Auction(var slot: Slot, var uuid: String) {
         var price = 0L
         var profit = 0L
-        var suggestedListingPrice = 0L
         var winning: Boolean? = null
+        var listingFee = 0L
+        var suggestedListingPrice = 0L
         var shouldSellBIN = true
         var seller: String? = null
         var otherBidder: String? = null
@@ -101,8 +102,6 @@ object AuctionMenuOverlays {
                 }
 
                 setAuctionPricingData(auction)
-
-                auction.profit = auction.suggestedListingPrice - auction.price
 
                 newBiddedAuctions.add(auction)
             }
@@ -153,7 +152,7 @@ object AuctionMenuOverlays {
                 if (newBidPrice != -1L) auction.price = newBidPrice
             }
 
-            auction.profit = auction.suggestedListingPrice - auction.price
+            setAuctionPricingData(auction)
 
             lastViewedAuction = auction
         }
@@ -198,7 +197,13 @@ object AuctionMenuOverlays {
 
         auction.suggestedListingPrice = suggestedListingPrice.get("price").asLong
         auction.shouldSellBIN = suggestedListingPrice.get("bin")?.asBoolean == true
-        auction.profit = auction.suggestedListingPrice - auction.price
+        auction.listingFee = when {
+            auction.suggestedListingPrice < 10_000_000L -> (auction.suggestedListingPrice * 0.01).toLong()
+            auction.suggestedListingPrice < 100_000_000L -> (auction.suggestedListingPrice * 0.02).toLong()
+            else -> (auction.suggestedListingPrice * 0.025).toLong()
+        }
+
+        auction.profit = auction.suggestedListingPrice - auction.price - auction.listingFee
     }
 
     private fun setAuctionInfoFromLore(auction: Auction) {
@@ -353,11 +358,15 @@ object AuctionMenuOverlays {
                 "§9$activeAuc Auctions"
             ) + getPrices(activeAucPrices) + listOf("§3$activeBin BINs") + getPrices(activeBinPrices)
 
+
+
             val flipPotential = mutableListOf(
                 "§e§lFlip Potential",
+                "§7List Fee: §c-${(lastViewedAuction!!.listingFee).formatNumber()}",
                 "§7Buy for §a${(lastViewedAuction!!.price).formatNumber()}",
                 "§7Sell for §d${(lastViewedAuction!!.suggestedListingPrice).formatNumber()}"
             )
+
             if (lastViewedAuction?.shouldSellBIN == false) flipPotential.add("§c§lSELL AS AUCTION")
 
             val lines = mutableListOf(

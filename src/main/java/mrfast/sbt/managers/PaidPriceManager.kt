@@ -14,52 +14,49 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 @SkyblockTweaks.EventComponent
 object PaidPriceManager {
     private var pricePaid = JsonObject()
-    private val binCostRegex = """Cost: (.*) coins""".toRegex()
-    private val aucBidCostRegex = """Your previous bid: (.*) coins""".toRegex()
+    private val binCostRegex = """Price: (.*) coins""".toRegex()
+    private val aucBidCostRegex = """New bid: (.*) coins""".toRegex()
 
     init {
         pricePaid = DataManager.getDataDefault("pricePaidMap", JsonObject()) as JsonObject
     }
 
-    private var lastViewedPrice = 0L
+    private var lastViewedPrice = -1L
     private var lastViewedItem = ""
 
     @SubscribeEvent
     fun onSlotClick(event: SlotClickedEvent) {
-        if(event.gui !is GuiChest || !event.gui.chestName().startsWith("Confirm")) return
+        if(event.gui !is GuiChest) return
 
         if (event.slot.slotNumber == 11 && event.slot.hasStack) {
             if (!event.gui.inventorySlots.getSlot(13).hasStack) return
 
             val itemBeingBought = event.gui.inventorySlots.getSlot(13).stack!!
             val uuid = itemBeingBought.getItemUUID() ?: return
-            val confirmationItem = event.slot.stack
-            var cost = -1L
+            val cost = lastViewedPrice
 
-            confirmationItem.getLore(true).forEach {
-                if (it.matches(binCostRegex)) {
-                    val costString = it.getRegexGroups(binCostRegex)?.get(1)?.value!!
-                    cost = costString.replace(",", "").toLongOrNull() ?: 0L
-                }
-            }
-            if (cost == -1L) {
-                println("Failed to parse cost from lore: ${confirmationItem.getLore(true)}")
-                return
-            }
-            if (lastViewedItem == uuid) {
-                cost += lastViewedPrice
-            }
+            if (cost == -1L) return
 
             saveItemPricePaid(uuid, cost)
         }
-        if (event.slot.slotNumber == 29 && event.slot.hasStack) {
-            if (!event.gui.inventorySlots.getSlot(13).hasStack) return
 
-            val confirmationItem = event.slot.stack
-            val itemBeingBought = event.gui.inventorySlots.getSlot(13).stack!!
+        if (event.gui.chestName().contains("Auction View")) {
+            val itemBeingBought = event.gui.inventorySlots.getSlot(13).stack ?: return
             val uuid = itemBeingBought.getItemUUID() ?: return
 
-            confirmationItem.getLore(true).forEach {
+            val binItem = event.gui.inventorySlots.getSlot(31).stack
+            val aucItem = event.gui.inventorySlots.getSlot(29).stack
+            lastViewedPrice = -1L
+
+            binItem.getLore(true).forEach {
+                if (it.matches(binCostRegex)) {
+                    val costString = it.getRegexGroups(binCostRegex)?.get(1)?.value!!
+                    lastViewedPrice = costString.replace(",", "").toLongOrNull() ?: 0L
+                    lastViewedItem = uuid
+                }
+            }
+
+            aucItem.getLore(true).forEach {
                 if (it.matches(aucBidCostRegex)) {
                     val costString = it.getRegexGroups(aucBidCostRegex)?.get(1)?.value!!
                     lastViewedPrice = costString.replace(",", "").toLongOrNull() ?: 0L

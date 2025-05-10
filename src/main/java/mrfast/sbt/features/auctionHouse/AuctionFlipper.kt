@@ -98,7 +98,8 @@ object AuctionFlipper {
     ) {
         var price: Long = 0
         var profit: Long? = null
-        var sellFor: Long? = null
+        var listingFee: Long = 0
+        var suggestedListingPrice: Long? = null
         var bidderUUID: String? = null
         var volume: Int? = null
         var itemID: String? = null
@@ -123,10 +124,12 @@ object AuctionFlipper {
                 timeRemaining = (endTime!! - System.currentTimeMillis()).toFormattedDuration()
             }
             // Example: buying item for 20m, selling for 35m
-            val profitPercent = (((sellFor!!.toFloat() / price.toFloat()) - 1) * 100).toInt()
+            val profitPercent = (((suggestedListingPrice!!.toFloat() / price.toFloat()) - 1) * 100).toInt()
+
+            profit = suggestedListingPrice!! - price - listingFee
 
             val notification =
-                "§eSB§9T§6 >> $auctionType ${itemStack?.displayName} §a${price.abbreviateNumber()}§3➜§a${(sellFor!!).abbreviateNumber()} §2(+${profit!!.abbreviateNumber()} §4$profitPercent%§2) §e${timeRemaining}"
+                "§eSB§9T§6 >> $auctionType ${itemStack?.displayName} §a${price.abbreviateNumber()}§3➜§a${(suggestedListingPrice!!).abbreviateNumber()} §2(+${profit!!.abbreviateNumber()} §4$profitPercent%§2) §e${timeRemaining}"
 
             val chatComponent = ChatComponentText(notification)
             chatComponent.chatStyle.chatClickEvent =
@@ -243,9 +246,19 @@ object AuctionFlipper {
 
         // Get Auction Price
         auctionFlip.price = auction.get("starting_bid").asLong
+
         // Use highest bid if its an auction
         if (auctionFlip.bin == false && auction.get("highest_bid_amount").asLong != 0L) {
             auctionFlip.price = auction.get("highest_bid_amount").asLong
+
+            // Set price to the next bid price
+            auctionFlip.price = when {
+                auctionFlip.price < 100_000L -> (auctionFlip.price * 1.15).toLong()
+                auctionFlip.price < 1_000_000L -> (auctionFlip.price * 1.1).toLong()
+                auctionFlip.price < 10_000_000L -> (auctionFlip.price * 1.05).toLong()
+                auctionFlip.price < 100_000_000L -> (auctionFlip.price * 1.025).toLong()
+                else -> auctionFlip.price
+            }
         }
 
         val itemBytes = auction.get("item_bytes").asString
@@ -293,24 +306,22 @@ object AuctionFlipper {
         val suggestedListingPrice = ItemUtils.getSuggestListingPrice(auctionFlip.itemStack!!)!!
         val priceToSellFor = suggestedListingPrice.get("price").asLong
 
+        auctionFlip.suggestedListingPrice = priceToSellFor
+
+        // Subtract listing fee, 1% of profit if price < 10m, 2% if < 100m, else 2.5%
+        auctionFlip.listingFee = when {
+            priceToSellFor < 10_000_000L -> (priceToSellFor * 0.01).toLong()
+            priceToSellFor < 100_000_000L -> (priceToSellFor * 0.02).toLong()
+            else -> (priceToSellFor * 0.025).toLong()
+        }
+
+        auctionFlip.profit = priceToSellFor - auctionFlip.price - auctionFlip.listingFee
+
+        if (pricingData.has("sold")) {
+            auctionFlip.volume = pricingData.get("sold").asInt
+        }
+
         if (auctionFlip.price < priceToSellFor) {
-            // Already take out 8% accounting for your upcoming bid
-            val nextBidPrice = (auctionFlip.price * 1.08).toLong()
-            auctionFlip.profit = priceToSellFor - nextBidPrice
-
-            // Subtract listing fee, 1% of profit if price < 10m, 2% if < 100m, else 2.5%
-            auctionFlip.profit = when {
-                priceToSellFor < 10_000_000 -> auctionFlip.profit!! - (auctionFlip.profit!! * 0.01).toLong()
-                priceToSellFor < 100_000_000 -> auctionFlip.profit!! - (auctionFlip.profit!! * 0.02).toLong()
-                else -> auctionFlip.profit!! - (auctionFlip.profit!! * 0.025).toLong()
-            }
-
-            if (pricingData.has("sold")) {
-                auctionFlip.volume = pricingData.get("sold").asInt
-            }
-
-            auctionFlip.sellFor = priceToSellFor
-
             filterAndSendFlip(auctionFlip)
         } else {
             filterOutWithReason("Price > Suggested Price")
@@ -345,6 +356,7 @@ object AuctionFlipper {
 
     private fun filterAndSendFlip(auctionFlip: AuctionFlip) {
         if(Utils.mc.thePlayer == null) return
+
         // Filter out auctions that your already the top bid on
         if (auctionFlip.bidderUUID?.equals(Utils.mc.thePlayer.uniqueID.toString().replace("-", "")) == true) {
             filterOutWithReason("Already top bidder")
@@ -437,24 +449,26 @@ object AuctionFlipper {
 
         // Filter based on profit margin
         if (auctionFlip.profit != null) {
+            auctionFlip.profit = auctionFlip.suggestedListingPrice!! - auctionFlip.price - auctionFlip.listingFee
             if (auctionFlip.profit!! < AuctionHouseConfig.AF_profitMargin) {
                 filterOutWithReason("Profit Margin Too Low")
                 return
             }
         }
 
-        // Filter based on volume
-        if (auctionFlip.volume != null) {
-            if (auctionFlip.volume!! < AuctionHouseConfig.AF_minimumVolume) {
-                filterOutWithReason("Volume Too Low")
+        // Filter based on profit percentage
+        if (auctionFlip.suggestedListingPrice != null) {
+            if (auctionFlip.suggestedListingPrice!!.toFloat() / auctionFlip.price.toFloat() <= AuctionHouseConfig.AF_minimumPercent / 100) {
+                filterOutWithReason("Profit Percentage Too Low")
                 return
             }
         }
 
-        // Filter based on profit percentage
-        if (auctionFlip.sellFor != null) {
-            if (auctionFlip.sellFor!!.toFloat() / auctionFlip.price.toFloat() <= AuctionHouseConfig.AF_minimumPercent / 100) {
-                filterOutWithReason("Profit Percentage Too Low")
+
+        // Filter based on volume
+        if (auctionFlip.volume != null) {
+            if (auctionFlip.volume!! < AuctionHouseConfig.AF_minimumVolume) {
+                filterOutWithReason("Volume Too Low")
                 return
             }
         }
@@ -473,7 +487,7 @@ object AuctionFlipper {
 
         // Add the auction to the list and notify
         sentAuctionFlips.add(auctionFlip)
-        sentAuctionFlips.sortBy { it.profit }
+        sentAuctionFlips.sortedByDescending { it.profit }
 
         auctionFlip.sendToChat()
     }
