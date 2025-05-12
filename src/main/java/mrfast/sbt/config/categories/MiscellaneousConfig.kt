@@ -20,11 +20,40 @@ object MiscellaneousConfig : Config() {
     @ConfigProperty(
         type = ConfigType.TOGGLE,
         name = "Highlight Missing Cakes",
-        description = "Highlight cakes that your missing in the Auction House. §CMust open cake bag first!",
+        description = "Highlight cakes that your missing in the Auction House. §CMust open cake bag at least once!",
         category = "Miscellaneous",
         subcategory = "New Years Cakes"
     )
     var highlightMissingNewYearCakes = false
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Accessory Bag Overlay",
+        description = "Shows a side-menu with your missing talismans in the accessory bag, sorted by best price per magic power. §aClick on a talisman to buy it!",
+        category = "Miscellaneous",
+        subcategory = "Accessory Bag"
+    )
+    var accessoryBagOverlay = false
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Highlight Missing Accessories in Auction House",
+        description = "Highlight accessories that your missing in the Auction House. §CMust open accessory bag at least once!",
+        category = "Miscellaneous",
+        subcategory = "Accessory Bag",
+        isParent = true
+    )
+    var highlightMissingTalismans = false
+
+    @ConfigProperty(
+        type = ConfigType.COLOR,
+        name = "Highlight Color",
+        description = "Color of the highlight for missing talismans",
+        category = "Miscellaneous",
+        subcategory = "Accessory Bag",
+        parentName = "Highlight Missing Accessories in Auction House"
+    )
+    var highlightMissingTalismansColor = CustomColor(Color.RED)
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
