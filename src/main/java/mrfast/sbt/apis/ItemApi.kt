@@ -18,6 +18,7 @@ import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.JsonToNBT
 import java.util.*
+import kotlin.math.max
 
 @SkyblockTweaks.EventComponent
 object ItemApi {
@@ -39,6 +40,7 @@ object ItemApi {
 
         // Update Item Prices every 10 Minutes
         if (CustomizationConfig.developerMode) println("Starting 10 Minute Interval for Item Data")
+
         Timer().scheduleAtFixedRate(object : TimerTask() {
             override fun run() {
                 updateSkyblockItemData(false)
@@ -60,8 +62,11 @@ object ItemApi {
                 // Add rarity to item properties
                 if (it.value.asJsonObject.has("lore")) {
                     val lore = it.value.asJsonObject.get("lore").asJsonArray
-                    val rarity = ItemUtils.extractRarity(lore[lore.size() - 1].asString)
-                    it.value.asJsonObject.addProperty("rarity", rarity)
+                    lore.reversed().find { it2 ->
+                        val rarity = ItemUtils.extractRarity(it2.asString) ?: return@find false
+                        it.value.asJsonObject.addProperty("rarity", rarity)
+                        return@find true
+                    }
                 }
                 skyblockItems.add(newKey, it.value)
             }
@@ -72,6 +77,40 @@ object ItemApi {
         } catch (e: Exception) {
             println("There was a problem loading NEU Repo.. ${e.message}")
         }
+    }
+
+    fun getCraftCost(itemId: String): Long {
+        val item = skyblockItems[itemId]?.asJsonObject ?: return -1L
+        val recipe = item.get("recipe")?.asJsonObject ?: return -1L
+        var cost = 0L
+
+        recipe.entrySet().forEach {
+            if(it.value.asString.split(":").size <= 1) return@forEach
+
+            val materialID = it.value.asString.split(":")[0]
+            val count = it.value.asString.split(":")[1].toInt()
+            var craftingCost = -1L
+
+            val itemInfo = getItemInfo(materialID)
+            if(itemInfo != null) {
+                if (itemInfo.has("bazaarBuy")) {
+                    craftingCost = itemInfo.get("bazaarBuy").asDouble.toLong()
+                }
+
+                if(craftingCost == -1L) {
+                    craftingCost = ItemUtils.getItemBasePrice(materialID, false).toLong()
+                }
+                if(craftingCost == -1L) {
+                    craftingCost = getCraftCost(materialID)
+                }
+            } else {
+                craftingCost = -1L
+            }
+
+            cost += (craftingCost * count)
+        }
+
+        return max(-1, cost)
     }
 
     /*
@@ -192,6 +231,7 @@ object ItemApi {
     fun createItemStack(itemId: String): ItemStack? {
         if (itemId.isEmpty()) return null
         if (itemStackCache.contains(itemId)) return itemStackCache[itemId]
+        if (itemId == "UNKNOWN") return null
 
         // Use coin talisman as texture for skyblock_coin
         if (itemId == "SKYBLOCK_COIN") {
