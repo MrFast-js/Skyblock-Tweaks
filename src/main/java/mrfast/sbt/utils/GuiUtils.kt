@@ -262,7 +262,8 @@ object GuiUtils {
         open var y: Float,
         var text: String,
         open var hoverText: List<String>?,
-        open var onClick: Runnable? = null,
+        open var onLeftClick: Runnable? = null,
+        open var onRightClick: Runnable? = null,
         open var drawBackground: Boolean = false,
         open var backgroundColor: Color = Color.GRAY,
         open var width: Int = text.getStringWidth()
@@ -270,9 +271,6 @@ object GuiUtils {
         open var height = Utils.mc.fontRendererObj.FONT_HEIGHT
 
         open fun draw(mouseX: Int, mouseY: Int, originX: Int = 0, originY: Int = 0) {
-            val actualMouseX = x + originX
-            val actualMouseY = y + originY
-
             if (drawBackground) {
                 OutlinedRoundedRectangle.drawOutlinedRoundedRectangle(
                     UMatrixStack(),
@@ -288,6 +286,12 @@ object GuiUtils {
             }
 
             drawText(text, x, y, TextStyle.DROP_SHADOW)
+            runHoverEvents(mouseX, mouseY, originX, originY)
+        }
+
+        fun runHoverEvents(mouseX: Int, mouseY: Int, originX: Int = 0, originY: Int = 0) {
+            val actualMouseX = x + originX
+            val actualMouseY = y + originY
 
             if (mouseX > actualMouseX && mouseY > actualMouseY && mouseX < actualMouseX + width && mouseY < actualMouseY + height) {
                 if (hoverText != null) {
@@ -305,13 +309,21 @@ object GuiUtils {
                     GlStateManager.popMatrix()
                     GlStateManager.popAttrib()
                 }
-                if (onClick != null) {
+
+                if (onLeftClick != null) {
                     if (Mouse.isButtonDown(0) && !elementClicked) {
                         elementClicked = true
-                        onClick!!.run()
+                        onLeftClick!!.run()
+                    }
+                }
+                if(onRightClick != null) {
+                    if (Mouse.isButtonDown(1) && !elementClicked) {
+                        elementClicked = true
+                        onRightClick!!.run()
                     }
                 }
             }
+
             if (!Mouse.isButtonDown(0)) {
                 elementClicked = false
             }
@@ -323,10 +335,10 @@ object GuiUtils {
         override var x: Float,
         override var y: Float,
         override var hoverText: List<String>? = null,
-        override var onClick: Runnable? = null,
+        override var onLeftClick: Runnable? = null,
         override var backgroundColor: Color,
         override var width: Int = 20,
-    ) : Element(x, y, "", hoverText, onClick, true, backgroundColor, width) {
+    ) : Element(x, y, "", hoverText, onLeftClick, null, true, backgroundColor, width) {
         override fun draw(mouseX: Int, mouseY: Int, originX: Int, originY: Int) {
             super.draw(mouseX, mouseY, originX, originY)
 
@@ -346,6 +358,8 @@ object GuiUtils {
                 Color(0xFFFFFF),
                 false
             )
+
+            runHoverEvents(mouseX, mouseY, originX, originY)
         }
     }
 
@@ -355,12 +369,15 @@ object GuiUtils {
         override var y: Float,
         override var width: Int = 16,
         override var height: Int = 16,
-        override var hoverText: List<String>? = null
+        override var hoverText: List<String>? = null,
+        override var onLeftClick: Runnable? = null,
     ) : Element(x, y, "", hoverText, null) {
         override fun draw(mouseX: Int, mouseY: Int, originX: Int, originY: Int) {
             GlStateManager.pushMatrix()
             renderItemStackOnScreen(stack, x, y, width.toFloat(), height.toFloat())
             GlStateManager.popMatrix()
+
+            runHoverEvents(mouseX, mouseY, originX, originY)
         }
     }
 
