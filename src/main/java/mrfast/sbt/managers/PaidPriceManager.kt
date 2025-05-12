@@ -44,8 +44,8 @@ object PaidPriceManager {
             val itemBeingBought = event.gui.inventorySlots.getSlot(13).stack ?: return
             val uuid = itemBeingBought.getItemUUID() ?: return
 
-            val binItem = event.gui.inventorySlots.getSlot(31).stack
-            val aucItem = event.gui.inventorySlots.getSlot(29).stack
+            val binItem = event.gui.inventorySlots.getSlot(31)?.stack ?: return
+            val aucItem = event.gui.inventorySlots.getSlot(29)?.stack ?: return
             lastViewedPrice = -1L
 
             binItem.getLore(true).forEach {
