@@ -270,7 +270,7 @@ object NetworkUtils {
 
     var NeuItems = JsonObject()
     private var NeuMobs = JsonObject()
-    private var NeuConstants = JsonObject()
+    var NeuConstants = JsonObject()
 
     fun downloadAndProcessRepo(force: Boolean = false) {
         val etagFile = ConfigManager.modDirectoryPath.resolve("repo/NEUAPI-ETAG.txt")
