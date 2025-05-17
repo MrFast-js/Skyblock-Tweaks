@@ -74,7 +74,7 @@ class AttributeUpgradeCommand : CommandBase() {
             val heldItemAttributes = ItemUtils.getHeldItem()?.getAttributes()
             val attributeNameFormatted = (attributeToUpgrade).replace("_", " ").toTitleCase()
 
-            if (heldItemAttributes == null || !heldItemAttributes.containsKey(attributeToUpgrade)) {
+            if (heldItemAttributes.isNullOrEmpty() || !heldItemAttributes.containsKey(attributeToUpgrade)) {
                 ChatUtils.sendClientMessage(
                     "§cYou must be holding an item with the attribute §e$attributeNameFormatted§c!",
                     shortPrefix = true
@@ -250,7 +250,7 @@ class AttributeUpgradeCommand : CommandBase() {
     private fun handleNoArguments() {
         val heldItemAttributes = ItemUtils.getHeldItem()?.getAttributes()
         val message = ChatComponentText("")
-        if (heldItemAttributes == null) {
+        if (heldItemAttributes.isNullOrEmpty()) {
             ChatUtils.sendClientMessage(
                 "§cYou must be holding an item with attributes to use this command!",
                 shortPrefix = true
