@@ -10,7 +10,9 @@ import mrfast.sbt.managers.DataManager
 import mrfast.sbt.utils.GuiUtils.chestName
 import mrfast.sbt.utils.ItemUtils.getSkyblockId
 import mrfast.sbt.utils.NetworkUtils
+import mrfast.sbt.utils.Utils
 import mrfast.sbt.utils.Utils.getInventory
+import mrfast.sbt.utils.Utils.matches
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -98,9 +100,21 @@ object AccessoryApi {
         return 0
     }
 
+    private val ACCESSORY_BAG_REGEX = """Accessory Bag(?: \((?:1|2)/2\))?$""".toRegex()
+    fun isAccessoryBagOpen(): Boolean {
+        val gui = Utils.mc.currentScreen
+        if (gui is GuiChest) {
+            val chestName = gui.chestName()
+            return chestName.matches(ACCESSORY_BAG_REGEX)
+        }
+        return false
+    }
+
     @SubscribeEvent
     fun onGuiDraw(event: GuiContainerBackgroundDrawnEvent) {
-        if (event.gui is GuiChest && (event.gui as GuiChest).chestName().startsWith("Accessory Bag")) {
+        if (event.gui is GuiChest) {
+            if(!isAccessoryBagOpen()) return
+
             val inv = (event.gui as GuiChest).getInventory()
 
             for (i in 0 until (event.gui as GuiChest).getInventory().sizeInventory) {

@@ -212,7 +212,7 @@ object AccessoryOverlay {
         override fun isActive(event: Event): Boolean {
             if (event !is GuiContainerBackgroundDrawnEvent || !MiscellaneousConfig.accessoryBagOverlay) return false
 
-            return (event.gui as GuiContainer).chestName().startsWith("Accessory Bag")
+            return AccessoryApi.isAccessoryBagOpen()
         }
     }
 }
