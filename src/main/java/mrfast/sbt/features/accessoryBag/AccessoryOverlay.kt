@@ -7,12 +7,14 @@ import mrfast.sbt.apis.AccessoryApi
 import mrfast.sbt.apis.ItemApi
 import mrfast.sbt.config.categories.MiscellaneousConfig
 import mrfast.sbt.customevents.GuiContainerBackgroundDrawnEvent
+import mrfast.sbt.features.auctionHouse.AuctionMenuOverlays
 import mrfast.sbt.guis.components.OutlinedRoundedRectangle
 import mrfast.sbt.managers.OverlayManager
 import mrfast.sbt.utils.ChatUtils
 import mrfast.sbt.utils.GuiUtils
 import mrfast.sbt.utils.GuiUtils.chestName
 import mrfast.sbt.utils.ItemUtils.getSkyblockId
+import mrfast.sbt.utils.Utils
 import mrfast.sbt.utils.Utils.abbreviateNumber
 import mrfast.sbt.utils.Utils.clean
 import mrfast.sbt.utils.Utils.formatNumber
@@ -29,6 +31,7 @@ object AccessoryOverlay {
     init {
         AccessoryBagOverlay()
     }
+    var onlyShowHighestLevel = false
 
     class AccessoryBagOverlay : OverlayManager.Overlay() {
         init {
@@ -40,9 +43,23 @@ object AccessoryOverlay {
 
         override fun draw(mouseX: Int, mouseY: Int, event: Event) {
             val lines = mutableListOf(
-                GuiUtils.Element(5f, 4f, "§c§lMissing Talismans", null, null),
+                GuiUtils.Element(5f, 5f, "§c§lMissing Talismans", null, null),
+                GuiUtils.IconElement(
+                    if(onlyShowHighestLevel) "§6§l✦" else "§c§l✧",
+                    7f + 116f,
+                    3f,
+                    listOf(
+                        if(onlyShowHighestLevel) "§eOnly Showing the Highest tier" else "§eShowing all tiers",
+                        "§7Click to toggle"
+                    ),
+                    {
+                        onlyShowHighestLevel = !onlyShowHighestLevel
+                    },
+                    backgroundColor = if(onlyShowHighestLevel) Color(255, 255, 85) else Color(255, 85, 85),
+                    width = 8
+                )
             )
-            val sorted = AccessoryApi.missing.sortedBy {
+            val sorted = (if(onlyShowHighestLevel) AccessoryApi.missingMax else AccessoryApi.missing).sortedBy {
                 val key = it.asString
 
                 if (ItemApi.liveAuctionData.has(key)) {
@@ -64,7 +81,7 @@ object AccessoryOverlay {
                 val element = GuiUtils.ItemStackElement(
                     itemStack,
                     (pricedItems % 8f) * 16f + 4f,
-                    (pricedItems / 8) * 16f + 14f,
+                    (pricedItems / 8) * 16f + 15f,
                     16,
                     16,
                     onLeftClick = {
@@ -89,7 +106,8 @@ object AccessoryOverlay {
                         ChatUtils.sendPlayerMessage("/viewauction $aucID")
                     }
                     element.onRightClick = Runnable {
-                        ChatUtils.sendPlayerMessage("/ahs ${data.asJsonObject.get("displayname").asString.clean()}")
+                        GuiUtils.closeGui()
+                        ChatUtils.sendPlayerMessage("/ahs ${itemData.asJsonObject.get("displayname").asString.clean()}")
                     }
 
                     hoverText.add(itemStack.displayName)
@@ -112,7 +130,8 @@ object AccessoryOverlay {
                         hoverText.add("§e§l[Click] §r§7to view recipe")
 
                         element.onLeftClick = Runnable {
-                            ChatUtils.sendPlayerMessage("/viewrecipe $it")
+                            ChatUtils.sendPlayerMessage("/viewrecipe ${it.asString}")
+                            GuiUtils.closeGui()
                         }
                         element.onRightClick = null
                     } else {
@@ -131,7 +150,7 @@ object AccessoryOverlay {
                 GuiUtils.Element(
                     5f,
                     GuiUtils.getLowestY(lines) + 5f,
-                    "§c§lSoulbound Talismans",
+                    "§c§lUnpriced Talismans",
                     null,
                     null
                 )
@@ -171,7 +190,7 @@ object AccessoryOverlay {
                     hoverText.add("§e§l[Click] §r§7to view recipe")
 
                     element.onLeftClick = Runnable {
-                        ChatUtils.sendPlayerMessage("/viewrecipe $it")
+                        ChatUtils.sendPlayerMessage("/viewrecipe ${it.asString}")
                     }
                 } else {
                     hoverText.add("§e§l[Click] §r§7to open wiki")

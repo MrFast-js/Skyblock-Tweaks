@@ -22,6 +22,7 @@ object AccessoryApi {
     private val allAccessoriesJson = DataManager.getDataDefault("AllAccessories", JsonObject()) as JsonObject
     private var playerAccessoryBagJson = JsonArray()
     var missing = JsonArray()
+    var missingMax = JsonArray()
 
     @SubscribeEvent
     fun onProfileLoad(event: ProfileLoadEvent) {
@@ -100,7 +101,7 @@ object AccessoryApi {
         return 0
     }
 
-    private val ACCESSORY_BAG_REGEX = """Accessory Bag(?: \((?:1|2)/2\))?$""".toRegex()
+    private val ACCESSORY_BAG_REGEX = """Accessory Bag(?: \(.*\/.*\))?$""".toRegex()
     fun isAccessoryBagOpen(): Boolean {
         val gui = Utils.mc.currentScreen
         if (gui is GuiChest) {
@@ -134,11 +135,11 @@ object AccessoryApi {
 
     private fun updateMissing() {
         missing = JsonArray()
+        missingMax = JsonArray()
 
         // Check if accessory is a base level
         for ((baseLevel, levels) in allAccessoriesJson.entrySet()) {
             // Check if player has a base level
-            if (playerAccessoryBagJson.contains(JsonPrimitive(baseLevel))) continue
             if (ignoredAccessories.contains(baseLevel)) continue
             if (missing.contains(JsonPrimitive(baseLevel))) continue
 
@@ -149,15 +150,25 @@ object AccessoryApi {
             for (upgrade in upgrades) {
                 if(foundUpgrade) {
                     if(!missing.contains(upgrade)) {
+                        // Add levels to max
                         missing.add(upgrade)
                     }
                 }
+                // Check if player has a tier of that upgrade
                 if (playerAccessoryBagJson.contains(upgrade)) {
                     foundUpgrade = true
                 }
             }
+            val maxTier = upgrades.lastOrNull()
+            if(maxTier != null) {
+                if(!missingMax.contains(maxTier) && !playerAccessoryBagJson.contains(maxTier)) {
+                    // Add levels to max
+                    missingMax.add(maxTier)
+                }
+            }
 
             if (!foundUpgrade) {
+                // Add base tiers
                 missing.add(JsonPrimitive(baseLevel))
             }
         }
