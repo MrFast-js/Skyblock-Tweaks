@@ -26,7 +26,8 @@ class JoinDungeonCommand : CommandBase() {
         }
         val masterMode = args[0].lowercase(Locale.getDefault()).contains("m")
         val dungeonType = (if (masterMode) "MASTER_" else "") + "CATACOMBS"
-        val floorInt = parseInt(args[0].replace("[^0-9]", ""))
+        val floor = args[0].replace("""[^0-9]""".toRegex(), "")
+        val floorInt = parseInt(floor)
 
         if (floorInt > 7) {
             ChatUtils.sendClientMessage(ChatFormatting.RED.toString() + "Invalid Floor!")
