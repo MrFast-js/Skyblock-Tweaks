@@ -79,37 +79,46 @@ object ItemApi {
         }
     }
 
-    fun getCraftCost(itemId: String): Long {
+    fun getCraftCost(
+        itemId: String,
+        visited: MutableSet<String> = mutableSetOf()
+    ): Long {
+        // If we’ve already visited this item in the current call chain, stop recursion
+        if (!visited.add(itemId)) return -1L
+
         val item = skyblockItems[itemId]?.asJsonObject ?: return -1L
         val recipe = item.get("recipe")?.asJsonObject ?: return -1L
         var cost = 0L
 
         recipe.entrySet().forEach {
-            if(it.value.asString.split(":").size <= 1) return@forEach
+            val parts = it.value.asString.split(":")
+            if (parts.size <= 1) return@forEach
 
-            val materialID = it.value.asString.split(":")[0]
-            val count = it.value.asString.split(":")[1].toInt()
+            val materialID = parts[0]
+            val count = parts[1].toIntOrNull() ?: return@forEach
             var craftingCost = -1L
 
             val itemInfo = getItemInfo(materialID)
-            if(itemInfo != null) {
+            if (itemInfo != null) {
                 if (itemInfo.has("bazaarBuy")) {
                     craftingCost = itemInfo.get("bazaarBuy").asDouble.toLong()
                 }
 
-                if(craftingCost == -1L) {
+                if (craftingCost == -1L) {
                     craftingCost = ItemUtils.getItemBasePrice(materialID, false).toLong()
                 }
-                if(craftingCost == -1L) {
-                    craftingCost = getCraftCost(materialID)
+
+                if (craftingCost == -1L) {
+                    craftingCost = getCraftCost(materialID, visited)
                 }
-            } else {
-                craftingCost = -1L
             }
+
+            if (craftingCost == -1L) return@forEach
 
             cost += (craftingCost * count)
         }
 
+        visited.remove(itemId)
         return max(-1, cost)
     }
 
