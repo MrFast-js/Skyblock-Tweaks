@@ -119,6 +119,7 @@ object ItemApi {
         }
 
         visited.remove(itemId)
+        if(cost == 0L) return -1L
         return max(-1, cost)
     }
 
