@@ -1,5 +1,8 @@
 package mrfast.sbt.utils
 
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.inventory.ContainerChest
@@ -18,11 +21,11 @@ import java.util.*
 object Utils {
     val mc: Minecraft = Minecraft.getMinecraft()
 
-    fun setTimeout(runnable: () -> Unit, delayMillis: Long) {
-        Thread {
-            Thread.sleep(delayMillis)
-            runnable()
-        }.start()
+    fun setTimeout(block: () -> Unit, delayMillis: Long) {
+        GlobalScope.launch {
+            delay(delayMillis)
+            block()
+        }
     }
 
 
