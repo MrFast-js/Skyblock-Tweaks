@@ -1,5 +1,7 @@
 package mrfast.sbt
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import mrfast.sbt.config.Config
 import mrfast.sbt.guis.ConfigGui
 import mrfast.sbt.managers.GuiManager

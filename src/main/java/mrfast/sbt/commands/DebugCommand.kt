@@ -2,6 +2,10 @@ package mrfast.sbt.commands
 
 import com.google.common.collect.Lists
 import com.mojang.realmsclient.gui.ChatFormatting
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.apis.ItemApi
 import mrfast.sbt.apis.PlayerStats
@@ -113,21 +117,29 @@ class DebugCommand : CommandBase() {
             }
 
             "refresh", "reload" -> {
-                Thread {
+                CoroutineScope(Dispatchers.Default).launch {
                     ChatUtils.sendClientMessage("§7Reconnecting to SBT Websocket..", shortPrefix = true)
                     SocketUtils.setupSocket()
-                    while (!SocketUtils.socketConnected) Thread.sleep(300)
+
+                    while (!SocketUtils.socketConnected) {
+                        delay(300)
+                    }
+
                     ChatUtils.sendClientMessage("§aConnected to SBT Websocket!", shortPrefix = true)
                     Utils.playSound("random.orb", 0.5)
 
-                    Thread.sleep(300)
+                    delay(300)
 
                     ChatUtils.sendClientMessage("§7Reloading Skyblock Item Data..", shortPrefix = true)
                     ItemApi.updateSkyblockItemData(logging = true, force = true)
-                    while (ItemApi.getSkyblockItems().entrySet().isEmpty()) Thread.sleep(300)
+
+                    while (ItemApi.getSkyblockItems().entrySet().isEmpty()) {
+                        delay(300)
+                    }
+
                     ChatUtils.sendClientMessage("§aLoaded Skyblock Item Data! §7(${ItemApi.getSkyblockItems().entrySet().size} items)", shortPrefix = true)
                     Utils.playSound("random.orb", 0.1)
-                }.start()
+                }
             }
 
             "entities" -> getMobData(tileEntities = true, mobs = true, dist)

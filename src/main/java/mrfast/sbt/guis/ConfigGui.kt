@@ -16,6 +16,7 @@ import gg.essential.elementa.state.BasicState
 import gg.essential.elementa.state.constraint
 import gg.essential.universal.UMatrixStack
 import gg.essential.vigilance.gui.settings.SelectorComponent
+import kotlinx.coroutines.*
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.config.categories.CustomizationConfig
 import mrfast.sbt.config.categories.DeveloperConfig
@@ -36,6 +37,7 @@ import net.minecraftforge.fml.client.config.GuiUtils
 import org.lwjgl.input.Keyboard
 import java.awt.Color
 import java.awt.Desktop
+import java.lang.Runnable
 import java.net.URI
 import java.util.*
 
@@ -666,6 +668,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2, drawDefaultB
     }
 
     private var floatingColorPicker: ColorPickerComponent? = null
+    private var keyListerJob: Job? = null
     private fun populateFeature(
         feature: ConfigManager.Feature,
         featureComponent: UIComponent
@@ -860,40 +863,31 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2, drawDefaultB
                     listeningForKeybind = true
                     // Set listening style, similar to minecrafts keybind system
                     buttonText.setText("§r> §e" + buttonText.getText() + "§r <")
+                    keyListerJob?.cancel()
+                    keyListerJob = CoroutineScope(Dispatchers.Default).launch {
+                        listeningForKeybind = true
 
-                    Thread {
-                        var keyPressed = false
-                        while (!keyPressed && listeningForKeybind) {
+                        while (listeningForKeybind) {
                             for (i in 0 until Keyboard.KEYBOARD_SIZE) {
                                 if (Keyboard.isKeyDown(i)) {
-                                    Utils.setTimeout({
-                                        listeningForKeybind = false
-                                    }, 100)
-
                                     val newKeyName = Keyboard.getKeyName(i)
 
-                                    // Reset if ESCAPE is pressed
-                                    if (i == 1) {
+                                    if (i == Keyboard.KEY_ESCAPE) {
                                         buttonText.setText("NONE")
+                                        delay(200)
                                         listeningForKeybind = false
                                         break
                                     }
+
                                     buttonText.setText(newKeyName)
-                                    keyPressed = true
                                     feature.field.set(SkyblockTweaks.config, i)
 
+                                    listeningForKeybind = false
                                     break
                                 }
                             }
-
-                            // Add a small delay to avoid excessive CPU usage
-                            try {
-                                Thread.sleep(100)
-                            } catch (e: InterruptedException) {
-                                e.printStackTrace()
-                            }
                         }
-                    }.start()
+                    }
                 }
 
                 resetImg.onMouseClick {

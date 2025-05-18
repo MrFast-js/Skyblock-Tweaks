@@ -2,6 +2,10 @@ package mrfast.sbt.commands
 
 import com.google.common.collect.Lists
 import com.google.gson.JsonObject
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.apis.ItemApi
 import mrfast.sbt.utils.ChatUtils
@@ -147,10 +151,9 @@ class AttributeUpgradeCommand : CommandBase() {
             val lowBound =
                 (2.0).pow(targetTier - 1) - (2.0).pow(currentTier - 1) // Low bound is most efficient weighted path
 
-            Thread {
-                val perfectPath1 = findMostEfficientPathDP(sortedList, lowBound) // Using the held items current tier
-                val perfectPath2 =
-                    findMostEfficientPathDP(sortedList, (2.0).pow(targetTier - 1)) // 'Skipping' the best starting tier
+            CoroutineScope(Dispatchers.IO).launch {
+                val perfectPath1 = findMostEfficientPathDP(sortedList, lowBound)
+                val perfectPath2 = findMostEfficientPathDP(sortedList, (2.0).pow(targetTier - 1))
 
                 val perfectPath = when {
                     perfectPath1 != null && perfectPath2 != null ->
@@ -162,40 +165,41 @@ class AttributeUpgradeCommand : CommandBase() {
                 }
 
                 if (perfectPath == null) {
+                    withContext(Dispatchers.Default) {
+                        ChatUtils.sendClientMessage(
+                            "§cUnable to find a path for the given tier! Not enough auctions!",
+                            shortPrefix = true
+                        )
+                    }
+                    return@launch
+                }
+
+                withContext(Dispatchers.Default) {
+                    perfectPath.forEach {
+                        val price = it.price
+                        val tier = it.tier
+                        val auctionID = it.aucID
+
+                        if (auctionID != null) {
+                            val itemDisplayName = ItemApi.getItemInfo(it.itemID!!)?.get("displayname")?.asString ?: "§fAttribute Shard"
+                            val message = ChatComponentText("$itemDisplayName §d| §b$attributeNameFormatted $tier §d| §a${price.abbreviateNumber()}")
+                            message.chatStyle.chatClickEvent = ClickEvent(ClickEvent.Action.RUN_COMMAND, "/viewauction $auctionID")
+                            message.chatStyle.setChatHoverEvent(
+                                HoverEvent(
+                                    HoverEvent.Action.SHOW_TEXT,
+                                    ChatComponentText("§eClick to view auction")
+                                )
+                            )
+                            ChatUtils.sendClientMessage(message, shortPrefix = true)
+                        }
+                    }
+
                     ChatUtils.sendClientMessage(
-                        "§cUnable to find a path for the given tier! Not enough auctions!",
+                        "§a§lTotal Price: ${perfectPath.sumOf { it.price }.abbreviateNumber()}",
                         shortPrefix = true
                     )
-                    return@Thread
                 }
-
-                perfectPath.forEach {
-                    val price = it.price
-                    val tier = it.tier
-                    val auctionID = it.aucID
-
-                    if (auctionID != null) {
-                        val itemDisplayName =
-                            ItemApi.getItemInfo(it.itemID!!)?.get("displayname")?.asString ?: "§fAttribute Shard"
-                        val message =
-                            ChatComponentText("$itemDisplayName §d| §b${attributeNameFormatted} $tier §d| §a${price.abbreviateNumber()}")
-                        message.chatStyle.chatClickEvent =
-                            ClickEvent(ClickEvent.Action.RUN_COMMAND, "/viewauction $auctionID")
-
-                        message.chatStyle.setChatHoverEvent(
-                            HoverEvent(
-                                HoverEvent.Action.SHOW_TEXT,
-                                ChatComponentText("§eClick to view auction")
-                            )
-                        )
-                        ChatUtils.sendClientMessage(message, shortPrefix = true)
-                    }
-                }
-                ChatUtils.sendClientMessage(
-                    "§a§lTotal Price: ${(perfectPath.sumOf { it.price }).abbreviateNumber()}",
-                    shortPrefix = true
-                )
-            }.start()
+            }
         }
     }
 

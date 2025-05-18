@@ -1,6 +1,7 @@
 package mrfast.sbt.apis
 
 import com.google.gson.JsonObject
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.config.categories.CustomizationConfig
@@ -143,12 +144,12 @@ object ItemApi {
                 val nearby = Utils.mc.theWorld.playerEntities.size
 
                 if(nearby == 0) {
-                    Thread.sleep(5_000)
+                    delay(5_000)
                     updateSkyblockItemData(logging, force)
                     return@runBlocking
                 }
             } catch (e: Exception) {
-                Thread.sleep(10_000)
+                delay(10_000)
                 updateSkyblockItemData(logging, force)
                 return@runBlocking
             }

@@ -4,7 +4,7 @@ import com.google.gson.JsonObject
 import gg.essential.elementa.ElementaVersion
 import gg.essential.elementa.WindowScreen
 import gg.essential.universal.UMatrixStack
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import mrfast.sbt.apis.ItemApi
 import mrfast.sbt.managers.LocationManager
 import mrfast.sbt.managers.PartyManager
@@ -45,44 +45,51 @@ class DungeonPartyGui : WindowScreen(ElementaVersion.V2) {
 
     override fun onScreenClose() {
         super.onScreenClose()
-        partyThread.interrupt()
+        partyJob?.cancel()
     }
 
     init {
         addPartyPlayers()
     }
 
-    private lateinit var partyThread: Thread
+    private var partyJob: Job? = null
     private fun addPartyPlayers() {
-        partyThread = Thread {
-            while (true) {
-                if (PartyManager.partyMembers.isNotEmpty() && (selectedPlayer == "" || !partyMemberApiData.containsKey(
-                        selectedPlayer
-                    ))
+        partyJob?.cancel()
+        partyJob = CoroutineScope(Dispatchers.IO).launch {
+            while (isActive) {
+                if (PartyManager.partyMembers.isNotEmpty() &&
+                    (selectedPlayer == "" || !partyMemberApiData.containsKey(selectedPlayer))
                 ) {
-                    selectedPlayer = PartyManager.partyMembers.keys.find { it != Utils.mc.thePlayer.name }!!
+                    selectedPlayer = PartyManager.partyMembers.keys.find { it != Utils.mc.thePlayer.name } ?: ""
                 }
-                PartyManager.partyMembers.forEach {
-                    if (it.key == Utils.mc.thePlayer.name || checkedPlayers.contains(it.key)) return@forEach
-                    checkedPlayers.add(it.key)
-                    getApiData(it.key)
+
+                for ((name, _) in PartyManager.partyMembers) {
+                    if (name == Utils.mc.thePlayer.name || checkedPlayers.contains(name)) continue
+
+                    checkedPlayers.add(name)
+                    getApiData(name)
+
                     if (NetworkUtils.tempApiAuthKey == "") {
-                        Thread.sleep(500)
+                        delay(500)
                     }
                 }
-                partyMemberApiData =
-                    partyMemberApiData.filterKeys { PartyManager.partyMembers.containsKey(it) }.toMutableMap()
-                Thread.sleep(200)
+
+                partyMemberApiData = partyMemberApiData
+                    .filterKeys { PartyManager.partyMembers.containsKey(it) }
+                    .toMutableMap()
+
+                delay(200)
+
                 if (PartyManager.partyMembers.size <= 1) {
                     ChatUtils.sendClientMessage(
                         "§cYou must be in a party with players to use the Dungeon Party Gui!",
                         prefix = true
                     )
                     GuiUtils.closeGui()
+                    break
                 }
             }
         }
-        partyThread.start()
     }
 
     private var lastMouseDown = false
