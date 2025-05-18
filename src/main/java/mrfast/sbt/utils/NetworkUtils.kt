@@ -3,6 +3,7 @@ package mrfast.sbt.utils
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
+import com.google.gson.stream.JsonReader
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import moe.nea.libautoupdate.UpdateUtils
@@ -19,6 +20,7 @@ import org.apache.http.impl.client.CloseableHttpClient
 import org.apache.http.impl.client.HttpClients
 import java.io.BufferedReader
 import java.io.InputStreamReader
+import java.io.StringReader
 import java.net.HttpURLConnection
 import java.net.URL
 import java.nio.charset.StandardCharsets
@@ -146,7 +148,13 @@ object NetworkUtils {
 
             response.use {
                 val responseBody = response.body.string()
-                val json = gson.fromJson(responseBody, JsonObject::class.java)
+                val json = try {
+                    val reader = JsonReader(StringReader(responseBody))
+                    reader.isLenient = true
+                    gson.fromJson(reader, JsonObject::class.java)
+                } catch (e: Exception) {
+                    JsonObject()
+                }
 
                 if (usingSBTAPI) {
                     if (json.has("auth-key")) {
