@@ -10,6 +10,7 @@ import mrfast.sbt.managers.LocationManager
 import mrfast.sbt.managers.PartyManager
 import mrfast.sbt.utils.*
 import mrfast.sbt.utils.ItemUtils.getLore
+import mrfast.sbt.utils.LevelingUtils.roundToTwoDecimalPlaces
 import mrfast.sbt.utils.Utils.abbreviateNumber
 import mrfast.sbt.utils.Utils.clean
 import mrfast.sbt.utils.Utils.formatNumber
@@ -56,38 +57,35 @@ class DungeonPartyGui : WindowScreen(ElementaVersion.V2) {
     private fun addPartyPlayers() {
         partyJob?.cancel()
         partyJob = CoroutineScope(Dispatchers.IO).launch {
-            while (isActive) {
-                if (PartyManager.partyMembers.isNotEmpty() &&
-                    (selectedPlayer == "" || !partyMemberApiData.containsKey(selectedPlayer))
-                ) {
-                    selectedPlayer = PartyManager.partyMembers.keys.find { it != Utils.mc.thePlayer.name } ?: ""
+            if (PartyManager.partyMembers.isNotEmpty() &&
+                (selectedPlayer == "" || !partyMemberApiData.containsKey(selectedPlayer))
+            ) {
+                selectedPlayer = PartyManager.partyMembers.keys.find { it != Utils.mc.thePlayer.name } ?: ""
+            }
+
+            for ((name, _) in PartyManager.partyMembers) {
+                if (name == Utils.mc.thePlayer.name || checkedPlayers.contains(name)) continue
+
+                checkedPlayers.add(name)
+                getApiData(name)
+
+                if (NetworkUtils.tempApiAuthKey == "") {
+                    delay(500)
                 }
+            }
 
-                for ((name, _) in PartyManager.partyMembers) {
-                    if (name == Utils.mc.thePlayer.name || checkedPlayers.contains(name)) continue
+            partyMemberApiData = partyMemberApiData
+                .filterKeys { PartyManager.partyMembers.containsKey(it) }
+                .toMutableMap()
 
-                    checkedPlayers.add(name)
-                    getApiData(name)
+            delay(200)
 
-                    if (NetworkUtils.tempApiAuthKey == "") {
-                        delay(500)
-                    }
-                }
-
-                partyMemberApiData = partyMemberApiData
-                    .filterKeys { PartyManager.partyMembers.containsKey(it) }
-                    .toMutableMap()
-
-                delay(200)
-
-                if (PartyManager.partyMembers.size <= 1) {
-                    ChatUtils.sendClientMessage(
-                        "§cYou must be in a party with players to use the Dungeon Party Gui!",
-                        prefix = true
-                    )
-                    GuiUtils.closeGui()
-                    break
-                }
+            if (PartyManager.partyMembers.size <= 1) {
+                ChatUtils.sendClientMessage(
+                    "§cYou must be in a party with players to use the Dungeon Party Gui!",
+                    prefix = true
+                )
+                GuiUtils.closeGui()
             }
         }
     }
@@ -98,6 +96,15 @@ class DungeonPartyGui : WindowScreen(ElementaVersion.V2) {
 
     override fun onDrawScreen(matrixStack: UMatrixStack, mouseX: Int, mouseY: Int, partialTicks: Float) {
         super.onDrawScreen(matrixStack, mouseX, mouseY, partialTicks)
+
+        if (PartyManager.partyMembers.size <= 1) {
+            ChatUtils.sendClientMessage(
+                "§cYou must be in a party with players to use the Dungeon Party Gui!",
+                prefix = true
+            )
+            GuiUtils.closeGui()
+        }
+
         val res = ScaledResolution(Utils.mc)
 
         this.mouseX = mouseX.toDouble()
@@ -604,31 +611,41 @@ class DungeonPartyGui : WindowScreen(ElementaVersion.V2) {
         val secrets = data.getAsJsonObject("dungeons")
             ?.get("secrets")
             ?.asInt ?: -1
+        val dungeonType = dungeonsData["dungeon_types"].asJsonObject["catacombs"]
+        val floorCompletions = dungeonType.asJsonObject["tier_completions"]?.asJsonObject?.get(selectedFloor) ?: 0
+        val totalFloorCompletions = dungeonType.asJsonObject["tier_completions"]?.asJsonObject?.entrySet()
+            ?.sumOf { it.value.asInt } ?: 0
+
         val cataXp = dungeonsData["dungeon_types"].asJsonObject["catacombs"].asJsonObject["experience"]?.asDouble ?: 0.0
         val cataLvl = LevelingUtils.calculateDungeonsLevel(cataXp)
         val catacombsWatcherKills = data["player_stats"].getAsJsonObject()["kills"].asJsonObject["watcher_summon_undead"]?.asInt ?: 0
 
         fontRendererObj.drawString("§e§lPlayer Stats", 0f, 0f, 0xFFFFFF, true)
-        fontRendererObj.drawString("§6Catacombs: $cataLvl", 0f, 10f, 0xFFFFFF, true)
+        fontRendererObj.drawString("§6Catacombs: $cataLvl", 0f, 9f, 0xFFFFFF, true)
         fontRendererObj.drawString(
             "${getClassColor(selectedClass)}${selectedClass.toTitleCase()}: $classLvl",
             0f,
-            20f,
+            18f,
             0xFFFFFF,
             true
         )
-        fontRendererObj.drawString("§7Secrets: ${secrets.formatNumber()}", 0f, 30f, 0xFFFFFF, true)
+        fontRendererObj.drawString("§7Secrets: ${secrets.formatNumber()}", 0f, 27f, 0xFFFFFF, true)
         fontRendererObj.drawString(
             "§cWatcher Kills: ${(catacombsWatcherKills).formatNumber()}",
             0f,
-            40f,
+            36f,
+            0xFFFFFF,
+            true
+        )
+        fontRendererObj.drawString(
+            "§bSecrets/Run: ${(secrets.toDouble()/totalFloorCompletions).roundToTwoDecimalPlaces()}",
+            0f,
+            45f,
             0xFFFFFF,
             true
         )
         GlStateManager.translate(-(guiLeft + 115f), -(guiTop + 18f), 0f)
 
-        val dungeonType = dungeonsData["dungeon_types"].asJsonObject["catacombs"]
-        val floorCompletions = dungeonType.asJsonObject["tier_completions"]?.asJsonObject?.get(selectedFloor) ?: 0
         val floorBestScore = dungeonType.asJsonObject["best_score"]?.asJsonObject?.get(selectedFloor) ?: 0
         val floorBestTime = dungeonType.asJsonObject["fastest_time"]?.asJsonObject?.get(selectedFloor)?.asLong ?: -1L
         val floorBestSTime = dungeonType.asJsonObject["fastest_time_s"]?.asJsonObject?.get(selectedFloor)?.asLong ?: -1L
