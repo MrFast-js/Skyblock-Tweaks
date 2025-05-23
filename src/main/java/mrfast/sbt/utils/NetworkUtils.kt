@@ -40,7 +40,7 @@ object NetworkUtils {
     private const val zipUrl = "https://github.com/NotEnoughUpdates/NotEnoughUpdates-Repo/archive/master.zip"
     var tempApiAuthKey = ""
 
-    var okHttpClient = OkHttpClient.Builder()
+    private var okHttpClient = OkHttpClient.Builder()
         .callTimeout(10, TimeUnit.SECONDS)
         .connectTimeout(5, TimeUnit.SECONDS)
         .readTimeout(10, TimeUnit.SECONDS)
@@ -144,43 +144,50 @@ object NetworkUtils {
 
         return withContext(Dispatchers.IO) {
             val call = okHttpClient.newCall(request)
-            val response = call.execute()
+            try {
+                val response = call.execute()
 
-            response.use {
-                val responseBody = response.body.string()
-                val json = try {
-                    val reader = JsonReader(StringReader(responseBody))
-                    reader.isLenient = true
-                    gson.fromJson(reader, JsonObject::class.java)
-                } catch (e: Exception) {
-                    JsonObject()
-                }
-
-                if (usingSBTAPI) {
-                    if (json.has("auth-key")) {
-                        tempApiAuthKey = json.get("auth-key").asString
-                        if (DeveloperConfig.logNetworkRequests) {
-                            println("GOT SBT AUTH KEY $tempApiAuthKey")
-                        }
-                        return@withContext apiRequestAndParse(modifiedUrlString, headers, caching, useProxy)
+                response.use {
+                    val responseBody = response.body.string()
+                    val json = try {
+                        val reader = JsonReader(StringReader(responseBody))
+                        reader.isLenient = true
+                        gson.fromJson(reader, JsonObject::class.java)
+                    } catch (e: Exception) {
+                        JsonObject()
                     }
-                    if (it.code != 200) {
-                        if (DeveloperConfig.showServerErrors && player != null) {
-                            ChatUtils.sendClientMessage(
-                                "§cServer Error: ${json.get("cause").asString} §e§o${json.get("err_code")} $modifiedUrlString",
-                                true
-                            )
+
+                    if (usingSBTAPI) {
+                        if (json.has("auth-key")) {
+                            tempApiAuthKey = json.get("auth-key").asString
+                            if (DeveloperConfig.logNetworkRequests) {
+                                println("GOT SBT AUTH KEY $tempApiAuthKey")
+                            }
+                            return@withContext apiRequestAndParse(modifiedUrlString, headers, caching, useProxy)
                         }
-                        return@withContext JsonObject()
+                        if (it.code != 200) {
+                            if (DeveloperConfig.showServerErrors && player != null) {
+                                ChatUtils.sendClientMessage(
+                                    "§cServer Error: ${json.get("cause").asString} §e§o${json.get("err_code")} $modifiedUrlString",
+                                    true
+                                )
+                            }
+                            return@withContext JsonObject()
+                        }
                     }
-                }
 
-                if(caching) {
-                    val cache = CacheObject(modifiedUrlString, json)
-                    jsonCache[modifiedUrlString] = cache
-                }
+                    if (caching) {
+                        val cache = CacheObject(modifiedUrlString, json)
+                        jsonCache[modifiedUrlString] = cache
+                    }
 
-                return@withContext json
+                    return@withContext json
+                }
+            } catch (e: SSLHandshakeException) {
+                if(usingSBTAPI) {
+                    ChatUtils.sendPlayerMessage("§cSSL Handshake Exception with SBT API! Contact MrFast on Discord!")
+                }
+                return@withContext JsonObject()
             }
         }
 
