@@ -187,6 +187,7 @@ object NetworkUtils {
                 if(usingSBTAPI) {
                     ChatUtils.sendPlayerMessage("§cSSL Handshake Exception with SBT API! Contact MrFast on Discord!")
                 }
+                e.printStackTrace()
                 return@withContext JsonObject()
             }
         }
