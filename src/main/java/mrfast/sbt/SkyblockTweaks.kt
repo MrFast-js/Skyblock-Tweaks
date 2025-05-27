@@ -31,15 +31,20 @@ class SkyblockTweaks {
         val config = Config()
     }
 
-
     @Mod.EventHandler
     fun preInit(event: FMLPreInitializationEvent?) {
         config.loadConfig()
     }
 
+    /**
+     * Used to mark features/objects that want to receive events, by registering them to the EVENT_BUS
+     */
     @Target(AnnotationTarget.CLASS)
     annotation class EventComponent
 
+    /**
+     * Used to mark commands that want to be registered as commands
+     */
     @Target(AnnotationTarget.CLASS)
     annotation class CommandComponent
 
@@ -55,7 +60,7 @@ class SkyblockTweaks {
             try {
                 MinecraftForge.EVENT_BUS.register(it.kotlin.objectInstance)
             } catch (_: NullPointerException) {
-                throw Error("Failed to register event component: ${it.simpleName} - Make sure it's an object not a class")
+                throw Error("Failed to register event component: ${it.simpleName} - Make sure it's an object not a class!")
             }
         }
 
@@ -63,7 +68,7 @@ class SkyblockTweaks {
         val commandsToRegister = reflections.getTypesAnnotatedWith(CommandComponent::class.java)
         commandsToRegister.forEach { ClientCommandHandler.instance.registerCommand(it.kotlin.createInstance() as ICommand?) }
 
-        // Checks mod folder for version of Skyblock Tweaks your using
+        // Checks loaded mods for version of Skyblock Tweaks your using
         MOD_VERSION = Loader.instance().modList.find { it.modId == MOD_ID }!!.displayVersion
     }
 
@@ -73,14 +78,6 @@ class SkyblockTweaks {
         config.saveConfig()
         GuiManager.loadGuiElements()
         GuiManager.saveGuiElements()
-    }
-
-    // Stop the ESC key from closing config when keybind listening
-    @SubscribeEvent
-    fun onGuiKeyEvent(event: KeyboardInputEvent.Pre) {
-        if (ConfigGui.listeningForKeybind && Keyboard.getEventKey() == Keyboard.KEY_ESCAPE) {
-            event.setCanceled(true)
-        }
     }
 
     // Sends custom event for the world loading, only once, as WorldEvent.Load is called twice

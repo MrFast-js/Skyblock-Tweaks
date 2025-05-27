@@ -3,12 +3,15 @@ package mrfast.sbt.managers
 import com.google.gson.GsonBuilder
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.config.categories.CustomizationConfig
+import mrfast.sbt.guis.ConfigGui
 import mrfast.sbt.guis.GuiEditor
 import mrfast.sbt.utils.Utils
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
+import net.minecraftforge.client.event.GuiScreenEvent
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import org.lwjgl.input.Keyboard
 import java.io.FileReader
 import java.io.FileWriter
 
@@ -40,6 +43,14 @@ object GuiManager {
                     GlStateManager.popMatrix()
                 }
             }
+        }
+    }
+
+    // Stop the ESC key from closing config when keybind listening
+    @SubscribeEvent
+    fun onGuiKeyEvent(event: GuiScreenEvent.KeyboardInputEvent.Pre) {
+        if (ConfigGui.listeningForKeybind && Keyboard.getEventKey() == Keyboard.KEY_ESCAPE) {
+            event.setCanceled(true)
         }
     }
 

@@ -191,24 +191,6 @@ object NetworkUtils {
                 return@withContext JsonObject()
             }
         }
-
-//        try {
-//            val request = HttpGet(URL(modifiedUrlString).toURI())
-//            request.protocolVersion = HttpVersion.HTTP_1_1
-//
-//
-//
-//        } catch (ex: SSLHandshakeException) {
-//            ex.printStackTrace()
-//            if (DeveloperConfig.showServerErrors && player != null) {
-//                player.addChatMessage(ChatComponentText("§cSSL Handshake Exception! §cThis API request has been blocked by your network! §e§o$modifiedUrlString"))
-//            }
-//        } catch (ex: Exception) {
-//            if (DeveloperConfig.showServerErrors && player != null) {
-//                player.addChatMessage(ChatComponentText("§cEncountered Exception when connecting to §e§o$modifiedUrlString"))
-//            }
-//            ex.printStackTrace()
-//        }
     }
 
     // Currently untested
