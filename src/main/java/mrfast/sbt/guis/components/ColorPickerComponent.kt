@@ -8,6 +8,7 @@ import gg.essential.elementa.constraints.RelativeConstraint
 import gg.essential.elementa.dsl.*
 import gg.essential.elementa.effects.OutlineEffect
 import gg.essential.elementa.state.constraint
+import gg.essential.elementa.utils.withAlpha
 import gg.essential.universal.UGraphics
 import gg.essential.universal.UMatrixStack
 import gg.essential.universal.USound
@@ -52,12 +53,15 @@ class ColorPickerComponent(var customColor: CustomColor, colorDisplay: UIBlock) 
 
         colorPicker!!.onValueChange {
             if(it.chroma) {
-                it.colorState = GuiUtils.rainbowColor
+                it.colorState.set(GuiUtils.rainbowColor.get().withAlpha(it.colorState.get().alpha))
             }
             this.chroma = it.chroma
 
             box.borderColor = it.colorState.constraint
             colorDisplay.setColor(it.colorState.constraint)
+            if(it.chroma) {
+                colorDisplay.setColor(GuiUtils.rainbowColor.constraint)
+            }
             changeValue(it)
         }
     }
@@ -152,6 +156,7 @@ class ColorPicker(var customColor: CustomColor) : UIContainer() {
             USound.playButtonPress()
             draggingHue = true
             currentHue = (event.relativeY - 1f) / huePickerLine.getHeight()
+            customColor.chroma = false
             updateHueIndicator()
         }.onMouseDrag { _, mouseY, _ ->
             if (!draggingHue) return@onMouseDrag
@@ -207,6 +212,7 @@ class ColorPicker(var customColor: CustomColor) : UIContainer() {
 
         bigPickerBox.onLeftClick { event ->
             USound.playButtonPress()
+            customColor.chroma = false
             draggingPicker = true
             currentSaturation = event.relativeX / bigPickerBox.getWidth()
             currentBrightness = 1f - (event.relativeY / bigPickerBox.getHeight())
@@ -246,9 +252,8 @@ class ColorPicker(var customColor: CustomColor) : UIContainer() {
 
     private fun recalculateColor() {
         val color = Color(Color.HSBtoRGB(currentHue, currentSaturation, currentBrightness), true)
-        val alphaColor = Color(color.red, color.green, color.blue, (currentAlpha * 255).roundToInt())
+        val alphaColor = Color(color.red, color.green, color.blue, (kotlin.math.min(255f, currentAlpha * 255)).roundToInt())
 
-        customColor.chroma = false
         customColor.set(alphaColor)
         onValueChange(customColor)
     }

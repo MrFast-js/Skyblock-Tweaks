@@ -720,8 +720,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2, drawDefaultB
 
             }
             if (feature.type == ConfigType.COLOR) {
-                val customColor =
-                    if (feature.value is Color) CustomColor(feature.value as Color) else (feature.value as CustomColor)
+                val customColor = if (feature.value is Color) CustomColor(feature.value as Color) else (feature.value as CustomColor)
 
                 val colorDisplay = UIBlock(customColor.colorState).constrain {
                     width = 28.pixels
@@ -729,6 +728,10 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2, drawDefaultB
                     y = CenterConstraint()
                     x = 10.pixels(true)
                 } childOf featureComponent effect OutlineEffect(Color.YELLOW, 1f)
+
+                if(customColor.chroma) {
+                    colorDisplay.setColor(mrfast.sbt.utils.GuiUtils.rainbowColor.constraint)
+                }
 
                 val colorPicker = ColorPickerComponent(customColor, colorDisplay).constrain {
                     x = 10.pixels(true)
@@ -780,22 +783,24 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2, drawDefaultB
                     feature.field.set(SkyblockTweaks.config, defaultValue)
                     if (defaultValue is Color) {
                         colorDisplay.setColor(defaultValue)
+                        customColor.chroma = false
+                        colorPicker.chroma = false
+                        colorPicker.customColor.chroma = false
                         colorPicker.setPickerColor(defaultValue)
                         customColor.colorState.set(defaultValue)
                     }
                     if (defaultValue is CustomColor) {
                         customColor.colorState.set(defaultValue.initialColor)
+                        customColor.chroma = false
+                        colorPicker.chroma = false
+                        colorPicker.customColor.chroma = false
                         colorDisplay.setColor(defaultValue.initialColor)
                         colorPicker.setPickerColor(defaultValue.initialColor)
                     }
                 }
+
                 colorPicker.onValueChange { value: Any? ->
-                    if (colorPicker.chroma) {
-                        colorDisplay.setColor(mrfast.sbt.utils.GuiUtils.rainbowColor.constraint)
-                    } else {
-                        colorDisplay.setColor((value as CustomColor).get())
-                    }
-                    feature.field.set(SkyblockTweaks.config, (value as CustomColor))
+                    feature.field.set(SkyblockTweaks.config, value)
                 }
 
                 ignoredHeights.addAll(mutableListOf(colorDisplay, resetImg, colorPicker))

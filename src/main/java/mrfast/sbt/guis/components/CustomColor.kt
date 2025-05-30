@@ -1,11 +1,9 @@
 package mrfast.sbt.guis.components
 
 import gg.essential.elementa.state.BasicState
-import gg.essential.elementa.state.constraint
+import gg.essential.elementa.utils.withAlpha
 import mrfast.sbt.utils.GuiUtils
 import java.awt.Color
-import java.util.*
-import kotlin.math.sin
 
 class CustomColor(var r: Int, var g: Int, var b: Int, var a: Int, var chroma: Boolean = false) {
     @Transient
@@ -28,10 +26,13 @@ class CustomColor(var r: Int, var g: Int, var b: Int, var a: Int, var chroma: Bo
     }
 
     fun get(): Color {
+        val rainbow = BasicState(GuiUtils.rainbowColor.get().withAlpha(a))
         if (chroma) {
-            colorState = GuiUtils.rainbowColor
+            colorState.set(rainbow.get())
         } else {
-            if (colorState == GuiUtils.rainbowColor) colorState = BasicState(Color(r, g, b, a))
+            if (colorState == rainbow) {
+                colorState.set(Color(r, g, b, a))
+            }
         }
         return colorState.get()
     }
@@ -69,9 +70,10 @@ class CustomColor(var r: Int, var g: Int, var b: Int, var a: Int, var chroma: Bo
         updateRGB()
     }
 
-    fun updateRGB() {
+    private fun updateRGB() {
         this.r = colorState.get().red
         this.g = colorState.get().green
         this.b = colorState.get().blue
+        this.a = colorState.get().alpha
     }
 }
