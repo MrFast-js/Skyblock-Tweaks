@@ -7,6 +7,7 @@ import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.RenderGlobal
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
+import net.minecraft.entity.Entity
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
@@ -65,14 +66,27 @@ object RenderUtils {
 
         GlStateManager.popMatrix()
     }
-    fun draw3DString(
-        text: String,
-        worldPos: BlockPos,
-        partialTicks: Float,
-        depth: Boolean? = false,
-        shadow: Boolean? = true
-    ) {
-        draw3DString(text, Vec3(worldPos).addVector(.5, 0.5, 0.5), partialTicks, depth, shadow)
+
+    fun drawLineToEntity(entity: Entity, thickness: Int, color: Color, partialTicks: Float) {
+        if (!mc.thePlayer.canEntityBeSeen(entity)) return
+
+        val skullPos = entity.positionVector.add(Vec3(0.0, entity.eyeHeight.toDouble(), 0.0))
+        drawLineToPos(skullPos, thickness, color, partialTicks)
+    }
+
+    fun drawLineToPos(pos: Vec3, thickness: Int, color: Color, partialTicks: Float) {
+        val playerPos = mc.thePlayer.getPositionEyes(partialTicks)
+        val toMob = pos.subtract(playerPos).normalize()
+        val lookVec = mc.thePlayer.getLook(partialTicks).normalize()
+        val dot = toMob.dotProduct(lookVec)
+
+        if (dot < 0.5) return // Only draw if the player has the target in view
+
+        GlStateManager.pushMatrix()
+        GlStateManager.disableDepth()
+        drawLine(playerPos, pos, thickness, color, partialTicks)
+        GlStateManager.enableDepth()
+        GlStateManager.popMatrix()
     }
 
     fun drawLine(from: Vec3, to: Vec3, thickness: Int, color: Color, partialTicks: Float) {

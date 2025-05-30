@@ -52,7 +52,10 @@ object OutlineUtils {
         shouldCancelHurt: Boolean = true
     ) {
         if(event.entity is EntityArmorStand || event.entity.isInvisible) return
+        if(!mc.thePlayer.canEntityBeSeen(event.entity)) return
+
         if (shouldCancelHurt) event.entity.hurtTime = 0
+
         val fancyGraphics = mc.gameSettings.fancyGraphics
         val gamma = mc.gameSettings.gammaSetting
         mc.gameSettings.fancyGraphics = false

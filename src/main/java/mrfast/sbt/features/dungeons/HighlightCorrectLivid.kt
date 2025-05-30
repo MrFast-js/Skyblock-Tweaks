@@ -72,17 +72,12 @@ object HighlightCorrectLivid {
         if (!LocationManager.inDungeons || LocationManager.dungeonFloor != 5 || !highlightCorrectLivid || !highlightCorrectLividLine) return
 
         if (lividEntity != null && lividEntity!!.isEntityAlive && Utils.mc.thePlayer.canEntityBeSeen(lividEntity)) {
-            val skullPos = lividEntity!!.positionVector.add(Vec3(0.0, lividEntity!!.eyeHeight.toDouble(), 0.0))
-            val playerPos = Utils.mc.thePlayer.getPositionEyes(event.partialTicks)
-            GlStateManager.disableDepth()
-            RenderUtils.drawLine(
-                playerPos,
-                skullPos,
+            RenderUtils.drawLineToEntity(
+                lividEntity!!,
                 2,
                 highlightCorrectLividColor.get(),
                 event.partialTicks
             )
-            GlStateManager.enableDepth()
         }
     }
 }
