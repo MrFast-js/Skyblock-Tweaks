@@ -206,6 +206,46 @@ object MiscellaneousConfig : Config() {
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
+        name = "Beastiary Mob Highlight",
+        description = "Highlights selected mobs in the world, §a§lMiddle Click§e on a mob to highlight! §cThis does not render through walls!",
+        category = "Miscellaneous",
+        subcategory = "Beastiary",
+        isParent = true
+    )
+    var beastiaryMobHighlight = false
+
+    @ConfigProperty(
+        type = ConfigType.COLOR,
+        name = "Highlight Color",
+        description = "",
+        category = "Miscellaneous",
+        subcategory = "Beastiary",
+        parentName = "Beastiary Mob Highlight"
+    )
+    var beastiaryMobHighlightColor = CustomColor(Color.RED)
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Draw Lines to Mobs",
+        description = "",
+        category = "Miscellaneous",
+        subcategory = "Beastiary",
+        parentName = "Beastiary Mob Highlight"
+    )
+    var beastiaryMobHighlightTracer = false
+
+    @ConfigProperty(
+        type = ConfigType.COLOR,
+        name = "Line Color",
+        description = "",
+        category = "Miscellaneous",
+        subcategory = "Beastiary",
+        parentName = "Beastiary Mob Highlight"
+    )
+    var beastiaryMobHighlightLineColor = CustomColor(255, 0, 0, 100)
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
         name = "Hotspot Circle Highlight",
         description = "Highlights the area of the hotspot, aswell as when the bobber is in the radius",
         category = "Miscellaneous",
