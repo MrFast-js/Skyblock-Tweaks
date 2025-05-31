@@ -507,7 +507,7 @@ object ItemUtils {
         return null
     }
 
-    private fun getPriceMatch(stack: ItemStack): Pair<Long, Double>? {
+    fun getPriceMatch(stack: ItemStack): Pair<Long, Double>? {
         if (stack.getSkyblockId() == null) return null
         return getPriceMatch(stack.getDataString(), stack.getSkyblockId()!!)
     }
