@@ -70,7 +70,7 @@ object Utils {
     }
 
     fun Number.formatNumber(): String {
-        return String.format("%,.0f", this.toDouble())
+        return "%,.0f".format(Locale.US, this.toDouble())
     }
 
     fun Number.abbreviateNumber(): String {
@@ -78,21 +78,21 @@ object Utils {
         return when {
             num <= -1_000_000_000_000 || num >= 1_000_000_000_000 -> {
                 val value = num / 1_000_000_000_000
-                if (value % 1.0 == 0.0) "${value.toInt()}T" else String.format("%.1fT", value)
+                if (value % 1.0 == 0.0) "${value.toInt()}T" else "%.1fT".format(Locale.US, value)
             }
             num <= -1_000_000_000 || num >= 1_000_000_000 -> {
                 val value = num / 1_000_000_000
-                if (value % 1.0 == 0.0) "${value.toInt()}B" else String.format("%.1fB", value)
+                if (value % 1.0 == 0.0) "${value.toInt()}B" else "%.1fB".format(Locale.US, value)
             }
             num <= -1_000_000 || num >= 1_000_000 -> {
                 val value = num / 1_000_000
-                if (value % 1.0 == 0.0) "${value.toInt()}M" else String.format("%.1fM", value)
+                if (value % 1.0 == 0.0) "${value.toInt()}M" else "%.1fM".format(Locale.US, value)
             }
             num <= -1_000 || num >= 1_000 -> {
                 val value = num / 1_000
-                if (value % 1.0 == 0.0) "${value.toInt()}k" else String.format("%.1fk", value)
+                if (value % 1.0 == 0.0) "${value.toInt()}k" else "%.1fk".format(Locale.US, value)
             }
-            else -> String.format("%.0f", num)
+            else -> "%.0f".format(Locale.US, num)
         }
     }
 
@@ -112,7 +112,11 @@ object Utils {
             }
         }
 
-        return "${if (days > 0) "${days}d " else ""}${if (hours > 0) "${hours}h " else ""}${if (minutes > 0) "${minutes}m " else ""}${if(remainingSeconds>0) "${remainingSeconds}s" else ""}"
+        return (if (days > 0) "${days}d " else "") +
+                (if (hours > 0) "${hours}h " else "") +
+                (if (minutes > 0) "${minutes}m " else "") +
+                if(remainingSeconds>0) "${remainingSeconds}s"
+                else ""
     }
 
     private val COORD_REGEX = """(?:x:\s*(-?\d+)[,\s]*y:\s*(-?\d+)[,\s]*z:\s*(-?\d+))|(-?\d+)\s+(-?\d+)\s+(-?\d+)""".toRegex()
@@ -177,6 +181,7 @@ object Utils {
     fun GuiChest.getInventory(): IInventory {
         return ((this.inventorySlots) as ContainerChest).lowerChestInventory
     }
+
 
     fun BlockPos.toString(): String {
         return "($x, $y, $z)"

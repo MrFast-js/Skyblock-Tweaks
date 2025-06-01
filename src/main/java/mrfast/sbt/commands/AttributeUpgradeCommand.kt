@@ -18,6 +18,7 @@ import net.minecraft.command.CommandBase
 import net.minecraft.command.ICommandSender
 import net.minecraft.event.ClickEvent
 import net.minecraft.event.HoverEvent
+import net.minecraft.item.ItemStack
 import net.minecraft.util.ChatComponentText
 import kotlin.math.pow
 
@@ -49,8 +50,7 @@ class AttributeUpgradeCommand : CommandBase() {
 
             // Player did attribute abbreviation
             if (ItemUtils.attributeShortNames.containsValue(attributeToUpgrade.uppercase())) {
-                attributeToUpgrade =
-                    ItemUtils.attributeShortNames.entries.firstOrNull { it.value == attributeToUpgrade }?.key!!
+                attributeToUpgrade = ItemUtils.attributeShortNames.entries.firstOrNull { it.value == attributeToUpgrade }?.key!!
             }
 
             // Ignore if attribute is not found
@@ -58,8 +58,6 @@ class AttributeUpgradeCommand : CommandBase() {
                 ChatUtils.sendClientMessage("§cUnable to find attribute: §e$attributeToUpgrade", shortPrefix = true)
                 return
             }
-
-            val attributeShortName = ItemUtils.attributeShortNames[attributeToUpgrade]!!
 
             // Check if the attribute is valid
             val targetTier = args[1].toIntOrNull()
@@ -100,104 +98,130 @@ class AttributeUpgradeCommand : CommandBase() {
                 "§eUpgrading §c§l$attributeNameFormatted $currentTier §e➡ §a§l$attributeNameFormatted $targetTier...",
                 shortPrefix = true
             )
-            val heldAttributeType = getAttributeType(heldItem.getSkyblockId()!!)
             val itemMap = mutableMapOf<Int, MutableList<JsonObject>>()
 
-            for (i in 10 downTo 1) {
-                ItemApi.liveAuctionData.entrySet().forEach {
-                    val itemID = it.key
-                    val obj = it.value.asJsonObject
-
-                    if (getAttributeType(itemID) != heldAttributeType && itemID != "ATTRIBUTE_SHARD") {
-                        return@forEach
-                    }
-
-                    // Pricing data for the item
-                    obj.entrySet().forEach { entry ->
-                        val attribute = entry.key // AT:LL4,MF5
-                        val attributeValue = entry.value.asJsonObject
-
-                        if (attribute.contains("$attributeShortName$i")) {
-                            attributeValue.addProperty("itemID", itemID)
-
-                            if (itemMap[i] == null) itemMap[i] = mutableListOf()
-
-                            itemMap[i]!!.add(attributeValue)
-                        }
-                    }
-                }
-            }
+            loadItemMap(heldItem, itemMap, attributeToUpgrade)
 
             val vectorMap = mutableMapOf<Int, MutableList<VectorObject>>()
 
-            itemMap.forEach {
-                val tier = it.key
-                val items = it.value
-
-                items.forEach { json ->
-                    if (vectorMap[tier] == null) vectorMap[tier] = mutableListOf()
-
-                    val vector = VectorObject(
-                        json.get("auc_id").asString,
-                        json.get("price").asLong,
-                        tier
-                    )
-                    vector.itemID = json.get("itemID").asString
-                    vectorMap[tier]!!.add(vector)
-                }
-            }
+            loadVectors(itemMap, vectorMap)
 
             val sortedList = vectorMap.values.flatten().sortedByDescending { it.value }
             val lowBound =
                 (2.0).pow(targetTier - 1) - (2.0).pow(currentTier - 1) // Low bound is most efficient weighted path
 
-            CoroutineScope(Dispatchers.IO).launch {
-                val perfectPath1 = findMostEfficientPathDP(sortedList, lowBound)
-                val perfectPath2 = findMostEfficientPathDP(sortedList, (2.0).pow(targetTier - 1))
+            findBestAttributePath(sortedList, attributeNameFormatted, targetTier, lowBound)
+        }
+    }
 
-                val perfectPath = when {
-                    perfectPath1 != null && perfectPath2 != null ->
-                        if (perfectPath1.sumOf { it.price } < perfectPath2.sumOf { it.price }) perfectPath1 else perfectPath2
+    private fun loadVectors(
+        itemMap: MutableMap<Int, MutableList<JsonObject>>,
+        vectorMap: MutableMap<Int, MutableList<VectorObject>>
+    ) {
+        itemMap.forEach {
+            val tier = it.key
+            val items = it.value
 
-                    perfectPath1 != null -> perfectPath1
-                    perfectPath2 != null -> perfectPath2
-                    else -> null
-                }
+            items.forEach { json ->
+                if (vectorMap[tier] == null) vectorMap[tier] = mutableListOf()
 
-                if (perfectPath == null) {
-                    withContext(Dispatchers.Default) {
-                        ChatUtils.sendClientMessage(
-                            "§cUnable to find a path for the given tier! Not enough auctions!",
-                            shortPrefix = true
-                        )
-                    }
-                    return@launch
-                }
+                val vector = VectorObject(
+                    json.get("auc_id").asString,
+                    json.get("price").asLong,
+                    tier
+                )
+                vector.itemID = json.get("itemID").asString
+                vectorMap[tier]!!.add(vector)
+            }
+        }
+    }
 
+    private fun findBestAttributePath(
+        sortedList: List<VectorObject>,
+        attributeNameFormatted: String,
+        targetTier: Int,
+        lowBound: Double
+    ) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val perfectPath1 = findMostEfficientPathDP(sortedList, lowBound)
+            val perfectPath2 = findMostEfficientPathDP(sortedList, (2.0).pow(targetTier - 1))
+
+            val perfectPath = when {
+                perfectPath1 != null && perfectPath2 != null ->
+                    if (perfectPath1.sumOf { it.price } < perfectPath2.sumOf { it.price }) perfectPath1 else perfectPath2
+
+                perfectPath1 != null -> perfectPath1
+                perfectPath2 != null -> perfectPath2
+                else -> null
+            }
+
+            if (perfectPath == null) {
                 withContext(Dispatchers.Default) {
-                    perfectPath.forEach {
-                        val price = it.price
-                        val tier = it.tier
-                        val auctionID = it.aucID
-
-                        if (auctionID != null) {
-                            val itemDisplayName = ItemApi.getItemInfo(it.itemID!!)?.get("displayname")?.asString ?: "§fAttribute Shard"
-                            val message = ChatComponentText("$itemDisplayName §d| §b$attributeNameFormatted $tier §d| §a${price.abbreviateNumber()}")
-                            message.chatStyle.chatClickEvent = ClickEvent(ClickEvent.Action.RUN_COMMAND, "/viewauction $auctionID")
-                            message.chatStyle.setChatHoverEvent(
-                                HoverEvent(
-                                    HoverEvent.Action.SHOW_TEXT,
-                                    ChatComponentText("§eClick to view auction")
-                                )
-                            )
-                            ChatUtils.sendClientMessage(message, shortPrefix = true)
-                        }
-                    }
-
                     ChatUtils.sendClientMessage(
-                        "§a§lTotal Price: ${perfectPath.sumOf { it.price }.abbreviateNumber()}",
+                        "§cUnable to find a path for the given tier! Not enough auctions!",
                         shortPrefix = true
                     )
+                }
+                return@launch
+            }
+
+            withContext(Dispatchers.Default) {
+                perfectPath.forEach {
+                    val price = it.price
+                    val tier = it.tier
+                    val auctionID = it.aucID
+
+                    if (auctionID != null) {
+                        val itemDisplayName = ItemApi.getItemInfo(it.itemID!!)?.get("displayname")?.asString ?: "§fAttribute Shard"
+                        val message = ChatComponentText("$itemDisplayName §d| §b$attributeNameFormatted $tier §d| §a${price.abbreviateNumber()}")
+                        message.chatStyle.chatClickEvent = ClickEvent(ClickEvent.Action.RUN_COMMAND, "/viewauction $auctionID")
+                        message.chatStyle.setChatHoverEvent(
+                            HoverEvent(
+                                HoverEvent.Action.SHOW_TEXT,
+                                ChatComponentText("§eClick to view auction")
+                            )
+                        )
+                        ChatUtils.sendClientMessage(message, shortPrefix = true)
+                    }
+                }
+
+                ChatUtils.sendClientMessage(
+                    "§a§lTotal Price: ${perfectPath.sumOf { it.price }.abbreviateNumber()}",
+                    shortPrefix = true
+                )
+            }
+        }
+    }
+
+    private fun loadItemMap(
+        heldItem: ItemStack,
+        itemMap: MutableMap<Int, MutableList<JsonObject>>,
+        attributeToUpgrade: String
+    ) {
+        val heldAttributeType = getAttributeType(heldItem.getSkyblockId()!!)
+        val attributeShortName = ItemUtils.attributeShortNames[attributeToUpgrade]!!
+
+        for (i in 10 downTo 1) {
+            ItemApi.liveAuctionData.entrySet().forEach {
+                val itemID = it.key
+                val obj = it.value.asJsonObject
+
+                if (getAttributeType(itemID) != heldAttributeType && itemID != "ATTRIBUTE_SHARD") {
+                    return@forEach
+                }
+
+                // Pricing data for the item
+                obj.entrySet().forEach { entry ->
+                    val attribute = entry.key // AT:LL4,MF5
+                    val attributeValue = entry.value.asJsonObject
+
+                    if (attribute.contains("$attributeShortName$i")) {
+                        attributeValue.addProperty("itemID", itemID)
+
+                        if (itemMap[i] == null) itemMap[i] = mutableListOf()
+
+                        itemMap[i]!!.add(attributeValue)
+                    }
                 }
             }
         }

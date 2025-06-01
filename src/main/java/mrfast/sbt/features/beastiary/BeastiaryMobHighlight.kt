@@ -1,26 +1,17 @@
 package mrfast.sbt.features.beastiary
 
-import com.mojang.realmsclient.gui.ChatFormatting
-import gg.essential.elementa.utils.withAlpha
 import mrfast.sbt.SkyblockTweaks
-import mrfast.sbt.apis.SkyblockMobDetector
 import mrfast.sbt.apis.SkyblockMobDetector.getSkyblockMob
-import mrfast.sbt.config.categories.DungeonConfig
 import mrfast.sbt.config.categories.MiscellaneousConfig
-import mrfast.sbt.config.categories.SlayerConfig
 import mrfast.sbt.customevents.RenderEntityModelEvent
 import mrfast.sbt.customevents.SkyblockMobEvent
-import mrfast.sbt.features.slayers.SlayerManager
 import mrfast.sbt.utils.ChatUtils
 import mrfast.sbt.utils.OutlineUtils
 import mrfast.sbt.utils.RenderUtils
 import mrfast.sbt.utils.Utils
-import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.Entity
-import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.MouseEvent
-import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 
@@ -68,7 +59,7 @@ object BeastiaryMobHighlight {
 
                 if (sbMob != null) {
                     if (sbMob.skyblockMobId == null) {
-                        ChatUtils.sendClientMessage(ChatFormatting.RED.toString() + "This mob could not be identified for the bestiary tracker!", shortPrefix = true)
+                        ChatUtils.sendClientMessage("§cThis mob could not be identified for the bestiary tracker!", shortPrefix = true)
                     }
                 }
 

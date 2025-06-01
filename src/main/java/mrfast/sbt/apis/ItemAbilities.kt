@@ -3,7 +3,7 @@ package mrfast.sbt.apis
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.config.categories.DeveloperConfig.showItemAbilities
 import mrfast.sbt.customevents.PacketEvent
-import mrfast.sbt.customevents.UseItemAbilityEvent
+import mrfast.sbt.customevents.ItemAbilityUsedEvent
 import mrfast.sbt.customevents.WorldLoadEvent
 import mrfast.sbt.managers.LocationManager
 import mrfast.sbt.managers.TickManager
@@ -42,7 +42,7 @@ object ItemAbilities {
                 if(ability.manaCost > PlayerStats.mana) {
                     return
                 }
-                MinecraftForge.EVENT_BUS.post(UseItemAbilityEvent(ability))
+                MinecraftForge.EVENT_BUS.post(ItemAbilityUsedEvent(ability))
 
                 if (showItemAbilities) {
                     ChatUtils.sendClientMessage("§7${ability.itemId} §8${ability.abilityName}")
@@ -113,63 +113,58 @@ object ItemAbilities {
         if (skyblockId == null || itemCooldowns.containsKey(skyblockId)) return
 
         val cdItem = CooldownItem()
-        var nextAbilityName: String
-        var nextCooldownSeconds: Int
         for (line in item.getLore()) {
             val clean = line.clean()
             if (clean.contains("Ability: ")) {
-                nextAbilityName =
-                    clean.split(": ".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[1].split("  ".toRegex())
-                        .dropLastWhile { it.isEmpty() }
-                        .toTypedArray()[0]
-
-                val ability = ItemAbility(skyblockId)
-                ability.abilityName = nextAbilityName
-
-                if (clean.endsWith("RIGHT CLICK")) {
-                    cdItem.rightClick = ability
-                } else if (clean.endsWith("LEFT CLICK")) {
-                    cdItem.leftClick = ability
-                } else if (clean.endsWith("SNEAK RIGHT CLICK")) {
-                    cdItem.sneakRightClick = ability
-                } else if (clean.endsWith("SNEAK LEFT CLICK")) {
-                    cdItem.sneakLeftClick = ability
-                }
+                setItemAbility(clean, cdItem, skyblockId)
             }
             if (clean.contains("Cooldown: ")) {
-                nextCooldownSeconds = clean.replace("[^0-9]".toRegex(), "").toInt()
-                if (cdItem.rightClick != null) {
-                    cdItem.rightClick!!.cooldownSeconds = nextCooldownSeconds.toDouble()
-                }
-                if (cdItem.leftClick != null) {
-                    cdItem.leftClick!!.cooldownSeconds = nextCooldownSeconds.toDouble()
-                }
-                if (cdItem.sneakRightClick != null) {
-                    cdItem.sneakRightClick!!.cooldownSeconds = nextCooldownSeconds.toDouble()
-                }
-                if (cdItem.sneakLeftClick != null) {
-                    cdItem.sneakLeftClick!!.cooldownSeconds = nextCooldownSeconds.toDouble()
-                }
+                setCooldownSeconds(clean, cdItem)
             }
             if(clean.contains("Mana Cost: ")) {
-                val manaCost = clean.replace("[^0-9]".toRegex(), "").toInt()
-                if (cdItem.rightClick != null) {
-                    cdItem.rightClick!!.manaCost = manaCost
-                }
-                if (cdItem.leftClick != null) {
-                    cdItem.leftClick!!.manaCost = manaCost
-                }
-                if (cdItem.sneakRightClick != null) {
-                    cdItem.sneakRightClick!!.manaCost = manaCost
-                }
-                if (cdItem.sneakLeftClick != null) {
-                    cdItem.sneakLeftClick!!.manaCost = manaCost
-                }
+                setManaCost(clean, cdItem)
             }
         }
         if (cdItem.rightClick != null || cdItem.leftClick != null || cdItem.sneakRightClick != null || cdItem.sneakLeftClick != null) {
             itemCooldowns[skyblockId] = cdItem
         }
+    }
+
+    private fun setItemAbility(
+        line: String,
+        cdItem: CooldownItem,
+        skyblockId: String
+    ) {
+        val nextAbilityName = line.split(": ".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[1].split("  ".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[0]
+
+        val ability = ItemAbility(skyblockId)
+        ability.abilityName = nextAbilityName
+
+        if (line.endsWith("RIGHT CLICK")) {
+            cdItem.rightClick = ability
+        } else if (line.endsWith("LEFT CLICK")) {
+            cdItem.leftClick = ability
+        } else if (line.endsWith("SNEAK RIGHT CLICK")) {
+            cdItem.sneakRightClick = ability
+        } else if (line.endsWith("SNEAK LEFT CLICK")) {
+            cdItem.sneakLeftClick = ability
+        }
+    }
+
+    private fun setCooldownSeconds(clean: String, cdItem: CooldownItem) {
+        val nextCooldownSeconds = clean.replace("[^0-9]".toRegex(), "").toInt()
+        if (cdItem.rightClick != null) cdItem.rightClick!!.cooldownSeconds = nextCooldownSeconds.toDouble()
+        if (cdItem.leftClick != null) cdItem.leftClick!!.cooldownSeconds = nextCooldownSeconds.toDouble()
+        if (cdItem.sneakRightClick != null) cdItem.sneakRightClick!!.cooldownSeconds = nextCooldownSeconds.toDouble()
+        if (cdItem.sneakLeftClick != null) cdItem.sneakLeftClick!!.cooldownSeconds = nextCooldownSeconds.toDouble()
+    }
+
+    private fun setManaCost(clean: String, cdItem: CooldownItem) {
+        val manaCost = clean.replace("[^0-9]".toRegex(), "").toInt()
+        if (cdItem.rightClick != null) cdItem.rightClick!!.manaCost = manaCost
+        if (cdItem.leftClick != null) cdItem.leftClick!!.manaCost = manaCost
+        if (cdItem.sneakRightClick != null) cdItem.sneakRightClick!!.manaCost = manaCost
+        if (cdItem.sneakLeftClick != null) cdItem.sneakLeftClick!!.manaCost = manaCost
     }
 
     private fun getCooldownReduction(): Int {
@@ -185,9 +180,6 @@ object ItemAbilities {
         }
         return 0
     }
-
-    private val isMage = false
-    private val isUniqueDungeonClass = false
 
     /**
      * Handle left click events differently
@@ -225,7 +217,7 @@ object ItemAbilities {
         val cdItem = itemCooldowns[skyblockId]
         val sneaking: Boolean = Utils.mc.thePlayer.isSneaking
         if (event.action == PlayerInteractEvent.Action.RIGHT_CLICK_AIR) {
-
+println("Mage: ${isMage()} Unique: ${isUniqueDungeonClass()}")
             // Right mouse button pressed
             if (cdItem!!.rightClick != null && (!sneaking || cdItem.sneakRightClick == null)) {
                 sendItemAbilityEvent(cdItem.rightClick, event)
@@ -274,9 +266,9 @@ object ItemAbilities {
 
     private fun updateCooldown(cooldownCount: Double): Double {
         var secondsToAdd = 0.05
-        if (LocationManager.inDungeons && cooldownReduction == -1 && isMage) {
+        if (LocationManager.inDungeons && cooldownReduction == -1 && isMage()) {
             cooldownReduction = getCooldownReduction()
-            if (isUniqueDungeonClass) {
+            if (isUniqueDungeonClass()) {
                 cooldownReduction += 25
             }
             cooldownReduction += 25
@@ -285,5 +277,19 @@ object ItemAbilities {
             secondsToAdd *= (100.0 + cooldownReduction) / cooldownReduction
         }
         return cooldownCount - secondsToAdd
+    }
+
+    private fun isMage(): Boolean {
+        return ScoreboardUtils.getTabListEntries().any {
+            return@any it.clean().contains(Utils.mc.thePlayer.name) && it.clean().contains("Mage")
+        }
+    }
+
+
+    private fun isUniqueDungeonClass(): Boolean {
+        return ScoreboardUtils.getTabListEntries().filter {
+            val args = it.clean().split(" ")
+            args.size >= 2 && args[args.size - 2] == "(Mage"
+        }.size == 1
     }
 }

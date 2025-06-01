@@ -32,7 +32,7 @@ object CrimsonIsleMap {
     private var lastPlayerR = 0.0
 
     @SubscribeEvent
-    private fun onChat(event: ClientChatReceivedEvent) {
+    fun onChat(event: ClientChatReceivedEvent) {
         if (!LocationManager.inSkyblock || LocationManager.currentIsland != "Crimson Isle" || !CrimsonConfig.crimsonIslesMap) return
 
         val message = event.message.unformattedText.clean()

@@ -1,10 +1,8 @@
 package mrfast.sbt.commands
 
 import com.google.common.collect.Lists
-import com.mojang.realmsclient.gui.ChatFormatting
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.utils.ChatUtils
-import mrfast.sbt.utils.Utils
 import net.minecraft.command.CommandBase
 import net.minecraft.command.ICommandSender
 import java.util.*
@@ -21,7 +19,7 @@ class JoinDungeonCommand : CommandBase() {
 
     override fun processCommand(sender: ICommandSender, args: Array<out String>) {
         if (args.size != 1) {
-            ChatUtils.sendClientMessage(ChatFormatting.RED.toString() + "Invalid Command Usage! Example Usage /jd m4")
+            ChatUtils.sendClientMessage("§cInvalid Command Usage! Example Usage /jd m4")
             return
         }
         val masterMode = args[0].lowercase(Locale.getDefault()).contains("m")
@@ -30,7 +28,7 @@ class JoinDungeonCommand : CommandBase() {
         val floorInt = parseInt(floor)
 
         if (floorInt > 7) {
-            ChatUtils.sendClientMessage(ChatFormatting.RED.toString() + "Invalid Floor!")
+            ChatUtils.sendClientMessage("§cInvalid Floor!")
             return
         }
 

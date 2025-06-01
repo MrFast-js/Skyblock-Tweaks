@@ -159,7 +159,6 @@ open class SiblingConstraintFixed @JvmOverloads constructor(
 
                     for (n in indexInParent - 1 downTo 0) {
                         visitor.visitSibling(ConstraintType.X, n)
-                        // TODO: Avoid this width call when not actually called in getXPositionImpl
                         visitor.visitSibling(ConstraintType.WIDTH, n)
                     }
                 }
@@ -187,7 +186,6 @@ open class SiblingConstraintFixed @JvmOverloads constructor(
 
                     for (n in indexInParent - 1 downTo 0) {
                         visitor.visitSibling(ConstraintType.Y, n)
-                        // TODO: Avoid this width call when not actually called in getXPositionImpl
                         visitor.visitSibling(ConstraintType.HEIGHT, n)
                     }
                 }

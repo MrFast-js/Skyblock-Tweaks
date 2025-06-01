@@ -30,8 +30,12 @@ import java.util.concurrent.TimeUnit
 import java.util.stream.Collectors
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
-import javax.net.ssl.*
-
+import javax.net.ssl.KeyManagerFactory
+import javax.net.ssl.SSLContext
+import javax.net.ssl.TrustManagerFactory
+import javax.net.ssl.X509TrustManager
+import javax.net.ssl.HttpsURLConnection
+import javax.net.ssl.SSLHandshakeException
 
 object NetworkUtils {
     private val sbtApiURL = DeveloperConfig.modAPIURL
@@ -249,16 +253,17 @@ object NetworkUtils {
             return if (formatted) formatUUID(it.key) else it.key
         }
 
-        try {
-            val uuidResponse = apiRequestAndParse("https://api.mojang.com/users/profiles/minecraft/$username")
+        var output: String?=null
+        val uuidResponse = apiRequestAndParse("https://api.mojang.com/users/profiles/minecraft/$username")
+
+        if(uuidResponse.has("id")) {
             val uuid = uuidResponse["id"].asString
             val name = uuidResponse["name"].asString.lowercase()
             nameCache[uuid] = name
-            return if (formatted) formatUUID(uuid) else uuid
-        } catch (e: Exception) {
-            e.printStackTrace()
+            output = if (formatted) formatUUID(uuid) else uuid
         }
-        return null
+
+        return output
     }
 
     private fun formatUUID(input: String): String {

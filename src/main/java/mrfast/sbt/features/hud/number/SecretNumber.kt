@@ -36,9 +36,9 @@ object SecretNumber {
                 else -> GuiUtils.TextStyle.DEFAULT
             }
 
-            secretCount.forEachIndexed { i, it ->
+            secretCount.forEachIndexed { i, line ->
                 GuiUtils.drawText(
-                    it,
+                    line,
                     this.width / 2f,
                     Utils.mc.fontRendererObj.FONT_HEIGHT * i.toFloat(),
                     style,
@@ -57,9 +57,9 @@ object SecretNumber {
                 else -> GuiUtils.TextStyle.DEFAULT
             }
 
-            secretCount.forEachIndexed { i, it ->
+            secretCount.forEachIndexed { i, line ->
                 GuiUtils.drawText(
-                    it,
+                    line,
                     this.width / 2f,
                     Utils.mc.fontRendererObj.FONT_HEIGHT * i.toFloat(),
                     style,

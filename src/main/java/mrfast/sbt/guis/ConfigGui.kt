@@ -23,7 +23,7 @@ import mrfast.sbt.config.categories.DeveloperConfig
 import mrfast.sbt.config.categories.DeveloperConfig.showInspector
 import mrfast.sbt.guis.components.*
 import mrfast.sbt.guis.components.CustomUIText
-import mrfast.sbt.guis.components.UIWrappedText
+import mrfast.sbt.guis.components.CustomUIWrappedText
 import mrfast.sbt.managers.ConfigManager
 import mrfast.sbt.managers.ConfigType
 import mrfast.sbt.managers.VersionManager
@@ -609,7 +609,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2, drawDefaultB
         } childOf secondContainer
 
         if (feature.description != "") {
-            val featureDescription = UIWrappedText(feature.description).constrain {
+            val featureDescription = CustomUIWrappedText(feature.description).constrain {
                 x = 3.pixels
                 y = SiblingConstraintFixed(2f)
                 width = 80.percent - 2.pixels
@@ -650,7 +650,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2, drawDefaultB
         } childOf featureContainer
 
         if (feature.description.isNotEmpty()) {
-            val optionDescription = UIWrappedText(feature.description).constrain {
+            val optionDescription = CustomUIWrappedText(feature.description).constrain {
                 x = 2.pixels
                 y = SiblingConstraintFixed(2f)
                 width = 80.percent - 2.pixels
@@ -1012,7 +1012,6 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2, drawDefaultB
 
     private fun updateThemeColors() {
         val theme = CustomizationConfig.selectedTheme
-        // TODO: Switch to classes
         if (theme == "Gray") {
             CustomizationConfig.sidebarBackgroundColor.set(0x1c1c1c)
             CustomizationConfig.selectedCategoryColor.set(0xffffff)

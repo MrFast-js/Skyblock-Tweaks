@@ -9,5 +9,4 @@ class GuiContainerBackgroundDrawnEvent(
     var mouseY: Int,
     var guiLeft: Int,
     var guiTop: Int
-) : Event() {
-}
+) : Event()

@@ -434,8 +434,7 @@ object GeneralConfig : Config() {
         name = "Auto Party Chat",
         description = "Auto sends §a/chat p§r after joining a party §cWarning Use At Own Risk",
         category = "General",
-        subcategory = "Party",
-        risky = true
+        subcategory = "Party"
     )
     var autoPartyChat = false
 

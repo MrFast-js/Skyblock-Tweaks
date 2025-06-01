@@ -63,7 +63,12 @@ object OutlineUtils {
         glPushMatrix()
         glPushAttrib(GL_ALL_ATTRIB_BITS)
         checkSetupFBO()
-        glColor4d((color.red / 255f).toDouble(), (color.green / 255f).toDouble(), (color.blue / 255f).toDouble(), (color.alpha / 255f).toDouble())
+        glColor4d(
+            (color.red / 255f).toDouble(),
+            (color.green / 255f).toDouble(),
+            (color.blue / 255f).toDouble(),
+            (color.alpha / 255f).toDouble()
+        )
         renderOne(lineWidth)
         render(event)
         renderTwo()

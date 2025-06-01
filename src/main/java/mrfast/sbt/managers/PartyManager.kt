@@ -17,6 +17,14 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 @SkyblockTweaks.EventComponent
 object PartyManager {
+    private val PARTY_DESTRUCTION_REGEX = """^The party was disbanded because all invites expired and the party was empty\.|[^ ]+ has disbanded the party!|You (?:left|have left|have been kicked from|were kicked from) the party\.|You (?:are not in a party right now|are not in a party|are not currently in a party\.)""".toRegex()
+    private val TRANSFER_PARTY_REGEX = """^The party was transferred to (?:\[[^\]]+\]\s*)?(?<newLeader>[^ ]+)(?:(?: because (?<leavingPlayer>[^ ]+) left)|(?: by .*))?""".toRegex()
+    private val JOINED_PARTY_REGEX = """^(?:\[[^\]]+\]\s*)?([^ ]+) joined the party\.""".toRegex()
+    private val REMOVED_PARTY_REGEX = """^(?:\[[^\]]+\]\s*)?([^ ]+) has (?:left|been removed from) the party\.""".toRegex()
+    private val JOIN_PARTY_REGX = """^You have joined (?:\[[^\]]+\]\s*)?(?<partyLeader>[^ ]+)'s party!""".toRegex()
+    private val PLIST_REGEX = """((?:Party (?:Leader|Members|Moderators)):|\[[^]]+]\s*| ●)""".toRegex()
+    private val DISCONNECT_REGEX = """^(?:The party leader, )?(?:\[[^]]+] )?(?<partyLeader>.*?) has disconnected""".toRegex()
+
     var partyMembers = mutableMapOf<String, PartyMember>()
     private var playerInParty = false
 
@@ -114,7 +122,6 @@ object PartyManager {
 
     private fun handleVanillaParty(clean: String) {
         // Other players join party
-        val JOINED_PARTY_REGEX = """^(?:\[[^\]]+\]\s*)?([^ ]+) joined the party\.""".toRegex()
         if (clean.matches(JOINED_PARTY_REGEX)) {
             val pm = PartyMember(clean.getRegexGroups(JOINED_PARTY_REGEX)!![1]!!.value)
             partyMembers[pm.name] = pm
@@ -124,7 +131,6 @@ object PartyManager {
         }
 
         // Other players leave party
-        val REMOVED_PARTY_REGEX = """^(?:\[[^\]]+\]\s*)?([^ ]+) has (?:left|been removed from) the party\.""".toRegex()
         if (clean.matches(REMOVED_PARTY_REGEX)) {
             partyMembers.values.removeIf {
                 it.name == clean.getRegexGroups(REMOVED_PARTY_REGEX)!![1]!!.value
@@ -142,7 +148,6 @@ object PartyManager {
         }
 
         // /p transfer
-        val TRANSFER_PARTY_REGEX = """^The party was transferred to (?:\[[^\]]+\]\s*)?(?<newLeader>[^ ]+)(?:(?: because (?<leavingPlayer>[^ ]+) left)|(?: by .*))?""".toRegex()
         if (clean.matches(TRANSFER_PARTY_REGEX)) {
             partyMembers.values.forEach { it.leader = false }
             val groups = clean.getRegexGroups(TRANSFER_PARTY_REGEX)!!
@@ -158,7 +163,6 @@ object PartyManager {
         }
 
         // no more party 👋
-        val PARTY_DESTRUCTION_REGEX = """^The party was disbanded because all invites expired and the party was empty\.|[^ ]+ has disbanded the party!|You (?:left|have left|have been kicked from|were kicked from) the party\.|You (?:are not in a party right now|are not in a party|are not currently in a party\.)""".toRegex()
         if (clean.matches(PARTY_DESTRUCTION_REGEX)) {
             partyMembers.clear()
             if (GeneralConfig.autoPartyChat && playerInParty) {
@@ -168,7 +172,6 @@ object PartyManager {
         }
 
         // You join party
-        val JOIN_PARTY_REGX = """^You have joined (?:\[[^\]]+\]\s*)?(?<partyLeader>[^ ]+)'s party!""".toRegex()
         if (clean.matches(JOIN_PARTY_REGX)) {
             partyMembers.clear()
             val newLeader = clean.getRegexGroups(JOIN_PARTY_REGX)!!["partyLeader"]?.value!!
@@ -180,9 +183,8 @@ object PartyManager {
         }
 
         // /p list
-        val PLIST_REGEX = """^Party (?:Leader|Moderators|Members): .*""".toRegex()
-        if (clean.matches(PLIST_REGEX)) {
-            val newCleaned = clean.replace("""((?:Party (?:Leader|Members|Moderators)):|\[[^]]+]\s*| ●)""".toRegex(),"").trim()
+        if (clean.matches("""^Party (?:Leader|Moderators|Members): .*""".toRegex())) {
+            val newCleaned = clean.replace(PLIST_REGEX,"").trim()
             val lineNames = newCleaned.split(" ")
 
             lineNames.forEach {
@@ -201,9 +203,8 @@ object PartyManager {
         }
 
         // Party Leader Disconnected
-        val disconnectRegex = """^(?:The party leader, )?(?:\[[^]]+] )?(?<partyLeader>.*?) has disconnected""".toRegex()
-        if (clean.matches(disconnectRegex)) {
-            val partyLeader = clean.getRegexGroups(disconnectRegex)!!["partyLeader"]!!.value
+        if (clean.matches(DISCONNECT_REGEX)) {
+            val partyLeader = clean.getRegexGroups(DISCONNECT_REGEX)!!["partyLeader"]!!.value
             partyMembers.values.forEach { it.leader = false }
             partyMembers[partyLeader]?.online = false
             partyMembers[partyLeader]?.leader = true
@@ -211,11 +212,7 @@ object PartyManager {
 
         // Joining existing parties, Disabled because this can exceed 5 party members
         if (clean.startsWith("You'll be partying with: ")) {
-            val membersLine = clean.split("You'll be partying with:")[1].trim()
-            for (member in membersLine.split(", ")) {
-//                val pm = PartyMember(parsePlayerName(member))
-//                partyMembers[pm.name] = pm
-            }
+
         }
     }
 

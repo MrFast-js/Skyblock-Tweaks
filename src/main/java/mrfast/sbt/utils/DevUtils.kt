@@ -124,6 +124,8 @@ object DevUtils {
 
     @SubscribeEvent
     fun onSoundPacket(event: PacketEvent.Received) {
+        if (!CustomizationConfig.developerMode) return
+
         if (event.packet is S29PacketSoundEffect) {
             val packet = event.packet
             mostRecentSounds.add(SoundPacket(packet.soundName, packet.pitch, packet.volume))

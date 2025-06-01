@@ -6,6 +6,7 @@ plugins {
     id("gg.essential.loom") version "0.10.0.5"
     id("dev.architectury.architectury-pack200") version "0.1.3"
     id("com.github.johnrengelman.shadow") version "8.1.1"
+    id("io.gitlab.arturbosch.detekt") version "1.23.8"
     idea
     java
 }
@@ -129,6 +130,13 @@ tasks.processResources {
     rename("(.+_at.cfg)", "META-INF/$1")
 }
 
+detekt {
+    config.setFrom(files("config/detekt/detekt.yml"))
+    buildUponDefaultConfig = true // Keep default rules + yours
+    allRules = false // Set to true if you want to enable ALL rules (not recommended)
+    parallel = true // Speed up on multi-core systems
+    ignoreFailures = true
+}
 
 val remapJar by tasks.named<net.fabricmc.loom.task.RemapJarTask>("remapJar") {
     // replaces old jar with new jar cuz same name

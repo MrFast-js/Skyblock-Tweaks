@@ -5,7 +5,7 @@ import net.minecraftforge.fml.common.eventhandler.Cancelable
 import net.minecraftforge.fml.common.eventhandler.Event
 
 @Cancelable
-class UseItemAbilityEvent(ability: ItemAbilities.ItemAbility) : Event() {
+class ItemAbilityUsedEvent(ability: ItemAbilities.ItemAbility) : Event() {
     var ability: ItemAbilities.ItemAbility
 
     init {

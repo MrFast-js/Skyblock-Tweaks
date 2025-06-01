@@ -412,21 +412,24 @@ class TradeHistoryGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
             )
         )
 
-        val horizontalLine1 = UIBlock(CustomizationConfig.guiLineColors.get().constraint).constrain {
+        // Horizontal line 1
+        UIBlock(CustomizationConfig.guiLineColors.get().constraint).constrain {
             x = 2.pixels
             y = 15.pixels
             width = 100.percent - 2.pixels
             height = 1.pixels
         } childOf group
 
-        val horizontalLine2 = UIBlock(CustomizationConfig.guiLineColors.get().constraint).constrain {
+        // Horizontal line 2
+        UIBlock(CustomizationConfig.guiLineColors.get().constraint).constrain {
             x = 2.pixels
             y = 35.pixels
             width = 100.percent - 2.pixels
             height = 1.pixels
         } childOf group
 
-        val verticalLine = UIBlock(CustomizationConfig.guiLineColors.get().constraint).constrain {
+        // Vertical line
+        UIBlock(CustomizationConfig.guiLineColors.get().constraint).constrain {
             x = 100.pixels
             y = 37.pixels
             width = 1.pixels
@@ -498,7 +501,7 @@ class TradeHistoryGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
         val isYourSide = side == "your"
         var otherWorth = if (isYourSide) trade.get("theirCustomValue")?.asLong ?: rawWorth else trade.get("yourCustomValue")?.asLong ?: rawWorth
 
-        val label = CustomUIText(if (isYourSide) "You" else traderName).constrain {
+        CustomUIText(if (isYourSide) "You" else traderName).constrain {
             x = CenterConstraint()
             y = CenterConstraint()
         } childOf usernameBlock

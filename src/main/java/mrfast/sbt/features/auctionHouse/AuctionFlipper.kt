@@ -3,15 +3,14 @@ package mrfast.sbt.features.auctionHouse
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
-import com.mojang.realmsclient.gui.ChatFormatting
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Semaphore
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.apis.ItemApi
 import mrfast.sbt.config.categories.AuctionHouseConfig
 import mrfast.sbt.config.categories.CustomizationConfig
-import mrfast.sbt.guis.GuiItemFilterPopup.*
 import mrfast.sbt.customevents.SocketMessageEvent
+import mrfast.sbt.guis.GuiItemFilterPopup.*
 import mrfast.sbt.managers.*
 import mrfast.sbt.utils.*
 import mrfast.sbt.utils.ItemUtils.getLore
@@ -79,7 +78,7 @@ object AuctionFlipper {
                         }
                     }
                     if (lastBestAuctionKeybindState != currentKeyState && currentKeyState) {
-                        ChatUtils.sendClientMessage(ChatFormatting.RED.toString() + "Best flip not found! Keep holding to open next.")
+                        ChatUtils.sendClientMessage("§cBest flip not found! Keep holding to open next.")
                     }
                     lastBestAuctionKeybindState = currentKeyState
                 }

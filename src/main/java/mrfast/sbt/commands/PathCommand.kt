@@ -1,6 +1,5 @@
 package mrfast.sbt.commands
 
-import com.mojang.realmsclient.gui.ChatFormatting
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.features.mining.PathTracer
 import mrfast.sbt.utils.ChatUtils
@@ -10,7 +9,6 @@ import net.minecraft.event.ClickEvent
 import net.minecraft.event.HoverEvent
 import net.minecraft.util.BlockPos
 import net.minecraft.util.ChatComponentText
-import net.minecraft.util.EnumChatFormatting
 import net.minecraft.util.Vec3
 
 @SkyblockTweaks.CommandComponent
@@ -19,7 +17,7 @@ class PathCommand : CommandBase() {
     private val recordOptions = listOf("start", "stop")
 
     private fun invalidUsage() {
-        val usage = ChatFormatting.RED.toString() + "Invalid Usage!\n" +
+        val usage = "§cInvalid Usage!\n" +
                 " §b• /path §3start §f➡ §7Starts the path creating process" + "\n" +
                 " §b• /path §3add §e<x> <y> <z> §f➡ §7Adds a point to the path your creating" + "\n" +
                 " §b• /path §3record §e<start|stop> §f➡ §7Starts/stops recording your movement on the path your creating" + "\n" +
@@ -128,7 +126,7 @@ class PathCommand : CommandBase() {
                             .setChatHoverEvent(
                                 HoverEvent(
                                     HoverEvent.Action.SHOW_TEXT,
-                                    ChatComponentText(EnumChatFormatting.GREEN.toString() + "/path load " + pathName)
+                                    ChatComponentText("§a/path load $pathName")
                                 )
                             )
                     )

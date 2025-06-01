@@ -390,12 +390,12 @@ object GuiUtils {
 
     private val blurShader = GaussianBlur(radius = DeveloperConfig.valueTest.toFloat())
     private var blurScale = 0.5f
-    private var time = 0f // Used to track the interpolation time
-    private val duration = 150f // Total duration for the easing effect
+    private var blurTime = 0f // Used to track the interpolation time
+    private const val BLUR_DURATION = 150f // Total duration for the easing effect
 
     fun resetBlurAnimation() {
         blurScale = 0.5f
-        time = 0f
+        blurTime = 0f
     }
 
     private fun easeInOutCubic(t: Float): Float {
@@ -411,9 +411,9 @@ object GuiUtils {
     }
 
     fun drawBackgroundBlur() {
-        if (time < duration) {
-            time += 1f // Increment time (can adjust speed)
-            val t = time / duration // Normalize time to a range of 0 to 1
+        if (blurTime < BLUR_DURATION) {
+            blurTime += 1f // Increment time (can adjust speed)
+            val t = blurTime / BLUR_DURATION // Normalize time to a range of 0 to 1
             val easedValue = easeInOutCubic(t)
             blurScale = 1f + easedValue * (10f - 0.5f) // Ease between 0.5f and 10f
             blurShader.radius = blurScale

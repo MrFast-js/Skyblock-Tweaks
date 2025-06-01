@@ -19,7 +19,7 @@ import mrfast.sbt.utils.GuiUtils
  * Taken from Elementa's UIText component, but with some changes to custom font rendering
  * https://github.com/EssentialGG/Elementa/blob/master/src/main/kotlin/gg/essential/elementa/components/UIText.kt
  */
-open class UIWrappedText @JvmOverloads constructor(
+open class CustomUIWrappedText @JvmOverloads constructor(
     text: State<String>,
     shadow: State<Boolean> = BasicState(true),
     private var centered: Boolean = false,

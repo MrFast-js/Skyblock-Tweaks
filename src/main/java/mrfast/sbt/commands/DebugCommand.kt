@@ -1,7 +1,6 @@
 package mrfast.sbt.commands
 
 import com.google.common.collect.Lists
-import com.mojang.realmsclient.gui.ChatFormatting
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -299,7 +298,7 @@ class DebugCommand : CommandBase() {
         if (tileEntities) {
             stringBuilder.append(copyTileEntities(player, distance))
         }
-        ChatUtils.sendClientMessage("${ChatFormatting.GREEN}Copied nearby entity data to clipboard!", shortPrefix = true)
+        ChatUtils.sendClientMessage("§aCopied nearby entity data to clipboard!", shortPrefix = true)
         Utils.copyToClipboard(stringBuilder.toString())
     }
 

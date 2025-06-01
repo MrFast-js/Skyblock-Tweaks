@@ -3,7 +3,7 @@ package mrfast.sbt.features.general
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.config.categories.MiscellaneousConfig
 import mrfast.sbt.config.categories.MiscellaneousConfig.fireFreezeVisualColor
-import mrfast.sbt.customevents.UseItemAbilityEvent
+import mrfast.sbt.customevents.ItemAbilityUsedEvent
 import mrfast.sbt.utils.RenderUtils
 import mrfast.sbt.utils.Utils
 import mrfast.sbt.utils.Utils.toFormattedSeconds
@@ -18,7 +18,7 @@ object FireFreezeVisual {
     private var activatedAt = 0L
 
     @SubscribeEvent
-    fun onItemUse(event: UseItemAbilityEvent) {
+    fun onItemUse(event: ItemAbilityUsedEvent) {
         if (!MiscellaneousConfig.fireFreezeVisual) return
 
         if (event.ability.itemId == "FIRE_FREEZE_STAFF") {

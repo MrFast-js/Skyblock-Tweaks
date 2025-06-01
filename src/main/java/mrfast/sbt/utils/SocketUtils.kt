@@ -20,7 +20,10 @@ object SocketUtils {
     private var lostConnection = false
     fun setupSocket() {
         socketConnected = false
-        if(DeveloperConfig.showServerErrors) println("Attempting connection to SBT websocket! ${DeveloperConfig.modSocketURL}")
+        if(DeveloperConfig.showServerErrors) {
+            println("Attempting connection to SBT websocket! ${DeveloperConfig.modSocketURL}")
+        }
+
         try {
             // Connect to the Socket.IO server
             socket = Socket(DeveloperConfig.modSocketURL)

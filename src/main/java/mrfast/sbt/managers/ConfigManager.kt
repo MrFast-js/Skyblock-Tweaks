@@ -187,9 +187,8 @@ annotation class ConfigProperty(
     val description: String = "",
     val isParent: Boolean = false,
     val parentName: String = "",
-    val dropdownOptions: Array<String> = arrayOf(),
+    val dropdownOptions: Array<String> = [],
     val category: String,
     val subcategory: String,
-    val placeholder: String = "",
-    val risky: Boolean = false,
+    val placeholder: String = ""
 )

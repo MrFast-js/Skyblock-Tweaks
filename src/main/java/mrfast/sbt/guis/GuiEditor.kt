@@ -1,8 +1,7 @@
 package mrfast.sbt.guis
 
-import com.mojang.realmsclient.gui.ChatFormatting
-import mrfast.sbt.managers.GuiManager
 import mrfast.sbt.config.categories.CustomizationConfig
+import mrfast.sbt.managers.GuiManager
 import mrfast.sbt.utils.ChatUtils
 import mrfast.sbt.utils.Utils
 import net.minecraft.client.gui.GuiButton
@@ -54,8 +53,7 @@ class GuiEditor : GuiScreen() {
 
         updateMousePos(mouseX, mouseY)
         for (element in GuiManager.guiElements) {
-            if (!element.isActive()) continue
-            if (!showAllEnabledElements && !element.isVisible()) continue
+            if (!element.isActive() || (!showAllEnabledElements && !element.isVisible())) continue
 
             val x = (element.relativeX * screenWidth)
             val y = (element.relativeY * screenHeight)
@@ -132,8 +130,7 @@ class GuiEditor : GuiScreen() {
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
         super.mouseClicked(mouseX, mouseY, mouseButton)
         for (element in GuiManager.guiElements) {
-            if (!element.isActive()) continue
-            if (!showAllEnabledElements && !element.isVisible()) continue
+            if (!element.isActive() || (!showAllEnabledElements && !element.isVisible())) continue
 
             val x = (element.relativeX * screenWidth).toInt()
             val y = (element.relativeY * screenHeight).toInt()
@@ -172,8 +169,7 @@ class GuiEditor : GuiScreen() {
     private fun updateMousePos(mouseX: Int, mouseY: Int) {
         hoveredElement = null
         for (element in GuiManager.guiElements) {
-            if (!element.isActive()) continue
-            if (!showAllEnabledElements && !element.isVisible()) continue
+            if (!element.isActive() || (!showAllEnabledElements && !element.isVisible())) continue
 
             val x = (element.relativeX * screenWidth).toInt()
             val y = (element.relativeY * screenHeight).toInt()
@@ -237,7 +233,7 @@ class GuiEditor : GuiScreen() {
                 val point =
                     "this.relativeX = ${hoveredElement!!.relativeX}\nthis.relativeY = ${hoveredElement!!.relativeY}"
                 Utils.copyToClipboard(point)
-                ChatUtils.sendClientMessage(ChatFormatting.GREEN.toString() + "Copied hovered element position: " + ChatFormatting.YELLOW + point)
+                ChatUtils.sendClientMessage("§aCopied hovered element position: §e$point")
             } else {
                 copyingPos = false
             }

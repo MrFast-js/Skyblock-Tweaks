@@ -284,8 +284,6 @@ object ItemUtils {
         val lore = mutableListOf(this.displayName)
 
         if (hasTagCompound()) {
-            val tagCompound = tagCompound
-
             if (tagCompound != null && tagCompound.hasKey("display", 10)) {
                 val displayTag = tagCompound.getCompoundTag("display")
 
@@ -420,18 +418,17 @@ object ItemUtils {
         } ?: -1L
 
         // If there are active BIN prices, suggest BIN price if it's lower than the average BIN price
-        if (binActivePrices != null) {
-            if (avgActiveBINPrice != -1L) {
-                if (abin != null) {
-                    if (avgActiveBINPrice < abin) {
-                        return JsonObject().apply {
-                            addProperty("price", avgActiveBINPrice)
-                            addProperty("bin", true)
-                        }
-                    }
-                }
+        if (binActivePrices != null &&
+            avgActiveBINPrice != -1L &&
+            abin != null &&
+            avgActiveBINPrice < abin
+            ) {
+            return JsonObject().apply {
+                addProperty("price", avgActiveBINPrice)
+                addProperty("bin", true)
             }
         }
+
         var suggestedListingPrice = 0L
         if (activeBins != null) {
             if (activeBins > 5) {

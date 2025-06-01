@@ -1,7 +1,6 @@
 package mrfast.sbt.features.minions
 
 import com.google.gson.JsonObject
-import com.mojang.realmsclient.gui.ChatFormatting
 import gg.essential.elementa.dsl.constraint
 import gg.essential.universal.UMatrixStack
 import mrfast.sbt.SkyblockTweaks
@@ -266,7 +265,7 @@ object MinionMenuOverlay {
                     val duration = timeElapsed.toFormattedDuration()
 
                     RenderUtils.draw3DString(
-                        ChatFormatting.YELLOW.toString() + "Last Collected: " + ChatFormatting.AQUA + duration,
+                        "§eLast Collected: §b$duration",
                         e.getPositionVector().add(Vec3(0.0, 1.5, 0.0)),
                         event.partialTicks
                     )

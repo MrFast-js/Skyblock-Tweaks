@@ -28,10 +28,10 @@ object AccessoryApi {
     fun onProfileLoad(event: ProfileLoadEvent) {
         playerAccessoryBagJson = DataManager.getProfileDataDefault("accessory_bag", JsonArray()) as JsonArray
         updateMissing()
-        loadUpgrades()
+        loadAllAccessories()
     }
 
-    private fun loadUpgrades() {
+    private fun loadTalismanUpgrades() {
         val misc = NetworkUtils.NeuConstants.get("misc").asJsonObject
 
         // Load talisman upgrades
@@ -45,8 +45,9 @@ object AccessoryApi {
 
             allAccessoriesJson.add(baseKey, combined)
         }
+    }
 
-        // Register all non existing accessories
+    private fun registerAccessories() {
         ItemApi.getSkyblockItems().entrySet().forEach { item ->
             val lore = item.value.asJsonObject?.get("lore")?.asJsonArray ?: return@forEach
 
@@ -64,6 +65,14 @@ object AccessoryApi {
                 allAccessoriesJson.add(item.key, combined)
             }
         }
+    }
+
+    private fun loadAllAccessories() {
+        // Register all talisman upgrades
+        loadTalismanUpgrades()
+
+        // Register all non existing accessories
+        registerAccessories()
 
         // Remove base keys that are included in another upgrade chain
         val keysToRemove = mutableSetOf<String>()
@@ -140,31 +149,28 @@ object AccessoryApi {
         // Check if accessory is a base level
         for ((baseLevel, levels) in allAccessoriesJson.entrySet()) {
             // Check if player has a base level
-            if (ignoredAccessories.contains(baseLevel)) continue
-            if (missing.contains(JsonPrimitive(baseLevel))) continue
+            if (ignoredAccessories.contains(baseLevel) || missing.contains(JsonPrimitive(baseLevel))) continue
 
             // Check if player has an upgrade of that base item
             val upgrades = levels?.asJsonArray ?: continue
 
             var foundUpgrade = false
             for (upgrade in upgrades) {
-                if(foundUpgrade) {
-                    if(!missing.contains(upgrade)) {
-                        // Add levels to max
-                        missing.add(upgrade)
-                    }
+                if(foundUpgrade && !missing.contains(upgrade)) {
+                    // Add levels to max
+                    missing.add(upgrade)
                 }
+
                 // Check if player has a tier of that upgrade
                 if (playerAccessoryBagJson.contains(upgrade)) {
                     foundUpgrade = true
                 }
             }
+
             val maxTier = upgrades.lastOrNull()
-            if(maxTier != null) {
-                if(!missingMax.contains(maxTier) && !playerAccessoryBagJson.contains(maxTier)) {
-                    // Add levels to max
-                    missingMax.add(maxTier)
-                }
+            if(maxTier != null && !missingMax.contains(maxTier) && !playerAccessoryBagJson.contains(maxTier)) {
+                // Add levels to max
+                missingMax.add(maxTier)
             }
 
             if (!foundUpgrade) {

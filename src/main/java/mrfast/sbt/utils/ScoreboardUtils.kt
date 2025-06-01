@@ -54,7 +54,7 @@ object ScoreboardUtils {
 
         if (playerInfoList != null) {
             for (playerInfo in playerInfoList) {
-                playerNames.add(playerInfo.gameProfile.name)
+                playerNames.add(playerInfo.displayName?.unformattedText ?: playerInfo.gameProfile.name)
             }
         }
 

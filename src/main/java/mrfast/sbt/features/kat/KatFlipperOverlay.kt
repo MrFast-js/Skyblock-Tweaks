@@ -26,7 +26,7 @@ import kotlin.math.max
 @SkyblockTweaks.EventComponent
 object KatFlipperOverlay {
     private val katFlips = mutableMapOf<String, KatFlip>()
-    const val maxFlipsShown = 20
+    const val MAX_SHOWN_FLIPS = 20
     private var statusMessage = ""
 
     class KatFlip {
@@ -68,9 +68,9 @@ object KatFlipperOverlay {
 
             var requiresSoulboundItem = false
             recipe.get("items").asJsonArray.forEach { item ->
-                val item = item.asString
-                val itemID = item.split(":")[0]
-                val count = Integer.parseInt(item.split(":")[1])
+                val itemString = item.asString
+                val itemID = itemString.split(":")[0]
+                val count = Integer.parseInt(itemString.split(":")[1])
 
                 if (ItemUtils.getItemBasePrice(itemID) != -1.0) {
                     katFlip.requiredItems[itemID] = count
@@ -180,7 +180,7 @@ object KatFlipperOverlay {
                 }
 
                 if (sorted.isNotEmpty()) {
-                    val endIndex = (scrollOffset + maxFlipsShown).coerceAtMost(sorted.size) // Prevent out-of-bounds error
+                    val endIndex = (scrollOffset + MAX_SHOWN_FLIPS).coerceAtMost(sorted.size) // Prevent out-of-bounds error
                     val startIndex = scrollOffset
                     sorted = sorted.subList(startIndex, endIndex)
                 }
