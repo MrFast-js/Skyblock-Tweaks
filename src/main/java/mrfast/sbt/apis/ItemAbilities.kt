@@ -217,7 +217,6 @@ object ItemAbilities {
         val cdItem = itemCooldowns[skyblockId]
         val sneaking: Boolean = Utils.mc.thePlayer.isSneaking
         if (event.action == PlayerInteractEvent.Action.RIGHT_CLICK_AIR) {
-println("Mage: ${isMage()} Unique: ${isUniqueDungeonClass()}")
             // Right mouse button pressed
             if (cdItem!!.rightClick != null && (!sneaking || cdItem.sneakRightClick == null)) {
                 sendItemAbilityEvent(cdItem.rightClick, event)
