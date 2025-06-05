@@ -6,10 +6,17 @@ import mrfast.sbt.customevents.RenderItemStackEvent
 import mrfast.sbt.utils.GuiUtils
 import mrfast.sbt.utils.ItemUtils
 import mrfast.sbt.utils.ItemUtils.getAttributes
+import mrfast.sbt.utils.ItemUtils.getSkyblockId
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 @SkyblockTweaks.EventComponent
 object AttributeOverlay {
+    private val GodRollCombos = mapOf(
+        Pair("crimson", Pair("magic_find", "veteran")),
+        Pair("aurora", Pair("mana_pool", "mana_regeneration")),
+        Pair("terror", Pair("mana_pool", "lifeline"))
+    )
+
     @SubscribeEvent
     fun onItemStackDrawn(event: RenderItemStackEvent) {
         if (!CrimsonConfig.itemAttributeOverlay) return
@@ -34,6 +41,15 @@ object AttributeOverlay {
             if (highestAttributeTier > CrimsonConfig.itemAttributeOverlayGRTier && suggestedPrice != null) {
                 val price = suggestedPrice.first
                 if (price > CrimsonConfig.itemAttributeOverlayGRPrice) {
+                    godRoll = true
+                }
+            }
+
+            if(!godRoll) {
+                val itemId = itemStack.getSkyblockId() ?: return
+                val godRollCombo = GodRollCombos.keys.firstOrNull { itemId.toLowerCase().contains(it) }?.let { GodRollCombos[it] }
+
+                if (godRollCombo?.first in attributes && godRollCombo?.second in attributes) {
                     godRoll = true
                 }
             }
