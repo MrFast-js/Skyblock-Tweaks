@@ -82,15 +82,15 @@ object BeastiaryMobHighlight {
 
     private fun getTargetEntity(): Entity? {
         val range = 4.0
-        val player = Utils.mc.thePlayer
+        val player = Utils.getPlayer()!!
         val start = Vec3(player.posX, player.posY + player.getEyeHeight(), player.posZ)
         val look = player.lookVec
         val end = start.addVector(look.xCoord * range, look.yCoord * range, look.zCoord * range)
         var hitEntity: Entity? = null
         var closestDistance = range
 
-        for (entity in Utils.mc.theWorld.loadedEntityList) {
-            if (entity === Utils.mc.thePlayer) continue
+        for (entity in Utils.getWorld().loadedEntityList) {
+            if (entity === Utils.getPlayer()!!) continue
 
             if (entity.canBeCollidedWith()) {
                 val collisionSize = entity.collisionBorderSize.toDouble()

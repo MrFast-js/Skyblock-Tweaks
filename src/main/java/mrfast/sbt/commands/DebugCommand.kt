@@ -290,7 +290,7 @@ class DebugCommand : CommandBase() {
     }
 
     private fun getMobData(tileEntities: Boolean = false, mobs: Boolean = false, distance: Int) {
-        val player: EntityPlayerSP = Utils.mc.thePlayer
+        val player: EntityPlayerSP = Utils.getPlayer()!!
         val stringBuilder = StringBuilder()
         if (mobs) {
             stringBuilder.append(copyMobEntities(player, distance))
@@ -304,7 +304,7 @@ class DebugCommand : CommandBase() {
 
     private fun copyMobEntities(player: EntityPlayerSP, distance: Int): String {
         val stringBuilder = StringBuilder()
-        val loadedEntitiesCopy: MutableList<Entity> = LinkedList<Entity>(Utils.mc.theWorld.loadedEntityList)
+        val loadedEntitiesCopy: MutableList<Entity> = LinkedList<Entity>(Utils.getWorld().loadedEntityList)
         val loadedEntitiesCopyIterator: ListIterator<Entity>
         loadedEntitiesCopy.removeIf { entity: Entity ->
             entity.getDistanceToEntity(
@@ -338,7 +338,7 @@ class DebugCommand : CommandBase() {
     private fun copyTileEntities(player: EntityPlayerSP, distance: Int): String {
         val stringBuilder = StringBuilder()
         val loadedTileEntitiesCopy: MutableList<TileEntity> =
-            LinkedList<TileEntity>(Utils.mc.theWorld.loadedTileEntityList)
+            LinkedList<TileEntity>(Utils.getWorld().loadedTileEntityList)
         val loadedTileEntitiesCopyIterator: ListIterator<TileEntity>
         loadedTileEntitiesCopy.removeIf { entity: TileEntity ->
             player.position.distanceSq(entity.pos) > distance

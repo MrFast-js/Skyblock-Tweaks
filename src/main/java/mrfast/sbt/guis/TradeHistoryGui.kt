@@ -68,7 +68,7 @@ class TradeHistoryGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2) {
                 val item = stackElements[element] ?: ItemStack(Items.apple)
 
                 // Post the event and modify the tooltip
-                val event = ItemTooltipEvent(item, Utils.mc.thePlayer, tooltip, false)
+                val event = ItemTooltipEvent(item, Utils.getPlayer()!!, tooltip, false)
                 MinecraftForge.EVENT_BUS.post(event)
 
                 // Draw the tooltip after it has been modified

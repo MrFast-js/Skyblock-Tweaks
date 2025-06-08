@@ -4,6 +4,7 @@ import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.apis.PlayerStats
 import mrfast.sbt.config.categories.GeneralConfig
 import mrfast.sbt.config.categories.RiftConfig
+import mrfast.sbt.managers.FontManager
 import mrfast.sbt.managers.GuiManager
 import mrfast.sbt.utils.GuiUtils
 import mrfast.sbt.managers.LocationManager
@@ -22,8 +23,8 @@ object RiftTimeNumber {
             this.relativeY = 0.8597
             this.elementName = "Rift Time"
             this.addToList()
-            this.height = Utils.mc.fontRendererObj.FONT_HEIGHT
-            this.width = Utils.mc.fontRendererObj.getStringWidth("§a00m00sф Left") + 1
+            this.height = FontManager.getFontRenderer().FONT_HEIGHT
+            this.width = FontManager.getFontRenderer().getStringWidth("§a00m00sф Left") + 1
             this.needsExample = true
         }
 

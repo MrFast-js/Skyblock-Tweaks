@@ -11,7 +11,7 @@ object TickManager {
 
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {
-        if (event.phase != TickEvent.Phase.START || Utils.mc.theWorld == null) return
+        if (event.phase != TickEvent.Phase.START || !Utils.isWorldLoaded()) return
 
         tickCount++
 

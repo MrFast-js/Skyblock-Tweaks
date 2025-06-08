@@ -23,7 +23,7 @@ object FireFreezeVisual {
 
         if (event.ability.itemId == "FIRE_FREEZE_STAFF") {
             activatedAt = System.currentTimeMillis()
-            activatedPos = Utils.mc.thePlayer.positionVector
+            activatedPos = Utils.getPlayer()!!.positionVector
         }
     }
 

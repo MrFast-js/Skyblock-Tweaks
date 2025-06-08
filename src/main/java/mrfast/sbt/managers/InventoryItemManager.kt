@@ -24,7 +24,7 @@ object InventoryItemManager {
 
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
-        if (event.phase != TickEvent.Phase.START || !LocationManager.inSkyblock || Utils.mc.theWorld == null) return
+        if (event.phase != TickEvent.Phase.START || !LocationManager.inSkyblock || !Utils.isWorldLoaded()) return
 
         if(TickManager.tickCount % 4 != 0) return
 
@@ -47,7 +47,7 @@ object InventoryItemManager {
 
     private fun getCurrentInventoryState(): Map<String, Int> {
         val inventoryState = mutableMapOf<String, Int>()
-        val mainInventory = Utils.mc.thePlayer.inventory.mainInventory
+        val mainInventory = Utils.getPlayer()!!.inventory.mainInventory
 
         loop@ for (element in mainInventory) {
             if (element == null) continue

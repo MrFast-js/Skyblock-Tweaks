@@ -51,7 +51,7 @@ object DrillFuelBar {
         }
 
         override fun isVisible(): Boolean {
-            val heldItemName = Utils.mc.thePlayer?.heldItem?.getSkyblockId() ?: ""
+            val heldItemName = Utils.getPlayer()!!?.heldItem?.getSkyblockId() ?: ""
             return heldItemName.contains("MITHRIL_DRILL") || heldItemName.contains("GEMSTONE_DRILL")
         }
     }

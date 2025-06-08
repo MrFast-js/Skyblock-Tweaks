@@ -6,11 +6,14 @@ import mrfast.sbt.config.categories.CustomizationConfig
 import mrfast.sbt.guis.ConfigGui
 import mrfast.sbt.guis.GuiEditor
 import mrfast.sbt.utils.Utils
+import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraftforge.client.event.GuiScreenEvent
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 import org.lwjgl.input.Keyboard
 import java.io.FileReader
 import java.io.FileWriter
@@ -22,13 +25,32 @@ object GuiManager {
     private val gson = GsonBuilder().setPrettyPrinting().create()
     private var showall = false
 
+    private var guiToOpen: GuiScreen? = null
+
+    @SubscribeEvent
+    fun onTick(event: ClientTickEvent) {
+        if (event.phase == TickEvent.Phase.START) return
+
+        if(guiToOpen != null) {
+            Utils.mc.displayGuiScreen(guiToOpen)
+            guiToOpen = null
+        }
+    }
+
+    fun displayScreen(gui: GuiScreen?) {
+        if (gui == null) return
+
+        guiToOpen = gui
+    }
+
     @SubscribeEvent
     fun onRender(event: RenderGameOverlayEvent.Post) {
         if (event.type == RenderGameOverlayEvent.ElementType.HOTBAR) {
-            if (Utils.mc.currentScreen is GuiEditor) return
-            val scaledResolution = ScaledResolution(Utils.mc)
+            if (Utils.getCurrentScreen() is GuiEditor) return
+            val scaledResolution = Utils.getScaledResolution()
             val screenWidth = scaledResolution.scaledWidth
             val screenHeight = scaledResolution.scaledHeight
+
             for (guiElement in guiElements) {
                 if (guiElement.isActive()) {
                     if (!showall && !guiElement.isVisible()) continue

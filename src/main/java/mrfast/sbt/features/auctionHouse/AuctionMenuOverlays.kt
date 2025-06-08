@@ -131,7 +131,7 @@ object AuctionMenuOverlays {
                 }
                 if (pastBids.size > 0) {
                     auction.otherBidder = pastBids[0]
-                    if (pastBids.size > 1 && auction.otherBidder == Utils.mc.thePlayer.name) {
+                    if (pastBids.size > 1 && auction.otherBidder == Utils.getPlayer()!!.name) {
                         auction.otherBidder = pastBids[1]
                     }
                 }
@@ -209,7 +209,7 @@ object AuctionMenuOverlays {
     private fun setAuctionInfoFromLore(auction: Auction) {
         for (line in auction.stack!!.getLore()) {
             if (line.clean().matches("""Bidder: (.*)""".toRegex())) {
-                auction.winning = line.clean().contains(Utils.mc.thePlayer.name)
+                auction.winning = line.clean().contains(Utils.getPlayer()!!.name)
             }
             if (line.clean().matches("""Status: Ended!""".toRegex())) {
                 auction.ended = true
@@ -438,7 +438,7 @@ object AuctionMenuOverlays {
             var icons = 0
 
             // Add special button to party the other bidder if they are being annoying
-            if (lastViewedAuction!!.otherBidder != null && lastViewedAuction!!.otherBidder != Utils.mc.thePlayer.name) {
+            if (lastViewedAuction!!.otherBidder != null && lastViewedAuction!!.otherBidder != Utils.getPlayer()!!.name) {
                 lines.add(
                     GuiUtils.IconElement(
                         "§9✚",
@@ -451,7 +451,7 @@ object AuctionMenuOverlays {
                             "§7if a player wont stop bidding"
                         ),
                         {
-                            Utils.mc.thePlayer.closeScreen()
+                            Utils.getPlayer()!!.closeScreen()
                             ChatUtils.sendPlayerMessage("/party ${lastViewedAuction!!.otherBidder}")
                         },
                         backgroundColor = Color(85, 85, 255),
@@ -473,7 +473,7 @@ object AuctionMenuOverlays {
                         "§7are being sold by the same seller"
                     ),
                     {
-                        Utils.mc.thePlayer.closeScreen()
+                        Utils.getPlayer()!!.closeScreen()
                         ChatUtils.sendPlayerMessage("/ah ${lastViewedAuction!!.seller}")
                     },
                     backgroundColor = Color(255, 170, 0),

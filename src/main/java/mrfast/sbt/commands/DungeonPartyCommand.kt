@@ -1,9 +1,9 @@
 package mrfast.sbt.commands
 
 import com.google.common.collect.Lists
-import gg.essential.api.utils.GuiUtil
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.features.partyfinder.DungeonPartyGui
+import mrfast.sbt.managers.GuiManager
 import mrfast.sbt.managers.PartyManager
 import mrfast.sbt.utils.ChatUtils
 import mrfast.sbt.utils.GuiUtils
@@ -34,7 +34,7 @@ class DungeonPartyCommand : CommandBase() {
             GuiUtils.closeGui()
             return
         }
-        GuiUtil.open(DungeonPartyGui())
+        GuiManager.displayScreen(DungeonPartyGui())
     }
 
     override fun canCommandSenderUseCommand(sender: ICommandSender?): Boolean {

@@ -59,13 +59,13 @@ object DataManager {
 
             if (groups.size >= 2) {
                 val newProfileId = groups[1]
-                val currentProfile = profileIds[Utils.mc.thePlayer.uniqueID.toString()]
+                val currentProfile = profileIds[Utils.getPlayer()!!.uniqueID.toString()]
 
                 if (currentProfile == null || currentProfile != newProfileId || !profileLoaded) {
                     profileLoaded = true
                     MinecraftForge.EVENT_BUS.post(ProfileLoadEvent())
                 }
-                profileIds[Utils.mc.thePlayer.uniqueID.toString()] = newProfileId
+                profileIds[Utils.getPlayer()!!.uniqueID.toString()] = newProfileId
                 dataJson.add("profileIds", convertToJsonObject(profileIds))
                 saveDataToFile(profileDataPath, dataJson)
             }
@@ -112,7 +112,7 @@ object DataManager {
 
     // Works with data names such as "subset1.list.option2" or even just "option2"
     fun saveProfileData(dataName: String, dataValue: Any) {
-        val currentProfileId = profileIds[Utils.mc.thePlayer.uniqueID.toString()]
+        val currentProfileId = profileIds[Utils.getPlayer()!!?.uniqueID.toString()]
         if(currentProfileId == null) {
             if(CustomizationConfig.developerMode) ChatUtils.sendClientMessage("Profile ID not found, please try again.")
             sendProfileIdCommand()
@@ -180,7 +180,7 @@ object DataManager {
     }
 
     private fun getProfileData(dataName: String): Any? {
-        val currentProfileId = profileIds[Utils.mc.thePlayer.uniqueID.toString()]
+        val currentProfileId = profileIds[Utils.getPlayer()!!.uniqueID.toString()]
 
         var profileJson = dataJson.getAsJsonObject(currentProfileId) ?: return null
         val parts = dataName.split("\\.".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()

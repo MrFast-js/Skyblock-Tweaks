@@ -35,7 +35,7 @@ object AuctionNotifications {
     fun onTick(event: ClientTickEvent) {
         if(TickManager.tickCount % 20 != 0) return
 
-        if(event.phase == TickEvent.Phase.START && Utils.mc.currentScreen == null && lastOpenedAuctionID != null) {
+        if(event.phase == TickEvent.Phase.START && Utils.getCurrentScreen() == null && lastOpenedAuctionID != null) {
             lastOpenedAuctionID = null
         }
     }

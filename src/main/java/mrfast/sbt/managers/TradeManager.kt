@@ -66,12 +66,12 @@ object TradeManager {
 
     @SubscribeEvent
     fun onClientTick(event: ClientTickEvent) {
-        if (TickManager.tickCount % 20 != 0 || Utils.mc.theWorld == null) return
+        if (TickManager.tickCount % 20 != 0 || !Utils.isWorldLoaded()) return
 
-        if(Utils.mc.currentScreen == null) inTradeMenu = false
+        if(Utils.getCurrentScreen() == null) inTradeMenu = false
 
         if (tradingWithSub.isNotEmpty()) {
-            val matchingPlayer = Utils.mc.theWorld.playerEntities.find {
+            val matchingPlayer = Utils.getWorld().playerEntities.find {
                 it.name.contains(tradingWithSub)
             }
             if (matchingPlayer != null) {

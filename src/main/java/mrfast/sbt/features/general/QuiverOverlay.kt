@@ -7,6 +7,7 @@ import mrfast.sbt.config.categories.MiscellaneousConfig
 import mrfast.sbt.config.categories.MiscellaneousConfig.quiverOverlay
 import mrfast.sbt.config.categories.MiscellaneousConfig.quiverOverlayType
 import mrfast.sbt.features.end.ZealotSpawnLocations
+import mrfast.sbt.managers.FontManager
 import mrfast.sbt.utils.GuiUtils
 import mrfast.sbt.utils.ItemUtils.getLore
 import mrfast.sbt.managers.LocationManager
@@ -32,11 +33,11 @@ object QuiverOverlay {
 
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
-        if (event.phase != TickEvent.Phase.START || !LocationManager.inSkyblock || Utils.mc.theWorld == null) return
+        if (event.phase != TickEvent.Phase.START || !LocationManager.inSkyblock || !Utils.isWorldLoaded()) return
 
         if(TickManager.tickCount % 5 != 0) return
 
-        for (itemStack in Utils.mc.thePlayer.inventory.mainInventory) {
+        for (itemStack in Utils.getPlayer()!!.inventory.mainInventory) {
             if (itemStack == null || !itemStack.hasDisplayName() || !itemStack.displayName.matches(QUIVER_REGEX)) continue
 
             for (line in itemStack.getLore()) {
@@ -71,7 +72,7 @@ object QuiverOverlay {
             if (currentArrow == "") display = ""
 
             GuiUtils.drawText(display, 17f, 3f, GuiUtils.TextStyle.DROP_SHADOW)
-            this.width = Utils.mc.fontRendererObj.getStringWidth(display.clean()) + 17
+            this.width = FontManager.getFontRenderer().getStringWidth(display.clean()) + 17
         }
 
         override fun isActive(): Boolean {
@@ -81,7 +82,7 @@ object QuiverOverlay {
         override fun isVisible(): Boolean {
             // Stop from showing if no held bow
             if (MiscellaneousConfig.quiverOverlayOnlyBow) {
-                val held: ItemStack = Utils.mc.thePlayer.heldItem ?: return false
+                val held: ItemStack = Utils.getPlayer()!!.heldItem ?: return false
                 if (held.item !is ItemBow) {
                     return false
                 }

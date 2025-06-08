@@ -39,16 +39,16 @@ object SkyblockMobDetector {
 
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {
-        if (Utils.mc.theWorld == null || !LocationManager.inSkyblock) return
+        if (!Utils.isWorldLoaded() || !LocationManager.inSkyblock) return
 
         if(TickManager.tickCount % 4 != 0) return
 
-        for (entity in Utils.mc.theWorld.loadedEntityList) {
-            if (Utils.mc.thePlayer.getDistanceToEntity(entity) > 30) continue
+        for (entity in Utils.getWorld().loadedEntityList) {
+            if (Utils.getPlayer()!!.getDistanceToEntity(entity) > 30) continue
 
             val potentialMob = when {
-                entity.customNameTag?.contains("Withermancer") == true -> Utils.mc.theWorld.getEntityByID(entity.entityId - 3)
-                else -> Utils.mc.theWorld.getEntityByID(entity.entityId - 1)
+                entity.customNameTag?.contains("Withermancer") == true -> Utils.getWorld().getEntityByID(entity.entityId - 3)
+                else -> Utils.getWorld().getEntityByID(entity.entityId - 1)
             } ?: continue
 
             if (entity is EntityArmorStand && entity.hasCustomName() && !skyblockMobHashMap.containsKey(entity)) {
@@ -60,7 +60,7 @@ object SkyblockMobDetector {
         }
 
         for (sbMob in skyblockMobHashMap.values) {
-            if (Utils.mc.thePlayer.getDistanceToEntity(sbMob.skyblockMob) > 30) continue
+            if (Utils.getPlayer()!!.getDistanceToEntity(sbMob.skyblockMob) > 30) continue
 
             if (sbMob.skyblockMobId == null) {
                 updateMobData(sbMob)
@@ -86,7 +86,7 @@ object SkyblockMobDetector {
             if (!sbMob.skyblockMob.isEntityAlive) {
                 iterator.remove()
                 if (sbMob.skyblockMobId != null) {
-                    if (Utils.mc.thePlayer.getDistanceToEntity(sbMob.mobNameEntity) > 30) continue
+                    if (Utils.getPlayer()!!.getDistanceToEntity(sbMob.mobNameEntity) > 30) continue
 
                     MinecraftForge.EVENT_BUS.post(SkyblockMobEvent.Death(sbMob))
                 }
@@ -101,7 +101,7 @@ object SkyblockMobDetector {
         val sbMob = event.sbMob
         val show = CustomizationConfig.developerMode && DeveloperConfig.showMobIds
         val flag1 =
-            showMobIdsThroughWalls || (Utils.mc.thePlayer.canEntityBeSeen(sbMob.skyblockMob) && !showMobIdsThroughWalls)
+            showMobIdsThroughWalls || (Utils.getPlayer()!!.canEntityBeSeen(sbMob.skyblockMob) && !showMobIdsThroughWalls)
         if (sbMob.skyblockMobId != null && CustomizationConfig.developerMode && flag1 && show) {
             val pos = Vec3(sbMob.skyblockMob.posX, sbMob.skyblockMob.posY + 1, sbMob.skyblockMob.posZ)
 
@@ -145,7 +145,7 @@ object SkyblockMobDetector {
                     }
                 }
             }
-            // Remove &k obfuscation on mobs that are corrupted
+            // Remove &k obfuscation on mobs that are runic
             sbMob.skyblockMobId?.let { skyblockMobId ->
                 if (skyblockMobId.startsWith("a") && Character.isUpperCase(skyblockMobId[1])) {
                     sbMob.skyblockMobId = skyblockMobId.substring(1, skyblockMobId.length - 2)

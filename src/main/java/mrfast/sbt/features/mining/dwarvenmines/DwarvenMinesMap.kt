@@ -36,7 +36,7 @@ object DwarvenMinesMap {
         }
 
         override fun draw() {
-            val player: EntityPlayerSP = Utils.mc.thePlayer
+            val player: EntityPlayerSP = Utils.getPlayer()!!
 
             val inTunnels = player.posX > -150 && player.posX < 40 && player.posZ > 183
             if(inTunnels) return

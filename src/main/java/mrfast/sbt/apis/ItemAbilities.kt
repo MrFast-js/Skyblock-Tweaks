@@ -71,7 +71,7 @@ object ItemAbilities {
 
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
-        if (event.phase != TickEvent.Phase.START || !LocationManager.inSkyblock || Utils.mc.theWorld == null) return
+        if (event.phase != TickEvent.Phase.START || !LocationManager.inSkyblock || !Utils.isWorldLoaded()) return
 
         if(TickManager.tickCount % 10 != 0) return
 
@@ -83,8 +83,9 @@ object ItemAbilities {
         activeCooldowns.clear()
         // Update a
         for (i in 0..7) {
-            if (Utils.mc.thePlayer.inventory.mainInventory[i] == null) continue
-            val stack: ItemStack = Utils.mc.thePlayer.inventory.mainInventory[i]
+            if (Utils.getPlayer()!!.inventory.mainInventory[i] == null) continue
+
+            val stack: ItemStack = Utils.getPlayer()!!.inventory.mainInventory[i]
             setStackCooldown(stack)
             val skyblockId: String? = stack.getSkyblockId()
 
@@ -106,7 +107,7 @@ object ItemAbilities {
 
     private var cooldownReduction = -1
     private fun setStackCooldown(item: ItemStack?) {
-        if (!LocationManager.inSkyblock || Utils.mc.theWorld == null) return
+        if (!LocationManager.inSkyblock || !Utils.isWorldLoaded()) return
 
         val skyblockId: String? = item?.getSkyblockId()
 
@@ -169,7 +170,7 @@ object ItemAbilities {
 
     private fun getCooldownReduction(): Int {
         for (sidebarLine in ScoreboardUtils.getSidebarLines(true)) {
-            if (sidebarLine.contains(Utils.mc.thePlayer.name)) {
+            if (sidebarLine.contains(Utils.getPlayer()!!.name)) {
                 try {
                     val mageLvl = sidebarLine.split(" ".toRegex()).dropLastWhile { it.isEmpty() }
                         .toTypedArray()[2].replace("[^0-9]".toRegex(), "").toInt()
@@ -187,14 +188,14 @@ object ItemAbilities {
      */
     @SubscribeEvent
     fun onMouseClick(event: MouseEvent) {
-        if (!LocationManager.inSkyblock || Utils.mc.theWorld == null) return
+        if (!LocationManager.inSkyblock || !Utils.isWorldLoaded()) return
 
         val heldItem: ItemStack = ItemUtils.getHeldItem() ?: return
         val skyblockId: String? = heldItem.getSkyblockId()
         if (skyblockId == null || !itemCooldowns.containsKey(skyblockId)) return
 
         val cdItem = itemCooldowns[skyblockId]
-        val sneaking: Boolean = Utils.mc.thePlayer.isSneaking
+        val sneaking: Boolean = Utils.getPlayer()!!.isSneaking
         if (event.button == 0 && event.buttonstate) {
             // Left mouse button pressed
             if (cdItem!!.leftClick != null && (cdItem.sneakLeftClick == null || !sneaking)) {
@@ -208,14 +209,14 @@ object ItemAbilities {
 
     @SubscribeEvent
     fun onPlayerInteract(event: PlayerInteractEvent) {
-        if (!LocationManager.inSkyblock || Utils.mc.theWorld == null) return
+        if (!LocationManager.inSkyblock || !Utils.isWorldLoaded()) return
 
         val heldItem: ItemStack = ItemUtils.getHeldItem() ?: return
         val skyblockId: String? = heldItem.getSkyblockId()
         if (skyblockId == null || !itemCooldowns.containsKey(skyblockId)) return
 
         val cdItem = itemCooldowns[skyblockId]
-        val sneaking: Boolean = Utils.mc.thePlayer.isSneaking
+        val sneaking: Boolean = Utils.getPlayer()!!.isSneaking
         if (event.action == PlayerInteractEvent.Action.RIGHT_CLICK_AIR) {
             // Right mouse button pressed
             if (cdItem!!.rightClick != null && (!sneaking || cdItem.sneakRightClick == null)) {
@@ -280,7 +281,7 @@ object ItemAbilities {
 
     private fun isMage(): Boolean {
         return ScoreboardUtils.getTabListEntries().any {
-            return@any it.clean().contains(Utils.mc.thePlayer.name) && it.clean().contains("Mage")
+            return@any it.clean().contains(Utils.getPlayer()!!.name) && it.clean().contains("Mage")
         }
     }
 

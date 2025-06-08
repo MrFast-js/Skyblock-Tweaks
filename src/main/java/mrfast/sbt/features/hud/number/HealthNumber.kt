@@ -3,6 +3,7 @@ package mrfast.sbt.features.hud.number
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.apis.PlayerStats
 import mrfast.sbt.config.categories.GeneralConfig
+import mrfast.sbt.managers.FontManager
 import mrfast.sbt.managers.GuiManager
 import mrfast.sbt.utils.GuiUtils
 import mrfast.sbt.managers.LocationManager
@@ -21,8 +22,8 @@ object HealthNumber {
             this.relativeY = 0.9166
             this.elementName = "Health Number"
             this.addToList()
-            this.height = Utils.mc.fontRendererObj.FONT_HEIGHT
-            this.width = Utils.mc.fontRendererObj.getStringWidth("12345/12345")
+            this.height = FontManager.getFontRenderer().FONT_HEIGHT
+            this.width = FontManager.getFontRenderer().getStringWidth("12345/12345")
         }
 
         override fun draw() {

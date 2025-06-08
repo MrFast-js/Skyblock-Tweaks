@@ -68,8 +68,8 @@ object ProfitTracker {
         if (!started || paused) return
 
         // Stop from counting gains from items pulled/put into chests
-        if (Utils.mc.currentScreen != null) {
-            if (Utils.mc.currentScreen !is GuiInventory) {
+        if (Utils.getCurrentScreen() != null) {
+            if (Utils.getCurrentScreen() !is GuiInventory) {
                 return
             }
         }

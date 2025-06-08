@@ -2,6 +2,7 @@ package mrfast.sbt.features.general
 
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.config.categories.GeneralConfig
+import mrfast.sbt.managers.FontManager
 import mrfast.sbt.managers.GuiManager
 import mrfast.sbt.managers.PartyManager
 import mrfast.sbt.utils.GuiUtils
@@ -19,20 +20,20 @@ object PartyDisplay {
             this.relativeY = 0.39
             this.elementName = "Party Display"
             this.addToList()
-            this.height = Utils.mc.fontRendererObj.FONT_HEIGHT
-            this.width = Utils.mc.fontRendererObj.getStringWidth("Party Members (5)")
+            this.height = FontManager.getFontRenderer().FONT_HEIGHT
+            this.width = FontManager.getFontRenderer().getStringWidth("Party Members (5)")
             this.needsExample = true
         }
 
         override fun draw() {
             if (PartyManager.partyMembers.isEmpty()) return
-            if (PartyManager.partyMembers.size == 1 && PartyManager.partyMembers.keys.contains(Utils.mc.thePlayer.name)) return
+            if (PartyManager.partyMembers.size == 1 && PartyManager.partyMembers.keys.contains(Utils.getPlayer()!!.name)) return
 
             var display = "§9§lParty Members §r§7(${PartyManager.partyMembers.size})"
             for (partyMember in PartyManager.partyMembers.values) {
                 val leaderText = if (partyMember.leader) " §6♚" else ""
                 var name = partyMember.name
-                if (partyMember.name == Utils.mc.thePlayer.name) {
+                if (partyMember.name == Utils.getPlayer()!!.name) {
                     name = "§a${partyMember.name}"
                 }
                 display += "\n §e• §3${name}$leaderText"

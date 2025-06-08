@@ -1,11 +1,12 @@
 package mrfast.sbt.commands
 
-import gg.essential.api.utils.GuiUtil
-import mrfast.sbt.features.profitTracking.ProfitTrackerGui
-import net.minecraft.command.CommandBase
-import net.minecraft.command.ICommandSender
 import com.google.common.collect.Lists
 import mrfast.sbt.SkyblockTweaks
+import mrfast.sbt.features.profitTracking.ProfitTrackerGui
+import mrfast.sbt.managers.GuiManager
+import mrfast.sbt.utils.GuiUtils
+import net.minecraft.command.CommandBase
+import net.minecraft.command.ICommandSender
 
 @SkyblockTweaks.CommandComponent
 class ProfitTrackerCommand : CommandBase() {
@@ -17,7 +18,7 @@ class ProfitTrackerCommand : CommandBase() {
     override fun getCommandUsage(sender: ICommandSender?): String = "/profittracker"
 
     override fun processCommand(sender: ICommandSender, args: Array<out String>) {
-        GuiUtil.open(ProfitTrackerGui())
+        GuiManager.displayScreen(ProfitTrackerGui())
     }
 
     override fun canCommandSenderUseCommand(sender: ICommandSender?): Boolean = true

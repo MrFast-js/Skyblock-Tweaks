@@ -4,6 +4,7 @@ import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.managers.GuiManager
 import mrfast.sbt.config.categories.DungeonConfig
 import mrfast.sbt.config.categories.GeneralConfig
+import mrfast.sbt.managers.FontManager
 import mrfast.sbt.utils.GuiUtils
 import mrfast.sbt.managers.LocationManager
 import mrfast.sbt.managers.TickManager
@@ -34,10 +35,10 @@ object FireFreezeHelper {
 
         if (TickManager.tickCount % 20 != 0) return
 
-        if (Utils.mc.thePlayer == null || Utils.mc.theWorld == null) return
+        if (!Utils.isWorldLoaded()) return
 
         var foundFireFreeze = false
-        Utils.mc.thePlayer.inventoryContainer.inventoryItemStacks.forEach { itemStack ->
+        Utils.getPlayer()!!.inventoryContainer.inventoryItemStacks.forEach { itemStack ->
             if (itemStack != null && itemStack.getSkyblockId() == "FIRE_FREEZE_STAFF") {
                 foundFireFreeze = true
             }
@@ -85,8 +86,8 @@ object FireFreezeHelper {
             this.relativeY = 0.522
             this.elementName = "Fire Freeze Timer"
             this.needsExample = true
-            this.height = Utils.mc.fontRendererObj.FONT_HEIGHT * 2 + 2
-            this.width = Utils.mc.fontRendererObj.getStringWidth("Fire Freeze in 5 seconds!") * 2 + 2
+            this.height = FontManager.getFontRenderer().FONT_HEIGHT * 2 + 2
+            this.width = FontManager.getFontRenderer().getStringWidth("Fire Freeze in 5 seconds!") * 2 + 2
             this.addToList()
         }
 

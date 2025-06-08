@@ -53,7 +53,7 @@ object LocationManager {
 
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
-        if (event.phase != TickEvent.Phase.START || Utils.mc.theWorld == null) return
+        if (event.phase != TickEvent.Phase.START || !Utils.isWorldLoaded()) return
         if(TickManager.tickCount % 10 != 0) return
 
         updatePlayerLocation()

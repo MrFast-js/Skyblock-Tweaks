@@ -121,13 +121,13 @@ object NetworkUtils {
             }
         }
 
-        val player = Utils.mc.thePlayer
+        val player = Utils.getPlayer()!!
 
         if (usingSBTAPI) {
             if (tempApiAuthKey.isNotEmpty()) {
                 headers["temp-auth-key"] = tempApiAuthKey
             }
-            val nearby = Utils.mc.theWorld
+            val nearby = Utils.getWorld()
                 .playerEntities
                 .toList()
                 .stream()
@@ -136,7 +136,7 @@ object NetworkUtils {
                 .collect(Collectors.toList())
 
             headers["x-players"] = nearby.toString()
-            headers["x-request-author"] = Utils.mc.thePlayer.toString()
+            headers["x-request-author"] = Utils.getPlayer()!!.toString()
             headers["x-version"] = SkyblockTweaks.MOD_VERSION
         }
 

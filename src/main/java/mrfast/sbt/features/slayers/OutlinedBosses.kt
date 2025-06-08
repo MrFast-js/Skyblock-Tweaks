@@ -15,7 +15,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object OutlinedBosses {
     @SubscribeEvent
     fun onRenderEntityOutlines(event: RenderEntityModelEvent) {
-        if (Utils.mc.theWorld == null || !SlayerConfig.highlightSlayerBosses) return
+        if (!Utils.isWorldLoaded() || !SlayerConfig.highlightSlayerBosses) return
 
         val sbMob = SkyblockMobDetector.getSkyblockMob(event.entity) ?: return
         if (sbMob.skyblockMob == event.entity && sbMob.skyblockMobId != null) {
@@ -43,7 +43,7 @@ object OutlinedBosses {
         if(SlayerManager.spawnedSlayer != null && SlayerConfig.highlightSlayerBosses && SlayerConfig.slayerTracer) {
             val slayer = SlayerManager.spawnedSlayer!!.skyblockMob
 
-            if(!Utils.mc.thePlayer.canEntityBeSeen(slayer)) return
+            if(!Utils.getPlayer()!!.canEntityBeSeen(slayer)) return
 
             if (SlayerConfig.highlightSlayerBosses) {
                 RenderUtils.drawLineToEntity(

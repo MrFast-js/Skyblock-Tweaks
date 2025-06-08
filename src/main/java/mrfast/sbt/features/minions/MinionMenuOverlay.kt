@@ -243,7 +243,7 @@ object MinionMenuOverlay {
         if (!MiscellaneousConfig.minionOverlay) return
 
         if (LocationManager.inSkyblock && LocationManager.currentArea == "Your Island") {
-            for (e in Utils.mc.theWorld.loadedEntityList) {
+            for (e in Utils.getWorld().loadedEntityList) {
                 if (e !is EntityArmorStand || !isMinion(e)) continue
 
                 if (DataManager.profileLoaded && !minions.has(e.position.toString())) {
@@ -258,7 +258,7 @@ object MinionMenuOverlay {
                 }
 
                 if (MiscellaneousConfig.lastCollectedAboveMinion &&
-                    minions.has(e.position.toString()) && Utils.mc.thePlayer.getDistanceToEntity(e) < 8
+                    minions.has(e.position.toString()) && Utils.getPlayer()!!.getDistanceToEntity(e) < 8
                 ) {
                     val minion = minions[e.position.toString()].asJsonObject
                     val timeElapsed = (System.currentTimeMillis() - minion["lastCollectedAt"].asLong)
@@ -284,7 +284,7 @@ object MinionMenuOverlay {
                     closestMinion = e
                     continue
                 }
-                if (Utils.mc.thePlayer.getDistanceToEntity(e) < Utils.mc.thePlayer.getDistanceToEntity(closestMinion)) {
+                if (Utils.getPlayer()!!.getDistanceToEntity(e) < Utils.getPlayer()!!.getDistanceToEntity(closestMinion)) {
                     closestMinion = e
                 }
             }

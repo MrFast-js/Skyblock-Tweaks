@@ -15,10 +15,10 @@ object NearlyCoherentFishingRodRadius {
     fun onRenderWorld(event: RenderWorldLastEvent) {
         if (!LocationManager.inSkyblock || LocationManager.currentIsland != "The Rift" || !RiftConfig.nearlyCoherentRodRadius) return
 
-        if (Utils.mc.thePlayer.heldItem?.getSkyblockId() != "NEARLY_COHERENT_ROD") return
+        if (Utils.getPlayer()!!.heldItem?.getSkyblockId() != "NEARLY_COHERENT_ROD") return
 
         RenderUtils.drawFilledCircleWithBorder(
-            Utils.mc.thePlayer.positionVector,
+            Utils.getPlayer()!!.positionVector,
             8f,
             72,
             RiftConfig.nearlyCoherentRodRadiusColor.get(),

@@ -58,12 +58,12 @@ object PlayerStats {
     private var useManaEstimation = false
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
-        if (event.phase != TickEvent.Phase.START || !LocationManager.inSkyblock || Utils.mc.thePlayer == null) return
+        if (event.phase != TickEvent.Phase.START || !LocationManager.inSkyblock || !Utils.isWorldLoaded()) return
         if(TickManager.tickCount % 10 != 0) return // Runs every 10 ticks (twice a second)
 
         if (LocationManager.currentIsland == "The Rift") {
-            health = Utils.mc.thePlayer.health.toInt()
-            maxHealth = Utils.mc.thePlayer.maxHealth.toInt()
+            health = Utils.getPlayer()!!.health.toInt()
+            maxHealth = Utils.getPlayer()!!.maxHealth.toInt()
         }
 
         if(useManaEstimation) {

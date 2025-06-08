@@ -52,14 +52,16 @@ object OutlineUtils {
         shouldCancelHurt: Boolean = true
     ) {
         if(event.entity is EntityArmorStand || event.entity.isInvisible) return
-        if(!mc.thePlayer.canEntityBeSeen(event.entity)) return
+        if(!Utils.getPlayer()!!.canEntityBeSeen(event.entity)) return
 
         if (shouldCancelHurt) event.entity.hurtTime = 0
 
-        val fancyGraphics = mc.gameSettings.fancyGraphics
-        val gamma = mc.gameSettings.gammaSetting
-        mc.gameSettings.fancyGraphics = false
-        mc.gameSettings.gammaSetting = 100000f
+        val gameSettings = Utils.getGameSettings()
+        val fancyGraphics = gameSettings.fancyGraphics
+        val gamma = gameSettings.gammaSetting
+
+        gameSettings.fancyGraphics = false
+        gameSettings.gammaSetting = 100000f
         glPushMatrix()
         glPushAttrib(GL_ALL_ATTRIB_BITS)
         checkSetupFBO()
@@ -80,8 +82,8 @@ object OutlineUtils {
         glLineWidth(1f)
         glPopAttrib()
         glPopMatrix()
-        mc.gameSettings.fancyGraphics = fancyGraphics
-        mc.gameSettings.gammaSetting = gamma
+        gameSettings.fancyGraphics = fancyGraphics
+        gameSettings.gammaSetting = gamma
     }
 
     private fun render(event: RenderEntityModelEvent) {

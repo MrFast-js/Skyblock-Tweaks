@@ -5,6 +5,7 @@ import mrfast.sbt.apis.PlayerStats
 import mrfast.sbt.config.categories.GeneralConfig
 import mrfast.sbt.managers.GuiManager
 import mrfast.sbt.config.categories.GeneralConfig.defenseNumberColor
+import mrfast.sbt.managers.FontManager
 import mrfast.sbt.utils.GuiUtils
 import mrfast.sbt.managers.LocationManager
 import mrfast.sbt.utils.Utils
@@ -22,8 +23,8 @@ object DefenseNumber {
             this.relativeY = 0.971
             this.elementName = "Defense Number"
             this.addToList()
-            this.height = Utils.mc.fontRendererObj.FONT_HEIGHT
-            this.width = Utils.mc.fontRendererObj.getStringWidth("124,567")
+            this.height = FontManager.getFontRenderer().FONT_HEIGHT
+            this.width = FontManager.getFontRenderer().getStringWidth("124,567")
         }
 
         override fun draw() {

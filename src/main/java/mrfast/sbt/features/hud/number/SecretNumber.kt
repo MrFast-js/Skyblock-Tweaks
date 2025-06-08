@@ -3,6 +3,7 @@ package mrfast.sbt.features.hud.number
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.apis.PlayerStats
 import mrfast.sbt.config.categories.GeneralConfig
+import mrfast.sbt.managers.FontManager
 import mrfast.sbt.managers.GuiManager
 import mrfast.sbt.utils.GuiUtils
 import mrfast.sbt.managers.LocationManager
@@ -21,8 +22,8 @@ object SecretNumber {
             this.relativeY = 0.93
             this.elementName = "Secret Number"
             this.addToList()
-            this.height = Utils.mc.fontRendererObj.FONT_HEIGHT * 2
-            this.width = Utils.mc.fontRendererObj.getStringWidth("§7Secrets") + 1
+            this.height = FontManager.getFontRenderer().FONT_HEIGHT * 2
+            this.width = FontManager.getFontRenderer().getStringWidth("§7Secrets") + 1
             this.needsExample = true
         }
 
@@ -40,13 +41,13 @@ object SecretNumber {
                 GuiUtils.drawText(
                     line,
                     this.width / 2f,
-                    Utils.mc.fontRendererObj.FONT_HEIGHT * i.toFloat(),
+                    FontManager.getFontRenderer().FONT_HEIGHT * i.toFloat(),
                     style,
                     Color(0xFFFFFF),
                     centered = true
                 )
             }
-            this.width = Utils.mc.fontRendererObj.getStringWidth("§7Secrets") + 1
+            this.width = FontManager.getFontRenderer().getStringWidth("§7Secrets") + 1
         }
 
         override fun drawExample() {
@@ -61,7 +62,7 @@ object SecretNumber {
                 GuiUtils.drawText(
                     line,
                     this.width / 2f,
-                    Utils.mc.fontRendererObj.FONT_HEIGHT * i.toFloat(),
+                    FontManager.getFontRenderer().FONT_HEIGHT * i.toFloat(),
                     style,
                     GeneralConfig.speedNumberColor.get(),
                     centered = true

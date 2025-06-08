@@ -24,12 +24,12 @@ object HotspotCircleHighlight {
     fun onRender3d(event: RenderWorldLastEvent) {
         if (!LocationManager.inSkyblock || !MiscellaneousConfig.hotspotCircleHighlight) return
 
-        val player = Utils.mc.thePlayer ?: return
+        val player = Utils.getPlayer()!! ?: return
         val bobber = player.fishEntity
 
         // Clear and refresh HOTSPOT locations
         hotspotPositions.clear()
-        for (entity in Utils.mc.theWorld.loadedEntityList) {
+        for (entity in Utils.getWorld().loadedEntityList) {
             if (entity is EntityArmorStand && entity.customNameTag.clean() == "HOTSPOT") {
                 val hotspotPos = Vec3(entity.posX, entity.posY - 1.6, entity.posZ)
 

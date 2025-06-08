@@ -7,6 +7,7 @@ import mrfast.sbt.config.categories.GeneralConfig.itemPickupLogItemPrices
 import mrfast.sbt.config.categories.GeneralConfig.itemPickupLogTextStyle
 import mrfast.sbt.customevents.SkyblockInventoryItemEvent
 import mrfast.sbt.customevents.WorldLoadEvent
+import mrfast.sbt.managers.FontManager
 import mrfast.sbt.managers.GuiManager
 import mrfast.sbt.utils.GuiUtils
 import mrfast.sbt.utils.ItemUtils
@@ -72,7 +73,7 @@ object ItemPickupLog {
             this.relativeY = 0.0
             this.elementName = "Item Pickup Log"
             this.addToList()
-            this.height = Utils.mc.fontRendererObj.FONT_HEIGHT * 2 + 2
+            this.height = FontManager.getFontRenderer().FONT_HEIGHT * 2 + 2
             this.width = 112
             this.needsExample = true
         }

@@ -63,8 +63,8 @@ object NewYearsCakeHelper {
         val inCakeBag = event.gui.chestName() == "New Year Cake Bag"
 
         // Highlight held item to show where it should go
-        if (inCakeBag && Utils.mc.thePlayer.inventory.itemStack != null && MiscellaneousConfig.cakeBagSortingHelper) {
-            val heldItemClean = JsonPrimitive(Utils.mc.thePlayer.inventory.itemStack.displayName.clean())
+        if (inCakeBag && Utils.getPlayer()!!.inventory.itemStack != null && MiscellaneousConfig.cakeBagSortingHelper) {
+            val heldItemClean = JsonPrimitive(Utils.getPlayer()!!.inventory.itemStack.displayName.clean())
 
             if (cakebagArray.contains(heldItemClean)) {
                 if (lastClickedSlot == event.slot.slotIndex) {

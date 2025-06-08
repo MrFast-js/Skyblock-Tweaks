@@ -2,6 +2,7 @@ package mrfast.sbt.features.hud.number
 
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.config.categories.GeneralConfig
+import mrfast.sbt.managers.FontManager
 import mrfast.sbt.managers.GuiManager
 import mrfast.sbt.utils.GuiUtils
 import mrfast.sbt.managers.LocationManager
@@ -21,14 +22,14 @@ object SpeedNumber {
             this.relativeY = 0.98
             this.elementName = "Speed Number"
             this.addToList()
-            this.height = Utils.mc.fontRendererObj.FONT_HEIGHT
+            this.height = FontManager.getFontRenderer().FONT_HEIGHT
         }
 
         override fun draw() {
             val speed = ((Minecraft.getMinecraft().thePlayer?.capabilities?.walkSpeed ?: 0f) * 1000)
             val number = "${speed.formatNumber()}%"
             GuiUtils.drawText(number, 0f, 0f, GuiUtils.TextStyle.BLACK_OUTLINE, GeneralConfig.speedNumberColor.get())
-            this.width = Utils.mc.fontRendererObj.getStringWidth(number) + 1
+            this.width = FontManager.getFontRenderer().getStringWidth(number) + 1
         }
 
         override fun isActive(): Boolean {

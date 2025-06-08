@@ -32,10 +32,10 @@ object LarvaSilkLines {
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
         if (shouldReturn() || startingSilkPos == null) return
-        val heldItem = Utils.mc.thePlayer.heldItem?.getSkyblockId() ?: return
+        val heldItem = Utils.getPlayer()!!.heldItem?.getSkyblockId() ?: return
         if (heldItem == "LARVA_SILK") {
             RenderUtils.drawSpecialBB(startingSilkPos!!, larvaSilkBlockColor.get(), event.partialTicks)
-            val lookingBlock: MovingObjectPosition = Utils.mc.thePlayer.rayTrace(4.0, event.partialTicks)
+            val lookingBlock: MovingObjectPosition = Utils.getPlayer()!!.rayTrace(4.0, event.partialTicks)
 
             if (lookingBlock.blockPos != null && lookingBlock.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
                 val starting = Vec3(
@@ -66,7 +66,7 @@ object LarvaSilkLines {
         if (shouldReturn()) return
 
         if (event.action == PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK) {
-            val heldItem = Utils.mc.thePlayer.heldItem?.getSkyblockId() ?: return
+            val heldItem = Utils.getPlayer()!!.heldItem?.getSkyblockId() ?: return
 
             if (heldItem == "LARVA_SILK") {
                 // If we haven't started silk, start it

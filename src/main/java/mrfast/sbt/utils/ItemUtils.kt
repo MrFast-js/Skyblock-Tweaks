@@ -27,7 +27,7 @@ object ItemUtils {
     }
 
     fun getHeldItem(): ItemStack? {
-        return Utils.mc.thePlayer.heldItem
+        return Utils.getPlayer()!!.heldItem
     }
 
     fun ItemStack.getItemUUID(): String? {

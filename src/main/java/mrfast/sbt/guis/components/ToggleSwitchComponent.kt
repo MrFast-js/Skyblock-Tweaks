@@ -59,7 +59,7 @@ class ToggleSwitchComponent(initValue: Boolean) : UIRoundedRectangle(0f) {
                     if (activated) CustomizationConfig.onSwitchColor.colorState.constraint else  CustomizationConfig.offSwitchColor.colorState.constraint
                 )
             }
-            Utils.mc.thePlayer.playSound("gui.button.press", 0.25f, 1f)
+            Utils.getPlayer()!!.playSound("gui.button.press", 0.25f, 1f)
         }
     }
 

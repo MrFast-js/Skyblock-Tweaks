@@ -1,6 +1,5 @@
 package mrfast.sbt.features.profitTracking
 
-import gg.essential.api.utils.GuiUtil
 import gg.essential.elementa.ElementaVersion
 import gg.essential.elementa.WindowScreen
 import gg.essential.universal.UKeyboard
@@ -16,6 +15,8 @@ import mrfast.sbt.features.profitTracking.ProfitTracker.sessionStartedAt
 import mrfast.sbt.features.profitTracking.ProfitTracker.started
 import mrfast.sbt.features.profitTracking.ProfitTracker.whitelistItems
 import mrfast.sbt.managers.DataManager
+import mrfast.sbt.managers.FontManager
+import mrfast.sbt.managers.GuiManager
 import mrfast.sbt.utils.GuiUtils
 import mrfast.sbt.utils.GuiUtils.Button
 import mrfast.sbt.utils.ItemUtils
@@ -44,7 +45,7 @@ import kotlin.math.min
 
 
 class ProfitTrackerGui : WindowScreen(ElementaVersion.V2) {
-    private val fontRenderer = Utils.mc.fontRendererObj
+    private val fontRenderer = FontManager.getFontRenderer()
     private var guiTop = 0F
     private var guiLeft = 0F
     private val boxTexture = ResourceLocation("skyblocktweaks", "gui/profitTracker.png")
@@ -210,10 +211,10 @@ class ProfitTrackerGui : WindowScreen(ElementaVersion.V2) {
                 listOf("§eYour currently earning", formatted),
                 mouseX,
                 mouseY,
-                Utils.mc.displayWidth,
-                Utils.mc.displayHeight,
+                Utils.getScaledResolution().scaledWidth,
+                Utils.getScaledResolution().scaledHeight,
                 -1,
-                Utils.mc.fontRendererObj
+                FontManager.getFontRenderer()
             )
         }
     }
@@ -362,10 +363,10 @@ class ProfitTrackerGui : WindowScreen(ElementaVersion.V2) {
                     textToShow,
                     mouseX.toInt(),
                     mouseY.toInt(),
-                    Utils.mc.displayWidth,
-                    Utils.mc.displayHeight,
+                    Utils.getScaledResolution().scaledWidth,
+                    Utils.getScaledResolution().scaledHeight,
                     -1,
-                    Utils.mc.fontRendererObj
+                    FontManager.getFontRenderer()
                 )
             }
         }
@@ -393,8 +394,8 @@ class ProfitTrackerGui : WindowScreen(ElementaVersion.V2) {
         selectedList.remove(itemId)
         newItemButtons.clear()
         // Refresh buttons
-        GuiUtil.open(null)
-        GuiUtil.open(ProfitTrackerGui())
+        GuiUtils.closeGui()
+        GuiManager.displayScreen(ProfitTrackerGui())
     }
 
     private fun addItem(itemId: String) {
@@ -403,13 +404,13 @@ class ProfitTrackerGui : WindowScreen(ElementaVersion.V2) {
         selectedList.add(selectedList.size - 1, itemId)
         newItemButtons.clear()
         // Refresh buttons
-        GuiUtil.open(null)
-        GuiUtil.open(ProfitTrackerGui())
+        GuiUtils.closeGui()
+        GuiManager.displayScreen(ProfitTrackerGui())
     }
 
     private fun openPickerPopup() {
         itemPickerPopupX = mouseX
-        val minY = Utils.mc.displayHeight / 2 - 128F
+        val minY = Utils.getScaledResolution().scaledHeight / 2 - 128F
         itemPickerPopupY = min(minY.toDouble(), mouseY)
     }
 
@@ -489,10 +490,10 @@ class ProfitTrackerGui : WindowScreen(ElementaVersion.V2) {
                             listOf(hoverText),
                             mouseX.toInt(),
                             mouseY.toInt(),
-                            Utils.mc.displayWidth,
-                            Utils.mc.displayHeight,
+                            Utils.getScaledResolution().scaledWidth,
+                            Utils.getScaledResolution().scaledHeight,
                             -1,
-                            Utils.mc.fontRendererObj
+                            FontManager.getFontRenderer()
                         )
                     GlStateManager.popMatrix()
                 }
@@ -586,10 +587,10 @@ class ProfitTrackerGui : WindowScreen(ElementaVersion.V2) {
                         textToShow,
                         mouseX.toInt(),
                         mouseY.toInt(),
-                        Utils.mc.displayWidth,
-                        Utils.mc.displayHeight,
+                        Utils.getScaledResolution().scaledWidth,
+                        Utils.getScaledResolution().scaledHeight,
                         -1,
-                        Utils.mc.fontRendererObj
+                        FontManager.getFontRenderer()
                     )
                 }
 

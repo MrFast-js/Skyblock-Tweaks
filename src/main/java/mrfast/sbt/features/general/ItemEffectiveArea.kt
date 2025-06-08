@@ -19,23 +19,24 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
  */
 @SkyblockTweaks.EventComponent
 object ItemEffectiveArea {
+    val items = listOf(
+        "BAT_WAND",
+        "STARRED_BAT_WAND",
+        "HYPERION",
+        "ASTRAEA",
+        "SCYLLA",
+        "VALKYRIE"
+    )
+
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        if (!LocationManager.inSkyblock || !RenderingConfig.showItemEffectiveArea) return
+        if (!LocationManager.inSkyblock || !RenderingConfig.showItemEffectiveArea || !Utils.isWorldLoaded()) return
 
-        val heldItemId = Utils.mc.thePlayer.heldItem?.getSkyblockId() ?: return
-
-        val items = listOf(
-            "BAT_WAND",
-            "STARRED_BAT_WAND",
-            "HYPERION",
-            "ASTRAEA",
-            "SCYLLA",
-            "VALKYRIE",
-        )
+        val heldItemId = Utils.getPlayer()!!.heldItem?.getSkyblockId() ?: return
 
         if (heldItemId in items) {
-            val lookingBlock = Utils.mc.thePlayer.rayTrace(if(heldItemId == "HYPERION") 9.0 else 45.0, event.partialTicks)
+            val lookingBlock = Utils.getPlayer()!!.rayTrace(if(heldItemId == "HYPERION") 9.0 else 45.0, event.partialTicks)
+
             if (lookingBlock.blockPos != null && lookingBlock.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
                 if (!showItemEffectiveAreaMobsNearby || SkyblockMobDetector.getLoadedSkyblockMobs()
                         .any { it.skyblockMobId != null && it.skyblockMob.positionVector.distanceTo(lookingBlock.hitVec) < 7 }

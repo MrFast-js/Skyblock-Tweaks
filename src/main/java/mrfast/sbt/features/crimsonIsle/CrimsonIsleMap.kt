@@ -80,7 +80,7 @@ object CrimsonIsleMap {
             )
             GlStateManager.popMatrix()
 
-            val player = Utils.mc.thePlayer
+            val player = Utils.getPlayer()!!
             var x = lastPlayerX
             var z = lastPlayerZ
             var rotation = lastPlayerR

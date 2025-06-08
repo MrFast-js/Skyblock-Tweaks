@@ -5,6 +5,7 @@ import mrfast.sbt.apis.PlayerStats
 import mrfast.sbt.config.categories.GeneralConfig
 import mrfast.sbt.managers.GuiManager
 import mrfast.sbt.config.categories.GeneralConfig.manaNumberColor
+import mrfast.sbt.managers.FontManager
 import mrfast.sbt.utils.GuiUtils
 import mrfast.sbt.managers.LocationManager
 import mrfast.sbt.utils.Utils
@@ -22,8 +23,8 @@ object ManaNumber {
             this.relativeY = 0.933
             this.elementName = "Mana Number"
             this.addToList()
-            this.height = Utils.mc.fontRendererObj.FONT_HEIGHT
-            this.width = Utils.mc.fontRendererObj.getStringWidth("12345/12345")
+            this.height = FontManager.getFontRenderer().FONT_HEIGHT
+            this.width = FontManager.getFontRenderer().getStringWidth("12345/12345")
         }
 
         override fun draw() {

@@ -16,11 +16,11 @@ object MoodyGrappleShotHelper {
     fun onRenderEntityModel(event: RenderEntityModelEvent) {
         if (LocationManager.currentIsland != "Crimson Isle" || !CrimsonConfig.moodyGrappleShotHighlight) return
 
-        if (Utils.mc.thePlayer.heldItem?.getSkyblockId() != "MOODY_GRAPPLESHOT") return
+        if (Utils.getPlayer()!!.heldItem?.getSkyblockId() != "MOODY_GRAPPLESHOT") return
 
         val mob = SkyblockMobDetector.getSkyblockMob(event.entity) ?: return
         if (mob.skyblockMobId == "Smoldering Blaze") {
-            if (Utils.mc.thePlayer.getDistanceToEntity(mob.skyblockMob) > 17) return
+            if (Utils.getPlayer()!!.getDistanceToEntity(mob.skyblockMob) > 17) return
             OutlineUtils.outlineEntity(event, CrimsonConfig.moodyGrappleShotHighlightColor.colorState.get())
         }
     }

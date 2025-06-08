@@ -47,7 +47,7 @@ object ShenPuzzleHelper {
         if (shouldReturn()) return
 
         // Looking at reset button
-        val rayTraceResult = Utils.mc.thePlayer.rayTrace(4.0, event.partialTicks)
+        val rayTraceResult = Utils.getPlayer()!!.rayTrace(4.0, event.partialTicks)
         if (rayTraceResult != null && rayTraceResult.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
             if(rayTraceResult.blockPos == BlockPos(-261, 20, -60) || rayTraceResult.blockPos == BlockPos(-262, 20, -60)) {
                 if (Mouse.isButtonDown(0) || Mouse.isButtonDown(1)) {
@@ -116,8 +116,8 @@ object ShenPuzzleHelper {
     }
 
     private fun shouldReturn(): Boolean {
-        if (Utils.mc.thePlayer != null) {
-            if (Utils.mc.thePlayer!!.position.distanceSq(buttons[0]) > 400) return true
+        if (Utils.isWorldLoaded()) {
+            if (Utils.getPlayer()!!.position.distanceSq(buttons[0]) > 400) return true
         }
 
         return !LocationManager.inSkyblock || LocationManager.currentIsland != "The Rift" || !RiftConfig.shenPuzzleHelper

@@ -6,6 +6,7 @@ import gg.essential.elementa.WindowScreen
 import gg.essential.universal.UMatrixStack
 import kotlinx.coroutines.*
 import mrfast.sbt.apis.ItemApi
+import mrfast.sbt.managers.FontManager
 import mrfast.sbt.managers.LocationManager
 import mrfast.sbt.managers.PartyManager
 import mrfast.sbt.utils.*
@@ -60,11 +61,11 @@ class DungeonPartyGui : WindowScreen(ElementaVersion.V2) {
             if (PartyManager.partyMembers.isNotEmpty() &&
                 (selectedPlayer == "" || !partyMemberApiData.containsKey(selectedPlayer))
             ) {
-                selectedPlayer = PartyManager.partyMembers.keys.find { it != Utils.mc.thePlayer.name } ?: ""
+                selectedPlayer = PartyManager.partyMembers.keys.find { it != Utils.getPlayer()!!.name } ?: ""
             }
 
             for ((name, _) in PartyManager.partyMembers) {
-                if (name == Utils.mc.thePlayer.name || checkedPlayers.contains(name)) continue
+                if (name == Utils.getPlayer()!!.name || checkedPlayers.contains(name)) continue
 
                 checkedPlayers.add(name)
                 getApiData(name)
@@ -146,7 +147,7 @@ class DungeonPartyGui : WindowScreen(ElementaVersion.V2) {
         }
         if (kickPlayerButton.isClicked(this.mouseX, this.mouseY, guiLeft, guiTop) && mouseClicking) {
             ChatUtils.sendPlayerMessage("/p kick $selectedPlayer")
-            if (PartyManager.partyMembers[Utils.mc.thePlayer.name]?.leader == true) {
+            if (PartyManager.partyMembers[Utils.getPlayer()!!.name]?.leader == true) {
                 selectedPlayer = ""
             }
         }
@@ -231,10 +232,10 @@ class DungeonPartyGui : WindowScreen(ElementaVersion.V2) {
                     itemStack.getLore(),
                     mouseX.toInt(),
                     mouseY.toInt(),
-                    Utils.mc.displayWidth,
-                    Utils.mc.displayHeight,
+                    Utils.getScaledResolution().scaledWidth,
+                    Utils.getScaledResolution().scaledHeight,
                     -1,
-                    Utils.mc.fontRendererObj
+                    FontManager.getFontRenderer()
                 )
             }
         }
@@ -260,10 +261,10 @@ class DungeonPartyGui : WindowScreen(ElementaVersion.V2) {
                     itemStack.getLore(),
                     mouseX.toInt(),
                     mouseY.toInt(),
-                    Utils.mc.displayWidth,
-                    Utils.mc.displayHeight,
+                    Utils.getScaledResolution().scaledWidth,
+                    Utils.getScaledResolution().scaledHeight,
                     -1,
-                    Utils.mc.fontRendererObj
+                    FontManager.getFontRenderer()
                 )
             }
         }
@@ -324,10 +325,10 @@ class DungeonPartyGui : WindowScreen(ElementaVersion.V2) {
                     itemStack.getLore(),
                     mouseX.toInt(),
                     mouseY.toInt(),
-                    Utils.mc.displayWidth,
-                    Utils.mc.displayHeight,
+                    Utils.getScaledResolution().scaledWidth,
+                    Utils.getScaledResolution().scaledHeight,
                     -1,
-                    Utils.mc.fontRendererObj
+                    FontManager.getFontRenderer()
                 )
             }
         }
@@ -353,10 +354,10 @@ class DungeonPartyGui : WindowScreen(ElementaVersion.V2) {
                     itemStack.getLore(),
                     mouseX.toInt(),
                     mouseY.toInt(),
-                    Utils.mc.displayWidth,
-                    Utils.mc.displayHeight,
+                    Utils.getScaledResolution().scaledWidth,
+                    Utils.getScaledResolution().scaledHeight,
                     -1,
-                    Utils.mc.fontRendererObj
+                    FontManager.getFontRenderer()
                 )
             }
         }
@@ -409,10 +410,10 @@ class DungeonPartyGui : WindowScreen(ElementaVersion.V2) {
                 fixLongLore(lore),
                 mouseX.toInt(),
                 mouseY.toInt(),
-                Utils.mc.displayWidth,
-                Utils.mc.displayHeight,
+                Utils.getScaledResolution().scaledWidth,
+                Utils.getScaledResolution().scaledHeight,
                 -1,
-                Utils.mc.fontRendererObj
+                FontManager.getFontRenderer()
             )
         }
     }
@@ -468,10 +469,10 @@ class DungeonPartyGui : WindowScreen(ElementaVersion.V2) {
                 lore.reversed(),
                 mouseX.toInt(),
                 mouseY.toInt(),
-                Utils.mc.displayWidth,
-                Utils.mc.displayHeight,
+                Utils.getScaledResolution().scaledWidth,
+                Utils.getScaledResolution().scaledHeight,
                 -1,
-                Utils.mc.fontRendererObj
+                FontManager.getFontRenderer()
             )
         }
 
@@ -571,9 +572,9 @@ class DungeonPartyGui : WindowScreen(ElementaVersion.V2) {
                 if (mouseClicking) {
                     // Kick button [X]
                     if (mouseX > tabX + 91f - 13f && mouseX < tabX + 91f && mouseY > tabY && mouseY < tabY + 10) {
-                        if (PartyManager.partyMembers[Utils.mc.thePlayer.name]?.leader == true) {
+                        if (PartyManager.partyMembers[Utils.getPlayer()!!.name]?.leader == true) {
                             ChatUtils.sendPlayerMessage("/p kick $username")
-                            if (PartyManager.partyMembers[Utils.mc.thePlayer.name]?.leader == true) {
+                            if (PartyManager.partyMembers[Utils.getPlayer()!!.name]?.leader == true) {
                                 selectedPlayer = ""
                             }
                             return

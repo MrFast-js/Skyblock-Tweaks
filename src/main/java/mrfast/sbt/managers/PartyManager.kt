@@ -80,7 +80,7 @@ object PartyManager {
                     if (hadProblemJoiningParty) return@setTimeout
 
                     // Clear all old party members but self
-                    partyMembers.entries.removeIf { it.key != Utils.mc.thePlayer.name }
+                    partyMembers.entries.removeIf { it.key != Utils.getPlayer()!!.name }
                     addSelfToParty(false)
 
                     for (line in event.slot.stack.getLore()) {
@@ -110,8 +110,8 @@ object PartyManager {
     private fun addSelfToParty(selfLeader: Boolean) {
         // Add self to party
         playerInParty = true
-        if (partyMembers.containsKey(Utils.mc.thePlayer.name)) return
-        val pm = PartyMember(Utils.mc.thePlayer.name)
+        if (partyMembers.containsKey(Utils.getPlayer()!!.name)) return
+        val pm = PartyMember(Utils.getPlayer()!!.name)
         pm.leader = selfLeader
         partyMembers[pm.name] = pm
 
@@ -230,8 +230,8 @@ object PartyManager {
             addSelfToParty(false)
             ChatUtils.sendPlayerMessage("/p list")
             hidePartyList = true
-            if (clean.contains(Utils.mc.thePlayer.name)) {
-                partyMembers[Utils.mc.thePlayer.name]?.leader = false
+            if (clean.contains(Utils.getPlayer()!!.name)) {
+                partyMembers[Utils.getPlayer()!!.name]?.leader = false
             }
         }
 

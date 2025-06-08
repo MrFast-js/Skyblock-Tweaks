@@ -54,12 +54,12 @@ object ExperimentationProfitOverlay {
     fun onTick(event: TickEvent.ClientTickEvent) {
         if (event.phase == TickEvent.Phase.START || !GeneralConfig.experimentationOverlay || LocationManager.currentArea != "Your Island") return
 
-        if (Utils.mc.currentScreen == null) {
+        if (Utils.getCurrentScreen() == null) {
             itemsInMenu.clear()
             return
         }
 
-        val gui = Utils.mc.currentScreen
+        val gui = Utils.getCurrentScreen()
         if (gui !is GuiChest || !gui.chestName().contains("Experimentation Table RNG")) return
 
         val inventory = gui.getInventory()

@@ -5,6 +5,7 @@ import mrfast.sbt.apis.PlayerStats
 import mrfast.sbt.managers.GuiManager
 import mrfast.sbt.config.categories.GeneralConfig
 import mrfast.sbt.config.categories.GeneralConfig.drillFuelDisplayColor
+import mrfast.sbt.managers.FontManager
 import mrfast.sbt.managers.LocationManager
 import mrfast.sbt.utils.GuiUtils
 import mrfast.sbt.utils.ItemUtils.getSkyblockId
@@ -23,8 +24,8 @@ object DrillFuelNumber {
             this.relativeY = 0.805
             this.elementName = "Drill Fuel Number"
             this.addToList()
-            this.height = Utils.mc.fontRendererObj.FONT_HEIGHT
-            this.width = Utils.mc.fontRendererObj.getStringWidth("20000/20000 Drill Fuel")
+            this.height = FontManager.getFontRenderer().FONT_HEIGHT
+            this.width = FontManager.getFontRenderer().getStringWidth("20000/20000 Drill Fuel")
             this.needsExample = true
         }
 
@@ -45,7 +46,7 @@ object DrillFuelNumber {
         }
 
         override fun isVisible(): Boolean {
-            val heldItemName = Utils.mc.thePlayer?.heldItem?.getSkyblockId() ?: ""
+            val heldItemName = Utils.getPlayer()!!?.heldItem?.getSkyblockId() ?: ""
             return heldItemName.contains("MITHRIL_DRILL") || heldItemName.contains("GEMSTONE_DRILL")
         }
     }

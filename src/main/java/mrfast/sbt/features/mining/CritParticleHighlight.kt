@@ -33,7 +33,7 @@ object CritParticleHighlight {
         val type = packet.particleType
         val pos = Vec3(packet.xCoordinate, packet.yCoordinate, packet.zCoordinate)
         if (type == EnumParticleTypes.CRIT) {
-            if(pos.distanceTo(Utils.mc.thePlayer.positionVector) > 7) return
+            if(pos.distanceTo(Utils.getPlayer()!!.positionVector) > 7) return
             val blockX = floor(pos.xCoord).toInt()
             val blockY = floor(pos.yCoord).toInt()
             val blockZ = floor(pos.zCoord).toInt()
@@ -54,12 +54,12 @@ object CritParticleHighlight {
 
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
-        if (event.phase != TickEvent.Phase.START || !LocationManager.inSkyblock || Utils.mc.theWorld == null) return
+        if (event.phase != TickEvent.Phase.START || !LocationManager.inSkyblock || !Utils.isWorldLoaded()) return
         if (currentlyMinedBlock == null || particlePosition == null || !MiningConfig.CritParticleHighlight) return
 
         if(TickManager.tickCount % 5 != 0) return
 
-        val selectedBlock = Utils.mc.theWorld.getBlockState(currentlyMinedBlock).block
+        val selectedBlock = Utils.getWorld().getBlockState(currentlyMinedBlock).block
         if (selectedBlock == Blocks.bedrock || selectedBlock == Blocks.air) {
             particlePosition = null
         }
@@ -75,8 +75,8 @@ object CritParticleHighlight {
             pos.xCoord + 0.08, pos.yCoord + 0.08, pos.zCoord + 0.08
         )
         // Get the player's eye position and look vector
-        val eyePos = Utils.mc.thePlayer.getPositionEyes(event.partialTicks)
-        val lookVec = Utils.mc.thePlayer.lookVec
+        val eyePos = Utils.getPlayer()!!.getPositionEyes(event.partialTicks)
+        val lookVec = Utils.getPlayer()!!.lookVec
 
         // Determine color based on intersection
         val color = if (aabb.calculateIntercept(

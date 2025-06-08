@@ -70,7 +70,7 @@ object ForgeFlipperOverlay {
         if (event.phase == TickEvent.Phase.START) return
         if (!MiningConfig.forgeFlipperOverlay || LocationManager.currentIsland != "Dwarven Mines") return
 
-        val gui = Utils.mc.currentScreen
+        val gui = Utils.getCurrentScreen()
         if (gui !is GuiChest) return
 
         itemsInMenu.clear()

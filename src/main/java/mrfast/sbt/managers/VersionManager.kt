@@ -43,7 +43,7 @@ object VersionManager {
 
     // Silently checks if you are behind in version (once per launch)
     private fun silentUpdateCheck() {
-        if (didSilentCheck || Utils.mc.thePlayer == null) return
+        if (didSilentCheck || !Utils.isWorldLoaded()) return
         didSilentCheck = true
 
         checkPotentialUpdate {

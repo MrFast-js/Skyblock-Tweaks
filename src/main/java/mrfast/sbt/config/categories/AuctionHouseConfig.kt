@@ -1,12 +1,13 @@
 package mrfast.sbt.config.categories
 
-import gg.essential.api.utils.GuiUtil
 import mrfast.sbt.config.Config
 import mrfast.sbt.features.auctionHouse.AuctionFlipper
 import mrfast.sbt.guis.GuiItemFilterPopup
 import mrfast.sbt.guis.components.CustomColor
 import mrfast.sbt.managers.ConfigProperty
 import mrfast.sbt.managers.ConfigType
+import mrfast.sbt.managers.GuiManager
+import mrfast.sbt.utils.GuiUtils
 import org.lwjgl.input.Keyboard
 import java.awt.Color
 
@@ -229,7 +230,7 @@ object AuctionHouseConfig : Config() {
             { newFilters -> AuctionFlipper.filters = newFilters.toMutableList() },
             AuctionFlipper.defaultFilterList
         )
-        GuiUtil.open(popup)
+        GuiManager.displayScreen(popup)
     }
 
     @ConfigProperty(

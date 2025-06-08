@@ -5,6 +5,7 @@ import mrfast.sbt.apis.PlayerStats
 import mrfast.sbt.config.categories.GeneralConfig
 import mrfast.sbt.managers.GuiManager
 import mrfast.sbt.config.categories.GeneralConfig.effectiveHealthNumberColor
+import mrfast.sbt.managers.FontManager
 import mrfast.sbt.utils.GuiUtils
 import mrfast.sbt.managers.LocationManager
 import mrfast.sbt.utils.Utils
@@ -22,8 +23,8 @@ object EffectiveHealthNumber {
             this.relativeY = 0.986
             this.elementName = "Effective Health Number"
             this.addToList()
-            this.height = Utils.mc.fontRendererObj.FONT_HEIGHT
-            this.width = Utils.mc.fontRendererObj.getStringWidth("380,000/420,000")
+            this.height = FontManager.getFontRenderer().FONT_HEIGHT
+            this.width = FontManager.getFontRenderer().getStringWidth("380,000/420,000")
         }
 
         override fun draw() {

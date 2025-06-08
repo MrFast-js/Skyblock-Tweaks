@@ -18,7 +18,7 @@ object VampireAnchorHighlight {
     fun onRenderWorld(event: RenderWorldLastEvent) {
         if (!LocationManager.inSkyblock || LocationManager.currentIsland != "The Rift" || !RiftConfig.highlightVampireAnchors) return
 
-        Utils.mc.theWorld.loadedEntityList.forEach {
+        Utils.getWorld().loadedEntityList.forEach {
             if (it is EntityArmorStand) {
                 if (it.getCurrentArmor(3) != null) {
                     val id = it.getCurrentArmor(3).serializeNBT().getCompoundTag("tag").getCompoundTag("SkullOwner")

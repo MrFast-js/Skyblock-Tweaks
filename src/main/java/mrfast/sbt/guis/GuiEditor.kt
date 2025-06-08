@@ -1,6 +1,7 @@
 package mrfast.sbt.guis
 
 import mrfast.sbt.config.categories.CustomizationConfig
+import mrfast.sbt.managers.FontManager
 import mrfast.sbt.managers.GuiManager
 import mrfast.sbt.utils.ChatUtils
 import mrfast.sbt.utils.Utils
@@ -20,8 +21,8 @@ class GuiEditor : GuiScreen() {
     private var showAllEnabledElements = false
     private var offsetX = 0.0
     private var offsetY = 0.0
-    private var screenWidth = Utils.mc.displayWidth / 2
-    private var screenHeight = Utils.mc.displayHeight / 2
+    private var screenWidth = Utils.getScaledResolution().scaledWidth / 2
+    private var screenHeight = Utils.getScaledResolution().scaledHeight / 2
 
     override fun initGui() {
         super.initGui()
@@ -104,7 +105,7 @@ class GuiEditor : GuiScreen() {
                 "§7X: §e${Math.round(hoveredElement!!.relativeX * screenWidth)} §7Y: §e${Math.round(hoveredElement!!.relativeY * screenHeight)} §7Scale: §e${hoveredElement!!.scale}",
                 "§3R-CLICK to open config"
             )
-            val fontObj = Utils.mc.fontRendererObj
+            val fontObj = FontManager.getFontRenderer()
             val tooltipWidth = fontObj.getStringWidth(renderTooltip[0])
             val tooltipHeight = renderTooltip.size * fontObj.FONT_HEIGHT
 

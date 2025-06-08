@@ -18,7 +18,7 @@ object ChatUtils {
     }
 
     fun sendClientCommand(message:String) {
-        ClientCommandHandler.instance.executeCommand(Utils.mc.thePlayer, message)
+        ClientCommandHandler.instance.executeCommand(Utils.getPlayer()!!, message)
     }
 
     fun sendClientMessage(message: String, prefix: Boolean? = false, shortPrefix: Boolean? = false) {

@@ -1,13 +1,15 @@
 package mrfast.sbt.guis
 
-import gg.essential.api.utils.GuiUtil
 import gg.essential.elementa.ElementaVersion
 import gg.essential.elementa.UIComponent
 import gg.essential.elementa.WindowScreen
 import gg.essential.elementa.components.*
 import gg.essential.elementa.components.input.UITextInput
 import gg.essential.elementa.components.inspector.Inspector
-import gg.essential.elementa.constraints.*
+import gg.essential.elementa.constraints.CenterConstraint
+import gg.essential.elementa.constraints.ChildBasedSizeConstraint
+import gg.essential.elementa.constraints.MinConstraint
+import gg.essential.elementa.constraints.PixelConstraint
 import gg.essential.elementa.constraints.animation.Animations
 import gg.essential.elementa.dsl.*
 import gg.essential.elementa.effects.OutlineEffect
@@ -22,10 +24,9 @@ import mrfast.sbt.config.categories.CustomizationConfig
 import mrfast.sbt.config.categories.DeveloperConfig
 import mrfast.sbt.config.categories.DeveloperConfig.showInspector
 import mrfast.sbt.guis.components.*
-import mrfast.sbt.guis.components.CustomUIText
-import mrfast.sbt.guis.components.CustomUIWrappedText
 import mrfast.sbt.managers.ConfigManager
 import mrfast.sbt.managers.ConfigType
+import mrfast.sbt.managers.GuiManager
 import mrfast.sbt.managers.VersionManager
 import mrfast.sbt.utils.ChatUtils
 import mrfast.sbt.utils.GuiUtils.drawBackgroundBlur
@@ -37,7 +38,6 @@ import net.minecraftforge.fml.client.config.GuiUtils
 import org.lwjgl.input.Keyboard
 import java.awt.Color
 import java.awt.Desktop
-import java.lang.Runnable
 import java.net.URI
 import java.util.*
 
@@ -49,7 +49,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2, drawDefaultB
 
         fun openConfigSearch(query: String) {
             searchQuery = query
-            GuiUtil.open(ConfigGui())
+            GuiManager.displayScreen(ConfigGui())
         }
     }
 
@@ -202,7 +202,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2, drawDefaultB
         val editGuiLocationsSymbol = CustomUIText("✎", scale = 2f).constrain {
             x = CenterConstraint();y = CenterConstraint();color = Color(0xFFFF55).constraint
         } childOf editGuiLocationsButton
-        editGuiLocationsButton.onMouseClick { GuiUtil.open(GuiEditor()) }
+        editGuiLocationsButton.onMouseClick { GuiManager.displayScreen(GuiEditor()) }
         editGuiLocationsButton.addTooltip(setOf("§eEdit Gui Locations"))
 
         // Add some text to the panel
@@ -261,7 +261,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2, drawDefaultB
             updateButton.onMouseClick {
                 // do update command
                 VersionManager.checkIfNeedUpdate()
-                Utils.mc.currentScreen = null
+                mrfast.sbt.utils.GuiUtils.closeGui()
             }
             updateButton.addTooltip(setOf("§aUpdate §e${VersionManager.neededUpdate.versionName}§a is available! Click to download"))
         }
@@ -685,7 +685,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2, drawDefaultB
                     // Reopen the config gui if developer mode is toggled
                     if(feature.name=="§cDeveloper Mode") {
                         mrfast.sbt.utils.GuiUtils.closeGui()
-                        GuiUtil.open(ConfigGui())
+                        GuiManager.displayScreen(ConfigGui())
                     }
                 }
                 ignoredHeights.add(toggleSwitch)

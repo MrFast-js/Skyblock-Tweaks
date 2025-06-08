@@ -13,7 +13,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object DragonHighlight {
     @SubscribeEvent
     fun onRenderPart(event: RenderEntityModelEvent) {
-        if (!LocationManager.inSkyblock || Utils.mc.theWorld == null || !RenderingConfig.highlightDragon) return
+        if (!LocationManager.inSkyblock || !Utils.isWorldLoaded() || !RenderingConfig.highlightDragon) return
 
         if (event.entity !is EntityDragon) return
 

@@ -4,7 +4,12 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import net.minecraft.client.Minecraft
+import net.minecraft.client.entity.EntityPlayerSP
+import net.minecraft.client.gui.GuiScreen
+import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.gui.inventory.GuiChest
+import net.minecraft.client.multiplayer.WorldClient
+import net.minecraft.client.settings.GameSettings
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.inventory.IInventory
 import net.minecraft.util.BlockPos
@@ -205,4 +210,22 @@ object Utils {
             else -> "th"
         }
     }
+
+
+    private var scaledResolution: ScaledResolution? = null
+    private var lastWidth = 0
+    fun getScaledResolution(): ScaledResolution {
+        if(mc.displayWidth != lastWidth || scaledResolution == null) {
+            scaledResolution = ScaledResolution(mc)
+        }
+        lastWidth = mc.displayWidth
+
+        return scaledResolution!!
+    }
+
+    fun getCurrentScreen(): GuiScreen? = mc.currentScreen
+    fun getGameSettings(): GameSettings = mc.gameSettings!!
+    fun isWorldLoaded(): Boolean = mc.theWorld != null && mc.thePlayer != null
+    fun getPlayer(): EntityPlayerSP? = mc.thePlayer
+    fun getWorld(): WorldClient = mc.theWorld
 }

@@ -66,7 +66,7 @@ object AuctionFlipper {
                     Mouse.isButtonDown(AuctionHouseConfig.autoAuctionFlipOpenKeybind!!) || Keyboard.isKeyDown(
                         AuctionHouseConfig.autoAuctionFlipOpenKeybind!!
                     )
-                if (Utils.mc.currentScreen == null) {
+                if (Utils.getCurrentScreen() == null) {
                     if (currentKeyState) {
                         if (sentAuctionFlips.isNotEmpty() && !sentBestAuction) {
                             sentBestAuction = true
@@ -154,7 +154,7 @@ object AuctionFlipper {
     // Wait for notification from webserver socket that auction house api updated
     @SubscribeEvent
     fun onSocketMessage(event: SocketMessageEvent) {
-        if (!AuctionHouseConfig.auctionFlipper || Utils.mc.theWorld == null || !LocationManager.inSkyblock) return
+        if (!AuctionHouseConfig.auctionFlipper || !Utils.isWorldLoaded() || !LocationManager.inSkyblock) return
 
         if (event.type == "event" && event.message == "AuctionUpdate") {
             if(CustomizationConfig.developerMode) {
@@ -354,10 +354,10 @@ object AuctionFlipper {
     private val filterDebugCounts = mutableMapOf<String, Int>()
 
     private fun filterAndSendFlip(auctionFlip: AuctionFlip) {
-        if(Utils.mc.thePlayer == null) return
+        if(!Utils.isWorldLoaded()) return
 
         // Filter out auctions that your already the top bid on
-        if (auctionFlip.bidderUUID?.equals(Utils.mc.thePlayer.uniqueID.toString().replace("-", "")) == true) {
+        if (auctionFlip.bidderUUID?.equals(Utils.getPlayer()!!.uniqueID.toString().replace("-", "")) == true) {
             filterOutWithReason("Already top bidder")
             return
         }

@@ -27,11 +27,11 @@ object PathTracer {
 
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
-        if (event.phase != TickEvent.Phase.START || Utils.mc.thePlayer == null || !recordingMovement) return
+        if (event.phase != TickEvent.Phase.START || !Utils.isWorldLoaded() || !recordingMovement) return
 
         if(TickManager.tickCount % 2 != 0) return
 
-        val pos = Utils.mc.thePlayer.positionVector.add(Vec3(0.0, 0.2, 0.0))
+        val pos = Utils.getPlayer()!!.positionVector.add(Vec3(0.0, 0.2, 0.0))
         if (!pathPoints.contains(pos)) {
             pathPoints.add(pos)
         }
@@ -39,14 +39,14 @@ object PathTracer {
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        if (Utils.mc.thePlayer != null) {
+        if (Utils.isWorldLoaded()) {
             GlStateManager.pushMatrix()
             if (pathThroughWalls) {
                 GlStateManager.disableDepth()
             }
             var previousPoint: Vec3? = null
             for (point in pathPoints) {
-                if (Utils.mc.thePlayer.positionVector.distanceTo(point) > pathRenderRange) {
+                if (Utils.getPlayer()!!.positionVector.distanceTo(point) > pathRenderRange) {
                     previousPoint = null
                     continue
                 }

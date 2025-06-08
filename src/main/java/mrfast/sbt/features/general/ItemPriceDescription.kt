@@ -26,7 +26,7 @@ object ItemPriceDescription {
         if (!MiscellaneousConfig.showItemPricingData) return
 
         val stack = event.itemStack
-        val menuName = (Utils.mc.currentScreen as? GuiChest)?.chestName() ?: ""
+        val menuName = (Utils.getCurrentScreen() as? GuiChest)?.chestName() ?: ""
         val pricingData = ItemApi.getItemInfo(stack) ?: return
 
         if (MiscellaneousConfig.showActiveAuctionStat) {

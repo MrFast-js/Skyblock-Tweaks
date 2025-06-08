@@ -1,6 +1,7 @@
 package mrfast.sbt.utils
 
 import gg.essential.elementa.utils.withAlpha
+import mrfast.sbt.managers.FontManager
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.renderer.GlStateManager
@@ -19,7 +20,6 @@ import kotlin.math.max
 import kotlin.math.sin
 
 object RenderUtils {
-    val mc = Utils.mc
     fun draw3DString(
         text: String,
         worldPos: Vec3,
@@ -27,10 +27,10 @@ object RenderUtils {
         depth: Boolean? = false,
         shadow: Boolean? = true
     ) {
-        val renderManager = mc.renderManager
-        val fontRenderer: FontRenderer = mc.fontRendererObj
+        val renderManager = Utils.mc.renderManager
+        val fontRenderer = FontManager.getFontRenderer()
 
-        val player = mc.thePlayer
+        val player = Utils.getPlayer()!!
         val viewerPosX = player.lastTickPosX + (player.posX - player.lastTickPosX) * partialTicks.toDouble()
         val viewerPosY = player.lastTickPosY + (player.posY - player.lastTickPosY) * partialTicks.toDouble()
         val viewerPosZ = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * partialTicks.toDouble()
@@ -68,16 +68,16 @@ object RenderUtils {
     }
 
     fun drawLineToEntity(entity: Entity, thickness: Int, color: Color, partialTicks: Float) {
-        if (!mc.thePlayer.canEntityBeSeen(entity)) return
+        if (!Utils.getPlayer()!!.canEntityBeSeen(entity)) return
 
         val skullPos = entity.positionVector.add(Vec3(0.0, entity.eyeHeight.toDouble(), 0.0))
         drawLineToPos(skullPos, thickness, color, partialTicks)
     }
 
     fun drawLineToPos(pos: Vec3, thickness: Int, color: Color, partialTicks: Float) {
-        val playerPos = mc.thePlayer.getPositionEyes(partialTicks)
+        val playerPos = Utils.getPlayer()!!.getPositionEyes(partialTicks)
         val toMob = pos.subtract(playerPos).normalize()
-        val lookVec = mc.thePlayer.getLook(partialTicks).normalize()
+        val lookVec = Utils.getPlayer()!!.getLook(partialTicks).normalize()
         val dot = toMob.dotProduct(lookVec)
 
         if (dot < 0.5) return // Only draw if the player has the target in view
@@ -90,7 +90,7 @@ object RenderUtils {
     }
 
     fun drawLine(from: Vec3, to: Vec3, thickness: Int, color: Color, partialTicks: Float) {
-        val player = mc.thePlayer
+        val player = Utils.getPlayer()!!
         val viewerPosX = player.lastTickPosX + (player.posX - player.lastTickPosX) * partialTicks.toDouble()
         val viewerPosY = player.lastTickPosY + (player.posY - player.lastTickPosY) * partialTicks.toDouble()
         val viewerPosZ = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * partialTicks.toDouble()
@@ -139,7 +139,7 @@ object RenderUtils {
         GlStateManager.disableTexture2D()
         GlStateManager.depthMask(false)
 
-        val width = max(1 - (Utils.mc.thePlayer.getDistance(bb.minX, bb.minY, bb.minZ) / 10 - 2), 2.0)
+        val width = max(1 - (Utils.getPlayer()!!.getDistance(bb.minX, bb.minY, bb.minZ) / 10 - 2), 2.0)
         drawFilledBB(bb, fillColor.withAlpha(0.6f), partialTicks)
         drawOutlinedBB(bb, fillColor.withAlpha(0.9f), width.toFloat(), partialTicks)
         GlStateManager.depthMask(true)
@@ -262,7 +262,7 @@ object RenderUtils {
         partialTicks: Float,
         depthCheckBorder: Boolean? = false
     ) {
-        val player = Utils.mc.thePlayer
+        val player = Utils.getPlayer()!!
         val interpolatedX = player.lastTickPosX + (player.posX - player.lastTickPosX) * partialTicks
         val interpolatedY = player.lastTickPosY + (player.posY - player.lastTickPosY) * partialTicks
         val interpolatedZ = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * partialTicks

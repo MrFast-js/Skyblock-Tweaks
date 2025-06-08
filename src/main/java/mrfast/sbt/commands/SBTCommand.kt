@@ -1,15 +1,16 @@
 package mrfast.sbt.commands
 
 import com.google.common.collect.Lists
-import gg.essential.api.utils.GuiUtil
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.config.categories.AuctionHouseConfig
-import mrfast.sbt.managers.VersionManager
 import mrfast.sbt.config.categories.CustomizationConfig
 import mrfast.sbt.config.categories.DungeonConfig
 import mrfast.sbt.guis.ConfigGui
 import mrfast.sbt.guis.GuiEditor
+import mrfast.sbt.managers.GuiManager
+import mrfast.sbt.managers.VersionManager
 import mrfast.sbt.utils.ChatUtils
+import mrfast.sbt.utils.GuiUtils
 import net.minecraft.command.CommandBase
 import net.minecraft.command.ICommandSender
 import net.minecraft.util.BlockPos
@@ -27,7 +28,7 @@ class SBTCommand : CommandBase() {
     override fun processCommand(sender: ICommandSender, args: Array<out String>) {
         if (args.isNotEmpty()) {
             when {
-                args[0] == "edit" -> GuiUtil.open(GuiEditor())
+                args[0] == "edit" -> GuiManager.displayScreen(GuiEditor())
                 args[0] == "update" -> {
                     if (args.size < 2) {
                         ChatUtils.sendClientMessage("§cInvalid Usage! §e/sbt update check|pre|full")
@@ -78,7 +79,7 @@ class SBTCommand : CommandBase() {
                 }
             }
         } else {
-            GuiUtil.open(ConfigGui())
+            GuiManager.displayScreen(ConfigGui())
         }
     }
 

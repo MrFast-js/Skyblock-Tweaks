@@ -29,11 +29,11 @@ object HighlightCorrectLivid {
 
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
-        if (!LocationManager.inDungeons || LocationManager.dungeonFloor != 5 || !highlightCorrectLivid || event.phase != TickEvent.Phase.START || Utils.mc.theWorld == null) return
+        if (!LocationManager.inDungeons || LocationManager.dungeonFloor != 5 || !highlightCorrectLivid || event.phase != TickEvent.Phase.START || !Utils.isWorldLoaded()) return
 
         if(TickManager.tickCount % 20 != 0) return
 
-        val state: IBlockState = Utils.mc.theWorld.getBlockState(BlockPos(5, 108, 42))
+        val state: IBlockState = Utils.getWorld().getBlockState(BlockPos(5, 108, 42))
         if (state.block != Blocks.stained_glass) return
 
         val color = state.getValue(BlockStainedGlass.COLOR)
@@ -50,7 +50,7 @@ object HighlightCorrectLivid {
             else -> return
         }
 
-        for (mob in Utils.mc.theWorld.playerEntities) {
+        for (mob in Utils.getWorld().playerEntities) {
             if (mob.name.contains(lividType)) {
                 lividEntity = mob
                 break
@@ -71,7 +71,7 @@ object HighlightCorrectLivid {
     fun onRenderWorld(event: RenderWorldLastEvent) {
         if (!LocationManager.inDungeons || LocationManager.dungeonFloor != 5 || !highlightCorrectLivid || !highlightCorrectLividLine) return
 
-        if (lividEntity != null && lividEntity!!.isEntityAlive && Utils.mc.thePlayer.canEntityBeSeen(lividEntity)) {
+        if (lividEntity != null && lividEntity!!.isEntityAlive && Utils.getPlayer()!!.canEntityBeSeen(lividEntity)) {
             RenderUtils.drawLineToEntity(
                 lividEntity!!,
                 2,

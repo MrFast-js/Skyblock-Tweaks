@@ -1,16 +1,14 @@
 package mrfast.sbt.config.categories
 
-import gg.essential.api.utils.GuiUtil
 import mrfast.sbt.config.Config
-import mrfast.sbt.features.auctionHouse.AuctionFlipper
-import mrfast.sbt.managers.ConfigProperty
-import mrfast.sbt.managers.ConfigType
 import mrfast.sbt.features.general.TrashHighlighter
 import mrfast.sbt.guis.ConfigGui
-import mrfast.sbt.guis.GuiItemFilterPopup.*
 import mrfast.sbt.guis.GuiItemFilterPopup
 import mrfast.sbt.guis.components.CustomColor
-import java.awt.Color
+import mrfast.sbt.managers.ConfigProperty
+import mrfast.sbt.managers.ConfigType
+import mrfast.sbt.managers.GuiManager
+import mrfast.sbt.utils.GuiUtils
 
 object DungeonConfig : Config() {
     @ConfigProperty(
@@ -141,9 +139,9 @@ object DungeonConfig : Config() {
         )
 
         popup.runOnClose {
-            GuiUtil.open(ConfigGui())
+            GuiManager.displayScreen(ConfigGui())
         }
-        GuiUtil.open(popup)
+        GuiManager.displayScreen(popup)
     }
 
     @ConfigProperty(

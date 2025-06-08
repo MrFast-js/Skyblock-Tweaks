@@ -3,17 +3,18 @@ package mrfast.sbt.utils
 import gg.essential.elementa.dsl.constraint
 import gg.essential.elementa.state.BasicState
 import gg.essential.universal.UMatrixStack
-import mrfast.sbt.config.categories.CustomizationConfig
 import mrfast.sbt.config.categories.DeveloperConfig
 import mrfast.sbt.guis.components.OutlinedRoundedRectangle
 import mrfast.sbt.guis.components.shader.GaussianBlur
 import mrfast.sbt.guis.components.shader.ShaderManager
 import mrfast.sbt.managers.FontManager
+import mrfast.sbt.managers.GuiManager
 import mrfast.sbt.utils.Utils.clean
 import mrfast.sbt.utils.Utils.cleanColor
 import mrfast.sbt.utils.Utils.getStringWidth
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.Gui
+import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.RenderHelper
@@ -69,9 +70,7 @@ object GuiUtils {
         scale: Float = 1.0f
     ) {
         val shadowText: String = text.cleanColor()
-        var fontRenderer = Utils.mc.fontRendererObj
-
-        if (CustomizationConfig.selectedFont == "Smooth") fontRenderer = FontManager.getSmoothFontRenderer()
+        val fontRenderer = FontManager.getFontRenderer()
 
         // Calculate the centered x position if needed
         val startX = if (centered) {
@@ -148,7 +147,7 @@ object GuiUtils {
         GlStateManager.translate(x, y, 0f)
         GlStateManager.scale(width / 16f, height / 16f, 1.0f)
         Minecraft.getMinecraft().renderItem.renderItemIntoGUI(stack, 0, 0)
-        Minecraft.getMinecraft().renderItem.renderItemOverlays(Utils.mc.fontRendererObj, stack, 0, 0)
+        Minecraft.getMinecraft().renderItem.renderItemOverlays(FontManager.getFontRenderer(), stack, 0, 0)
         RenderHelper.disableStandardItemLighting()
         GlStateManager.popMatrix()
     }
@@ -268,7 +267,7 @@ object GuiUtils {
         open var backgroundColor: Color = Color.GRAY,
         open var width: Int = text.getStringWidth()
     ) {
-        open var height = Utils.mc.fontRendererObj.FONT_HEIGHT
+        open var height = FontManager.getFontRenderer().FONT_HEIGHT
 
         open fun draw(mouseX: Int, mouseY: Int, originX: Int = 0, originY: Int = 0) {
             if (drawBackground) {
@@ -301,10 +300,10 @@ object GuiUtils {
                         hoverText,
                         mouseX,
                         mouseY,
-                        Utils.mc.displayWidth,
-                        Utils.mc.displayHeight,
+                        Utils.getScaledResolution().scaledWidth,
+                        Utils.getScaledResolution().scaledHeight,
                         -1,
-                        Utils.mc.fontRendererObj
+                        FontManager.getFontRenderer()
                     )
                     GlStateManager.popMatrix()
                     GlStateManager.popAttrib()
@@ -423,7 +422,7 @@ object GuiUtils {
             GL11.glPushMatrix()
             GlStateManager.disableTexture2D()
             GlStateManager.color(0f, 0f, 0f, 1f)
-            ShaderManager.drawQuads(0f, 0f, Utils.mc.displayWidth / 2f, Utils.mc.displayHeight / 2f)
+            ShaderManager.drawQuads(0f, 0f, Utils.getScaledResolution().scaledWidth / 2f, Utils.getScaledResolution().scaledHeight / 2f)
             GlStateManager.enableTexture2D()
             GL11.glPopMatrix()
         }

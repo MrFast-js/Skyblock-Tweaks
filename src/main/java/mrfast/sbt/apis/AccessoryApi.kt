@@ -112,7 +112,7 @@ object AccessoryApi {
 
     private val ACCESSORY_BAG_REGEX = """Accessory Bag(?: \(.*\/.*\))?$""".toRegex()
     fun isAccessoryBagOpen(): Boolean {
-        val gui = Utils.mc.currentScreen
+        val gui = Utils.getCurrentScreen()
         if (gui is GuiChest) {
             val chestName = gui.chestName()
             return chestName.matches(ACCESSORY_BAG_REGEX)

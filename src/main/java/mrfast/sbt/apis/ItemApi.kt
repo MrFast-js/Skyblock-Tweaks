@@ -141,7 +141,7 @@ object ItemApi {
 
             try {
                 // Wait until player is in world, for some reason this can fail
-                val nearby = Utils.mc.theWorld.playerEntities.size
+                val nearby = Utils.getWorld().playerEntities.size
 
                 if(nearby == 0) {
                     delay(5_000)
@@ -318,7 +318,7 @@ object ItemApi {
 
         val nbtString = itemJson["nbttag"]?.asString
         if (nbtString == null) {
-            ChatUtils.sendClientMessage("§cFailed to get NBT for item §e$itemId§c, try §7/sbtd reload")
+//            ChatUtils.sendClientMessage("§cFailed to get NBT for item §e$itemId§c, try §7/sbtd reload")
             return null
         }
 
