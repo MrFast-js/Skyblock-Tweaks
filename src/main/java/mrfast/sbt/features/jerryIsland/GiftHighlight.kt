@@ -8,6 +8,7 @@ import mrfast.sbt.utils.RenderUtils
 import mrfast.sbt.utils.Utils
 import mrfast.sbt.utils.Utils.clean
 import mrfast.sbt.utils.Utils.matches
+import net.minecraft.block.BlockAir
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.util.BlockPos
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -30,6 +31,9 @@ object GiftHighlight {
             if(!isGift(armorStand)) return@forEach
 
             val blockPos = armorStand.position.up()
+            val block = Utils.getWorld().getBlockState(blockPos).block
+            if(block !is BlockAir) return@forEach
+
             val vector = armorStand.positionVector.addVector(0.0, 2.0, 0.0)
             val isCollected = collectedGifts.contains(blockPos)
             val color = if (isCollected) RenderingConfig.highlightGiftLocationsCollectedColor else RenderingConfig.highlightGiftLocationsUncollectedColor
@@ -49,8 +53,7 @@ object GiftHighlight {
 
     private fun isGift(armorStand: EntityArmorStand): Boolean {
         val headSlot = armorStand.getCurrentArmor(3) ?: return false
-        val isPlayerGift =
-            Utils.getWorld().getEntityByID(armorStand.entityId+1)?.displayName?.unformattedText?.clean()?.matches("""To: .*""".toRegex())?: false
+        val isPlayerGift = Utils.getWorld().getEntityByID(armorStand.entityId+1)?.displayName?.unformattedText?.clean()?.matches("""To: .*""".toRegex())?: false
         return headSlot.getSkyblockId() == "WHITE_GIFT" && !isPlayerGift
     }
 
