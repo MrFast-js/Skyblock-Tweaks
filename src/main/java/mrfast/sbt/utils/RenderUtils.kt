@@ -2,15 +2,18 @@ package mrfast.sbt.utils
 
 import gg.essential.elementa.utils.withAlpha
 import mrfast.sbt.managers.FontManager
+import net.minecraft.block.BlockLeaves
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.RenderGlobal
 import net.minecraft.client.renderer.Tessellator
+import net.minecraft.client.renderer.culling.Frustum
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.entity.Entity
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
+import net.minecraft.util.MovingObjectPosition
 import net.minecraft.util.Vec3
 import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL11.*
@@ -75,18 +78,30 @@ object RenderUtils {
     }
 
     fun drawLineToPos(pos: Vec3, thickness: Int, color: Color, partialTicks: Float) {
-        val playerPos = Utils.getPlayer()!!.getPositionEyes(partialTicks)
-        val toMob = pos.subtract(playerPos).normalize()
-        val lookVec = Utils.getPlayer()!!.getLook(partialTicks).normalize()
-        val dot = toMob.dotProduct(lookVec)
+        val player = Utils.getPlayer() ?: return
+        val world = player.worldObj
 
-        if (dot < 0.5) return // Only draw if the player has the target in view
+        val playerPos = player.getPositionEyes(partialTicks)
+        val toMob = pos.subtract(playerPos).normalize()
+        val lookVec = player.getLook(partialTicks).normalize()
+
+        if (toMob.dotProduct(lookVec) < 0.5) return // Only draw if the player has the target in view
+
+        val end = pos.addVector(0.0, 0.0, 0.0)
+
+        val result = world.rayTraceBlocks(playerPos, end, false, false, false)
+
+        // If there's a block in the way, don't draw
+        if (result != null && result.typeOfHit != MovingObjectPosition.MovingObjectType.MISS) {
+            return
+        }
 
         GlStateManager.pushMatrix()
         GlStateManager.disableDepth()
-        drawLine(playerPos, pos, thickness, color, partialTicks)
+        drawLine(playerPos, end, thickness, color, partialTicks)
         GlStateManager.enableDepth()
         GlStateManager.popMatrix()
+
     }
 
     fun drawLine(from: Vec3, to: Vec3, thickness: Int, color: Color, partialTicks: Float) {

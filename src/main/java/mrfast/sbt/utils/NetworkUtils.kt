@@ -271,9 +271,9 @@ object NetworkUtils {
     }
 
 
-    var NeuItems = JsonObject()
-    private var NeuMobs = JsonObject()
-    var NeuConstants = JsonObject()
+    var NeuItems = DataManager.loadDataFromFile(ConfigManager.modDirectoryPath.resolve("repo/NeuItems.json"))
+    private var NeuMobs = DataManager.loadDataFromFile(ConfigManager.modDirectoryPath.resolve("repo/NeuMobs.json"))
+    var NeuConstants = DataManager.loadDataFromFile(ConfigManager.modDirectoryPath.resolve("repo/NeuConstants.json"))
 
     fun downloadAndProcessRepo(force: Boolean = false) {
         val etagFile = ConfigManager.modDirectoryPath.resolve("repo/NEUAPI-ETAG.txt")

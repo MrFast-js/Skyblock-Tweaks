@@ -4,6 +4,7 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
 import mrfast.sbt.SkyblockTweaks
+import mrfast.sbt.config.categories.CustomizationConfig
 import mrfast.sbt.customevents.GuiContainerBackgroundDrawnEvent
 import mrfast.sbt.customevents.ProfileLoadEvent
 import mrfast.sbt.managers.DataManager
@@ -36,6 +37,9 @@ object AccessoryApi {
 
         // Load talisman upgrades
         val upgradesJson = misc.getAsJsonObject("talisman_upgrades")
+        if(CustomizationConfig.developerMode) {
+            println("Loading ${upgradesJson.entrySet().size} talisman upgrades")
+        }
         for ((baseKey, value) in upgradesJson.entrySet()) {
             val upgradeArray = value.asJsonArray
 
@@ -44,6 +48,9 @@ object AccessoryApi {
             upgradeArray.forEach { combined.add(JsonPrimitive(it.asString)) }
 
             allAccessoriesJson.add(baseKey, combined)
+        }
+        if(CustomizationConfig.developerMode) {
+            println("Loaded ${allAccessoriesJson.entrySet().size} talisman upgrades")
         }
     }
 

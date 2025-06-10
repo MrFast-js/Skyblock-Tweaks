@@ -120,6 +120,35 @@ object RenderingConfig : Config() {
 
 
     @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Highlight Gift Locations",
+        description = "Highlights the locations of gifts in the Jerry's Workshop.",
+        category = "Rendering",
+        subcategory = "Misc",
+        isParent = true
+    )
+    var highlightGiftLocations = false
+
+    @ConfigProperty(
+        type = ConfigType.COLOR,
+        name = "Uncollected Color",
+        category = "Rendering",
+        subcategory = "Misc",
+        parentName = "Highlight Gift Locations"
+    )
+    var highlightGiftLocationsUncollectedColor = CustomColor(Color.RED)
+
+    @ConfigProperty(
+        type = ConfigType.COLOR,
+        name = "Collected Color",
+        category = "Rendering",
+        subcategory = "Misc",
+        parentName = "Highlight Gift Locations"
+    )
+    var highlightGiftLocationsCollectedColor = CustomColor(Color.GREEN)
+
+
+    @ConfigProperty(
         type = ConfigType.COLOR,
         name = "Main Path Color",
         description = "Main color used when drawing the loaded path. \nThis will display if points are §a< 3§r blocks away.",
