@@ -118,16 +118,6 @@ object GeneralConfig : Config() {
     var healthBarHealthColor = CustomColor(0xff5555)
 
     @ConfigProperty(
-        type = ConfigType.TOGGLE,
-        name = "Display Absorption",
-        description = "",
-        category = "General",
-        subcategory = "Stat Displays",
-        parentName = "Health Bar"
-    )
-    var healthBarShowAbsorption = false
-
-    @ConfigProperty(
         type = ConfigType.COLOR,
         name = "Absorption Color",
         category = "General",
