@@ -42,7 +42,14 @@ object GuiUtils {
                     val red = (sin(time / 200.0) * 127 + 128).toInt()
                     val green = (sin(time / 200.0 + 2) * 127 + 128).toInt()
                     val blue = (sin(time / 200.0 + 4) * 127 + 128).toInt()
-                    rainbowColor.set(Color(red, green, blue))
+
+                    // Blend with white for pastel effect
+                    val pastelFactor = 0.3 // closer to 1 = more white
+                    val pastelRed = (red + (255 * pastelFactor)).toInt().coerceAtMost(255)
+                    val pastelGreen = (green + (255 * pastelFactor)).toInt().coerceAtMost(255)
+                    val pastelBlue = (blue + (255 * pastelFactor)).toInt().coerceAtMost(255)
+
+                    rainbowColor.set(Color(pastelRed, pastelGreen, pastelBlue))
                 } catch (e: Exception) {
                     // Do nothing
                 }

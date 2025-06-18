@@ -18,6 +18,15 @@ object GeneralConfig : Config() {
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
+        name = "Interpolate Health and Mana",
+        description = "Smoothly counts health and mana features instead of 'jumping'",
+        category = "General",
+        subcategory = "Stat Displays",
+    )
+    var interpolateStats = true
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
         name = "Clean Action Bar",
         description = "Hides Health, Mana, and other attributes from the action bar. §aRecommended to use with Stat Displays",
         category = "General",
@@ -106,7 +115,17 @@ object GeneralConfig : Config() {
         subcategory = "Stat Displays",
         parentName = "Health Bar"
     )
-    var healthBarHealthColor = CustomColor(Color.RED)
+    var healthBarHealthColor = CustomColor(0xff5555)
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Display Absorption",
+        description = "",
+        category = "General",
+        subcategory = "Stat Displays",
+        parentName = "Health Bar"
+    )
+    var healthBarShowAbsorption = false
 
     @ConfigProperty(
         type = ConfigType.COLOR,
@@ -124,7 +143,16 @@ object GeneralConfig : Config() {
         subcategory = "Stat Displays",
         parentName = "Health Bar"
     )
-    var healthBarBarColor = CustomColor(Color.BLACK)
+    var healthBarBarColor = CustomColor(0x242424)
+
+    @ConfigProperty(
+        type = ConfigType.COLOR,
+        name = "Health Bar Border Color",
+        category = "General",
+        subcategory = "Stat Displays",
+        parentName = "Health Bar"
+    )
+    var healthBarBarBorderColor = CustomColor(0x323232)
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
@@ -143,7 +171,7 @@ object GeneralConfig : Config() {
         subcategory = "Stat Displays",
         parentName = "Mana Bar"
     )
-    var manaBarManaColor = CustomColor(0x5555FF)
+    var manaBarManaColor = CustomColor(0x5654eb)
 
     @ConfigProperty(
         type = ConfigType.COLOR,
@@ -161,7 +189,16 @@ object GeneralConfig : Config() {
         subcategory = "Stat Displays",
         parentName = "Mana Bar"
     )
-    var manaBarBarColor = CustomColor(Color.BLACK)
+    var manaBarBarColor = CustomColor(0x242424)
+
+    @ConfigProperty(
+        type = ConfigType.COLOR,
+        name = "Mana Bar Border Color",
+        category = "General",
+        subcategory = "Stat Displays",
+        parentName = "Mana Bar"
+    )
+    var manaBarBarBorderColor = CustomColor(0x323232)
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,

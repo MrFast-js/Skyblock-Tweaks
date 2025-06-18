@@ -7,6 +7,7 @@ import mrfast.sbt.apis.PlayerStats
 import mrfast.sbt.config.categories.GeneralConfig
 import mrfast.sbt.managers.GuiManager
 import mrfast.sbt.config.categories.GeneralConfig.manaBarBarColor
+import mrfast.sbt.config.categories.GeneralConfig.manaBarBarBorderColor
 import mrfast.sbt.config.categories.GeneralConfig.manaBarManaColor
 import mrfast.sbt.config.categories.GeneralConfig.manaBarOverflowColor
 import mrfast.sbt.config.categories.GeneralConfig.manaBarShowOverflow
@@ -30,7 +31,7 @@ object ManaBar {
 
         override fun draw() {
             val max = PlayerStats.maxMana
-            val mana = PlayerStats.mana
+            val mana = PlayerStats.displayedMana
             val overflow = PlayerStats.overflowMana
             val total = max + if (manaBarShowOverflow) overflow else 0
             val manaFillPerc = mana.toDouble() / total
@@ -38,7 +39,8 @@ object ManaBar {
             val borderWidth = 2f
 
             // Draw background/border
-            UIRoundedRectangle.drawRoundedRectangle(UMatrixStack(), 0f, 0f, 80f, 10f, 5f, manaBarBarColor.get())
+            UIRoundedRectangle.drawRoundedRectangle(UMatrixStack(), 1f, 1f, 79f, 9f, 4f, manaBarBarBorderColor.get())
+            UIRoundedRectangle.drawRoundedRectangle(UMatrixStack(), 2f, 2f, 78f, 8f, 3f, manaBarBarColor.get())
 
             // Draw normal blue mana
             UIRoundedRectangle.drawRoundedRectangle(

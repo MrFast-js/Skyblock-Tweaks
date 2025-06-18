@@ -5,8 +5,6 @@ import mrfast.sbt.config.categories.DeveloperConfig
 import mrfast.sbt.config.categories.GeneralConfig
 import mrfast.sbt.customevents.WorldLoadEvent
 import mrfast.sbt.managers.LocationManager
-import mrfast.sbt.managers.TickManager
-import mrfast.sbt.utils.ChatUtils
 import mrfast.sbt.utils.Utils
 import mrfast.sbt.utils.Utils.getRegexGroups
 import mrfast.sbt.utils.Utils.matches
@@ -15,6 +13,7 @@ import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
+import kotlin.math.abs
 import kotlin.math.max
 
 @SkyblockTweaks.EventComponent
@@ -27,7 +26,6 @@ object PlayerStats {
     private var MANA_REGEX = """§b(?<currentMana>[\d,]+)\/(?<maxMana>[\d,]+)✎( Mana)?""".toRegex()
     private var OVERFLOW_REGEX = """§3(?<overflowMana>[\d,]+)ʬ""".toRegex()
     var mana = 0
-    var estimatedManaRegenRate = 0
     var maxMana = 0
     var overflowMana = 0
 
@@ -55,24 +53,87 @@ object PlayerStats {
         currentRoomMaxSecrets = 0
     }
 
-    private var useManaEstimation = false
+    var displayedHealth = health.toFloat()
+    var displayedMana = mana.toFloat()
+
+    private var lastHealth = health.toFloat()
+    private var lastMana = mana.toFloat()
+
+    private var healthRegenPerInterval = 0f
+    private var manaRegenPerInterval = 0f
+
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
         if (event.phase != TickEvent.Phase.START || !LocationManager.inSkyblock || !Utils.isWorldLoaded()) return
-        if(TickManager.tickCount % 10 != 0) return // Runs every 10 ticks (twice a second)
 
-        if (LocationManager.currentIsland == "The Rift") {
-            health = Utils.getPlayer()!!.health.toInt()
-            maxHealth = Utils.getPlayer()!!.maxHealth.toInt()
+        if(!GeneralConfig.interpolateStats) {
+            displayedMana = mana.toFloat()
+            displayedHealth = health.toFloat()
+            return
         }
 
-        if(useManaEstimation) {
-            mana += (maxMana * 0.012).toInt()
-            if (mana > maxMana) {
-                mana = maxMana
-            }
+        // Default when world loads
+        if(health >= maxHealth || health == (20 + absorption)) {
+            lastHealth = maxHealth.toFloat()
+            health = maxHealth
+            displayedHealth = maxHealth.toFloat()
+        }
+
+        if(mana == maxMana) {
+            lastMana = mana.toFloat()
+            mana = maxMana
+            displayedMana = maxMana.toFloat()
+        }
+
+        // if displayed is far from actual, reset it
+        if(abs(displayedMana-mana) > 50) {
+            lastMana = mana.toFloat()
+            displayedMana = mana.toFloat()
+        }
+        if(abs(displayedHealth-health) > 50) {
+            lastHealth = health.toFloat()
+            displayedHealth = health.toFloat()
+        }
+
+        // Health update logic
+        if (health.toFloat() < lastHealth) {
+            // Health dropped — reset regen tracking
+            displayedHealth = health.toFloat()
+        } else if (health.toFloat() > lastHealth) {
+            // Health went up — calculate how much and update regen rate
+            val regenAmount = health - lastHealth
+            healthRegenPerInterval = regenAmount
+        }
+        lastHealth = health.toFloat()
+
+        // Mana update logic
+        if (mana.toFloat() < lastMana) {
+            // Mana dropped — reset regen tracking
+            displayedMana = mana.toFloat()
+        } else if (mana.toFloat() > lastMana) {
+            // Mana went up — calculate how much and update regen rate
+            val regenAmount = mana - lastMana
+            manaRegenPerInterval = regenAmount
+        }
+        lastMana = mana.toFloat()
+
+        // Predict current health based on regen rate and elapsed time
+        displayedHealth += healthRegenPerInterval / 20f
+        if(displayedHealth > maxHealth) {
+            displayedHealth = maxHealth.toFloat() // Clamp to max health
+        }
+
+        // Predict current mana based on regen rate and elapsed time
+        displayedMana += manaRegenPerInterval / 20f
+        if (displayedMana > maxMana) {
+            displayedMana = maxMana.toFloat() // Clamp to max mana
         }
     }
+
+
+
+    // Animate value counting
+
 
     @SubscribeEvent
     fun onEvent(event: ClientChatReceivedEvent) {
@@ -149,9 +210,6 @@ object PlayerStats {
             val groups = actionBar.getRegexGroups(MANA_REGEX) ?: return
             mana = groups["currentMana"]!!.value.toInt()
             maxMana = groups["maxMana"]!!.value.toInt()
-            useManaEstimation = false
-        } else {
-            useManaEstimation = true
         }
 
         if (actionBar.matches(OVERFLOW_REGEX)) {

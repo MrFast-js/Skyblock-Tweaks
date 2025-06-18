@@ -7,7 +7,6 @@ import mrfast.sbt.managers.FontManager
 import mrfast.sbt.managers.GuiManager
 import mrfast.sbt.utils.GuiUtils
 import mrfast.sbt.managers.LocationManager
-import mrfast.sbt.utils.Utils
 import java.awt.Color
 
 @SkyblockTweaks.EventComponent

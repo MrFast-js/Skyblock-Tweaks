@@ -8,7 +8,6 @@ import mrfast.sbt.config.categories.GeneralConfig.manaOverflowNumberColor
 import mrfast.sbt.managers.FontManager
 import mrfast.sbt.utils.GuiUtils
 import mrfast.sbt.managers.LocationManager
-import mrfast.sbt.utils.Utils
 import mrfast.sbt.utils.Utils.formatNumber
 
 @SkyblockTweaks.EventComponent

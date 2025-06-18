@@ -7,7 +7,6 @@ import mrfast.sbt.managers.FontManager
 import mrfast.sbt.managers.GuiManager
 import mrfast.sbt.utils.GuiUtils
 import mrfast.sbt.managers.LocationManager
-import mrfast.sbt.utils.Utils
 import mrfast.sbt.utils.Utils.formatNumber
 
 @SkyblockTweaks.EventComponent
@@ -27,14 +26,14 @@ object HealthNumber {
         }
 
         override fun draw() {
-            val color = if (PlayerStats.health > PlayerStats.maxHealth) {
+            val color = if (PlayerStats.absorption != 0) {
                 GeneralConfig.healthDisplayAbsorptionColor
             } else {
                 GeneralConfig.healthDisplayColor
             }
 
             val maxHealth = if (GeneralConfig.showMaxHealth) "/${PlayerStats.maxHealth.formatNumber()}" else ""
-            val number = "${PlayerStats.health.formatNumber()}$maxHealth"
+            val number = "${(PlayerStats.displayedHealth+PlayerStats.absorption).formatNumber()}$maxHealth"
 
             val centerX = this.width / 2f
             GuiUtils.drawText(number, centerX, 0f, GuiUtils.TextStyle.BLACK_OUTLINE, color.get(), centered = true)

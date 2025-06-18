@@ -8,7 +8,6 @@ import mrfast.sbt.config.categories.GeneralConfig.manaNumberColor
 import mrfast.sbt.managers.FontManager
 import mrfast.sbt.utils.GuiUtils
 import mrfast.sbt.managers.LocationManager
-import mrfast.sbt.utils.Utils
 import mrfast.sbt.utils.Utils.formatNumber
 
 @SkyblockTweaks.EventComponent
@@ -28,7 +27,7 @@ object ManaNumber {
         }
 
         override fun draw() {
-            val number = "${PlayerStats.mana.formatNumber()}/${PlayerStats.maxMana.formatNumber()}"
+            val number = "${PlayerStats.displayedMana.formatNumber()}/${PlayerStats.maxMana.formatNumber()}"
             val centerX = this.width / 2f
             GuiUtils.drawText(number, centerX, 0f, GuiUtils.TextStyle.BLACK_OUTLINE, manaNumberColor.get(), centered = true)
         }
