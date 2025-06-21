@@ -429,7 +429,7 @@ object GuiUtils {
             GL11.glPushMatrix()
             GlStateManager.disableTexture2D()
             GlStateManager.color(0f, 0f, 0f, 1f)
-            ShaderManager.drawQuads(0f, 0f, Utils.getScaledResolution().scaledWidth / 2f, Utils.getScaledResolution().scaledHeight / 2f)
+            ShaderManager.drawQuads(0f, 0f, Utils.getScaledResolution().scaledWidth.toFloat(), Utils.getScaledResolution().scaledHeight.toFloat())
             GlStateManager.enableTexture2D()
             GL11.glPopMatrix()
         }

@@ -398,7 +398,7 @@ object GeneralConfig : Config() {
         subcategory = "Stat Displays",
         parentName = "Defense Number"
     )
-    var defenseNumberColor = CustomColor(85, 85, 255)
+    var defenseNumberColor = CustomColor(107, 255, 122)
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
