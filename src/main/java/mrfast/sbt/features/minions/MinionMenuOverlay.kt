@@ -14,6 +14,7 @@ import mrfast.sbt.guis.components.OutlinedRoundedRectangle
 import mrfast.sbt.managers.DataManager
 import mrfast.sbt.managers.LocationManager
 import mrfast.sbt.managers.OverlayManager
+import mrfast.sbt.managers.ProfileManager
 import mrfast.sbt.utils.GuiUtils
 import mrfast.sbt.utils.GuiUtils.chestName
 import mrfast.sbt.utils.ItemUtils.getItemBasePrice
@@ -246,7 +247,7 @@ object MinionMenuOverlay {
             for (e in Utils.getWorld().loadedEntityList) {
                 if (e !is EntityArmorStand || !isMinion(e)) continue
 
-                if (DataManager.profileLoaded && !minions.has(e.position.toString())) {
+                if (ProfileManager.profileLoaded && !minions.has(e.position.toString())) {
                     val minion = JsonObject()
                     minion.addProperty("lastCollectedAt", System.currentTimeMillis())
                     minions.add(e.position.toString(), minion)

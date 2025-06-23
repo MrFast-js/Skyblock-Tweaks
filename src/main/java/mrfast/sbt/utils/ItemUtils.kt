@@ -6,6 +6,7 @@ import mrfast.sbt.apis.ItemApi
 import mrfast.sbt.config.categories.AuctionHouseConfig
 import mrfast.sbt.customevents.WorldLoadEvent
 import mrfast.sbt.features.general.ItemPriceDescription
+import mrfast.sbt.managers.ProfileManager
 import mrfast.sbt.utils.Utils.clean
 import net.minecraft.init.Items
 import net.minecraft.item.ItemStack
@@ -346,6 +347,12 @@ object ItemUtils {
         if(id == "SKYBLOCK_COIN") return 1.0
 
         val itemInfo = ItemApi.getItemInfo(id) ?: return -1.0
+
+        if (sell && ProfileManager.onIronman) {
+            if(itemInfo.has("npcSell")) {
+                return itemInfo.get("npcSell").asDouble
+            }
+        }
 
         if (sell && itemInfo.has("bazaarSell")) {
             return itemInfo.get("bazaarSell").asDouble

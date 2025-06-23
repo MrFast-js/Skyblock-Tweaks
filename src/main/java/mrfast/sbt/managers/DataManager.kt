@@ -3,13 +3,7 @@ package mrfast.sbt.managers
 import com.google.gson.*
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.config.categories.CustomizationConfig
-import mrfast.sbt.customevents.ProfileLoadEvent
 import mrfast.sbt.utils.ChatUtils
-import mrfast.sbt.utils.Utils
-import mrfast.sbt.utils.Utils.clean
-import net.minecraftforge.client.event.ClientChatReceivedEvent
-import net.minecraftforge.common.MinecraftForge
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -19,65 +13,26 @@ import java.nio.file.Paths
 @SkyblockTweaks.EventComponent
 object DataManager {
     private var dataJson = JsonObject()
-    private var profileIds = mutableMapOf<String, String>() // UUID, PFID
-    private var profileDataPath = ConfigManager.modDirectoryPath.resolve("data/profilesData.json")
+    private var dataFile = ConfigManager.modDirectoryPath.resolve("data/profilesData.json")
 
     init {
-        val profileData = loadDataFromFile(profileDataPath)
+        val profileData = loadDataFromFile(dataFile)
         dataJson = profileData
-        if (dataJson.has("profileIds")) {
+
+        if (dataJson.has("selectedProfileIds")) {
             // Load past profile ids from files
-            for (entry in dataJson["profileIds"].asJsonObject.entrySet()) {
-                profileIds[entry.key] = entry.value.asString
+            for (entry in dataJson["selectedProfileIds"].asJsonObject.entrySet()) {
+                ProfileManager.profileIds[entry.key] = entry.value.asString
             }
         }
     }
 
-    private var listenForProfileId = false
-    private fun sendProfileIdCommand() {
-        listenForProfileId = true
-        ChatUtils.sendPlayerMessage("/profileid")
-    }
+    fun reloadDataFile() {
+        ChatUtils.sendClientMessage("§7Reloading SBT Data..", shortPrefix = true)
+        dataJson = loadDataFromFile(dataFile)
 
-    var profileLoaded = false
-
-    @SubscribeEvent
-    fun onChat(event: ClientChatReceivedEvent) {
-        if (event.type.toInt() == 2) return
-
-        val clean = event.message.unformattedText.clean()
-        val profileIdPattern = Regex("Profile ID: (\\S+)")
-        val suggestPattern = Regex("CLICK THIS TO SUGGEST IT IN CHAT .*")
-        val firstJoinPattern = Regex("Latest update: SkyBlock .*") // First startup, get profile id
-
-        if (clean.matches(firstJoinPattern)) {
-            sendProfileIdCommand()
-        }
-
-        if (clean.matches(profileIdPattern)) {
-            val groups = profileIdPattern.find(clean)?.groupValues ?: return
-
-            if (groups.size >= 2) {
-                val newProfileId = groups[1]
-                val currentProfile = profileIds[Utils.getPlayer()!!.uniqueID.toString()]
-
-                if (currentProfile == null || currentProfile != newProfileId || !profileLoaded) {
-                    profileLoaded = true
-                    MinecraftForge.EVENT_BUS.post(ProfileLoadEvent())
-                }
-                profileIds[Utils.getPlayer()!!.uniqueID.toString()] = newProfileId
-                dataJson.add("profileIds", convertToJsonObject(profileIds))
-                saveDataToFile(profileDataPath, dataJson)
-            }
-            if (listenForProfileId) event.isCanceled = true
-        }
-
-        if (clean.matches(suggestPattern) && listenForProfileId) {
-            event.isCanceled = true
-            if (clean.contains("[NO DASHES]")) {
-                listenForProfileId = false
-            }
-        }
+        ChatUtils.sendClientMessage("§aSaved SBT Data!", shortPrefix = true)
+        saveDataToFile(dataFile, dataJson)
     }
 
     fun loadDataFromFile(saveDataFilePath: File): JsonObject {
@@ -98,7 +53,7 @@ object DataManager {
 
     fun saveData(dataName: String?, dataValue: Any) {
         dataJson.add(dataName, convertToJsonObject(dataValue))
-        saveDataToFile(profileDataPath, dataJson)
+        saveDataToFile(dataFile, dataJson)
     }
 
     fun getData(dataName: String?): Any? {
@@ -112,10 +67,10 @@ object DataManager {
 
     // Works with data names such as "subset1.list.option2" or even just "option2"
     fun saveProfileData(dataName: String, dataValue: Any) {
-        val currentProfileId = profileIds[Utils.getPlayer()!!?.uniqueID.toString()]
+        val currentProfileId = ProfileManager.getCurrentProfileId()
         if(currentProfileId == null) {
             if(CustomizationConfig.developerMode) ChatUtils.sendClientMessage("Profile ID not found, please try again.")
-            sendProfileIdCommand()
+            ProfileManager.sendProfileIdCommand()
             return
         }
         var profileJson = dataJson.getAsJsonObject(currentProfileId)
@@ -131,7 +86,7 @@ object DataManager {
             profileJson = profileJson.getAsJsonObject(parts[i])
         }
         profileJson.add(parts[parts.size - 1], convertToJsonObject(dataValue))
-        saveDataToFile(profileDataPath, dataJson)
+        saveDataToFile(dataFile, dataJson)
     }
 
     fun saveDataToFile(savePath: File, newData: JsonObject) {
@@ -180,7 +135,7 @@ object DataManager {
     }
 
     private fun getProfileData(dataName: String): Any? {
-        val currentProfileId = profileIds[Utils.getPlayer()!!.uniqueID.toString()]
+        val currentProfileId = ProfileManager.getCurrentProfileId() ?: return null
 
         var profileJson = dataJson.getAsJsonObject(currentProfileId) ?: return null
         val parts = dataName.split("\\.".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()

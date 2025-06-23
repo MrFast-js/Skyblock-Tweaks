@@ -9,9 +9,7 @@ import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.apis.ItemApi
 import mrfast.sbt.apis.PlayerStats
 import mrfast.sbt.config.categories.CustomizationConfig
-import mrfast.sbt.managers.ConfigManager
-import mrfast.sbt.managers.LocationManager
-import mrfast.sbt.managers.PaidPriceManager
+import mrfast.sbt.managers.*
 import mrfast.sbt.utils.*
 import mrfast.sbt.utils.Utils.clean
 import mrfast.sbt.utils.Utils.toDateTimestamp
@@ -81,6 +79,15 @@ class DebugCommand : CommandBase() {
                     ChatUtils.sendClientMessage("§aDeveloper mode enabled!", shortPrefix = true)
                 }
             }
+
+            "profile" -> {
+                ChatUtils.sendClientMessage(
+                    "§6Current Profile: '${ProfileManager.getCurrentProfileId()}'\n" +
+                            "§cIron Man: ${ProfileManager.onIronman}\n",
+                    shortPrefix = true
+                )
+            }
+
             "sounds" -> {
                 val soundList = DevUtils.getRecentSounds()
                 val soundListString = StringBuilder()
@@ -117,6 +124,8 @@ class DebugCommand : CommandBase() {
 
             "refresh", "reload" -> {
                 CoroutineScope(Dispatchers.Default).launch {
+                    DataManager.reloadDataFile()
+
                     ChatUtils.sendClientMessage("§7Reconnecting to SBT Websocket..", shortPrefix = true)
                     SocketUtils.setupSocket()
 
