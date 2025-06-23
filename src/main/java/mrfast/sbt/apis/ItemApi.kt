@@ -225,17 +225,19 @@ object ItemApi {
 
     private val itemNameIDCache = mutableMapOf<String, String>()
     fun getItemIdFromName(displayName: String, ignoreFormatting: Boolean? = false): String? {
-        if (itemNameIDCache.containsKey(displayName.clean())) return itemNameIDCache[displayName.clean()]
+        val cleanedName = if (ignoreFormatting == true) displayName.clean() else displayName
 
+        itemNameIDCache[cleanedName]?.let { return it }
 
-        return skyblockItems.entrySet().toList().find { entry ->
-            val itemName = entry.value?.asJsonObject?.get("displayname")?.asString ?: return@find false
-            val cleanedItemName = if (ignoreFormatting == true) itemName.clean() else itemName
-            val cleanedDisplayName = if (ignoreFormatting == true) displayName.clean() else displayName
+        val matchKey = synchronized(skyblockItems) {
+            skyblockItems.entrySet().firstOrNull { entry ->
+                val name = entry.value?.asJsonObject?.get("displayname")?.asString ?: return@firstOrNull false
+                val cleanedItemName = if (ignoreFormatting == true) name.clean() else name
+                cleanedItemName == cleanedName
+            }?.key
+        }
 
-            if (cleanedItemName == cleanedDisplayName) itemNameIDCache[cleanedDisplayName] = entry.key
-            cleanedItemName == cleanedDisplayName
-        }?.key
+        return matchKey?.also { itemNameIDCache[cleanedName] = it }
     }
 
     private val itemStackCache = mutableMapOf<String, ItemStack>()
