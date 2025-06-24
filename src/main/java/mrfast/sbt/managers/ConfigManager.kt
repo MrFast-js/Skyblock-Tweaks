@@ -47,7 +47,7 @@ abstract class ConfigManager {
         var dropdownOptions: Array<String> = arrayOf(),
         val parentName: String = "",
         var parentFeature: Feature? = null,
-        var featureComponent: UIComponent = UIContainer(),
+        var featureAndOptionsComponent: UIComponent = UIContainer(),
         var subcategory: Subcategory = Subcategory(""),
         var optionElements: MutableMap<String, Feature> = mutableMapOf(),
         var optionsHidden: Boolean = true

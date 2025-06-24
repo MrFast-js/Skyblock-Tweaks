@@ -492,11 +492,10 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2, drawDefaultB
 
                     if (!showAll && !shouldFeatureAppear(feature)) continue
 
-                    val featureElement = createFeatureElement(feature, subcategoryComponent)
+                    // Create the feature element, containing the title, description and config type
+                    createFeatureElement(feature, subcategoryComponent)
 
-                    if (featureElement != null) {
-                        drawnFeatures++
-                    }
+                    drawnFeatures++
                 }
                 // Don't draw subcategory title if no features
                 if (drawnFeatures != 0) {
@@ -506,7 +505,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2, drawDefaultB
             }
         }
 
-        // Populate the feature-options after all features have been created
+        // After all features have been loaded, go back through and populate the parent features with their options
 
         // Loop through all categories
         for (category in ConfigManager.categories) {
@@ -515,6 +514,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2, drawDefaultB
                 // Loop through all features in subcategory
                 for (feature in subcategory.features.values) {
                     if (!showAll && feature.parentName.isEmpty()) continue
+
                     // Ensure that the features option has a real parent
                     if (feature.parentFeature == null) {
                         if (feature.parentName.isNotEmpty()) {
@@ -533,8 +533,9 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2, drawDefaultB
                     if (featureOption != null) {
                         // Add feature to parent's reference so it can be hidden / unhidden in future
                         feature.parentFeature!!.optionElements[feature.name] = featureOption
-                        // Hide suboptions by default
-                        featureOption.featureComponent.hide(true)
+
+                        // Hide sub options so original height is not affected
+                        featureOption.featureAndOptionsComponent.hide(true)
                     }
                 }
             }
@@ -575,38 +576,41 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2, drawDefaultB
         return false
     }
 
+    // Used to create main feature, which contains the title, description and config type
     private fun createFeatureElement(
         feature: ConfigManager.Feature,
         subcategoryComponent: UIComponent
-    ): ConfigManager.Feature? {
-
-        val featureContainer = UIContainer().constrain {
+    ): ConfigManager.Feature {
+        // This is the main ui element, everything else is a child of this, and when options are present, they are cut off by this element when not expanded
+        val featureAndOptionsContainer = UIContainer().constrain {
             x = CenterConstraint()
             y = SiblingConstraintFixed(6f)
             width = 99.percent
             height = ChildBasedSizeConstraint(2f)
         } childOf subcategoryComponent effect ScissorEffect()
 
-        val featureBackground =
+        // Create the background for the feature and options container
+        val featureAndOptionsBackground =
             OutlinedRoundedRectangle(featureBorderColorState.get().colorState.constraint, 1f, 6f).constrain {
                 x = CenterConstraint()
                 y = SiblingConstraintFixed(6f)
                 width = if (feature.parentName.isEmpty()) 100.percent else 90.percent
                 height = ChildBasedSizeConstraint(2f)
                 color = featureBackgroundColorState.get().colorState.constraint
-            } childOf featureContainer
+            } childOf featureAndOptionsContainer
 
-        val secondContainer = UIContainer().constrain {
+        // The feature container, which contains the title, description
+        val featureContainer = UIContainer().constrain {
             x = PixelConstraint(0f)
             y = SiblingConstraintFixed(6f)
             width = 100.percent
             height = ChildBasedSizeConstraint(2f)
-        } childOf featureBackground
+        } childOf featureAndOptionsBackground
 
         val featureTitle = CustomUIText(feature.name, scale = 1.5f).constrain {
             x = 3.pixels
             y = 3.pixels
-        } childOf secondContainer
+        } childOf featureContainer
 
         if (feature.description != "") {
             val featureDescription = CustomUIWrappedText(feature.description).constrain {
@@ -614,16 +618,18 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2, drawDefaultB
                 y = SiblingConstraintFixed(2f)
                 width = 80.percent - 2.pixels
                 color = Color.GRAY.constraint
-            } childOf secondContainer
+            } childOf featureContainer
         }
 
-        populateFeature(feature, secondContainer)
+        // Populate the feature with its config type, ie toggle, text input, etc.
+        populateFeature(feature, featureContainer)
 
-        feature.featureComponent = featureContainer
+        feature.featureAndOptionsComponent = featureAndOptionsContainer
 
         return feature
     }
 
+    // Create a feature option element, which is a child of the parent feature, and contains the title, description and config type
     private fun createFeatureOptionElement(
         feature: ConfigManager.Feature
     ): ConfigManager.Feature? {
@@ -632,7 +638,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2, drawDefaultB
             return null
         }
 
-        val parentComponent = feature.parentFeature!!.featureComponent
+        val parentComponent = feature.parentFeature!!.featureAndOptionsComponent
 
         val parentFeatureBackground = parentComponent.children.getOrNull(0) ?: return null
 
@@ -662,7 +668,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2, drawDefaultB
 
         populateFeature(feature, featureContainer)
 
-        feature.featureComponent = featureContainer
+        feature.featureAndOptionsComponent = featureContainer
 
         return feature
     }
@@ -940,6 +946,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2, drawDefaultB
                 ignoredHeights.add(button)
             }
 
+            // Give parents a settings gear if they have options, allowing for expanding and collapsing of options
             if (feature.isParent) {
                 val unhovered = Color(200, 200, 200)
                 val hovered = Color(255, 255, 255)
@@ -962,33 +969,45 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2, drawDefaultB
                         setColorAnimation(Animations.OUT_EXP, 0.5f, unhovered.constraint)
                     }
                 }
-                var orignalHeight = 0.pixels
+
+                // Calculate the height of the feature, waits 500ms because the components must be rendered first
+                var smallSizeHeight = 0.pixels
 
                 Utils.setTimeout({
-                    orignalHeight = feature.featureComponent.getHeight().pixels
+                    smallSizeHeight = feature.featureAndOptionsComponent.getHeight().pixels
                 }, 500)
 
+                // Hides the color picker if it is open
                 clearPopup()
 
+                // On click, toggle the options hidden state
                 settingsGear.onMouseClick {
                     feature.optionsHidden = !feature.optionsHidden
+
+                    // Rotate the settings gear
                     settingsGear.setTargetAngle(if (feature.optionsHidden) 0f else 90f)
 
+                    // Hides the color picker if it is open
                     clearPopup()
 
-                    val parentFeatureBackground = feature.featureComponent.children.getOrNull(0)
+                    val featureBackground = feature.featureAndOptionsComponent.children.getOrNull(0)
+
                     if (!feature.optionsHidden) {
-                        parentFeatureBackground?.setHeight(orignalHeight)
-                        parentFeatureBackground?.animate {
+                        // If the feature is being expanded, set the height to the small size height, then animate to the full height
+                        featureBackground?.setHeight(smallSizeHeight)
+                        featureBackground?.animate {
                             setHeightAnimation(Animations.IN_OUT_EXP, 0.35f, ChildBasedSizeConstraint(2f), 0f)
                         }
+
+                        // Unhide all the options in the feature
                         feature.optionElements.values.forEach {
-                            it.featureComponent.unhide(true)
+                            it.featureAndOptionsComponent.unhide(true)
                         }
                     } else {
-                        parentFeatureBackground?.setHeight(feature.featureComponent.getHeight().pixels)
-                        parentFeatureBackground?.animate {
-                            setHeightAnimation(Animations.IN_OUT_EXP, 0.35f, orignalHeight, 0f)
+                        // If the feature is being collapsed, set the height to the full height, then animate to the small size height
+                        featureBackground?.setHeight(feature.featureAndOptionsComponent.getHeight().pixels)
+                        featureBackground?.animate {
+                            setHeightAnimation(Animations.IN_OUT_EXP, 0.35f, smallSizeHeight, 0f)
                         }
                     }
                 }

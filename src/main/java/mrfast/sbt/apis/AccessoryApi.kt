@@ -57,8 +57,9 @@ object AccessoryApi {
     private fun registerAccessories() {
         ItemApi.getSkyblockItems().entrySet().forEach { item ->
             val lore = item.value.asJsonObject?.get("lore")?.asJsonArray ?: return@forEach
+            val line = lore.lastOrNull()?.toString() ?: return@forEach
 
-            if(lore.last().asString.contains("ACCESSORY")) {
+            if(line.contains("ACCESSORY")) {
                 val combined = JsonArray()
                 combined.add(JsonPrimitive(item.key))
 

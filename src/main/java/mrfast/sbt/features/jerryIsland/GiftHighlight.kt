@@ -2,7 +2,6 @@ package mrfast.sbt.features.jerryIsland
 
 import mrfast.sbt.SkyblockTweaks
 import mrfast.sbt.config.categories.RenderingConfig
-import mrfast.sbt.utils.ChatUtils
 import mrfast.sbt.utils.ItemUtils.getSkyblockId
 import mrfast.sbt.utils.RenderUtils
 import mrfast.sbt.utils.Utils
@@ -14,7 +13,6 @@ import net.minecraft.util.BlockPos
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.entity.player.AttackEntityEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import java.awt.Color
 
 
 @SkyblockTweaks.EventComponent
@@ -59,6 +57,8 @@ object GiftHighlight {
 
     @SubscribeEvent
     fun onAttack(event: AttackEntityEvent) {
+        if(!RenderingConfig.highlightGiftLocations) return
+
         if(event.target is EntityArmorStand && isGift(event.target as EntityArmorStand)) {
             val armorStand = event.target as EntityArmorStand
             val blockPos = armorStand.position.up()

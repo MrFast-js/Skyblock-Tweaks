@@ -101,7 +101,7 @@ object GeneralConfig : Config() {
     @ConfigProperty(
         type = ConfigType.TOGGLE,
         name = "Health Bar",
-        description = "Moveable Health Bar that adjusts depending on absorption and damage taken",
+        description = "Health Bar that adjusts depending on absorption and damage taken",
         category = "General",
         subcategory = "Stat Displays",
         isParent = true
@@ -147,7 +147,7 @@ object GeneralConfig : Config() {
     @ConfigProperty(
         type = ConfigType.TOGGLE,
         name = "Mana Bar",
-        description = "Moveable Mana Bar that adjusts depending on abilities and overflow mana",
+        description = "Mana Bar that adjusts depending on abilities and overflow mana",
         category = "General",
         subcategory = "Stat Displays",
         isParent = true
@@ -202,7 +202,7 @@ object GeneralConfig : Config() {
     @ConfigProperty(
         type = ConfigType.TOGGLE,
         name = "Drill Fuel Bar",
-        description = "Moveable Fuel Bar that shows your drills fuel status",
+        description = "Fuel Bar that shows your drills fuel status",
         category = "General",
         subcategory = "Stat Displays",
         isParent = true
@@ -230,6 +230,7 @@ object GeneralConfig : Config() {
     @ConfigProperty(
         type = ConfigType.TOGGLE,
         name = "Health Number",
+        description = "Shows your current health",
         category = "General",
         subcategory = "Stat Displays",
         isParent = true
@@ -267,6 +268,7 @@ object GeneralConfig : Config() {
     @ConfigProperty(
         type = ConfigType.TOGGLE,
         name = "Speed Number",
+        description = "Shows your current speed",
         category = "General",
         subcategory = "Stat Displays",
         isParent = true
@@ -276,6 +278,7 @@ object GeneralConfig : Config() {
     @ConfigProperty(
         type = ConfigType.TOGGLE,
         name = "Secret Number",
+        description = "Shows the amount of secrets you have found in a dungeon room",
         category = "General",
         subcategory = "Stat Displays",
         isParent = true
@@ -304,6 +307,7 @@ object GeneralConfig : Config() {
     @ConfigProperty(
         type = ConfigType.TOGGLE,
         name = "Effective Health Number",
+        description = "Shows your effective health, which is a combination of health + defense",
         category = "General",
         subcategory = "Stat Displays",
         isParent = true
@@ -331,6 +335,7 @@ object GeneralConfig : Config() {
     @ConfigProperty(
         type = ConfigType.TOGGLE,
         name = "Drill Fuel Number",
+        description = "Shows the current fuel of your drill",
         category = "General",
         subcategory = "Stat Displays",
         isParent = true
@@ -349,6 +354,7 @@ object GeneralConfig : Config() {
     @ConfigProperty(
         type = ConfigType.TOGGLE,
         name = "Mana Number",
+        description = "Shows your current and max mana",
         category = "General",
         subcategory = "Stat Displays",
         isParent = true
@@ -367,6 +373,7 @@ object GeneralConfig : Config() {
     @ConfigProperty(
         type = ConfigType.TOGGLE,
         name = "Overflow Mana Number",
+        description = "Shows your overflow mana",
         category = "General",
         subcategory = "Stat Displays",
         isParent = true
@@ -385,6 +392,7 @@ object GeneralConfig : Config() {
     @ConfigProperty(
         type = ConfigType.TOGGLE,
         name = "Defense Number",
+        description = "Shows your current defense",
         category = "General",
         subcategory = "Stat Displays",
         isParent = true

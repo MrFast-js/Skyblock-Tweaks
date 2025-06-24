@@ -13,8 +13,6 @@ class RotatingUIImage(
         // Update rotation
         updateRotation()
 
-        beforeDrawCompat(matrixStack)
-
         val x = this.getLeft().toDouble()
         val y = this.getTop().toDouble()
         val width = this.getWidth().toDouble()
