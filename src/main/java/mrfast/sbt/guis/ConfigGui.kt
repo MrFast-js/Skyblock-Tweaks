@@ -936,6 +936,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2, drawDefaultB
                 button.onMouseClick {
                     (feature.value as Runnable).run()
                 }
+
                 ignoredHeights.add(button)
             }
 
@@ -943,7 +944,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2, drawDefaultB
                 val unhovered = Color(200, 200, 200)
                 val hovered = Color(255, 255, 255)
 
-                val settingsGear = UIImage.ofResourceCached("/assets/skyblocktweaks/gui/gear.png").constrain {
+                val settingsGear = RotatingUIImage.ofResourceCached("/assets/skyblocktweaks/gui/gear.png").constrain {
                     x = SiblingConstraintFixed(5f, true)
                     y = CenterConstraint()
                     height = 16.pixels
@@ -971,6 +972,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2, drawDefaultB
 
                 settingsGear.onMouseClick {
                     feature.optionsHidden = !feature.optionsHidden
+                    settingsGear.setTargetAngle(if (feature.optionsHidden) 0f else 90f)
 
                     clearPopup()
 
