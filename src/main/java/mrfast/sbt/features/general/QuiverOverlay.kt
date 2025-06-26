@@ -64,12 +64,22 @@ object QuiverOverlay {
             this.elementName = "Quiver Overlay"
             this.addToList()
             this.height = 16
+            this.needsExample = true
         }
 
         override fun draw() {
             GuiUtils.renderItemStackOnScreen(ItemApi.createItemStack(currentArrowId), 0f, 0f, 16f, 16f)
             var display = (if (quiverOverlayType) "$currentArrow " else "") + "§r§7x${currentArrowCount.formatNumber()}"
             if (currentArrow == "") display = ""
+
+            GuiUtils.drawText(display, 17f, 3f, GuiUtils.TextStyle.DROP_SHADOW)
+            this.width = FontManager.getFontRenderer().getStringWidth(display.clean()) + 17
+        }
+
+        override fun drawExample() {
+            val exampleCurrentArrow = "§fFlint Arrow"
+            GuiUtils.renderItemStackOnScreen(ItemApi.createItemStack("ARROW"), 0f, 0f, 16f, 16f)
+            val display = (if (quiverOverlayType) "$exampleCurrentArrow " else "") + "§r§7x${1234.formatNumber()}"
 
             GuiUtils.drawText(display, 17f, 3f, GuiUtils.TextStyle.DROP_SHADOW)
             this.width = FontManager.getFontRenderer().getStringWidth(display.clean()) + 17

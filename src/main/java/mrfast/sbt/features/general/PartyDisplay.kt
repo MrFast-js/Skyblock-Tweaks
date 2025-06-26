@@ -20,8 +20,8 @@ object PartyDisplay {
             this.relativeY = 0.39
             this.elementName = "Party Display"
             this.addToList()
-            this.height = FontManager.getFontRenderer().FONT_HEIGHT
-            this.width = FontManager.getFontRenderer().getStringWidth("Party Members (5)")
+            this.height = FontManager.getFontRenderer().FONT_HEIGHT * 7
+            this.width = FontManager.getFontRenderer().getStringWidth(" • MrFast (Berserker 20)")
             this.needsExample = true
         }
 
