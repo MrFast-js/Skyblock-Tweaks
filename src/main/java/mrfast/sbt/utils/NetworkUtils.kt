@@ -50,9 +50,20 @@ object NetworkUtils {
         .readTimeout(10, TimeUnit.SECONDS)
         .build()
 
+    var NeuItems = JsonObject()
+    var NeuMobs = JsonObject()
+    var NeuConstants = JsonObject()
+
     // Follow these directions
     // https://moddev.nea.moe/https/#false-hope
     init {
+        NeuItems = DataManager.loadDataFromFile(ConfigManager.modDirectoryPath.resolve("repo/NeuItems.json"))
+        NeuMobs = DataManager.loadDataFromFile(ConfigManager.modDirectoryPath.resolve("repo/NeuMobs.json"))
+        NeuConstants = DataManager.loadDataFromFile(ConfigManager.modDirectoryPath.resolve("repo/NeuConstants.json"))
+        if(CustomizationConfig.developerMode) {
+            println("Loaded NEU API data from file. Items: ${NeuItems.entrySet().size}, Mobs: ${NeuMobs.entrySet().size}, Constants: ${NeuConstants.entrySet().size}")
+        }
+
         try {
             val myKeyStore = KeyStore.getInstance("JKS")
 
@@ -270,11 +281,6 @@ object NetworkUtils {
         return input.replace(Regex("(.{8})(.{4})(.{4})(.{4})(.{12})"), "$1-$2-$3-$4-$5")
     }
 
-
-    var NeuItems = DataManager.loadDataFromFile(ConfigManager.modDirectoryPath.resolve("repo/NeuItems.json"))
-    private var NeuMobs = DataManager.loadDataFromFile(ConfigManager.modDirectoryPath.resolve("repo/NeuMobs.json"))
-    var NeuConstants = DataManager.loadDataFromFile(ConfigManager.modDirectoryPath.resolve("repo/NeuConstants.json"))
-
     fun downloadAndProcessRepo(force: Boolean = false) {
         val etagFile = ConfigManager.modDirectoryPath.resolve("repo/NEUAPI-ETAG.txt")
 
@@ -305,27 +311,45 @@ object NetworkUtils {
                 .takeIf { it.statusLine.statusCode == 200 }?.entity?.content?.use { zipStream ->
                     ZipInputStream(zipStream).use { zip ->
                         var entry: ZipEntry? = zip.nextEntry
+
+                        if (CustomizationConfig.developerMode) println("Downloading NEU API data, clearing old...")
+
+                        NeuItems = JsonObject()
+                        NeuMobs = JsonObject()
+                        NeuConstants = JsonObject()
+
                         while (entry != null) {
                             if (entry.name.endsWith(".json")) {
                                 val jsonContent = zip.bufferedReader().readText()
                                 val name = entry.name.split("/").last().removeSuffix(".json")
-                                val value = JsonParser().parse(jsonContent).asJsonObject
-                                when {
-                                    entry.name.contains("/items/") -> {
-                                        NeuItems.add(name, value)
-                                    }
+                                try {
+                                    val value = JsonParser().parse(jsonContent).asJsonObject
 
-                                    entry.name.contains("/mobs/") -> {
-                                        NeuMobs.add(name, value)
-                                    }
+                                    when {
+                                        entry.name.contains("/items/") -> {
+                                            NeuItems.add(name, value)
+                                        }
 
-                                    entry.name.contains("/constants/") -> {
-                                        NeuConstants.add(name, value)
+                                        entry.name.contains("/mobs/") -> {
+                                            NeuMobs.add(name, value)
+                                        }
+
+                                        entry.name.contains("/constants/") -> {
+                                            NeuConstants.add(name, value)
+                                        }
+                                    }
+                                } catch (e: Exception) {
+                                    if (CustomizationConfig.developerMode) {
+                                        println("Failed to parse JSON from entry ${entry.name}, skipping...")
                                     }
                                 }
                             }
+
                             entry = zip.nextEntry
                         }
+
+                        zip.closeEntry()
+                        if (CustomizationConfig.developerMode) println("NEU API data downloaded and processed successfully.")
                     }
                 }
 
@@ -334,6 +358,7 @@ object NetworkUtils {
             currentEtag?.let {
                 Files.write(etagFile.toPath(), it.toByteArray(StandardCharsets.UTF_8))
             }
+            if (CustomizationConfig.developerMode) println("Saved NEU API Data to file and updated ETag.")
             DataManager.saveDataToFile(ConfigManager.modDirectoryPath.resolve("repo/NeuItems.json"), NeuItems)
             DataManager.saveDataToFile(ConfigManager.modDirectoryPath.resolve("repo/NeuMobs.json"), NeuMobs)
             DataManager.saveDataToFile(ConfigManager.modDirectoryPath.resolve("repo/NeuConstants.json"), NeuConstants)

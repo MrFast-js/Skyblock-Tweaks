@@ -139,7 +139,7 @@ class DebugCommand : CommandBase() {
                     delay(300)
 
                     ChatUtils.sendClientMessage("§7Reloading Skyblock Item Data..", shortPrefix = true)
-                    ItemApi.updateSkyblockItemData(logging = true, force = true)
+                    ItemApi.updateSkyblockItemData(force = true)
 
                     while (ItemApi.getSkyblockItems().entrySet().isEmpty()) {
                         delay(300)

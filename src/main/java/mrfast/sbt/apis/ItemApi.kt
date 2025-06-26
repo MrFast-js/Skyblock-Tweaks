@@ -49,10 +49,10 @@ object ItemApi {
         }, 0, 1000 * 60 * 10)
     }
 
-    private fun loadNeuRepo(logging: Boolean, force: Boolean) {
+    private fun loadNeuRepo(force: Boolean) {
         skyblockItems = JsonObject()
         try {
-            if (logging) println("Starting to download Skyblock Items from NEU Repo")
+            if (CustomizationConfig.developerMode) println("Starting to download Skyblock Items from NEU Repo")
 
             NetworkUtils.downloadAndProcessRepo(force)
             NetworkUtils.NeuItems.entrySet().forEach {
@@ -74,7 +74,7 @@ object ItemApi {
 
             if (skyblockItems.entrySet().size > 0) loadedNEURepo = true
 
-            if (logging) println("Loaded Skyblock Items from NEU Repo!")
+            if (CustomizationConfig.developerMode) println("Loaded Skyblock Items from NEU Repo!")
         } catch (e: Exception) {
             println("There was a problem loading NEU Repo.. ${e.message}")
         }
@@ -129,7 +129,7 @@ object ItemApi {
      * if fails, it has a backup of the last known data.
      * If force is true, it will clear the cache and get all data, from NEU Repo and SBT API
      */
-    fun updateSkyblockItemData(logging: Boolean, force: Boolean = false) {
+    fun updateSkyblockItemData(force: Boolean = false) {
         if (force) {
             // Clear existing data
             skyblockItems = JsonObject()
@@ -137,7 +137,7 @@ object ItemApi {
         }
 
         runBlocking {
-        if (!loadedNEURepo) loadNeuRepo(logging, force)
+            if (!loadedNEURepo) loadNeuRepo(force)
 
             try {
                 // Wait until player is in world, for some reason this can fail
@@ -145,25 +145,25 @@ object ItemApi {
 
                 if(nearby == 0) {
                     delay(5_000)
-                    updateSkyblockItemData(logging, force)
+                    updateSkyblockItemData(force)
                     return@runBlocking
                 }
             } catch (e: Exception) {
                 delay(10_000)
-                updateSkyblockItemData(logging, force)
+                updateSkyblockItemData(force)
                 return@runBlocking
             }
 
-            loadPricingData(logging)
-            loadLiveAuctionData(logging)
+            loadPricingData()
+            loadLiveAuctionData()
 
             DataManager.saveDataToFile(itemDataPath, skyblockItems)
             DataManager.saveDataToFile(liveAuctionDataPath, liveAuctionData)
         }
     }
 
-    private suspend fun loadPricingData(logging: Boolean) {
-        if (logging) println("Loading Lowest Item Prices from SBT API")
+    private suspend fun loadPricingData() {
+        if (CustomizationConfig.developerMode) println("Loading Lowest Item Prices from SBT API")
 
         try {
             val data = NetworkUtils.apiRequestAndParse(
@@ -176,7 +176,7 @@ object ItemApi {
                 return
             }
 
-            if (logging) println("Loaded ${data.entrySet().size} Items From Skyblock-Tweaks Item API")
+            if (CustomizationConfig.developerMode) println("Loaded ${data.entrySet().size} Items From Skyblock-Tweaks Item API")
             data.entrySet().forEach {
                 val item = it.value.asJsonObject
                 val itemId = it.key
@@ -200,8 +200,8 @@ object ItemApi {
         }
     }
 
-    private suspend fun loadLiveAuctionData(logging: Boolean) {
-        if (logging) println("Loading Live Item Prices from SBT API")
+    private suspend fun loadLiveAuctionData() {
+        if (CustomizationConfig.developerMode) println("Loading Live Item Prices from SBT API")
         try {
             val data = NetworkUtils.apiRequestAndParse(
                 url = "${DeveloperConfig.modAPIURL}аpi/liveBetaAuctions",
@@ -213,7 +213,7 @@ object ItemApi {
                 return
             }
 
-            if (logging) println("Loaded Live ${data.entrySet().size} Auctions Item From Skyblock-Tweaks Item API")
+            if (CustomizationConfig.developerMode) println("Loaded Live ${data.entrySet().size} Auctions Item From Skyblock-Tweaks Item API")
 
             liveAuctionData = data
         } catch (e: Exception) {
