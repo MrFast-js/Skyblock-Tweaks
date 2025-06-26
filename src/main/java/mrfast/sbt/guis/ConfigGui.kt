@@ -321,6 +321,10 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2, drawDefaultB
             height = 100.percent - 34.pixels
         } childOf background
 
+        featureList.onMouseScroll {
+            clearPopup()
+        }
+
         val featureScrollbar = UIRoundedRectangle(3f).constrain {
             width = 5.pixels
             height = 100.percent
@@ -745,19 +749,16 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2, drawDefaultB
 
                 colorPicker.hide(true)
 
-                var hidden = true;
                 colorDisplay.onMouseClick {
-                    hidden = !hidden
-                    if (hidden) {
-                        floatingColorPicker = null
-                        colorPicker.setFloating(false)
-                        colorPicker.hide(true)
-                    } else {
+                    if(floatingColorPicker != null) {
                         clearPopup()
+                    } else {
                         colorPicker.setY(SiblingConstraintFixed(5f))
-                        floatingColorPicker = colorPicker
+
                         colorPicker.setFloating(true)
                         colorPicker.unhide(false)
+
+                        floatingColorPicker = colorPicker
                     }
                 }
 
@@ -1025,6 +1026,7 @@ class ConfigGui : WindowScreen(ElementaVersion.V2, newGuiScale = 2, drawDefaultB
     private fun clearPopup() {
         floatingColorPicker?.setFloating(false)
         floatingColorPicker?.hide(true)
+        floatingColorPicker = null
     }
 
     private fun UIComponent.addTooltip(set: Set<String>) {

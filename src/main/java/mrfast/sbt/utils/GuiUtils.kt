@@ -88,6 +88,27 @@ object GuiUtils {
         }
 
         GlStateManager.pushMatrix() // Push matrix for transformations
+        if(coreColor.alpha != 255) {
+            GlStateManager.enableBlend()
+            GlStateManager.tryBlendFuncSeparate(
+                GL11.GL_SRC_ALPHA,
+                GL11.GL_ONE_MINUS_SRC_ALPHA,
+                GL11.GL_ONE,
+                GL11.GL_ONE_MINUS_SRC_ALPHA
+            )
+            GL14.glBlendFuncSeparate(
+                GL11.GL_SRC_ALPHA,
+                GL11.GL_ONE_MINUS_SRC_ALPHA,
+                GL11.GL_ONE,
+                GL11.GL_ONE_MINUS_SRC_ALPHA
+            )
+            GlStateManager.color(
+                1f,
+                1f,
+                1f,
+                coreColor.alpha / 255f
+            )
+        }
         GlStateManager.translate(0f, 1f, 200f)
 
         // Apply scaling transformation

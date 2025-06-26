@@ -475,7 +475,7 @@ object GeneralConfig : Config() {
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
-        name = "Show item pickup log",
+        name = "Item pickup log",
         description = "Shows items gained and lost, aswell as sack info",
         category = "General",
         subcategory = "Item Pickup Log",
@@ -484,11 +484,41 @@ object GeneralConfig : Config() {
     var itemPickupLog = false
 
     @ConfigProperty(
+        type = ConfigType.NUMBER,
+        name = "Item Total Display Duration (ms)",
+        description = "",
+        category = "General",
+        subcategory = "Item Pickup Log",
+        parentName = "Item pickup log"
+    )
+    var itemPickupLogTotalTime = 5000
+
+    @ConfigProperty(
+        type = ConfigType.NUMBER,
+        name = "Item Fade In Duration (ms)",
+        description = "",
+        category = "General",
+        subcategory = "Item Pickup Log",
+        parentName = "Item pickup log"
+    )
+    var itemPickupLogFadeIn = 300
+
+    @ConfigProperty(
+        type = ConfigType.NUMBER,
+        name = "Item Fade Out Duration (ms)",
+        description = "",
+        category = "General",
+        subcategory = "Item Pickup Log",
+        parentName = "Item pickup log"
+    )
+    var itemPickupLogFadeOut = 300
+
+    @ConfigProperty(
         type = ConfigType.DROPDOWN,
         name = "Text Style",
         category = "General",
         subcategory = "Item Pickup Log",
-        parentName = "Show item pickup log",
+        parentName = "Item pickup log",
         dropdownOptions = ["Shadowed", "Default", "Outlined"]
     )
     var itemPickupLogTextStyle = "Shadowed"
@@ -498,7 +528,7 @@ object GeneralConfig : Config() {
         name = "Show Material IDs",
         category = "General",
         subcategory = "Item Pickup Log",
-        parentName = "Show item pickup log"
+        parentName = "Item pickup log"
     )
     var itemPickupLogItemIds = false
 
@@ -507,7 +537,7 @@ object GeneralConfig : Config() {
         name = "Show Material Prices",
         category = "General",
         subcategory = "Item Pickup Log",
-        parentName = "Show item pickup log"
+        parentName = "Item pickup log"
     )
     var itemPickupLogItemPrices = true
 

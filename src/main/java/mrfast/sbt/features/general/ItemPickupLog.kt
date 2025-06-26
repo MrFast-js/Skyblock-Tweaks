@@ -1,6 +1,7 @@
 package mrfast.sbt.features.general
 
 import mrfast.sbt.SkyblockTweaks
+import mrfast.sbt.config.categories.GeneralConfig
 import mrfast.sbt.config.categories.GeneralConfig.itemPickupLog
 import mrfast.sbt.config.categories.GeneralConfig.itemPickupLogItemIds
 import mrfast.sbt.config.categories.GeneralConfig.itemPickupLogItemPrices
@@ -16,6 +17,7 @@ import mrfast.sbt.utils.Utils
 import mrfast.sbt.utils.Utils.clean
 import mrfast.sbt.utils.Utils.formatNumber
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import java.awt.Color
 import kotlin.math.abs
 
 @SkyblockTweaks.EventComponent
@@ -26,6 +28,46 @@ object ItemPickupLog {
         var count: Int = 0
         var lastUpdated: Long = 0
         var itemId: String = ""
+
+        private val fadeInDuration = GeneralConfig.itemPickupLogFadeIn
+        private val fadeOutDuration = GeneralConfig.itemPickupLogFadeOut
+        private val totalDuration = GeneralConfig.itemPickupLogTotalTime
+
+        fun timeSinceUpdate(): Long = System.currentTimeMillis() - lastUpdated
+
+        fun isExpired(): Boolean = timeSinceUpdate() >= totalDuration
+
+        fun getAlpha(): Int {
+            val elapsed = timeSinceUpdate()
+
+            return when {
+                elapsed < fadeInDuration -> {
+                    val t = elapsed.toFloat() / fadeInDuration
+                    (t * 255).toInt().coerceIn(0, 255)
+                }
+                elapsed > totalDuration - fadeOutDuration -> {
+                    val t = (totalDuration - elapsed).toFloat() / fadeOutDuration
+                    (t * 255).toInt().coerceIn(0, 255)
+                }
+                else -> 255
+            }
+        }
+
+        fun getVerticalOffset(baseY: Float): Float {
+            val elapsed = timeSinceUpdate()
+
+            return when {
+                elapsed < fadeInDuration -> {
+                    val t = 1f - (elapsed.toFloat() / fadeInDuration)
+                    baseY + (10f * t) // Slide up into place
+                }
+                elapsed > totalDuration - fadeOutDuration -> {
+                    val t = (elapsed - (totalDuration - fadeOutDuration)).toFloat() / fadeOutDuration
+                    baseY + (10f * t) // Slide down while fading out
+                }
+                else -> baseY
+            }
+        }
     }
 
     // Stop from rift showing every item gain/loss when going between dimensions
@@ -79,36 +121,42 @@ object ItemPickupLog {
         }
 
         override fun draw() {
-            // Clear out logs after 3s
-            displayLines = displayLines.filterValues {
-                System.currentTimeMillis() - it.lastUpdated < 3000
-            } as MutableMap<String, PickupEntry>
+            val now = System.currentTimeMillis()
 
-            val sorted = displayLines.toList().sortedByDescending { (_, value) -> value.lastUpdated }.toMap()
+            // Remove expired entries before drawing
+            displayLines = displayLines.filterValues { !it.isExpired() } as MutableMap<String, PickupEntry>
+
+            val sorted = displayLines.toList().sortedByDescending { (_, value) -> value.lastUpdated }
 
             var drawnEntries = 0
-            for (entry in sorted) {
-                if (entry.value.count == 0) continue
+            for ((entryName, entry) in sorted) {
+                if (entry.count == 0) continue
 
-                val entryName = entry.key
-                val materialId = entry.value.itemId
-                val colorSymbol = if (entry.value.count < 0) "§c-" else "§a+"
-                val count = abs(entry.value.count).formatNumber()
+                val alpha = entry.getAlpha()
+                if (alpha <= 0) continue
 
+                val baseY = 10f * drawnEntries
+                val yWithOffset = entry.getVerticalOffset(baseY)
+
+                val colorSymbol = if (entry.count < 0) "§c-" else "§a+"
+                val count = abs(entry.count).formatNumber()
                 var display = "$colorSymbol$count §e$entryName"
 
-                if (itemPickupLogItemIds) display += " §7$materialId"
+                if (itemPickupLogItemIds) display += " §7${entry.itemId}"
                 if (itemPickupLogItemPrices) {
-                    val price = ItemUtils.getItemBasePrice(materialId) * entry.value.count
+                    val price = ItemUtils.getItemBasePrice(entry.itemId) * entry.count
                     display += " §6$${abs(price).formatNumber()}"
                 }
+
                 val style = when (itemPickupLogTextStyle) {
                     "Shadowed" -> GuiUtils.TextStyle.DROP_SHADOW
                     "Outlined" -> GuiUtils.TextStyle.BLACK_OUTLINE
                     else -> GuiUtils.TextStyle.DEFAULT
                 }
 
-                GuiUtils.drawText(display, 0f, (10 * drawnEntries).toFloat(), style)
+                val color = Color(255, 255, 255, alpha)
+                GuiUtils.drawText(display, 0f, yWithOffset, style, color)
+
                 drawnEntries++
             }
         }

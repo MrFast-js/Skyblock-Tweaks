@@ -229,13 +229,15 @@ object ItemApi {
 
         itemNameIDCache[cleanedName]?.let { return it }
 
-        val matchKey = synchronized(skyblockItems) {
-            skyblockItems.entrySet().firstOrNull { entry ->
-                val name = entry.value?.asJsonObject?.get("displayname")?.asString ?: return@firstOrNull false
-                val cleanedItemName = if (ignoreFormatting == true) name.clean() else name
-                cleanedItemName == cleanedName
-            }?.key
+        val entriesSnapshot = synchronized(skyblockItems) {
+            skyblockItems.entrySet().toList()
         }
+
+        val matchKey = entriesSnapshot.firstOrNull { entry ->
+            val name = entry.value?.asJsonObject?.get("displayname")?.asString ?: return@firstOrNull false
+            val cleanedItemName = if (ignoreFormatting == true) name.clean() else name
+            cleanedItemName == cleanedName
+        }?.key
 
         return matchKey?.also { itemNameIDCache[cleanedName] = it }
     }
