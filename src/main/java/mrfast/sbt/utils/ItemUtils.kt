@@ -400,7 +400,7 @@ object ItemUtils {
             }
         }
 
-        val itemID = itemStack.getSkyblockId()!!
+        val itemID = itemStack.getSkyblockId()?: return null
         val pricingData = ItemApi.getItemInfo(itemID) ?: return null
 
         val lbin = if (pricingData.has("lowestBin")) pricingData.get("lowestBin").asLong else null
