@@ -61,18 +61,17 @@ object ItemUtils {
     }
 
     private val enchantCache = mutableMapOf<String, String?>()
+
     private fun getEnchantFromName(name: String): String? {
         val cleanedName = name.clean()
 
-        if(enchantCache.containsKey(cleanedName)) {
-            return enchantCache[cleanedName]
-        }
+        enchantCache[cleanedName]?.let { return it }
 
-        ItemApi.getSkyblockItems().entrySet().forEach { (id, itemJSON) ->
-            val itemId = itemJSON.asJsonObject?.get("itemid")?.asString ?: return@forEach
-            if (itemId != "minecraft:enchanted_book") return@forEach
+        for ((id, itemJSON) in ItemApi.getSkyblockItems().entrySet()) {
+            val itemId = itemJSON.asJsonObject?.get("itemid")?.asString ?: continue
+            if (itemId != "minecraft:enchanted_book") continue
 
-            val lore = itemJSON.asJsonObject.getAsJsonArray("lore") ?: return@forEach
+            val lore = itemJSON.asJsonObject.getAsJsonArray("lore") ?: continue
             if (lore.size() > 0 && lore[0].asString.clean() == cleanedName) {
                 enchantCache[cleanedName] = id
                 return id

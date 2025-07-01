@@ -10,6 +10,15 @@ object MiscellaneousConfig : Config() {
 
     @ConfigProperty(
         type = ConfigType.TOGGLE,
+        name = "Bazaar Buy Amount Overlay",
+        description = "Shows a overlay when entering amount of items to buy, with quick options for common amounts.",
+        category = "Miscellaneous",
+        subcategory = "New Years Cakes"
+    )
+    var bazaarBuyAmountOverlay = true
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
         name = "Cake Bag Sorting Helper",
         description = "Provides a easy tool to help sort your new year cake bag in order.§b Low years -> High years",
         category = "Miscellaneous",

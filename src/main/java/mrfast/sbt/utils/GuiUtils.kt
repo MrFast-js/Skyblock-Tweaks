@@ -293,7 +293,7 @@ object GuiUtils {
         open var onRightClick: Runnable? = null,
         open var drawBackground: Boolean = false,
         open var backgroundColor: Color = Color.GRAY,
-        open var width: Int = text.getStringWidth()
+        open var width: Int = text.cleanColor().getStringWidth()
     ) {
         open var height = FontManager.getFontRenderer().FONT_HEIGHT
 
