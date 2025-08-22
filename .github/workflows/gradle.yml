@@ -1,5 +1,4 @@
 name: Build SkyblockTweaks
-
 on:
   push:
     branches:
@@ -7,30 +6,76 @@ on:
   pull_request:
     branches:
       - '*'
-
 jobs:
   build-gradle-project:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/setup-java@v4.0.0
         with:
           distribution: zulu
           java-version: 17
-
       - name: Checkout repo
         uses: actions/checkout@v4.1.1
-
       - name: Make gradlew executable
         run: chmod +x ./gradlew
-
       - name: Setup Gradle and build jar
         uses: gradle/gradle-build-action@v2.11.1
         with:
           arguments: build
-
       - name: Upload SkyblockTweaks jar
         uses: actions/upload-artifact@v4.0.0
         with:
           name: SkyblockTweaks-Nightly
           path: build/libs/*.jar
+  send-to-discord:
+    if: github.event_name == 'push'
+    needs: build-gradle-project
+    runs-on: ubuntu-latest
+    env:
+      DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
+      DISCORD_CHANNEL_ID: ${{ secrets.DISCORD_CHANNEL_ID }}
+      BUILD_NUMBER: ${{ github.run_number }}
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Download built artifact
+        uses: actions/download-artifact@v4.1.7
+        with:
+          name: SkyblockTweaks-Nightly
+          path: ./artifact
+      - name: Send jar to Discord via Bot
+        run: |
+          JAR_FILE=$(find ./artifact -name "*.jar" | head -n 1)
+          JAR_NAME=$(basename "$JAR_FILE")
+          COMMIT_MESSAGE=$(git log -1 --pretty=%s)
+          COMMIT_HASH=$(git rev-parse --short HEAD)
+          COMMIT_URL="https://github.com/${{ github.repository }}/commit/${COMMIT_HASH}"
+          BRANCH_NAME="${{ github.ref_name }}"
+          
+          EMBED_PAYLOAD=$(jq -n \
+            --arg title "🚀 SkyblockTweaks Nightly Build #${BUILD_NUMBER}" \
+            --arg desc "**Latest Commit:** [$COMMIT_MESSAGE]($COMMIT_URL)\n**Branch:** \`$BRANCH_NAME\`\n**Build:** #${BUILD_NUMBER}\n**Hash:** \`$COMMIT_HASH\`\n**File:** \`$JAR_NAME\`" \
+            --arg timestamp "$(date -u +%Y-%m-%dT%H:%M:%S.000Z)" \
+            '{
+              embeds: [{
+                title: $title,
+                description: $desc,
+                color: 3447003,
+                timestamp: $timestamp,
+                footer: {
+                  text: "SkyblockTweaks Nightly Builds"
+                },
+                thumbnail: {
+                  url: https://cdn.modrinth.com/data/5SDy0bij/85f954e6f5727fa5f49425fc677b5ec663491a07_96.webp"
+                }
+              }]
+            }')
+          
+          curl -X POST \
+            -H "Authorization: Bot $DISCORD_BOT_TOKEN" \
+            -H "Content-Type: multipart/form-data" \
+            -F "payload_json=${EMBED_PAYLOAD}" \
+            -F "files[0]=@${JAR_FILE}" \
+            "https://discord.com/api/v10/channels/1322213901781438544/messages"
