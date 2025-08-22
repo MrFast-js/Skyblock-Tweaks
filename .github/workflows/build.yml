@@ -55,16 +55,16 @@ jobs:
           
           EMBED_PAYLOAD=$(jq -n \
             --arg title "🚀 SkyblockTweaks Nightly Build #${BUILD_NUMBER}" \
-            --arg desc "**Latest Commit:** [$COMMIT_MESSAGE]($COMMIT_URL)
-**Branch:** \`$BRANCH_NAME\`
-**Build:** #${BUILD_NUMBER}
-**Hash:** \`$COMMIT_HASH\`
-**File:** \`$JAR_NAME\`" \
+            --arg commit "**Latest Commit:** [$COMMIT_MESSAGE]($COMMIT_URL)" \
+            --arg branch "**Branch:** \`$BRANCH_NAME\`" \
+            --arg build "**Build:** #${BUILD_NUMBER}" \
+            --arg hash "**Hash:** \`$COMMIT_HASH\`" \
+            --arg file "**File:** \`$JAR_NAME\`" \
             --arg timestamp "$(date -u +%Y-%m-%dT%H:%M:%S.000Z)" \
             '{
               embeds: [{
                 title: $title,
-                description: $desc,
+                description: ($commit + "\n" + $branch + "\n" + $build + "\n" + $hash + "\n" + $file),
                 color: 3447003,
                 timestamp: $timestamp,
                 footer: {
