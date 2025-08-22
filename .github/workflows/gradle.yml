@@ -55,7 +55,7 @@ jobs:
           BRANCH_NAME="${{ github.ref_name }}"
 
           BUILD_TITLE="🚀 SkyblockTweaks Nightly Build #${BUILD_NUMBER} [${BRANCH_NAME}]"
-          DESCRIPTION="***You must have a Github Account for this to work***\n\`\`\`${COMMIT_MESSAGE}\`\`\`"
+          DESCRIPTION="\`\`\`${COMMIT_MESSAGE}\`\`\`"
           DOWNLOAD_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
 
           EMBED_PAYLOAD=$(jq -n \
@@ -70,7 +70,7 @@ jobs:
               embeds: [{
                 title: $title,
                 description: $description,
-                color: 0x00AE86,
+                color: 44678,
                 thumbnail: {
                   url: "https://i.imgur.com/TtnRRnq.png"
                 },
