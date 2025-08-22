@@ -32,8 +32,7 @@ jobs:
     needs: build-gradle-project
     runs-on: ubuntu-latest
     env:
-      DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
-      DISCORD_CHANNEL_ID: ${{ secrets.DISCORD_CHANNEL_ID }}
+      DISCORD_WEBHOOK_URL: ${{ secrets.WEBHOOK }}
       BUILD_NUMBER: ${{ github.run_number }}
     steps:
       - name: Checkout source
@@ -45,7 +44,7 @@ jobs:
         with:
           name: SkyblockTweaks-Nightly
           path: ./artifact
-      - name: Send jar to Discord via Bot
+      - name: Send jar to Discord via Webhook
         run: |
           JAR_FILE=$(find ./artifact -name "*.jar" | head -n 1)
           JAR_NAME=$(basename "$JAR_FILE")
@@ -68,14 +67,13 @@ jobs:
                   text: "SkyblockTweaks Nightly Builds"
                 },
                 thumbnail: {
-                  url: https://cdn.modrinth.com/data/5SDy0bij/85f954e6f5727fa5f49425fc677b5ec663491a07_96.webp"
+                  url: "https://cdn.modrinth.com/data/5SDy0bij/85f954e6f5727fa5f49425fc677b5ec663491a07_96.webp"
                 }
               }]
             }')
           
           curl -X POST \
-            -H "Authorization: Bot $DISCORD_BOT_TOKEN" \
             -H "Content-Type: multipart/form-data" \
             -F "payload_json=${EMBED_PAYLOAD}" \
-            -F "files[0]=@${JAR_FILE}" \
-            "https://discord.com/api/v10/channels/1322213901781438544/messages"
+            -F "file=@${JAR_FILE}" \
+            "$DISCORD_WEBHOOK_URL"
