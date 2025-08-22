@@ -21,7 +21,6 @@ import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.entity.EntityJoinWorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
-import java.util.regex.Pattern
 
 @SkyblockTweaks.EventComponent
 object SkyblockMobDetector {
@@ -117,7 +116,7 @@ object SkyblockMobDetector {
     private fun updateMobData(sbMob: SkyblockMob) {
         val rawMobName = sbMob.mobNameEntity.displayName.unformattedText.clean().replace(",", "")
 
-        var matcher: Matcher? = null
+        var matcher: MatchResult? = null
 
         // Iterate through the regex patterns
         var regexBeingUsed: Regex? = null
