@@ -1,32 +1,3 @@
-name: Build SkyblockTweaks
-on:
-  push:
-    branches:
-      - '*'
-  pull_request:
-    branches:
-      - '*'
-jobs:
-  build-gradle-project:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/setup-java@v4.0.0
-        with:
-          distribution: zulu
-          java-version: 17
-      - name: Checkout repo
-        uses: actions/checkout@v4.1.1
-      - name: Make gradlew executable
-        run: chmod +x ./gradlew
-      - name: Setup Gradle and build jar
-        uses: gradle/gradle-build-action@v2.11.1
-        with:
-          arguments: build
-      - name: Upload SkyblockTweaks jar
-        uses: actions/upload-artifact@v4.0.0
-        with:
-          name: SkyblockTweaks-Nightly
-          path: build/libs/*.jar
   send-to-discord:
     if: github.event_name == 'push'
     needs: build-gradle-project
@@ -53,26 +24,30 @@ jobs:
           COMMIT_URL="https://github.com/${{ github.repository }}/commit/${COMMIT_HASH}"
           BRANCH_NAME="${{ github.ref_name }}"
 
+          BUILD_TITLE="🚀 SkyblockTweaks Nightly Build #${BUILD_NUMBER} [${BRANCH_NAME}]"
+          DESCRIPTION="***You must have a Github Account for this to work***\n\`\`\`${COMMIT_MESSAGE}\`\`\`"
+          DOWNLOAD_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+
           EMBED_PAYLOAD=$(jq -n \
             --arg username "SkyblockTweaks Bot" \
-            --arg avatar_url "https://cdn.modrinth.com/data/5SDy0bij/85f954e6f5727fa5f49425fc677b5ec663491a07_96.webp" \
-            --arg title "🚀 SkyblockTweaks Nightly Build #${BUILD_NUMBER} [$BRANCH_NAME]" \
-            --arg commit "**Commit:** [$COMMIT_MESSAGE]($COMMIT_URL)" \
-            --arg timestamp "$(date -u +%Y-%m-%dT%H:%M:%S.000Z)" \
+            --arg avatar_url "https://i.imgur.com/TtnRRnq.png" \
+            --arg title "$BUILD_TITLE" \
+            --arg description "$DESCRIPTION" \
+            --arg url "$DOWNLOAD_URL" \
             '{
               username: $username,
               avatar_url: $avatar_url,
               embeds: [{
                 title: $title,
-                description: ($commit),
-                color: 3447003,
-                timestamp: $timestamp,
-                footer: {
-                  text: "SkyblockTweaks Nightly Builds"
-                },
+                description: $description,
+                color: 0x00AE86,
                 thumbnail: {
-                  url: "https://cdn.modrinth.com/data/5SDy0bij/85f954e6f5727fa5f49425fc677b5ec663491a07_96.webp"
-                }
+                  url: "https://i.imgur.com/TtnRRnq.png"
+                },
+                footer: {
+                  text: "⚠️ Warning Developer Builds are extremely unstable and may cause crashes ⚠️"
+                },
+                url: $url
               }]
             }')
 
