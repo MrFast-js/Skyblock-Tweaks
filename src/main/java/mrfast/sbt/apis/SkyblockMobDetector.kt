@@ -27,6 +27,9 @@ import java.util.regex.Pattern
 @SkyblockTweaks.EventComponent
 object SkyblockMobDetector {
     private val skyblockMobHashMap = HashMap<Entity, SkyblockMob>()
+    private val normalMobRegex = "\\[Lv\\d+k?] (?:[༕ൠ☮⊙Ž✰♨⚂❆☽✿☠⸕⚓♆♣⚙\uFE0E♃⛨✈⸙] )?(.+?) [\\d.,]+[MkB]?/[\\d.,]+[MkB]?❤".toRegex()
+    private val slayerMobRegex = "(?<=☠\\s)[A-Za-z]+\\s[A-Za-z]+(?:\\s[IVX]+)?".toRegex()
+    private val dungeonMobRegex = "(?:[༕ൠ☮⊙Ž✰♨⚂❆☽✿☠⸕⚓♆♣⚙︎♃⛨✈⸙] )?✯?\\s*(?:Flaming|Super|Healing|Boomer|Golden|Speedy|Fortified|Stormy|Healthy)?\\s*([\\w\\s]+?)\\s*([\\d.,]+[mkM?]*|[?]+)❤".toRegex()
 
     class SkyblockMob(val mobNameEntity: Entity, val skyblockMob: Entity) {
         var skyblockMobId: String? = null
@@ -113,10 +116,6 @@ object SkyblockMobDetector {
 
     private fun updateMobData(sbMob: SkyblockMob) {
         val rawMobName = sbMob.mobNameEntity.displayName.unformattedText.clean().replace(",", "")
-
-        val normalMobRegex = "\\[Lv(?:\\d+k?)] (.+?) [\\d.,]+[MkB]?/[\\d.,]+[MkB]?❤"
-        val slayerMobRegex = "(?<=☠\\s)[A-Za-z]+\\s[A-Za-z]+(?:\\s[IVX]+)?"
-        val dungeonMobRegex = "✯?\\s*(?:Flaming|Super|Healing|Boomer|Golden|Speedy|Fortified|Stormy|Healthy)?\\s*([\\w\\s]+?)\\s*([\\d.,]+[mkM?]*|[?]+)❤"
 
         var pattern: Pattern
         var matcher: Matcher? = null
