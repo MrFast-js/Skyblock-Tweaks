@@ -117,17 +117,15 @@ object SkyblockMobDetector {
     private fun updateMobData(sbMob: SkyblockMob) {
         val rawMobName = sbMob.mobNameEntity.displayName.unformattedText.clean().replace(",", "")
 
-        var pattern: Pattern
         var matcher: Matcher? = null
-
+        
         // Iterate through the regex patterns
         val regexPatterns = listOf(normalMobRegex, slayerMobRegex, dungeonMobRegex)
         var regexBeingUsed: String? = null
         for (regex in regexPatterns) {
-            pattern = Pattern.compile(regex)
-            matcher = pattern.matcher(rawMobName)
+            matcher = regex.toPattern().matcher(rawMobName)
             if (matcher.find()) {
-                regexBeingUsed = regex
+                regexBeingUsed = regex.pattern
                 break
             }
         }
@@ -135,9 +133,9 @@ object SkyblockMobDetector {
         if (regexBeingUsed != null) {
             matcher = matcher ?: return
             when (regexBeingUsed) {
-                normalMobRegex -> sbMob.skyblockMobId = matcher.group(1)
-                slayerMobRegex -> sbMob.skyblockMobId = matcher.group() + " Slayer"
-                dungeonMobRegex -> {
+                normalMobRegex.pattern -> sbMob.skyblockMobId = matcher.group(1)
+                slayerMobRegex.pattern -> sbMob.skyblockMobId = matcher.group() + " Slayer"
+                dungeonMobRegex.pattern -> {
                     sbMob.skyblockMobId = matcher.group(1)
                     if (rawMobName.startsWith("ൠ")) {
                         sbMob.skyblockMobId = matcher.group(1) + " Pest"
