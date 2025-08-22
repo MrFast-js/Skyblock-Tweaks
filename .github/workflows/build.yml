@@ -33,7 +33,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       DISCORD_WEBHOOK_URL: ${{ secrets.WEBHOOK }}
-      BUILD_NUMBER: ${{ github.run_number }}
+      BUILD_NUMBER: ${{ github.run_number + 440 }}
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
@@ -54,17 +54,13 @@ jobs:
           BRANCH_NAME="${{ github.ref_name }}"
           
           EMBED_PAYLOAD=$(jq -n \
-            --arg title "🚀 SkyblockTweaks Nightly Build #${BUILD_NUMBER}" \
-            --arg commit "**Latest Commit:** [$COMMIT_MESSAGE]($COMMIT_URL)" \
-            --arg branch "**Branch:** \`$BRANCH_NAME\`" \
-            --arg build "**Build:** #${BUILD_NUMBER}" \
-            --arg hash "**Hash:** \`$COMMIT_HASH\`" \
-            --arg file "**File:** \`$JAR_NAME\`" \
+            --arg title "🚀 SkyblockTweaks Nightly Build #${BUILD_NUMBER} [$BRANCH_NAME]" \
+            --arg commit "**Commit:** [$COMMIT_MESSAGE]($COMMIT_URL)" \
             --arg timestamp "$(date -u +%Y-%m-%dT%H:%M:%S.000Z)" \
             '{
               embeds: [{
                 title: $title,
-                description: ($commit + "\n" + $branch + "\n" + $build + "\n" + $hash + "\n" + $file),
+                description: ($commit),
                 color: 3447003,
                 timestamp: $timestamp,
                 footer: {
