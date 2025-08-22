@@ -52,12 +52,16 @@ jobs:
           COMMIT_HASH=$(git rev-parse --short HEAD)
           COMMIT_URL="https://github.com/${{ github.repository }}/commit/${COMMIT_HASH}"
           BRANCH_NAME="${{ github.ref_name }}"
-          
+
           EMBED_PAYLOAD=$(jq -n \
+            --arg username "SkyblockTweaks Bot" \
+            --arg avatar_url "https://cdn.modrinth.com/data/5SDy0bij/85f954e6f5727fa5f49425fc677b5ec663491a07_96.webp" \
             --arg title "🚀 SkyblockTweaks Nightly Build #${BUILD_NUMBER} [$BRANCH_NAME]" \
             --arg commit "**Commit:** [$COMMIT_MESSAGE]($COMMIT_URL)" \
             --arg timestamp "$(date -u +%Y-%m-%dT%H:%M:%S.000Z)" \
             '{
+              username: $username,
+              avatar_url: $avatar_url,
               embeds: [{
                 title: $title,
                 description: ($commit),
@@ -71,7 +75,7 @@ jobs:
                 }
               }]
             }')
-          
+
           curl -X POST \
             -H "Content-Type: multipart/form-data" \
             -F "payload_json=${EMBED_PAYLOAD}" \
