@@ -21,13 +21,15 @@ import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.entity.EntityJoinWorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
-import java.util.regex.Matcher
-import java.util.regex.Pattern
 
 @SkyblockTweaks.EventComponent
 object SkyblockMobDetector {
     private val skyblockMobHashMap = HashMap<Entity, SkyblockMob>()
-
+    private val normalMobRegex = "\\[Lv\\d+k?] (?:[༕ൠ☮⊙Ž✰♨⚂❆☽✿☠⸕⚓♆♣⚙\uFE0E♃⛨✈⸙] )?(.+?) [\\d.,]+[MkB]?/[\\d.,]+[MkB]?❤".toRegex()
+    private val slayerMobRegex = "(?<=☠\\s)[A-Za-z]+\\s[A-Za-z]+(?:\\s[IVX]+)?".toRegex()
+    private val dungeonMobRegex = "(?:[༕ൠ☮⊙Ž✰♨⚂❆☽✿☠⸕⚓♆♣⚙︎♃⛨✈⸙] )?✯?\\s*(?:Flaming|Super|Healing|Boomer|Golden|Speedy|Fortified|Stormy|Healthy)?\\s*([\\w\\s]+?)\\s*([\\d.,]+[mkM?]*|[?]+)❤".toRegex()
+    private val regexPatterns = listOf(normalMobRegex, slayerMobRegex, dungeonMobRegex)
+    
     class SkyblockMob(val mobNameEntity: Entity, val skyblockMob: Entity) {
         var skyblockMobId: String? = null
     }
@@ -114,20 +116,13 @@ object SkyblockMobDetector {
     private fun updateMobData(sbMob: SkyblockMob) {
         val rawMobName = sbMob.mobNameEntity.displayName.unformattedText.clean().replace(",", "")
 
-        val normalMobRegex = "\\[Lv(?:\\d+k?)] (.+?) [\\d.,]+[MkB]?/[\\d.,]+[MkB]?❤"
-        val slayerMobRegex = "(?<=☠\\s)[A-Za-z]+\\s[A-Za-z]+(?:\\s[IVX]+)?"
-        val dungeonMobRegex = "✯?\\s*(?:Flaming|Super|Healing|Boomer|Golden|Speedy|Fortified|Stormy|Healthy)?\\s*([\\w\\s]+?)\\s*([\\d.,]+[mkM?]*|[?]+)❤"
-
-        var pattern: Pattern
-        var matcher: Matcher? = null
+        var matcher: MatchResult? = null
 
         // Iterate through the regex patterns
-        val regexPatterns = listOf(normalMobRegex, slayerMobRegex, dungeonMobRegex)
-        var regexBeingUsed: String? = null
+        var regexBeingUsed: Regex? = null
         for (regex in regexPatterns) {
-            pattern = Pattern.compile(regex)
-            matcher = pattern.matcher(rawMobName)
-            if (matcher.find()) {
+            matcher = regex.find(rawMobName)
+            if (matcher != null) {
                 regexBeingUsed = regex
                 break
             }
@@ -136,12 +131,12 @@ object SkyblockMobDetector {
         if (regexBeingUsed != null) {
             matcher = matcher ?: return
             when (regexBeingUsed) {
-                normalMobRegex -> sbMob.skyblockMobId = matcher.group(1)
-                slayerMobRegex -> sbMob.skyblockMobId = matcher.group() + " Slayer"
+                normalMobRegex -> sbMob.skyblockMobId = matcher.groupValues[1]
+                slayerMobRegex -> sbMob.skyblockMobId = matcher.value + " Slayer"
                 dungeonMobRegex -> {
-                    sbMob.skyblockMobId = matcher.group(1)
+                    sbMob.skyblockMobId = matcher.groupValues[1]
                     if (rawMobName.startsWith("ൠ")) {
-                        sbMob.skyblockMobId = matcher.group(1) + " Pest"
+                        sbMob.skyblockMobId = matcher.groupValues[1] + " Pest"
                     }
                 }
             }
