@@ -1,3 +1,6 @@
+# This Project has reached its EOL (end of life)
+## Check out my other ongoing project replacement: https://github.com/StellariumMC/zen-1.21
+
 ![Title Logo](https://i.imgur.com/UloOzQW.png)
 
 <div align="center">
