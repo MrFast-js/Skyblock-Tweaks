@@ -84,4 +84,13 @@ object MiningConfig : Config() {
         parentName = "Forge Flipper Overlay"
     )
     var forgeFlipperMaxHotm = 10
+
+    @ConfigProperty(
+        type = ConfigType.TOGGLE,
+        name = "Powder Chest Highlight",
+        description = "Highlights powder chests in the Crystal hollows Mines through walls, including a timer before despawn.",
+        category = "Mining",
+        subcategory = "Render"
+    )
+    var PowderChestESP = true
 }
